@@ -1,6 +1,6 @@
 package site.dogether.common.error;
 
-public interface ErrorCode {
+public interface ExceptionCode {
 
     String getValue();
     String getMessage();
