@@ -1,16 +1,17 @@
-x-springboot-app-secret: &springboot-app-secret
+x-common-springboot-app-docker-settings: &common-springboot-app-docker-settings
   image: ${SPRING_BOOT_APP_IMAGE_REPOSITORY_PATH}:${SPRING_BOOT_APP_IMAGE_TAG}
   networks:
     - backend_network
   volumes:
     - ./data/springboot-app/logs:/logs
-  environment:
-    TZ: "Asia/Seoul"
-    SPRING_DATASOURCE_URL: ${DB_URL}
-    SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-    SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
   depends_on:
     - mysql
+
+x-springboot-app-secret: &springboot-app-secret
+  TZ: "Asia/Seoul"
+  SPRING_DATASOURCE_URL: ${DB_URL}
+  SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+  SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
 services:
   mysql:
@@ -32,10 +33,13 @@ services:
       - --collation-server=utf8mb4_unicode_ci
 
   springboot-app:
-    <<: *springboot-app-secret
+    <<: *common-springboot-app-docker-settings
     container_name: springboot-app
     ports:
       - "8080:8080"
+    environment:
+      <<: *springboot-app-secret
+      SERVER_PORT: 8080
 
   promtail:
     image: grafana/promtail:latest
