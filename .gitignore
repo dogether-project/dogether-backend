@@ -181,4 +181,7 @@ local.env
 # docker data
 /data
 
+# custom sh
+/sh
+
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
