@@ -1,5 +1,8 @@
 spring:
-  config:
-    import: "secret.yml"
-  profiles:
-    active: local
+  profiles.active: local
+
+  jpa:
+    open-in-view: false
+
+secret:
+  api-docs-path: ${API_DOCS_PATH}

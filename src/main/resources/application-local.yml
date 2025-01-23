@@ -1,18 +1,15 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:33306/dogether
+    username: root
+    password: root
 
   jpa:
+    hibernate.ddl-auto: create
     show-sql: true
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
+    properties.hibernate.format_sql: true
 
 logging:
-  config: classpath:logback-local.xml
-  level:
-    site:
-      dogether: trace
+  config: classpath:logback/logback-local.xml
+  level.site.dogether: trace

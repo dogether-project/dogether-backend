@@ -2,15 +2,11 @@ spring:
   profiles:
     active: test
 
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
+  datasource:
+    driver-class-name: ${DB_DRIVER}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
-logging:
-  config: classpath:logback-test.xml
-  level:
-    site:
-      dogether: trace
+secret:
+  api-docs-path: ${API_DOCS_PATH}
