@@ -178,4 +178,7 @@ gradle-app.setting
 # env file
 local.env
 
+# docker data
+/data
+
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
