@@ -5,4 +5,4 @@ spring:
     open-in-view: false
 
 secret:
-  api-docs-path: ${API_DOCS_PATH}
+  item: item

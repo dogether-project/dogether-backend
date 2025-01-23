@@ -9,4 +9,4 @@ spring:
     password: ${DB_PASSWORD:root}
 
 secret:
-  api-docs-path: ${API_DOCS_PATH}
+  item: item
