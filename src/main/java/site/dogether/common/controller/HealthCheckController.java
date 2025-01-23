@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.common.controller.response.ApiResponse;
 
 @RestController
-public class CommonController {
+public class HealthCheckController {
 
     @GetMapping("/api/health-check")
     public ResponseEntity<ApiResponse<Void>> healthCheck() {
