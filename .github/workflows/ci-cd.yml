@@ -23,10 +23,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew\
-      - name: Build with gradle
-        run: ./gradlew bootJar
       - name: Execute test
-        run: ./gradlew test
+        # test 패키지 하위 application.yml 민감 정보 추가
+        env:
+          DB_DRIVER: "org.h2.Driver"
+          DB_URL: "jdbc:h2:mem:dogether;MODE=MYSQL"
+          DB_USERNAME: "sa"
+        run: ./gradlew test --info
 
   set-environment:
     if: github.event.pull_request.merged == true
@@ -69,7 +72,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew\
       - name: Build with gradle
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar -Pspring.profiles.active=${{ matrix.environment }} --info
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -120,10 +123,10 @@ jobs:
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_NAME=${{ secrets.DB_NAME }}
-  
+            DB_URL=${{ secrets.DB_URL }}
+            
             SPRING_BOOT_APP_IMAGE_REPOSITORY_PATH=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
             SPRING_BOOT_APP_IMAGE_TAG=${{ github.sha }}
-            DB_URL=${{ secrets.DB_URL }}
             EOF
 
             # deploy with docker
