@@ -84,7 +84,7 @@ jobs:
           mask-password: 'true'
       - name: Docker build & push
         run: |
-          docker build --build-arg SPRING_BOOT_APP_PROFILE=${{ matrix.environment }} --platform linux/arm64 --tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
+          docker build --build-arg SPRING_BOOT_APP_PROFILE=${{ matrix.environment }} --platform linux/arm64 -f docker/Dockerfile --tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
   deploy:
@@ -97,46 +97,38 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-      - name: Upload docker-compose.yml to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.BACKEND_EC2_HOST }}
-          username: ${{ secrets.BACKEND_EC2_USER }}
-          key: ${{ secrets.BACKEND_EC2_SSH_KEY }}
-          port: 22
-          source: "./docker-compose.yml"
-          target: "~/project"
-
       - name: Deploy new Spring Boot Application
         id: deploy-status
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.BACKEND_EC2_HOST }}
-          username: ${{ secrets.BACKEND_EC2_USER }}
-          key: ${{ secrets.BACKEND_EC2_SSH_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
             cd ~/project
             
-            # create env file
-            cat <<EOF > .${{ matrix.environment }}.env
+            # create .env file
+            cat <<EOF > .env
+            # springboot-app environment
+            SPRINGBOOT_APP_IMAGE_REPOSITORY=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
+            SPRINGBOOT_APP_IMAGE_TAG=${{ github.sha }}
+            
+            # mysql environment
+            DB_NAME=${{ secrets.DB_NAME }}
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_NAME=${{ secrets.DB_NAME }}
             DB_URL=${{ secrets.DB_URL }}
-            
-            SPRING_BOOT_APP_IMAGE_REPOSITORY_PATH=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
-            SPRING_BOOT_APP_IMAGE_TAG=${{ github.sha }}
             EOF
 
             # deploy with docker
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username ${{ secrets.AWS_REPOSITORY_ID }} --password-stdin ${{ secrets.ECR_REGISTRY }}
-            sudo docker-compose --env-file .${{ matrix.environment }}.env stop springboot-app
-            sudo docker-compose --env-file .${{ matrix.environment }}.env rm -f springboot-app
+            sudo docker-compose stop springboot-app
+            sudo docker-compose rm -f springboot-app
             sudo docker images --filter=reference="*/springboot-app-${{ matrix.environment }}:*" -q | xargs -r sudo docker rmi -f
-            sudo docker-compose --env-file .${{ matrix.environment }}.env up -d springboot-app
+            sudo docker-compose up -d springboot-app
             
-            sudo rm -rf .${{ matrix.environment }}.env
+            sudo rm -rf .env
 
       - name: notify
         if: always()
