@@ -5,16 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import site.dogether.docs.util.UriDecodingPreprocessor;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyHeaders;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class RestDocsSupport {
@@ -22,7 +24,6 @@ public abstract class RestDocsSupport {
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
     protected MockMvc mockMvc;
-    protected RestDocumentationResultHandler restDocs;
 
     protected static Attributes.Attribute constraints(final String value) {
         return new Attributes.Attribute("constraints", value);
@@ -30,7 +31,6 @@ public abstract class RestDocsSupport {
 
     @BeforeEach
     void setUp(final RestDocumentationContextProvider provider) {
-        this.restDocs = MockMvcRestDocumentation.document("{class-name}/{method-name}");
         this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
                 .apply(documentationConfiguration(provider)
                     .operationPreprocessors()
@@ -49,9 +49,21 @@ public abstract class RestDocsSupport {
                             .remove("Expires")
                             .remove("X-Frame-Options"),
                         prettyPrint()))
-                .alwaysDo(restDocs)
                 .alwaysDo(MockMvcResultHandlers.print())
                 .build();
+    }
+
+    protected RestDocumentationResultHandler createDocument(final Snippet... snippets) {
+        return document(
+            "{class-name}/{method-name}",
+            getDocumentRequest(),
+            preprocessResponse(),
+            snippets
+        );
+    }
+
+    protected OperationRequestPreprocessor getDocumentRequest() {
+        return preprocessRequest(new UriDecodingPreprocessor());
     }
 
     protected abstract Object initController();
