@@ -9,5 +9,4 @@ class DogetherApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
