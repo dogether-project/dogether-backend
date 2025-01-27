@@ -1,5 +1,6 @@
 package site.dogether.docs.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +64,10 @@ public abstract class RestDocsSupport {
 
     protected OperationRequestPreprocessor getDocumentRequest() {
         return preprocessRequest(new UriDecodingPreprocessor());
+    }
+
+    protected String convertToJson(final Object object) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(object);
     }
 
     protected abstract Object initController();
