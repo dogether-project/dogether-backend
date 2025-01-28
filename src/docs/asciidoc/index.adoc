@@ -8,6 +8,9 @@ endif::[]
 :toc: left
 :toclevels: 2
 :sectlinks:
+ifndef::docinfodir[]
+:docinfodir: ./common
+endif::[]
 :docinfo: shared-head
 
-include::overview.adoc[]
+include::common/overview.adoc[]
