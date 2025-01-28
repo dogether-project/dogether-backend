@@ -1,0 +1,50 @@
+[[overview]]
+== Overview
+
+[[overview-host]]
+=== Host
+
+|===
+| 환경 | Host
+
+| 개발
+| `api-dev.dogether.site`
+
+| 운영
+| `미정`
+|===
+
+[[overview-http-status-codes]]
+=== HTTP Status Codes
+
+|===
+| 상태 코드 | 설명
+
+| `200 OK`
+| 성공
+
+| `400 Bad Request`
+| 잘못된 요청
+
+| `401 Unauthorized`
+| 비인증 상태
+
+| `403 Forbidden`
+| 권한 거부
+
+| `404 Not Found`
+| 존재하지 않는 요청 리소스
+
+| `500 Internal Server Error`
+| 서버 에러
+|===
+
+[[overview-error-codes]]
+=== Error Codes
+
+|===
+| 값 | 설명
+
+| IA-001
+| 서버 애플리케이션에 예기지 못한 예외가 발생했습니다.
+|===

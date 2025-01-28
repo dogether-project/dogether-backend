@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id("org.asciidoctor.jvm.convert") version "4.0.4"
 }
 
 group = 'site'
@@ -21,6 +22,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
 }
 
 repositories {
@@ -28,9 +30,27 @@ repositories {
 }
 
 dependencies {
+    // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // H2
+    runtimeOnly 'com.h2database:h2'
+
+    // MySQL
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Spring REST Docs
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -39,6 +59,49 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+ext {
+    activeProfile = project.hasProperty('spring.profiles.active') ? project.property('spring.profiles.active') : 'default'
+    snippetsDir = file('build/generated-snippets')
+}
+
+tasks.register('restDocsTest', Test) {
+    description = "Run only REST Docs related tests"
+    group = "verification"
+
+    outputs.dir snippetsDir
+
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching "*.docs.*"
+    }
+
+    onlyIf {
+        activeProfile != 'prod'
+    }
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+
+    sources { // 특정 파일만 html로 만든다.
+        include("**/index.adoc", "**/enum/*.adoc")
+    }
+    baseDirFollowsSourceFile() // 다른 adoc 파일을 include 할 때 경로를 baseDir로 맞춘다.
+    dependsOn restDocsTest
+
+    onlyIf {
+        activeProfile != 'prod'
+    }
+}
+
 bootJar {
     archiveFileName = "${rootProject.name}.jar"
+
+    if (activeProfile != 'prod') {
+        dependsOn asciidoctor
+        from("${asciidoctor.outputDir}") {
+            into 'static/docs'
+        }
+    }
 }
