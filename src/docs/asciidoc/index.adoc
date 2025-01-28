@@ -8,3 +8,4 @@ endif::[]
 :toc: left
 :toclevels: 2
 :sectlinks:
+:docinfo: shared-head
