@@ -42,9 +42,11 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("name")
                         .description("사용자 이름")
                         .type(JsonFieldType.STRING)
-                        .optional(),
+                        .optional()
+                        .attributes(constraints("OAuth Provider(Apple)상의 사용자 이름")),
                     fieldWithPath("idToken")
                         .description("IdentityToken")
+                        .attributes(constraints("애플이 제공하는 id_token만 가능"))
                         .type(JsonFieldType.STRING)
                 ),
                 responseFields(
@@ -80,6 +82,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("authorizationCode")
                         .description("인가 코드")
                         .type(JsonFieldType.STRING)
+                        .attributes(constraints("애플이 제공하는 인가 코드만 가능"))
                 ),
                 responseFields(
                     fieldWithPath("code")
