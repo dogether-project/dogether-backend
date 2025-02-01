@@ -14,7 +14,7 @@ import site.dogether.auth.controller.response.LoginResponse;
 import site.dogether.common.controller.response.ApiResponse;
 
 @RequestMapping("/api/auth")
-@RestController()
+@RestController
 public class AuthController {
 
     @PostMapping("/login")
