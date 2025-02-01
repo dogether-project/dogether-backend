@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.dogether.common.controller.response.SuccessCode;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public enum DailyTodoSuccessCode implements SuccessCode {
 
     CREATE_DAILY_TODOS("DTS-0001", "데일리 투두가 작성되었습니다."),

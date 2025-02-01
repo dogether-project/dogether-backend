@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.dogether.common.controller.response.SuccessCode;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public enum ChallengeGroupSuccessCode implements SuccessCode {
 
     CREATE_CHALLENGE_GROUP("CGS-0001", "챌린지 그룹을 생성하였습니다."),

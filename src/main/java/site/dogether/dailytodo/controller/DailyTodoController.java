@@ -12,7 +12,7 @@ import java.util.List;
 import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.*;
 
 @RequestMapping("/api/todos")
-@RestController()
+@RestController
 public class DailyTodoController {
 
     @PostMapping
