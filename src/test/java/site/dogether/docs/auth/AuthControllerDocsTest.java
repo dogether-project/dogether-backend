@@ -3,6 +3,7 @@ package site.dogether.docs.auth;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.auth.controller.AuthController;
 import site.dogether.auth.controller.request.LoginRequest;
+import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.docs.util.RestDocsSupport;
 
 @DisplayName("로그인 & 회원 탈퇴 API 문서화 테스트")
@@ -57,6 +59,34 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.accessToken")
                         .description("JWT accessToken")
+                        .type(JsonFieldType.STRING))));
+    }
+
+    @DisplayName("회원 탈퇴 API")
+    @Test
+    void withdraw() throws Exception {
+        final WithdrawRequest request = new WithdrawRequest(
+            "authorizationCodeauthorizationCodeauthorizationCode"
+        );
+
+        mockMvc.perform(
+                delete("/api/auth/withdraw")
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(convertToJson(request)))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                requestFields(
+                    fieldWithPath("authorizationCode")
+                        .description("인가 코드")
+                        .type(JsonFieldType.STRING)
+                ),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
                         .type(JsonFieldType.STRING))));
     }
 
