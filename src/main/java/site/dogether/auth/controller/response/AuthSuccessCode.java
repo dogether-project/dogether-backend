@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.dogether.common.controller.response.SuccessCode;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public enum AuthSuccessCode implements SuccessCode {
 
     LOGIN("AUS-0001", "로그인이 완료되었습니다."),

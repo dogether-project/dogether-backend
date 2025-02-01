@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.dogether.common.controller.response.SuccessCode;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public enum DailyTodoCertificationSuccessCode implements SuccessCode {
 
     REVIEW_DAILY_TODO_CERTIFICATION("TCS-0001", "데일리 투두 수행 인증 검사가 완료되었습니다."),
