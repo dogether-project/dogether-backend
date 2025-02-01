@@ -14,6 +14,7 @@ endif::[]
 :docinfo: shared-head
 
 include::common/overview.adoc[]
+include::auth/auth.adoc[]
 include::challengegroup/challenge-group.adoc[]
 include::dailytodo/daily-todo.adoc[]
 include::dailytodocertification/daily-todo-certification.adoc[]
