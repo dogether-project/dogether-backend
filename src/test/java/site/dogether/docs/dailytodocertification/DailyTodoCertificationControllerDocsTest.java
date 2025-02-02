@@ -99,13 +99,13 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                 )));
     }
 
-    @DisplayName("검사할 특정 투두 수행 인증 상세 조회 API")
+    @DisplayName("특정 투두 수행 인증 상세 조회 API")
     @Test
-    void getDailyTodoCertificationForReviewById() throws Exception {
+    void getDailyTodoCertificationById() throws Exception {
         final long todoCertificationId = 1L;
 
         mockMvc.perform(
-                get("/api/todo-certifications/pending-review/{todoCertificationId}", todoCertificationId)
+                get("/api/todo-certifications/{todoCertificationId}", todoCertificationId)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

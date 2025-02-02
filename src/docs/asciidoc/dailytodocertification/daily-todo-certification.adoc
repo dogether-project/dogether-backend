@@ -45,8 +45,8 @@ include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo
 include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certifications-for-review/http-response.adoc[]
 include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certifications-for-review/response-fields.adoc[]
 
-[[get-daily-todo-certification-for-review-by-id]]
-=== 검사할 특정 투두 수행 인증 상세 조회
+[[get-daily-todo-certification-by-id]]
+=== 특정 투두 수행 인증 상세 조회
 
 ==== 개발 상태
 |===
@@ -60,9 +60,9 @@ include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo
 |===
 
 ==== HTTP Request
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-for-review-by-id/http-request.adoc[]
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-for-review-by-id/path-parameters.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/http-request.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/path-parameters.adoc[]
 
 ==== HTTP Response
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-for-review-by-id/http-response.adoc[]
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-for-review-by-id/response-fields.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/http-response.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/response-fields.adoc[]
