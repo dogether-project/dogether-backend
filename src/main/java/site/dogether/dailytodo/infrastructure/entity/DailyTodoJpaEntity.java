@@ -33,4 +33,27 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
     @Column(name = "status", length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private DailyTodoStatus status;
+
+    public DailyTodoJpaEntity(
+        final ChallengeGroupJpaEntity challengeGroup,
+        final MemberJpaEntity member,
+        final String content,
+        final DailyTodoStatus status
+    ) {
+        this(null, challengeGroup, member, content, status);
+    }
+
+    public DailyTodoJpaEntity(
+        final Long id,
+        final ChallengeGroupJpaEntity challengeGroup,
+        final MemberJpaEntity member,
+        final String content,
+        final DailyTodoStatus status
+    ) {
+        this.id = id;
+        this.challengeGroup = challengeGroup;
+        this.member = member;
+        this.content = content;
+        this.status = status;
+    }
 }
