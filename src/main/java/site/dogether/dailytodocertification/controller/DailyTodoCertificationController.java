@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
-import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationForReviewByIdResponse;
+import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationByIdResponse;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
 import site.dogether.dailytodocertification.controller.response.DailyTodoCertificationResponse;
 
@@ -45,11 +45,11 @@ public class DailyTodoCertificationController {
                         "공부 3시간 조지기")))));
     }
 
-    @GetMapping("/pending-review/{todoCertificationId}")
-    public ResponseEntity<ApiResponse<GetDailyTodoCertificationForReviewByIdResponse>> getDailyTodoCertificationForReviewById(@PathVariable Long todoCertificationId) {
+    @GetMapping("/{todoCertificationId}")
+    public ResponseEntity<ApiResponse<GetDailyTodoCertificationByIdResponse>> getDailyTodoCertificationById(@PathVariable Long todoCertificationId) {
         return ResponseEntity.ok(ApiResponse.successWithData(
-            GET_DAILY_TODO_CERTIFICATION_FOR_REVIEW_BY_ID,
-            new GetDailyTodoCertificationForReviewByIdResponse(
+            GET_DAILY_TODO_CERTIFICATION_BY_ID,
+            new GetDailyTodoCertificationByIdResponse(
                 new DailyTodoCertificationResponse(
                     1L,
                     "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
