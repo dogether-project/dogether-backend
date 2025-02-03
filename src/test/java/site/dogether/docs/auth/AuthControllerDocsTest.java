@@ -21,7 +21,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
 
     @Override
     protected Object initController() {
-        return new AuthController();
+        return new AuthController(null);
     }
 
     @DisplayName("애플 로그인 API")
