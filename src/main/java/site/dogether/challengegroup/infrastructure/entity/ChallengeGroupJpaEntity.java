@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.common.audit.entity.BaseTimeEntity;
 
 import java.time.LocalDateTime;
@@ -36,13 +37,18 @@ public class ChallengeGroupJpaEntity extends BaseTimeEntity {
     @Column(name = "join_code", length = 20, nullable = false, unique = true)
     private String joinCode;
 
+    @Column(name = "status", length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ChallengeGroupStatus status;
+
     public ChallengeGroupJpaEntity(
         final String name,
         final int maximumMemberCount,
         final LocalDateTime startAt,
         final LocalDateTime endAt,
         final int maximumTodoCount,
-        final String joinCode
+        final String joinCode,
+        final ChallengeGroupStatus status
     ) {
         this(
             null,
@@ -51,7 +57,8 @@ public class ChallengeGroupJpaEntity extends BaseTimeEntity {
             startAt,
             endAt,
             maximumTodoCount,
-            joinCode
+            joinCode,
+            status
         );
     }
 
@@ -62,7 +69,8 @@ public class ChallengeGroupJpaEntity extends BaseTimeEntity {
         final LocalDateTime startAt,
         final LocalDateTime endAt,
         final int maximumTodoCount,
-        final String joinCode
+        final String joinCode,
+        final ChallengeGroupStatus status
     ) {
         this.id = id;
         this.name = name;
@@ -71,5 +79,6 @@ public class ChallengeGroupJpaEntity extends BaseTimeEntity {
         this.endAt = endAt;
         this.maximumTodoCount = maximumTodoCount;
         this.joinCode = joinCode;
+        this.status = status;
     }
 }
