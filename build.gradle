@@ -52,6 +52,10 @@ dependencies {
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
+    // Jwt
+    implementation 'io.jsonwebtoken:jjwt:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
