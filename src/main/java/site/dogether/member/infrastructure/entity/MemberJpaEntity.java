@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.member.domain.Member;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,5 +31,13 @@ public class MemberJpaEntity extends BaseTimeEntity {
         this.id = id;
         this.providerId = providerId;
         this.name = name;
+    }
+
+    public Member toDomain() {
+        return new Member(
+                id,
+                providerId,
+                name
+        );
     }
 }
