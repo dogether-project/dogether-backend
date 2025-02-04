@@ -5,20 +5,23 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class JwtHandler {
 
-    private static final String TEMP_JWT_SECRET_KEY = "secretsecretsecretsecretsecretsecretsecretsec";
-    private static final Long EXPIRE_TIME = 365 * 24 * 60 * 60 * 1000L;
+    @Value("${jwt.secret}")
+    private String secret;
+    @Value("${jwt.expire-time}")
+    private Long expireTime;
 
     public void validateToken(final String bearerToken) {
         final String token = bearerToken.substring("Bearer ".length()).trim();
         try {
             Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(TEMP_JWT_SECRET_KEY.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                     .build()
                     .parse(token);
             log.info("토큰이 유효합니다.");
@@ -29,12 +32,12 @@ public class JwtHandler {
 
     public String createToken(Long id) {
         final long now  = new Date().getTime();
-        final Date expiredDate = new Date(now + EXPIRE_TIME);
+        final Date expiredDate = new Date(now + expireTime);
 
         final String accessToken = Jwts.builder()
                 .claim("member_id", id)
                 .expiration(expiredDate)
-                .signWith(Keys.hmacShaKeyFor(TEMP_JWT_SECRET_KEY.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
 
         log.info("토큰이 발급되었습니다.");
@@ -50,7 +53,7 @@ public class JwtHandler {
     private Claims parseClaims(final String token) {
         log.info("토큰을 파싱합니다. {}", token);
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(TEMP_JWT_SECRET_KEY.getBytes()))
+                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
                 .parseSignedClaims(token.trim())
                 .getPayload();

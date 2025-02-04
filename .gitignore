@@ -185,4 +185,7 @@ local.env
 # custom sh
 /sh
 
+# secret resources
+/src/main/resources/secret/
+
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
