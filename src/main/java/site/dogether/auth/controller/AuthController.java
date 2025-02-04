@@ -30,7 +30,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @RequestBody final LoginRequest request
     ) {
-        LoginResponse response = memberService.login(request);
+        final LoginResponse response = memberService.login(request);
         return ResponseEntity.ok(ApiResponse.successWithData(
             LOGIN, response
         ));
@@ -38,7 +38,7 @@ public class AuthController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
-            @RequestHeader("Authorization") String token,
+            @RequestHeader("Authorization") final String token,
             @RequestBody final WithdrawRequest request
     ) {
         memberService.withdraw(token, request);

@@ -14,26 +14,24 @@ public class JwtHandler {
     private static final String TEMP_JWT_SECRET_KEY = "secretsecretsecretsecretsecretsecretsecretsec";
     private static final Long EXPIRE_TIME = 365 * 24 * 60 * 60 * 1000L;
 
-    public String validateToken(String bearerToken) {
-        String token = bearerToken.substring("Bearer ".length()).trim();
+    public void validateToken(final String bearerToken) {
+        final String token = bearerToken.substring("Bearer ".length()).trim();
         try {
             Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(TEMP_JWT_SECRET_KEY.getBytes()))
                     .build()
                     .parse(token);
             log.info("토큰이 유효합니다.");
-            return token;
         } catch (Exception e) {
             log.info("토큰이 유효하지 않습니다.");
         }
-        return null;
     }
 
     public String createToken(Long id) {
-        long now  = new Date().getTime();
-        Date expiredDate = new Date(now + EXPIRE_TIME);
+        final long now  = new Date().getTime();
+        final Date expiredDate = new Date(now + EXPIRE_TIME);
 
-        String accessToken = Jwts.builder()
+        final String accessToken = Jwts.builder()
                 .claim("member_id", id)
                 .expiration(expiredDate)
                 .signWith(Keys.hmacShaKeyFor(TEMP_JWT_SECRET_KEY.getBytes()))
@@ -44,12 +42,12 @@ public class JwtHandler {
         return accessToken;
     }
 
-    public Long getMemberId(String token) {
-        Claims claims = parseClaims(token);
+    public Long getMemberId(final String token) {
+        final Claims claims = parseClaims(token);
         return claims.get("member_id", Long.class);
     }
 
-    private Claims parseClaims(String token) {
+    private Claims parseClaims(final String token) {
         log.info("토큰을 파싱합니다. {}", token);
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(TEMP_JWT_SECRET_KEY.getBytes()))

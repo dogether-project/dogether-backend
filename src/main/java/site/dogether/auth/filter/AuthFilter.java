@@ -20,14 +20,14 @@ public class AuthFilter implements Filter {
     private final JwtHandler jwtHandler;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain)
             throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        final HttpServletRequest request = (HttpServletRequest) servletRequest;
 
-        String bearerToken = request.getHeader("Authorization");
+        final String bearerToken = request.getHeader("Authorization");
 
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            String token = jwtHandler.validateToken(bearerToken);
+            jwtHandler.validateToken(bearerToken);
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

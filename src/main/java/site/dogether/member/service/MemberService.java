@@ -19,33 +19,33 @@ public class MemberService {
     private final MemberJpaRepository memberJpaRepository;
     private final JwtHandler jwtHandler;
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(final LoginRequest request) {
         Member member = new Member(
                 request.idToken(),
                 request.name()
         );
-        MemberJpaEntity memberJpaEntity = new MemberJpaEntity(
+        final MemberJpaEntity memberJpaEntity = new MemberJpaEntity(
                 member.getProviderId(),
                 member.getName()
         );
         member = memberJpaRepository.save(memberJpaEntity).toDomain();
 
-        String token = jwtHandler.createToken(member.getId());
+        final String token = jwtHandler.createToken(member.getId());
         return new LoginResponse(member.getName(), token);
     }
 
-    public void withdraw(String token, WithdrawRequest request) {
+    public void withdraw(String token, final WithdrawRequest request) {
         token = token.substring("Bearer ".length());
-        Long memberId = jwtHandler.getMemberId(token);
+        final Long memberId = jwtHandler.getMemberId(token);
 
-        MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
+        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
         memberJpaRepository.delete(memberJpaEntity);
     }
 
     public Member findMemberByToken(String token) {
         token = token.substring("Bearer ".length());
-        Long memberId = jwtHandler.getMemberId(token);
-        MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
+        final Long memberId = jwtHandler.getMemberId(token);
+        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
         return memberJpaEntity.toDomain();
     }
 
