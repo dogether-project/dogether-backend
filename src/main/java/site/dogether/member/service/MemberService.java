@@ -35,7 +35,6 @@ public class MemberService {
     }
 
     public void withdraw(String token, final WithdrawRequest request) {
-        token = token.substring("Bearer ".length());
         final Long memberId = jwtHandler.getMemberId(token);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
@@ -43,7 +42,6 @@ public class MemberService {
     }
 
     public Member findMemberByToken(String token) {
-        token = token.substring("Bearer ".length());
         final Long memberId = jwtHandler.getMemberId(token);
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
         return memberJpaEntity.toDomain();
