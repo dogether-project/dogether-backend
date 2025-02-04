@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.controller.response.LoginResponse;
+import site.dogether.auth.resolver.AuthToken;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.member.service.MemberService;
 import site.dogether.member.service.dto.AuthenticatedMember;
@@ -43,7 +44,7 @@ public class AuthController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
-            @RequestHeader("Authorization") final String token,
+            @AuthToken final String token,
             @RequestBody final WithdrawRequest request
     ) {
         memberService.withdraw(token, request);
