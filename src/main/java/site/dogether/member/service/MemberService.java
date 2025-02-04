@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
-import site.dogether.auth.controller.response.LoginResponse;
 import site.dogether.auth.service.JwtHandler;
 import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.infrastructure.repository.MemberJpaRepository;
+import site.dogether.member.service.dto.AuthenticatedMember;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class MemberService {
     private final MemberJpaRepository memberJpaRepository;
     private final JwtHandler jwtHandler;
 
-    public LoginResponse login(final LoginRequest request) {
+    public AuthenticatedMember login(final LoginRequest request) {
         Member member = new Member(
                 request.idToken(),
                 request.name()
@@ -31,7 +31,7 @@ public class MemberService {
         member = memberJpaRepository.save(memberJpaEntity).toDomain();
 
         final String token = jwtHandler.createToken(member.getId());
-        return new LoginResponse(member.getName(), token);
+        return new AuthenticatedMember(member.getName(), token);
     }
 
     public void withdraw(String token, final WithdrawRequest request) {

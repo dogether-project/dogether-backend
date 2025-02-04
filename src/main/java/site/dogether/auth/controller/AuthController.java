@@ -17,6 +17,7 @@ import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.controller.response.LoginResponse;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.member.service.MemberService;
+import site.dogether.member.service.dto.AuthenticatedMember;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +31,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @RequestBody final LoginRequest request
     ) {
-        final LoginResponse response = memberService.login(request);
+        final AuthenticatedMember authenticatedMember = memberService.login(request);
+        final LoginResponse response = new LoginResponse(
+            authenticatedMember.name(),
+            authenticatedMember.accessToken()
+        );
         return ResponseEntity.ok(ApiResponse.successWithData(
             LOGIN, response
         ));
