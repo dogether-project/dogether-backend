@@ -25,10 +25,7 @@ public class AuthFilter implements Filter {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         final String bearerToken = request.getHeader("Authorization");
-
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            jwtHandler.validateToken(bearerToken);
-        }
+        jwtHandler.validateToken(bearerToken);
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

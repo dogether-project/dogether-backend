@@ -1,9 +1,5 @@
 package site.dogether.auth.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,44 +14,23 @@ public class JwtHandler {
     private Long expireTime;
 
     public void validateToken(final String bearerToken) {
-        final String token = bearerToken.substring("Bearer ".length()).trim();
+        final JwtToken token = new JwtToken(bearerToken);
         try {
-            Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                    .build()
-                    .parse(token);
-            log.info("토큰이 유효합니다.");
+            token.validate(secret);
+            log.info("토큰 검증에 성공하였습니다.");
         } catch (Exception e) {
-            log.info("토큰이 유효하지 않습니다.");
+            log.info("토큰 검증에 실패하였습니다.");
         }
     }
 
-    public String createToken(Long id) {
-        final long now  = new Date().getTime();
-        final Date expiredDate = new Date(now + expireTime);
-
-        final String accessToken = Jwts.builder()
-                .claim("member_id", id)
-                .expiration(expiredDate)
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .compact();
-
-        log.info("토큰이 발급되었습니다.");
-
-        return accessToken;
+    public String createToken(Long memberId) {
+        final JwtToken token = new JwtToken(memberId, secret, expireTime);
+        log.info("토큰을 생성합니다. {}", token.getValue());
+        return token.getValue();
     }
 
-    public Long getMemberId(final String token) {
-        final Claims claims = parseClaims(token);
-        return claims.get("member_id", Long.class);
+    public Long getMemberId(final JwtToken token) {
+        return token.getMemberId(secret);
     }
 
-    private Claims parseClaims(final String token) {
-        log.info("토큰을 파싱합니다. {}", token);
-        return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseSignedClaims(token.trim())
-                .getPayload();
-    }
 }

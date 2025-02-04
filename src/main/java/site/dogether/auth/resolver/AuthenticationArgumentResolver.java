@@ -6,6 +6,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import site.dogether.auth.service.JwtToken;
 
 @Component
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
@@ -20,11 +21,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
             throws Exception {
         final String bearerToken = webRequest.getHeader("Authorization");
-
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring("Bearer ".length());
-        }
-
-        return null;
+        return new JwtToken(bearerToken);
     }
 }
