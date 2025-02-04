@@ -1,4 +1,4 @@
-package site.dogether.auth.service;
+package site.dogether.auth.infrastructure;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

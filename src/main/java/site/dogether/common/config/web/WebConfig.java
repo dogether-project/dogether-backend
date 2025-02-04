@@ -1,10 +1,10 @@
-package site.dogether.common.config;
+package site.dogether.common.config.web;
 
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import site.dogether.auth.resolver.AuthenticationArgumentResolver;
+import site.dogether.common.config.web.resolver.AuthenticationArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

@@ -1,4 +1,4 @@
-package site.dogether.auth.resolver;
+package site.dogether.common.config.web.resolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

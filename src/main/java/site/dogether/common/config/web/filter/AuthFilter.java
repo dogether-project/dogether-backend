@@ -1,4 +1,4 @@
-package site.dogether.auth.filter;
+package site.dogether.common.config.web.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import site.dogether.auth.service.JwtHandler;
+import site.dogether.auth.infrastructure.JwtHandler;
 
 @Slf4j
 @RequiredArgsConstructor
