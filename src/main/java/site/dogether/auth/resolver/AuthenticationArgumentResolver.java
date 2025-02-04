@@ -8,11 +8,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-public class AuthTokenArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthToken.class);
+        return parameter.hasParameterAnnotation(Authentication.class);
     }
 
     @Override
