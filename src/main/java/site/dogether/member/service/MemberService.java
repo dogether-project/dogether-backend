@@ -25,10 +25,7 @@ public class MemberService {
                 request.idToken(),
                 request.name()
         );
-        final MemberJpaEntity memberJpaEntity = new MemberJpaEntity(
-                member.getProviderId(),
-                member.getName()
-        );
+        final MemberJpaEntity memberJpaEntity = new MemberJpaEntity(member);
         member = memberJpaRepository.save(memberJpaEntity).toDomain();
 
         final String token = jwtHandler.createToken(member.getId());
@@ -36,14 +33,14 @@ public class MemberService {
     }
 
     public void withdraw(final JwtToken token, final WithdrawRequest request) {
-        Long memberId = jwtHandler.getMemberId(token);
+        final Long memberId = jwtHandler.getMemberId(token);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
         memberJpaRepository.delete(memberJpaEntity);
     }
 
     public Member findMemberByToken(final JwtToken token) {
-        Long memberId = jwtHandler.getMemberId(token);
+        final Long memberId = jwtHandler.getMemberId(token);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
         return memberJpaEntity.toDomain();

@@ -33,6 +33,10 @@ public class MemberJpaEntity extends BaseTimeEntity {
         this.name = name;
     }
 
+    public MemberJpaEntity(final Member member) {
+        this(member.getProviderId(), member.getName());
+    }
+
     public Member toDomain() {
         return new Member(
                 id,
