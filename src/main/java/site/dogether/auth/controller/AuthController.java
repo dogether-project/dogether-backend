@@ -33,10 +33,7 @@ public class AuthController {
             @RequestBody final LoginRequest request
     ) {
         final AuthenticatedMember authenticatedMember = memberService.login(request);
-        final LoginResponse response = new LoginResponse(
-            authenticatedMember.name(),
-            authenticatedMember.accessToken()
-        );
+        final LoginResponse response = new LoginResponse(authenticatedMember);
         return ResponseEntity.ok(ApiResponse.successWithData(
             LOGIN, response
         ));
