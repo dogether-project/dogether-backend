@@ -8,13 +8,9 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import site.dogether.auth.infrastructure.JwtHandler;
 
-@Slf4j
 @RequiredArgsConstructor
-@Component
 public class AuthFilter implements Filter {
 
     private final JwtHandler jwtHandler;
@@ -25,7 +21,9 @@ public class AuthFilter implements Filter {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         final String bearerToken = request.getHeader("Authorization");
-        jwtHandler.validateToken(bearerToken);
+        if (bearerToken != null) {
+            jwtHandler.validateToken(bearerToken);
+        }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
