@@ -12,6 +12,7 @@ jobs:
   test:
     if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
+    environment: test
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -24,6 +25,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew\
+      - name: Setup Firebase service key
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key-dev.json
       - name: Execute test
         # test 패키지 하위 application.yml 민감 정보 추가
         env:
@@ -100,6 +105,10 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+      - name: Setup Firebase service key
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key-${{ matrix.environment }}.json
       - name: Deploy new Spring Boot Application
         id: deploy-status
         uses: appleboy/ssh-action@v1.2.0

@@ -1,4 +1,4 @@
-package site.dogether.common.error;
+package site.dogether.common.exception;
 
 public interface ExceptionCode {
 

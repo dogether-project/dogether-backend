@@ -2,7 +2,7 @@ package site.dogether.common.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import site.dogether.common.error.ExceptionCode;
+import site.dogether.common.exception.ExceptionCode;
 
 @Getter
 public class ApiResponse<T> {
