@@ -11,8 +11,8 @@ import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.member.exception.MemberExceptionCode;
 
 @Slf4j
+@Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class MemberExceptionHandler {
 
     @ExceptionHandler(InvalidMemberException.class)

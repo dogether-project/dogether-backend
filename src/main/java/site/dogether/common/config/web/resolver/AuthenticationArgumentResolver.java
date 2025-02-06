@@ -19,7 +19,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
     public Object resolveArgument(final MethodParameter parameter,final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
             throws Exception {
-        final String bearerToken = webRequest.getHeader("Authorization");
-        return new AuthenticationToken(bearerToken);
+        return webRequest.getHeader("Authorization");
     }
 }

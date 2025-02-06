@@ -53,16 +53,17 @@ public class JwtHandler {
         return token;
     }
 
-    public Long getMemberId(final String token) {
+    public Long getMemberId(final String bearerToken) {
+        String token = extract(bearerToken);
         final Claims claims = parseClaims(token);
         return claims.get("member_id", Long.class);
     }
 
-    private Claims parseClaims(String value) {
+    private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
-                .parseSignedClaims(value)
+                .parseSignedClaims(token)
                 .getPayload();
     }
 
