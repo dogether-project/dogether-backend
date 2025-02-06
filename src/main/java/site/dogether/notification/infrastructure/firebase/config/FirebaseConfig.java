@@ -35,7 +35,7 @@ public class FirebaseConfig {
                 FirebaseApp.initializeApp(options);
             }
 
-            log.info("FirebaseApp 초기화 완료 - {}", getFirebaseKeyFileName());
+            log.info("FirebaseApp 초기화 성공 - {}", getFirebaseKeyFileName());
         } catch (final Exception e) {
             log.error("FirebaseApp 초기화 실패", e);
             throw e;
