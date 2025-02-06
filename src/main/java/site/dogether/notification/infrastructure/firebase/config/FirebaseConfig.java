@@ -43,10 +43,10 @@ public class FirebaseConfig {
     }
 
     private String getFirebaseKeyFileName() {
-        if (activeProfile.equals("prod")) {
-            return FIREBASE_KEY_FILE_DIR + FIREBASE_KEY_FILE_BASE_NAME + "prod" + FIREBASE_KEY_FILE_EXTENSION;
+        if (!activeProfile.equals("dev") && !activeProfile.equals("prod")) {
+            activeProfile = "dev";
         }
 
-        return FIREBASE_KEY_FILE_DIR + FIREBASE_KEY_FILE_BASE_NAME + "dev" + FIREBASE_KEY_FILE_EXTENSION;
+        return FIREBASE_KEY_FILE_DIR + FIREBASE_KEY_FILE_BASE_NAME + activeProfile + FIREBASE_KEY_FILE_EXTENSION;
     }
 }
