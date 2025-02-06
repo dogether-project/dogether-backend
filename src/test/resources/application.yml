@@ -9,4 +9,6 @@ spring:
     password: ${DB_PASSWORD:root}
 
 secret:
-  item: item
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expire-time: ${JWT_EXPIRE_TIME}
