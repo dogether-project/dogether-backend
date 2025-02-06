@@ -83,7 +83,6 @@ public class AuthControllerDocsTest extends RestDocsSupport {
             "authorizationCodeauthorizationCodeauthorizationCode"
         );
 
-//        final AuthenticationToken token = new AuthenticationToken("test-token");
         doNothing().when(memberService).withdraw(anyString(), any(WithdrawRequest.class));
 
         mockMvc.perform(

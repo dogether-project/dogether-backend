@@ -38,7 +38,7 @@ public class MemberService {
         memberJpaRepository.delete(memberJpaEntity);
     }
 
-    public Member findMemberByToken(final String token) {
+    public Member findMemberByAuthenticationToken(final String token) {
         final Long memberId = jwtHandler.getMemberId(token);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();

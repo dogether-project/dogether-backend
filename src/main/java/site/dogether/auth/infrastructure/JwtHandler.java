@@ -3,6 +3,7 @@ package site.dogether.auth.infrastructure;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,25 +12,45 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtHandler {
 
+    public static final String PREFIX = "Bearer ";
+
     @Value("${jwt.secret}")
     private String secret;
     @Value("${jwt.expire-time}")
     private Long expireTime;
 
     public void validateToken(final String bearerToken) {
-        final AuthenticationToken token = new AuthenticationToken(bearerToken);
+        final String token = extract(bearerToken);
         try {
-            token.validate(secret);
+            Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .build()
+                    .parse(token);
             log.info("토큰 검증에 성공하였습니다.");
         } catch (Exception e) {
             log.info("토큰 검증에 실패하였습니다.");
         }
     }
 
+    private String extract(final String bearerToken) {
+        if (bearerToken != null && bearerToken.startsWith(PREFIX)) {
+            return bearerToken.substring(PREFIX.length());
+        }
+        return bearerToken;
+    }
+
     public String createToken(Long memberId) {
-        final AuthenticationToken token = new AuthenticationToken(memberId, secret, expireTime);
-        log.info("토큰을 생성합니다. {}", token.getValue());
-        return token.getValue();
+        final long now  = new Date().getTime();
+        final Date expiredDate = new Date(now + expireTime);
+
+        final String token = Jwts.builder()
+                .claim("member_id", memberId)
+                .expiration(expiredDate)
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .compact();
+
+        log.info("토큰을 생성합니다. {}", token);
+        return token;
     }
 
     public Long getMemberId(final String token) {
