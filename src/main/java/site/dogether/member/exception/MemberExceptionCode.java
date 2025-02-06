@@ -9,7 +9,7 @@ import site.dogether.common.error.ExceptionCode;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public enum MemberExceptionCode implements ExceptionCode {
 
-    INVALID_MEMBER_EXCEPTION("MF-001", "유효하지 않은 회원입니다.");
+    INVALID_MEMBER_EXCEPTION("MF-0001", "유효하지 않은 회원입니다.");
 
     private final String value;
     private final String message;
