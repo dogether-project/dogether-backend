@@ -179,9 +179,12 @@ gradle-app.setting
 local.env
 
 # docker data
-/data
+/docker/data
 
 # custom sh
 /sh
+
+# firebase
+src/main/resources/firebase
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
