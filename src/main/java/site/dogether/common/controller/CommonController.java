@@ -8,6 +8,6 @@ public class CommonController {
 
     @GetMapping("/api/health-check")
     public String healthCheck() {
-        return "Dogether Backend Service is OK 🔥";
+        return "Dogether Backend Service is OK 👍🔥";
     }
 }
