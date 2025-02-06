@@ -4,5 +4,7 @@ spring:
   jpa:
     open-in-view: false
 
-  config:
-    import: "secret/jwt.yml"
+secret:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expire-time: ${JWT_EXPIRE_TIME}

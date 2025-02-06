@@ -14,9 +14,9 @@ public class JwtHandler {
 
     public static final String PREFIX = "Bearer ";
 
-    @Value("${jwt.secret}")
+    @Value("${secret.jwt.secret-key}")
     private String secret;
-    @Value("${jwt.expire-time}")
+    @Value("${secret.jwt.expire-time}")
     private Long expireTime;
 
     public void validateToken(final String bearerToken) {

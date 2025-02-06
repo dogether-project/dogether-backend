@@ -6,6 +6,7 @@ on:
     branches: [ dev, main ]
     paths:
       - 'src/**'
+      - '.github/**'
 
 jobs:
   test:
@@ -29,6 +30,8 @@ jobs:
           DB_DRIVER: "org.h2.Driver"
           DB_URL: "jdbc:h2:mem:dogether;MODE=MYSQL"
           DB_USERNAME: "sa"
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRE_TIME: ${{ secrets.JWT_EXPIRE_TIME }}
         run: ./gradlew test --info
 
   set-environment:
@@ -119,6 +122,10 @@ jobs:
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_URL=${{ secrets.DB_URL }}
+            
+            # jwt environment
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            JWT_EXPIRE_TIME=${{ secrets.JWT_EXPIRE_TIME }}
             EOF
 
             # deploy with docker
