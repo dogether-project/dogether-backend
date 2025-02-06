@@ -25,8 +25,6 @@ public class FirebaseConfig {
     @PostConstruct
     public void init() {
         try {
-            log.info("FirebaseApp 초기화 - {}", getFirebaseKeyFileName());
-
             final InputStream serviceAccount = new ClassPathResource(getFirebaseKeyFileName()).getInputStream();
             final FirebaseOptions options = FirebaseOptions.builder()
                                                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -35,6 +33,8 @@ public class FirebaseConfig {
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
             }
+
+            log.info("FirebaseApp 초기화 완료 - {}", getFirebaseKeyFileName());
         } catch (final Exception e) {
             log.error("FirebaseApp 초기화 실패", e);
         }
