@@ -3,3 +3,8 @@ spring:
 
   jpa:
     open-in-view: false
+
+secret:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expire-time: ${JWT_EXPIRE_TIME}

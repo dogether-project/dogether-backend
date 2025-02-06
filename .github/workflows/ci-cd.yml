@@ -122,6 +122,8 @@ jobs:
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_URL=${{ secrets.DB_URL }}
+            
+            # jwt environment
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             JWT_EXPIRE_TIME=${{ secrets.JWT_EXPIRE_TIME }}
             EOF

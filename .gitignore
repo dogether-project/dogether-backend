@@ -184,6 +184,9 @@ local.env
 # custom sh
 /sh
 
+# secret resources
+/src/main/resources/secret/
+
 # firebase
 src/main/resources/firebase
 
