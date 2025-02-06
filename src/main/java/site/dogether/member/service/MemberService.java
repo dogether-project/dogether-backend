@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.infrastructure.JwtHandler;
-import site.dogether.auth.infrastructure.JwtToken;
 import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.infrastructure.repository.MemberJpaRepository;
@@ -32,14 +31,14 @@ public class MemberService {
         return new AuthenticatedMember(member.getName(), token);
     }
 
-    public void withdraw(final JwtToken token, final WithdrawRequest request) {
+    public void withdraw(final String token, final WithdrawRequest request) {
         final Long memberId = jwtHandler.getMemberId(token);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
         memberJpaRepository.delete(memberJpaEntity);
     }
 
-    public Member findMemberByToken(final JwtToken token) {
+    public Member findMemberByToken(final String token) {
         final Long memberId = jwtHandler.getMemberId(token);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();

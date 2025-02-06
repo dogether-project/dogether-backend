@@ -1,23 +1,22 @@
 package site.dogether.auth.infrastructure;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import lombok.Getter;
 
 @Getter
-public class JwtToken {
+public class AuthenticationToken {
 
     public static final String PREFIX = "Bearer ";
 
     private final String value;
 
-    public JwtToken(final String bearerToken) {
+    public AuthenticationToken(final String bearerToken) {
         this.value = extract(bearerToken);
     }
 
-    public JwtToken(final Long memberId, final String secret, final Long expireTime) {
+    public AuthenticationToken(final Long memberId, final String secret, final Long expireTime) {
         final long now  = new Date().getTime();
         final Date expiredDate = new Date(now + expireTime);
 
@@ -33,19 +32,6 @@ public class JwtToken {
                 .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
                 .parse(value);
-    }
-
-    public Long getMemberId(final String secret) {
-        final Claims claims = parseClaims(secret);
-        return claims.get("member_id", Long.class);
-    }
-
-    private Claims parseClaims(final String secret) {
-        return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseSignedClaims(value)
-                .getPayload();
     }
 
     private String extract(final String bearerToken) {

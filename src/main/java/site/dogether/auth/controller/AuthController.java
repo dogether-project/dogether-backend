@@ -15,7 +15,6 @@ import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.controller.response.LoginResponse;
 import site.dogether.common.config.web.resolver.Authentication;
-import site.dogether.auth.infrastructure.JwtToken;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.member.service.MemberService;
 import site.dogether.member.service.dto.AuthenticatedMember;
@@ -41,11 +40,10 @@ public class AuthController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
-            @Authentication final JwtToken token,
+            @Authentication final String token,
             @RequestBody final WithdrawRequest request
     ) {
         memberService.withdraw(token, request);
         return ResponseEntity.ok(ApiResponse.success(WITHDRAW));
     }
-
 }
