@@ -1,4 +1,4 @@
-package site.dogether.common.error;
+package site.dogether.common.exception;
 
 import lombok.AccessLevel;
 import lombok.Getter;

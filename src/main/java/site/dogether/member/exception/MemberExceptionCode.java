@@ -3,7 +3,7 @@ package site.dogether.member.exception;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import site.dogether.common.error.ExceptionCode;
+import site.dogether.common.exception.ExceptionCode;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
