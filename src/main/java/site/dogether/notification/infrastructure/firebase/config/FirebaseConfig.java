@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.InputStream;
 
 @Slf4j
@@ -23,7 +24,7 @@ public class FirebaseConfig {
     private String activeProfile;
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
         try {
             final InputStream serviceAccount = new ClassPathResource(getFirebaseKeyFileName()).getInputStream();
             final FirebaseOptions options = FirebaseOptions.builder()
@@ -37,6 +38,7 @@ public class FirebaseConfig {
             log.info("FirebaseApp 초기화 완료 - {}", getFirebaseKeyFileName());
         } catch (final Exception e) {
             log.error("FirebaseApp 초기화 실패", e);
+            throw e;
         }
     }
 
