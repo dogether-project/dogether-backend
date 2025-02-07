@@ -24,6 +24,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(exceptionCode.getValue(), exceptionCode.getMessage(), null);
     }
 
+    public static ApiResponse<Void> failWithMessage(final ExceptionCode exceptionCode, final String message) {
+        return new ApiResponse<>(exceptionCode.getValue(), message, null);
+    }
+
     private ApiResponse(
         final String code,
         final String message,
