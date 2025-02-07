@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.auth.infrastructure.JwtHandler;
 import site.dogether.member.domain.Member;
+import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.infrastructure.repository.MemberJpaRepository;
 
@@ -29,20 +30,23 @@ public class MemberService {
 
     @Transactional
     public void delete(final Long memberId) {
-        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
+        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).orElseThrow(
+                () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         memberJpaRepository.delete(memberJpaEntity);
     }
 
     public Member findMemberByAuthenticationToken(final String token) {
         final Long memberId = jwtHandler.getMemberId(token);
 
-        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).get();
+        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).orElseThrow(
+                () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         return memberJpaEntity.toDomain();
     }
 
     public MemberJpaEntity findMemberEntityByAuthenticationToken(final String token) {
         final Long memberId = jwtHandler.getMemberId(token);
-        return memberJpaRepository.findById(memberId).get();
+        return memberJpaRepository.findById(memberId).orElseThrow(
+                () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.member.exception.MemberExceptionCode;
+import site.dogether.member.exception.MemberNotFoundException;
 
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -21,5 +22,13 @@ public class MemberExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(ApiResponse.fail(MemberExceptionCode.INVALID_MEMBER_EXCEPTION));
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMemberNotFoundException(final MemberNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.fail(MemberExceptionCode.MEMBER_NOT_FOUND_EXCEPTION));
     }
 }
