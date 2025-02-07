@@ -3,12 +3,12 @@ package site.dogether.auth.infrastructure.client.apple;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import site.dogether.auth.infrastructure.client.apple.response.AppleKeySetResponse;
+import site.dogether.auth.infrastructure.client.apple.response.ApplePublicKeySetResponse;
 
 @Component
 public class AppleApiClient {
 
-    public AppleKeySetResponse requestPublicKeySet() {
+    public ApplePublicKeySetResponse requestPublicKeySet() {
         return RestClient.create()
                 .get()
                 .uri("https://appleid.apple.com/auth/keys")
@@ -16,6 +16,6 @@ public class AppleApiClient {
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new RuntimeException("4xx error");
                 })
-                .body(AppleKeySetResponse.class);
+                .body(ApplePublicKeySetResponse.class);
     }
 }

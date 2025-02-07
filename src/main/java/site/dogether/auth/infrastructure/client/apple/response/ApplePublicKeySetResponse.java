@@ -2,10 +2,10 @@ package site.dogether.auth.infrastructure.client.apple.response;
 
 import java.util.List;
 
-public record AppleKeySetResponse(
+public record ApplePublicKeySetResponse(
         List<Key> keys
 ) {
-    record Key(
+    public record Key(
             String kty,
             String kid,
             String use,
@@ -15,7 +15,7 @@ public record AppleKeySetResponse(
     ) {
     }
 
-    public Key getMatchedPublicKey(final String kid, final String alg) {
+    public Key findMatchedPublicKey(final String kid, final String alg) {
         return keys.stream()
                 .filter(key -> key.kid().equals(kid) && key.alg().equals(alg))
                 .findFirst()

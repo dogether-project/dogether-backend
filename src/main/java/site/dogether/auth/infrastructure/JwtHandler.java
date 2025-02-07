@@ -3,6 +3,7 @@ package site.dogether.auth.infrastructure;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.security.PublicKey;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,10 +33,10 @@ public class JwtHandler {
         }
     }
 
-    public String parseClaimsOfIdToken(final String idToken, final String publicKey) {
+    public String parseClaimsOfIdToken(final String idToken, final PublicKey publicKey) {
         try {
             Claims claims = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(publicKey.getBytes()))
+                    .verifyWith(publicKey)
                     .build()
                     .parseSignedClaims(idToken)
                     .getPayload();
