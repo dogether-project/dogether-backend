@@ -32,6 +32,20 @@ public class JwtHandler {
         }
     }
 
+    public String parseClaimsOfIdToken(final String idToken, final String publicKey) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(publicKey.getBytes()))
+                    .build()
+                    .parseSignedClaims(idToken)
+                    .getPayload();
+            return claims.getSubject();
+        } catch (Exception e) {
+            log.info("IdToken 검증에 실패하였습니다.");
+        }
+        return idToken;
+    }
+
     private String extract(final String bearerToken) {
         if (bearerToken != null && bearerToken.startsWith(PREFIX)) {
             return bearerToken.substring(PREFIX.length());
