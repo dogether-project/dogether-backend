@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.infrastructure.JwtHandler;
+import site.dogether.auth.infrastructure.client.apple.AppleOAuthProvider;
 import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.infrastructure.repository.MemberJpaRepository;
@@ -20,9 +21,12 @@ public class MemberService {
 
     private final MemberJpaRepository memberJpaRepository;
     private final JwtHandler jwtHandler;
+    private final AppleOAuthProvider appleOAuthProvider;
 
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
+        String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
+
         Member member = new Member(
                 request.idToken(),
                 request.name()
