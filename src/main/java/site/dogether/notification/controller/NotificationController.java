@@ -28,7 +28,10 @@ public class NotificationController {
     }
 
     @DeleteMapping("/tokens")
-    public ResponseEntity<ApiResponse<Void>> deleteNotificationToken(@RequestBody final DeleteNotificationTokenRequest request) {
+    public ResponseEntity<ApiResponse<Void>> deleteNotificationToken(
+            @Authentication final String authenticationToken,
+            @RequestBody final DeleteNotificationTokenRequest request) {
+        notificationService.deleteNotificationToken(authenticationToken, request.token());
         return ResponseEntity.ok(ApiResponse.success(DELETE_NOTIFICATION_TOKEN));
     }
 }

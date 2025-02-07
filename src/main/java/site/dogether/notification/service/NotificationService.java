@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
-import site.dogether.member.infrastructure.repository.MemberJpaRepository;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.infrastructure.entity.NotificationTokenJpaEntity;
 import site.dogether.notification.infrastructure.firebase.sender.SimpleFcmNotificationRequest;
@@ -19,7 +18,6 @@ import site.dogether.notification.service.exception.InvalidNotificationTokenExce
 @Service
 public class NotificationService {
 
-    private final MemberJpaRepository memberJpaRepository;
     private final NotificationTokenJpaRepository notificationTokenJpaRepository;
     private final NotificationSender notificationSender;
     private final MemberService memberService;
@@ -55,6 +53,7 @@ public class NotificationService {
 
         final NotificationTokenJpaEntity notificationTokenJpaEntity = new NotificationTokenJpaEntity(memberJpaEntity, notificationToken);
         notificationTokenJpaRepository.save(notificationTokenJpaEntity);
+        log.info("푸시 알림 토큰 저장 - {}", notificationToken);
     }
 
     private void validateNotificationTokenIsNullOrEmpty(final String token) {
@@ -62,5 +61,16 @@ public class NotificationService {
             log.info("입력된 알림 토큰 값이 null 혹은 공백 - {}", token);
             throw new InvalidNotificationTokenException("알림 토큰 값은 공백일 수 없습니다.");
         }
+    }
+
+    @Transactional
+    public void deleteNotificationToken(final String authenticationToken, final String notificationToken) {
+        validateNotificationTokenIsNullOrEmpty(notificationToken);
+
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        notificationTokenJpaRepository.findByMemberAndValue(memberJpaEntity, notificationToken)
+                .ifPresent(notificationTokenJpaEntity -> {
+                    notificationTokenJpaRepository.delete(notificationTokenJpaEntity);
+                    log.info("푸시 알림 토큰 제거 - {}", notificationToken);});
     }
 }
