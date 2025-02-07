@@ -9,7 +9,7 @@
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
@@ -31,7 +31,7 @@ include::{snippets}/notification-controller-docs-test/save-notification-token/re
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X

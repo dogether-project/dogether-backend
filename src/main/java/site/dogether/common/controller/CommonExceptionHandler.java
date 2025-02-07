@@ -1,6 +1,8 @@
 package site.dogether.common.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,6 +13,7 @@ import static org.springframework.http.ResponseEntity.internalServerError;
 import static site.dogether.common.exception.CommonExceptionCode.INTERNAL_SERVER_APPLICATION;
 
 @Slf4j
+@Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
 public class CommonExceptionHandler {
 

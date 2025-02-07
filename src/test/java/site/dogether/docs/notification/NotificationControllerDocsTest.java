@@ -8,16 +8,21 @@ import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.notification.controller.NotificationController;
 import site.dogether.notification.controller.request.DeleteNotificationTokenRequest;
 import site.dogether.notification.controller.request.SaveNotificationTokenRequest;
+import site.dogether.notification.service.NotificationService;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@DisplayName("푸시 알림 API 문서화 테스트")
 public class NotificationControllerDocsTest extends RestDocsSupport {
+
+    private final NotificationService notificationService = mock(NotificationService.class);
 
     @Override
     protected Object initController() {
-        return new NotificationController();
+        return new NotificationController(notificationService);
     }
 
     @DisplayName("푸시 알림 토큰 저장 API")
