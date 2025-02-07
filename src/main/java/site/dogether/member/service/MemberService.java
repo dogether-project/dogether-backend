@@ -20,8 +20,11 @@ public class MemberService {
 
     @Transactional
     public Member save(final Member member) {
-        final MemberJpaEntity memberJpaEntity = new MemberJpaEntity(member);
-        return memberJpaRepository.save(memberJpaEntity).toDomain();
+        return memberJpaRepository.findByProviderId(member.getProviderId())
+                .orElseGet(() -> {
+                    MemberJpaEntity memberJpaEntity = new MemberJpaEntity(member);
+                    return memberJpaRepository.save(memberJpaEntity);
+                }).toDomain();
     }
 
     @Transactional
