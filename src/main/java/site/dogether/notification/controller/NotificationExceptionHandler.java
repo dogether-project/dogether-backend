@@ -1,5 +1,7 @@
 package site.dogether.notification.controller;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -8,6 +10,7 @@ import site.dogether.notification.service.exception.InvalidNotificationTokenExce
 
 import static site.dogether.notification.controller.response.NotificationExceptionCode.INVALID_NOTIFICATION_TOKEN;
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
 public class NotificationExceptionHandler {
 
