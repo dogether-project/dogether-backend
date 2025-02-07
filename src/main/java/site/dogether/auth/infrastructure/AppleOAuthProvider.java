@@ -1,4 +1,4 @@
-package site.dogether.auth.infrastructure.client.apple;
+package site.dogether.auth.infrastructure;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import site.dogether.auth.infrastructure.JwtHandler;
+import site.dogether.auth.infrastructure.client.apple.AppleApiClient;
 import site.dogether.auth.infrastructure.client.apple.response.ApplePublicKeySetResponse;
 import site.dogether.auth.infrastructure.client.apple.response.ApplePublicKeySetResponse.Key;
 
