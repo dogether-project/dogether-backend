@@ -25,7 +25,7 @@ public class MemberService {
 
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
-        String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
+        final String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
 
         Member member = new Member(
                 request.idToken(),

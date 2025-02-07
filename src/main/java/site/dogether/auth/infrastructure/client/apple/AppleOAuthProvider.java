@@ -26,12 +26,12 @@ public class AppleOAuthProvider {
     private final JwtHandler jwtHandler;
     private final ObjectMapper objectMapper;
 
-    public String getSubjectFromIdToken(String idToken) {
-        String headerOfIdToken = idToken.split("\\.")[0];
-        String decodedHeader = new String(Base64.getDecoder().decode(headerOfIdToken));
+    public String getSubjectFromIdToken(final String idToken) {
+        final String headerOfIdToken = idToken.split("\\.")[0];
+        final String decodedHeader = new String(Base64.getDecoder().decode(headerOfIdToken));
         try {
-            Map<String, String> header = objectMapper.readValue(decodedHeader, new TypeReference<>() {});
-            PublicKey publicKey = getApplePublicKey(header);
+            final Map<String, String> header = objectMapper.readValue(decodedHeader, new TypeReference<>() {});
+            final PublicKey publicKey = getApplePublicKey(header);
             return jwtHandler.parseClaimsOfIdToken(idToken, publicKey);
         } catch (Exception e) {
             log.error("IdToken 헤더 파싱에 실패하였습니다.", e);
@@ -41,19 +41,18 @@ public class AppleOAuthProvider {
 
     private PublicKey getApplePublicKey(final Map<String, String> header)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        ApplePublicKeySetResponse response = appleApiClient.requestPublicKeySet();
-        Key key = response.findMatchedPublicKey(header.get("kid"), header.get("alg"));
+        final ApplePublicKeySetResponse response = appleApiClient.requestPublicKeySet();
+        final Key key = response.findMatchedPublicKey(header.get("kid"), header.get("alg"));
 
-        byte[] nBytes = Base64.getUrlDecoder().decode(key.n());
-        byte[] eBytes = Base64.getUrlDecoder().decode(key.e());
-        BigInteger nBigInt = new BigInteger(1, nBytes);
-        BigInteger eBigInt = new BigInteger(1, eBytes);
+        final byte[] nBytes = Base64.getUrlDecoder().decode(key.n());
+        final byte[] eBytes = Base64.getUrlDecoder().decode(key.e());
+        final BigInteger nBigInt = new BigInteger(1, nBytes);
+        final BigInteger eBigInt = new BigInteger(1, eBytes);
 
-        RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(nBigInt, eBigInt);
-        KeyFactory keyFactory = KeyFactory.getInstance(key.kty());
+        final RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(nBigInt, eBigInt);
+        final KeyFactory keyFactory = KeyFactory.getInstance(key.kty());
 
         return keyFactory.generatePublic(rsaPublicKeySpec);
     }
-
 
 }
