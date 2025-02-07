@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.dogether.member.infrastructure.entity.MemberJpaEntity;
+import site.dogether.member.infrastructure.repository.MemberJpaRepository;
+import site.dogether.member.service.MemberService;
 import site.dogether.notification.infrastructure.entity.NotificationTokenJpaEntity;
 import site.dogether.notification.infrastructure.firebase.sender.SimpleFcmNotificationRequest;
 import site.dogether.notification.infrastructure.repository.NotificationTokenJpaRepository;
@@ -16,8 +19,10 @@ import site.dogether.notification.service.exception.InvalidNotificationTokenExce
 @Service
 public class NotificationService {
 
+    private final MemberJpaRepository memberJpaRepository;
     private final NotificationTokenJpaRepository notificationTokenJpaRepository;
     private final NotificationSender notificationSender;
+    private final MemberService memberService;
 
     @Transactional
     public void sendNotification(
@@ -36,6 +41,26 @@ public class NotificationService {
         } catch (final InvalidNotificationTokenException e) {
             notificationTokenJpaRepository.deleteAllByValue(notificationToken.getValue());
             log.info("유효하지 않은 토큰 제거 - {}", notificationToken.getValue());
+        }
+    }
+
+    @Transactional
+    public void saveNotificationToken(final String authenticationToken, final String notificationToken) {
+        validateNotificationTokenIsNullOrEmpty(notificationToken);
+
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        if (notificationTokenJpaRepository.existsByMemberAndValue(memberJpaEntity, notificationToken)) {
+            return;
+        }
+
+        final NotificationTokenJpaEntity notificationTokenJpaEntity = new NotificationTokenJpaEntity(memberJpaEntity, notificationToken);
+        notificationTokenJpaRepository.save(notificationTokenJpaEntity);
+    }
+
+    private void validateNotificationTokenIsNullOrEmpty(final String token) {
+        if (token == null || token.isEmpty()) {
+            log.info("입력된 알림 토큰 값이 null 혹은 공백 - {}", token);
+            throw new InvalidNotificationTokenException("알림 토큰 값은 공백일 수 없습니다.");
         }
     }
 }
