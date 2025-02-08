@@ -16,7 +16,7 @@ import static site.dogether.member.controller.response.MemberExceptionCode.INVAL
 @RestControllerAdvice
 public class MemberExceptionHandler {
 
-    @ExceptionHandler(InvalidMemberException.class)
+    @ExceptionHandler
     public ResponseEntity<ApiResponse<Void>> handleInvalidMemberException(final InvalidMemberException e) {
         log.warn(e.getMessage());
         return ResponseEntity.badRequest()
