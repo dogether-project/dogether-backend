@@ -23,6 +23,7 @@ import site.dogether.auth.infrastructure.client.apple.response.ApplePublicKeySet
 public class AppleOAuthProvider {
 
     private final AppleApiClient appleApiClient;
+    private final AppleClientSecretGenerator appleClientSecretGenerator;
     private final JwtHandler jwtHandler;
     private final ObjectMapper objectMapper;
 
@@ -53,6 +54,15 @@ public class AppleOAuthProvider {
         final KeyFactory keyFactory = KeyFactory.getInstance(key.kty());
 
         return keyFactory.generatePublic(rsaPublicKeySpec);
+    }
+
+    private void revoke(String authorizationCode) {
+        try {
+            final String clientSecret = appleClientSecretGenerator.createClientSecret();
+            final String refreshToken = appleApiClient.requestRefreshToken(clientSecret, authorizationCode);
+        } catch (Exception e) {
+            log.error("애플 revoke 요청에 실패하였습니다.", e);
+        }
     }
 
 }
