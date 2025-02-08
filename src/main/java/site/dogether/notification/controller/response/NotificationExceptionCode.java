@@ -8,9 +8,8 @@ import site.dogether.common.exception.ExceptionCode;
 @RequiredArgsConstructor
 public enum NotificationExceptionCode implements ExceptionCode {
 
-    INVALID_NOTIFICATION_TOKEN("NTF-0001", "유효하지 않은 토큰입니다.")
+    INVALID_NOTIFICATION_TOKEN("NTF-0001")
     ;
 
     private final String value;
-    private final String message;
 }
