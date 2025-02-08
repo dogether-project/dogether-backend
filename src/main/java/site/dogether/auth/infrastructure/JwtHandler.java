@@ -65,7 +65,8 @@ public class JwtHandler {
     public String createClientSecret(final String keyId, final String teamId, final Date expirationDate,
                                      final String audience, final String clientId, final PrivateKey privateKey) {
         return Jwts.builder()
-                .header().add("alg", Jwts.SIG.ES256).add("kid", keyId).and()
+                .header()
+                    .add("alg", Jwts.SIG.ES256).add("kid", keyId).and()
                 .issuer(teamId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(expirationDate)

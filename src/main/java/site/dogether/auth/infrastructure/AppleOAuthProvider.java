@@ -35,9 +35,15 @@ public class AppleOAuthProvider {
             final PublicKey publicKey = getApplePublicKey(header);
             return jwtHandler.parseClaimsOfIdToken(idToken, publicKey);
         } catch (Exception e) {
-            log.error("IdToken 헤더 파싱에 실패하였습니다.", e);
+            log.warn("IdToken 헤더 파싱에 실패하였습니다.", e);
         }
         return null;
+    }
+
+    public void revoke(String authorizationCode) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        final String clientSecret = appleClientSecretGenerator.createClientSecret();
+        final String refreshToken = appleApiClient.requestRefreshToken(clientSecret, authorizationCode);
+        appleApiClient.requestRevoke(clientSecret, refreshToken);
     }
 
     private PublicKey getApplePublicKey(final Map<String, String> header)
@@ -54,15 +60,6 @@ public class AppleOAuthProvider {
         final KeyFactory keyFactory = KeyFactory.getInstance(key.kty());
 
         return keyFactory.generatePublic(rsaPublicKeySpec);
-    }
-
-    private void revoke(String authorizationCode) {
-        try {
-            final String clientSecret = appleClientSecretGenerator.createClientSecret();
-            final String refreshToken = appleApiClient.requestRefreshToken(clientSecret, authorizationCode);
-        } catch (Exception e) {
-            log.error("애플 revoke 요청에 실패하였습니다.", e);
-        }
     }
 
 }

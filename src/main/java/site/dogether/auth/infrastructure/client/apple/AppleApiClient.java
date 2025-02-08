@@ -39,4 +39,18 @@ public class AppleApiClient {
                 .body(AppleTokenResponse.class);
         return response.refreshToken();
     }
+
+    public void requestRevoke(final String clientSecret, final String refreshToken) {
+        RestClient.create()
+                .post()
+                .uri("https://appleid.apple.com/auth/revoke")
+                .body("client_id=" + clientId
+                        + "&client_secret=" + clientSecret
+                        + "&token=" + refreshToken
+                        + "&token_type_hint=" + "refresh_token")
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new RuntimeException("Apple Revoke 요청에 실패하였습니다.");
+                });
+    }
 }

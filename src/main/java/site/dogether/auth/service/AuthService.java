@@ -41,7 +41,12 @@ public class AuthService {
     public void withdraw(final String token, final WithdrawRequest request) {
         final Long memberId = jwtHandler.getMemberId(token);
 
-        memberService.delete(memberId);
+        try {
+            appleOAuthProvider.revoke(request.authorizationCode());
+            memberService.delete(memberId);
+        } catch (Exception e) {
+            throw new RuntimeException("애플 계정 해지(revoke) 실패로 회원 탈퇴를 진행할 수 없습니다.");
+        }
     }
 
 }
