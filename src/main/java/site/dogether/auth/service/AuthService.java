@@ -40,6 +40,7 @@ public class AuthService {
     @Transactional
     public void withdraw(final String token, final WithdrawRequest request) {
         final Long memberId = jwtHandler.getMemberId(token);
+
         memberService.delete(memberId);
     }
 

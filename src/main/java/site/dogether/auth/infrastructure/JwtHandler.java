@@ -3,6 +3,7 @@ package site.dogether.auth.infrastructure;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
@@ -47,13 +48,6 @@ public class JwtHandler {
         return idToken;
     }
 
-    private String extract(final String bearerToken) {
-        if (bearerToken != null && bearerToken.startsWith(PREFIX)) {
-            return bearerToken.substring(PREFIX.length());
-        }
-        return bearerToken;
-    }
-
     public String createToken(Long memberId) {
         final long now  = new Date().getTime();
         final Date expiredDate = new Date(now + expireTime);
@@ -68,10 +62,30 @@ public class JwtHandler {
         return token;
     }
 
+    public String createClientSecret(final String keyId, final String teamId, final Date expirationDate,
+                                     final String audience, final String clientId, final PrivateKey privateKey) {
+        return Jwts.builder()
+                .header().add("alg", Jwts.SIG.ES256).add("kid", keyId).and()
+                .issuer(teamId)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(expirationDate)
+                .audience().add(audience).and()
+                .subject(clientId)
+                .signWith(privateKey, Jwts.SIG.ES256)
+                .compact();
+    }
+
     public Long getMemberId(final String bearerToken) {
         String token = extract(bearerToken);
         final Claims claims = parseClaims(token);
         return claims.get("member_id", Long.class);
+    }
+
+    private String extract(final String bearerToken) {
+        if (bearerToken != null && bearerToken.startsWith(PREFIX)) {
+            return bearerToken.substring(PREFIX.length());
+        }
+        return bearerToken;
     }
 
     private Claims parseClaims(String token) {
