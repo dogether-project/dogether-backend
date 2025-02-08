@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntity;
 import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.dailytodo.domain.DailyTodo;
 import site.dogether.dailytodo.domain.DailyTodoStatus;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 
@@ -33,6 +34,20 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
     @Column(name = "status", length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private DailyTodoStatus status;
+
+    public DailyTodoJpaEntity(
+        final DailyTodo dailyTodo,
+        final ChallengeGroupJpaEntity challengeGroup,
+        final MemberJpaEntity member
+    ) {
+        this(
+            null,
+            challengeGroup,
+            member,
+            dailyTodo.getContent(),
+            dailyTodo.getStatus()
+        );
+    }
 
     public DailyTodoJpaEntity(
         final ChallengeGroupJpaEntity challengeGroup,
