@@ -18,14 +18,15 @@ import static site.dogether.common.exception.CommonExceptionCode.INTERNAL_SERVER
 public class CommonExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleException(final Exception e) {
-        log.error("handle Exception", e);
-        return internalServerError().body(ApiResponse.fail(INTERNAL_SERVER_APPLICATION));
-    }
-
-    @ExceptionHandler
     public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(final NoResourceFoundException e) {
         log.warn("handle NoResourceFoundException - {}", e.getResourcePath());
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleException(final Exception e) {
+        log.error("handle Exception", e);
+        return internalServerError()
+            .body(ApiResponse.fail(INTERNAL_SERVER_APPLICATION, e.getMessage()));
     }
 }

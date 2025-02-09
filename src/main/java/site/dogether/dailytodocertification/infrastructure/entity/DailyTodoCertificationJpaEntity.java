@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.dogether.common.audit.entity.BaseTimeEntity;
 import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
+import site.dogether.dailytodocertification.domain.DailyTodoCertification;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 
 @Getter
@@ -28,6 +29,19 @@ public class DailyTodoCertificationJpaEntity extends BaseTimeEntity {
 
     @Column(name = "content", length = 200, nullable = false)
     private String content;
+
+    public DailyTodoCertificationJpaEntity(
+        final DailyTodoCertification dailyTodoCertification,
+        final DailyTodoJpaEntity dailyTodo,
+        final MemberJpaEntity member
+    ) {
+        this(
+            null,
+            dailyTodo,
+            member,
+            dailyTodoCertification.getContent()
+        );
+    }
 
     public DailyTodoCertificationJpaEntity(
         final DailyTodoJpaEntity dailyTodo,

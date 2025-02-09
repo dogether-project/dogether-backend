@@ -7,10 +7,12 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.dailytodo.controller.DailyTodoController;
 import site.dogether.dailytodo.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
+import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.docs.util.RestDocsSupport;
 
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -21,9 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("데일리 투두 API 문서화 테스트")
 public class DailyTodoControllerDocsTest extends RestDocsSupport {
 
+    private final DailyTodoService dailyTodoService = mock(DailyTodoService.class);
+
     @Override
     protected Object initController() {
-        return new DailyTodoController();
+        return new DailyTodoController(dailyTodoService);
     }
 
     @DisplayName("데일리 투두 작성 API")

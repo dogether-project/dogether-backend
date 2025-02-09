@@ -1,4 +1,4 @@
-package site.dogether.notification.controller.response;
+package site.dogether.dailytodocertification.controller.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,9 +6,9 @@ import site.dogether.common.exception.ExceptionCode;
 
 @Getter
 @RequiredArgsConstructor
-public enum NotificationExceptionCode implements ExceptionCode {
+public enum DailyTodoCertificationExceptionCode implements ExceptionCode {
 
-    INVALID_NOTIFICATION_TOKEN("NTF-0001")
+    INVALID_DAILY_TODO_CERTIFICATION("TCF-0001")
     ;
 
     private final String value;
