@@ -27,7 +27,7 @@ public class AuthService {
         final String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
 
         Member member = new Member(
-                request.idToken(),
+                subject,
                 request.name()
         );
         member = memberService.save(member);

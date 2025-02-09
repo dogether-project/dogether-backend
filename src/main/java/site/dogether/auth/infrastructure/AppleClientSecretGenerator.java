@@ -29,7 +29,7 @@ public class AppleClientSecretGenerator {
     private String privateKey;
 
     public String createClientSecret() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        final Date expirationDate = Date.from(
+        final Date expireDate = Date.from(
                 LocalDateTime.now()
                         .plusMinutes(5)
                         .atZone(ZoneId.systemDefault())
@@ -38,7 +38,7 @@ public class AppleClientSecretGenerator {
         return jwtHandler.createClientSecret(
                 keyId,
                 teamId,
-                expirationDate,
+                expireDate,
                 "https://appleid.apple.com",
                 clientId,
                 getPrivateKey()
