@@ -32,9 +32,11 @@ public class DailyTodoController {
 
     @PostMapping("/{todoId}/certify")
     public ResponseEntity<ApiResponse<Void>> certifyDailyTodo(
+        @Authentication String authenticationToken,
         @PathVariable final Long todoId,
         @RequestBody final CertifyDailyTodoRequest request
     ) {
+        dailyTodoService.certifyDailyTodo(authenticationToken, todoId, request.content(), request.mediaUrls());
         return ResponseEntity.ok(ApiResponse.success(CERTIFY_DAILY_TODO));
     }
 

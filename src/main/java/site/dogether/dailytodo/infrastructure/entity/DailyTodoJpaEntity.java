@@ -71,4 +71,19 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
         this.content = content;
         this.status = status;
     }
+
+    public DailyTodo toDomain() {
+        return new DailyTodo(
+            id,
+            content,
+            status,
+            getCreatedAt(),
+            member.toDomain(),
+            challengeGroup.toDomain()
+        );
+    }
+
+    public void changeStatusReviewPending() {
+        this.status = DailyTodoStatus.REVIEW_PENDING;
+    }
 }

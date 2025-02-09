@@ -43,4 +43,8 @@ public class ChallengeGroup {
             throw new InvalidDailyTodoException(exceptionMessage);
         }
     }
+
+    public boolean isRunning() {
+        return status == ChallengeGroupStatus.RUNNING;
+    }
 }

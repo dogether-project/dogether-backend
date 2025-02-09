@@ -62,4 +62,17 @@ public class DailyTodo {
             throw new InvalidDailyTodoException("데일리 투두 내용은 %d ~ %d 길이의 문자열만 입력할 수 있습니다. - %s");
         }
     }
+
+    public boolean checkOwner(final Long memberId) {
+        return member.getId().equals(memberId);
+    }
+
+    public boolean isCertifyPendingStatus() {
+        return status == DailyTodoStatus.CERTIFY_PENDING;
+    }
+
+    public boolean createdToday() {
+        return createdAt.toLocalDate()
+            .isEqual(LocalDateTime.now().toLocalDate());
+    }
 }
