@@ -41,13 +41,11 @@ public class DailyTodoController {
     }
 
     @GetMapping("/my/yesterday")
-    public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos() {
-        return ResponseEntity.ok(ApiResponse.successWithData(
-            GET_YESTERDAY_DAILY_TODOS,
-            new GetYesterdayDailyTodosResponse(
-                List.of(
-                    "푸쉬업 10회",
-                    "프로그래머스 코테 두 문제 풀기",
-                    "스프링 강의 3개 듣기"))));
+    public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos(
+        @Authentication String authenticationToken
+    ) {
+        final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(authenticationToken);
+        final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
     }
 }

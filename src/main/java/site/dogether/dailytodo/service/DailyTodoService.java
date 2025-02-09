@@ -28,6 +28,8 @@ import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -176,5 +178,21 @@ public class DailyTodoService {
         final MemberJpaEntity pickedReviewer = otherChallengeGroupMembers.get(random.nextInt(otherChallengeGroupMembers.size()));
         log.info("데일리 투두 수행 인증 검사자 배정 완료 : 투두 수행 인증자 - {}, 투두 수행 검사자 - {}", certifyingMember, pickedReviewer);
         return pickedReviewer;
+    }
+
+    public List<String> findYesterdayDailyTodos(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, memberJpaEntity)
+            .orElseThrow(() -> new MemberNotInChallengeGroupException("현재 진행중인 챌린지 그룹에 참여하고 있지 않습니다."));
+
+        final LocalDate yesterday = LocalDate.now().minusDays(1);
+        return dailyTodoJpaRepository.findAllByCreatedAtBetweenAndChallengeGroupAndMember(
+            yesterday.atStartOfDay(),
+            yesterday.atTime(LocalTime.MAX),
+            challengeGroupMemberJpaEntity.getChallengeGroup(),
+            challengeGroupMemberJpaEntity.getMember())
+            .stream()
+            .map(DailyTodoJpaEntity::getContent)
+            .toList();
     }
 }
