@@ -12,3 +12,10 @@ secret:
   jwt:
     secret-key: ${JWT_SECRET_KEY:secretsecretsecretsecretsecretsecretsecretsec}
     expire-time: ${JWT_EXPIRE_TIME:31536000000}
+  aws:
+    s3:
+      bucket-name: ${AWS_S3_BUCKET_NAME}
+    region: ${AWS_REGION}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}

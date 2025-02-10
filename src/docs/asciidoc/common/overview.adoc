@@ -90,6 +90,9 @@
 | NTS-0002
 | 푸시 알림 토큰 삭제 성공
 
+| S3S-0001
+| S3 Presigned Url 생성 성공
+
 |===
 
 [[overview-exception-code]]
