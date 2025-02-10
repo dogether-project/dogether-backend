@@ -1,13 +1,22 @@
 package site.dogether.challengegroup.infrastructure.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.dogether.challengegroup.domain.ChallengeGroup;
+import site.dogether.challengegroup.domain.ChallengeGroupDurationOption;
+import site.dogether.challengegroup.domain.ChallengeGroupStartAtOption;
 import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.common.audit.entity.BaseTimeEntity;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -80,5 +89,56 @@ public class ChallengeGroupJpaEntity extends BaseTimeEntity {
         this.maximumTodoCount = maximumTodoCount;
         this.joinCode = joinCode;
         this.status = status;
+    }
+
+    public static ChallengeGroupJpaEntity from(final ChallengeGroup challengeGroup) {
+        final LocalDateTime now = LocalDateTime.now();
+
+        return new ChallengeGroupJpaEntity(
+            challengeGroup.getName(),
+            challengeGroup.getMaximumMemberCount(),
+            setStartAt(now, challengeGroup.getStartAtOption()),
+            setEndAt(now, challengeGroup.getStartAtOption(), challengeGroup.getDurationOption()),
+            challengeGroup.getMaximumTodoCount(),
+            challengeGroup.getJoinCode(),
+            challengeGroup.getStatus()
+        );
+    }
+
+    private static LocalDateTime setStartAt(
+            final LocalDateTime now,
+            final ChallengeGroupStartAtOption startAtOption
+    ) {
+        if (startAtOption == ChallengeGroupStartAtOption.TODAY) {
+            return now;
+        }
+        return now.plusDays(1);
+    }
+
+    private static LocalDateTime setEndAt(
+            final LocalDateTime now,
+            final ChallengeGroupStartAtOption startAtOption,
+            final ChallengeGroupDurationOption durationOption
+    ) {
+        if (startAtOption == ChallengeGroupStartAtOption.TODAY) {
+            return now.plusDays(durationOption.getValue());
+        }
+        return now.plusDays(durationOption.getValue() + 1);
+    }
+
+    public ChallengeGroup toDomain() {
+        final ChallengeGroupStartAtOption startAtOption = ChallengeGroupStartAtOption.from(startAt, this.getCreatedAt());
+        final ChallengeGroupDurationOption durationOption = ChallengeGroupDurationOption.from(startAt, endAt);
+
+        return new ChallengeGroup(
+            id,
+            name,
+            maximumMemberCount,
+            startAtOption,
+            durationOption,
+            maximumTodoCount,
+            status,
+            joinCode
+        );
     }
 }

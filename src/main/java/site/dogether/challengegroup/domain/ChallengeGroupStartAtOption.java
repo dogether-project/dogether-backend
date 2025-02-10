@@ -1,5 +1,6 @@
 package site.dogether.challengegroup.domain;
 
+import java.time.LocalDateTime;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 
 public enum ChallengeGroupStartAtOption {
@@ -20,5 +21,12 @@ public enum ChallengeGroupStartAtOption {
         if (!startAt.equals("TODAY") && !startAt.equals("TOMORROW")) {
             throw new InvalidChallengeGroupException("유효하지 않은 시작일 옵션입니다.");
         }
+    }
+
+    public static ChallengeGroupStartAtOption from(final LocalDateTime startAt, final LocalDateTime createdAt) {
+        if (startAt.getDayOfYear() == createdAt.getDayOfYear()) {
+            return TODAY;
+        }
+        return TOMORROW;
     }
 }

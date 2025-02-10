@@ -36,7 +36,7 @@ public class ChallengeGroupController {
             @Authentication final String token,
             @RequestBody final CreateChallengeGroupRequest request
     ) {
-        String joinCode = challengeGroupService.createChallengeGroup(request);
+        final String joinCode = challengeGroupService.createChallengeGroup(request);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 CREATE_CHALLENGE_GROUP,

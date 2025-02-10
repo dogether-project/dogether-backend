@@ -13,6 +13,7 @@ public class ChallengeGroup {
     private final ChallengeGroupDurationOption durationOption;
     private final int maximumTodoCount;
     private final ChallengeGroupStatus status;
+    private final String joinCode;
 
     public ChallengeGroup(
             final String name,
@@ -28,6 +29,27 @@ public class ChallengeGroup {
         this.durationOption = setDurationOption(durationOption);
         this.maximumTodoCount = validateMaximumTodoCount(maximumTodoCount);
         this.status = setStatus();
+        this.joinCode = createJoinCode();
+    }
+
+    public ChallengeGroup(
+            final Long id,
+            final String name,
+            final int maximumMemberCount,
+            final ChallengeGroupStartAtOption startAtOption,
+            final ChallengeGroupDurationOption durationOption,
+            final int maximumTodoCount,
+            final ChallengeGroupStatus status,
+            final String joinCode
+    ) {
+        this.id = id;
+        this.name = name;
+        this.maximumMemberCount = maximumMemberCount;
+        this.startAtOption = startAtOption;
+        this.durationOption = durationOption;
+        this.maximumTodoCount = maximumTodoCount;
+        this.status = status;
+        this.joinCode = joinCode;
     }
 
     private String validateName(final String name) {
@@ -67,6 +89,10 @@ public class ChallengeGroup {
             return ChallengeGroupStatus.READY;
         }
         return ChallengeGroupStatus.RUNNING;
+    }
+
+    private String createJoinCode() {
+        return "Join Code";
     }
 
 }

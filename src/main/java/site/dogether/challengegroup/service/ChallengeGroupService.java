@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.domain.ChallengeGroup;
+import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntity;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaRepository;
 
 @RequiredArgsConstructor
@@ -20,8 +21,10 @@ public class ChallengeGroupService {
                 request.durationOption(),
                 request.maximumTodoCount()
         );
-        
 
-        return "Join Code";
+        final ChallengeGroupJpaEntity challengeGroupJpaEntity = ChallengeGroupJpaEntity.from(challengeGroup);
+        challengeGroup = challengeGroupJpaRepository.save(challengeGroupJpaEntity).toDomain();
+
+        return challengeGroup.getJoinCode();
     }
 }
