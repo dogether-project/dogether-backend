@@ -20,6 +20,7 @@ public class ChallengeGroupService {
                 request.durationOption(),
                 request.maximumTodoCount()
         );
+        
 
         return "Join Code";
     }
