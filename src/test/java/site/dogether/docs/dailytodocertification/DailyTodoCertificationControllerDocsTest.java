@@ -7,8 +7,13 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.dailytodocertification.controller.DailyTodoCertificationController;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
+import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 import site.dogether.docs.util.RestDocsSupport;
 
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -16,8 +21,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.*;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.*;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.DAILY_TODO_CERTIFICATION_REVIEW_RESULT;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
 public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
@@ -71,6 +76,30 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
     @DisplayName("검사할 투두 수행 인증 전체 조회 API")
     @Test        
     void getDailyTodoCertificationsForReview() throws Exception {
+        final List<DailyTodoCertificationDto> dailyTodoCertificationDtos = List.of(
+            new DailyTodoCertificationDto(
+                1L,
+                "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
+                List.of(
+                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
+                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
+                ),
+                "유산소 & 무산소 1시간 조지기"
+            ),
+            new DailyTodoCertificationDto(
+                2L,
+                "공부까지 갓벽...",
+                List.of(
+                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s1.png",
+                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s2.png"
+                ),
+                "공부 3시간 조지기"
+            )
+        );
+
+        given(dailyTodoCertificationService.findAllTodoCertificationsForReview(any()))
+            .willReturn(dailyTodoCertificationDtos);
+
         mockMvc.perform(
                 get("/api/todo-certifications/pending-review")
                     .header("Authorization", "Bearer access_token")
@@ -107,6 +136,18 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
     @Test
     void getDailyTodoCertificationById() throws Exception {
         final long todoCertificationId = 1L;
+        final DailyTodoCertificationDto dailyTodoCertificationDto = new DailyTodoCertificationDto(
+            1L,
+            "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
+            List.of(
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
+            ),
+            "유산소 & 무산소 1시간 조지기"
+        );
+
+        given(dailyTodoCertificationService.findTodoCertificationById(todoCertificationId))
+            .willReturn(dailyTodoCertificationDto);
 
         mockMvc.perform(
                 get("/api/todo-certifications/{todoCertificationId}", todoCertificationId)
