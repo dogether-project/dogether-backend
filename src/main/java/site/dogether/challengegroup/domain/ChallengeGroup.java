@@ -1,5 +1,6 @@
 package site.dogether.challengegroup.domain;
 
+import java.util.UUID;
 import lombok.Getter;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 
@@ -92,7 +93,8 @@ public class ChallengeGroup {
     }
 
     private String createJoinCode() {
-        return "Join Code";
+        return UUID.randomUUID().toString()
+                .substring(0, 6);
     }
 
 }
