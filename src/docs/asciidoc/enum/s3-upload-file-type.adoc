@@ -1,0 +1,5 @@
+:doctype: book
+:icons: font
+
+[[s3-upload-file-type]]
+include::{snippets}/common-docs-controller-test/enums/custom-response-fields-beneath-s3UploadFileType.adoc[]
