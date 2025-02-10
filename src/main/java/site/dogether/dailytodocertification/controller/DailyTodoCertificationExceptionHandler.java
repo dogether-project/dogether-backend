@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.dailytodocertification.domain.exception.InvalidDailyTodoCertificationException;
+import site.dogether.dailytodocertification.service.exception.DailyTodoCertificationNotFoundException;
+import site.dogether.dailytodocertification.service.exception.NotDailyTodoCertificationReviewerException;
 
-import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationExceptionCode.INVALID_DAILY_TODO_CERTIFICATION;
+import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationExceptionCode.*;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -21,5 +23,19 @@ public class DailyTodoCertificationExceptionHandler {
         log.info("handle InvalidDailyTodoCertificationException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(INVALID_DAILY_TODO_CERTIFICATION, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleDailyTodoCertificationNotFoundException(final DailyTodoCertificationNotFoundException e) {
+        log.info("handle DailyTodoCertificationNotFoundException", e);
+        return ResponseEntity.badRequest()
+            .body(ApiResponse.fail(DAILY_TODO_CERTIFICATION_NOT_FOUND, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleNotDailyTodoCertificationReviewerException(final NotDailyTodoCertificationReviewerException e) {
+        log.info("handle NotDailyTodoCertificationReviewerException", e);
+        return ResponseEntity.badRequest()
+            .body(ApiResponse.fail(NOT_DAILY_TODO_CERTIFICATION_REVIEWER, e.getMessage()));
     }
 }

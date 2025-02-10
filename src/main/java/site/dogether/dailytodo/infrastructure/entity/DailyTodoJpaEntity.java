@@ -84,4 +84,9 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
     public void changeStatusReviewPending() {
         this.status = DailyTodoStatus.REVIEW_PENDING;
     }
+
+    public void changeReviewResult(final DailyTodo dailyTodo) {
+        this.status = dailyTodo.getStatus();
+        this.rejectReason = dailyTodo.getRejectReason().get();
+    }
 }

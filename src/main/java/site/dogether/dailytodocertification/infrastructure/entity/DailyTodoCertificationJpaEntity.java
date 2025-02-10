@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.dailytodo.domain.DailyTodo;
 import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
 import site.dogether.dailytodocertification.domain.DailyTodoCertification;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
@@ -61,5 +62,16 @@ public class DailyTodoCertificationJpaEntity extends BaseTimeEntity {
         this.dailyTodo = dailyTodo;
         this.reviewer = reviewer;
         this.content = content;
+    }
+
+    public DailyTodoCertification toDomain() {
+        final DailyTodo dailyTodoDomain = dailyTodo.toDomain();
+        return new DailyTodoCertification(
+            id,
+            dailyTodoDomain,
+            reviewer.toDomain(),
+            content,
+            getCreatedAt()
+        );
     }
 }

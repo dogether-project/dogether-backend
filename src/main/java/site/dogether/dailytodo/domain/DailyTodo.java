@@ -75,11 +75,11 @@ public class DailyTodo {
     }
 
     private void validateRejectReason(final DailyTodoStatus status, final String rejectReason) {
-        if (status != REJECTED && rejectReason != null) {
+        if (status != REJECT && rejectReason != null) {
             throw new InvalidDailyTodoRejectReasonException("데일리 투두가 노인정 상태일 때만 노인정 사유를 입력할 수 있습니다. - " + status.name());
         }
 
-        if (status != REJECTED) {
+        if (status != REJECT) {
             return;
         }
 
@@ -108,6 +108,14 @@ public class DailyTodo {
     public boolean createdToday() {
         return createdAt.toLocalDate()
             .isEqual(LocalDateTime.now().toLocalDate());
+    }
+
+    public Long getMemberId() {
+        return member.getId();
+    }
+
+    public String getStatusDescription() {
+        return status.getDescription();
     }
 
     public Optional<String> getRejectReason() {

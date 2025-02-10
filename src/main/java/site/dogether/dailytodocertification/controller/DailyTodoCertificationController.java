@@ -1,25 +1,39 @@
 package site.dogether.dailytodocertification.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import site.dogether.common.config.web.resolver.Authentication;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationByIdResponse;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
 import site.dogether.dailytodocertification.controller.response.DailyTodoCertificationResponse;
+import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 
 import java.util.List;
 
 import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationSuccessCode.*;
 
+@RequiredArgsConstructor
 @RequestMapping("/api/todo-certifications")
 @RestController
 public class DailyTodoCertificationController {
 
+    private final DailyTodoCertificationService dailyTodoCertificationService;
+
     @PostMapping("{todoCertificationId}/review")
     public ResponseEntity<ApiResponse<Void>> reviewDailyTodoCertification(
+        @Authentication String authenticationToken,
         @PathVariable Long todoCertificationId,
-        @RequestBody final ReviewDailyTodoCertificationRequest request) {
+        @RequestBody final ReviewDailyTodoCertificationRequest request
+    ) {
+        dailyTodoCertificationService.reviewDailyTodoCertification(
+            authenticationToken,
+            todoCertificationId,
+            request.result(),
+            request.rejectReason()
+        );
         return ResponseEntity.ok(ApiResponse.success(REVIEW_DAILY_TODO_CERTIFICATION));
     }
 

@@ -1,7 +1,9 @@
 package site.dogether.dailytodocertification.domain;
 
 import lombok.Getter;
+import site.dogether.challengegroup.domain.ChallengeGroup;
 import site.dogether.dailytodo.domain.DailyTodo;
+import site.dogether.dailytodo.domain.DailyTodoStatus;
 import site.dogether.dailytodocertification.domain.exception.InvalidDailyTodoCertificationException;
 import site.dogether.member.domain.Member;
 
@@ -15,19 +17,19 @@ public class DailyTodoCertification {
 
     private final Long id;
     private final DailyTodo dailyTodo;
-    private final Member member;
+    private final Member reviewer;
     private final String content;
     private final LocalDateTime createdAt;
 
     public static DailyTodoCertification create(
         final String content,
         final DailyTodo dailyTodo,
-        final Member member
+        final Member reviewer
     ) {
         return new DailyTodoCertification(
             null,
             dailyTodo,
-            member,
+            reviewer,
             content,
             LocalDateTime.now()
         );
@@ -36,7 +38,7 @@ public class DailyTodoCertification {
     public DailyTodoCertification(
         final Long id,
         final DailyTodo dailyTodo,
-        final Member member,
+        final Member reviewer,
         final String content,
         final LocalDateTime createdAt
     ) {
@@ -44,7 +46,7 @@ public class DailyTodoCertification {
 
         this.id = id;
         this.dailyTodo = dailyTodo;
-        this.member = member;
+        this.reviewer = reviewer;
         this.content = content;
         this.createdAt = createdAt;
     }
@@ -61,5 +63,25 @@ public class DailyTodoCertification {
             );
             throw new InvalidDailyTodoCertificationException(exceptionMessage);
         }
+    }
+
+    public boolean checkReviewer(final Long reviewerId) {
+        return reviewer.getId().equals(reviewerId);
+    }
+
+    public ChallengeGroup getChallengeGroup() {
+        return dailyTodo.getChallengeGroup();
+    }
+
+    public DailyTodo review(final String result, final String rejectReason) {
+        return new DailyTodo(
+            dailyTodo.getId(),
+            dailyTodo.getContent(),
+            DailyTodoStatus.valueOf(result),
+            rejectReason,
+            dailyTodo.getCreatedAt(),
+            dailyTodo.getMember(),
+            dailyTodo.getChallengeGroup()
+        );
     }
 }
