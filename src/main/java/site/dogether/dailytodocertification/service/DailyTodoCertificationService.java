@@ -90,4 +90,14 @@ public class DailyTodoCertificationService {
             .map(DailyTodoCertificationMediaUrlJpaEntity::getValue)
             .toList();
     }
+
+    public DailyTodoCertificationDto findTodoCertificationById(final Long todoCertificationId) {
+        final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity = dailyTodoCertificationJpaRepository.findById(todoCertificationId)
+            .orElseThrow(() -> new DailyTodoCertificationNotFoundException("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다. - " + todoCertificationId));
+
+        return DailyTodoCertificationDto.from(
+            dailyTodoCertificationJpaEntity.toDomain(),
+            findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertificationJpaEntity)
+        );
+    }
 }

@@ -54,15 +54,9 @@ public class DailyTodoCertificationController {
 
     @GetMapping("/{todoCertificationId}")
     public ResponseEntity<ApiResponse<GetDailyTodoCertificationByIdResponse>> getDailyTodoCertificationById(@PathVariable Long todoCertificationId) {
-        return ResponseEntity.ok(ApiResponse.successWithData(
-            GET_DAILY_TODO_CERTIFICATION_BY_ID,
-            new GetDailyTodoCertificationByIdResponse(
-                new DailyTodoCertificationResponse(
-                    1L,
-                    "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
-                    List.of(
-                        "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
-                        "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"),
-                    "유산소 & 무산소 1시간 조지기"))));
+        final DailyTodoCertificationDto dailyTodoCertification = dailyTodoCertificationService.findTodoCertificationById(todoCertificationId);
+        final GetDailyTodoCertificationByIdResponse response = new GetDailyTodoCertificationByIdResponse(DailyTodoCertificationResponse.of(dailyTodoCertification));
+
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_DAILY_TODO_CERTIFICATION_BY_ID, response));
     }
 }
