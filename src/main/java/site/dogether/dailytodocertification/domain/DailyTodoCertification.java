@@ -69,6 +69,10 @@ public class DailyTodoCertification {
         return reviewer.getId().equals(reviewerId);
     }
 
+    public String getDailyTodoContent() {
+        return dailyTodo.getContent();
+    }
+
     public ChallengeGroup getChallengeGroup() {
         return dailyTodo.getChallengeGroup();
     }

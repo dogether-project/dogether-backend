@@ -6,8 +6,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.dailytodocertification.controller.DailyTodoCertificationController;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
+import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 import site.dogether.docs.util.RestDocsSupport;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -20,9 +22,11 @@ import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.*;
 @DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
 public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
 
+    private final DailyTodoCertificationService dailyTodoCertificationService = mock(DailyTodoCertificationService.class);
+
     @Override
     protected Object initController() {
-        return new DailyTodoCertificationController();
+        return new DailyTodoCertificationController(dailyTodoCertificationService);
     }
 
     @DisplayName("데일리 투두 수행 인증 검사 API")

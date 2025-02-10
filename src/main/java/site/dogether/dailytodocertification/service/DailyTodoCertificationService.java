@@ -5,17 +5,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.domain.ChallengeGroup;
+import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.challengegroup.service.exception.NotRunningChallengeGroupException;
 import site.dogether.dailytodo.domain.DailyTodo;
+import site.dogether.dailytodo.domain.DailyTodoStatus;
 import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
 import site.dogether.dailytodocertification.domain.DailyTodoCertification;
 import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationJpaEntity;
+import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationMediaUrlJpaEntity;
 import site.dogether.dailytodocertification.infrastructure.repository.DailyTodoCertificationJpaRepository;
+import site.dogether.dailytodocertification.infrastructure.repository.DailyTodoCertificationMediaUrlJpaRepository;
+import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 import site.dogether.dailytodocertification.service.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.service.exception.NotDailyTodoCertificationReviewerException;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +31,7 @@ import site.dogether.notification.service.NotificationService;
 public class DailyTodoCertificationService {
 
     private final DailyTodoCertificationJpaRepository dailyTodoCertificationJpaRepository;
+    private final DailyTodoCertificationMediaUrlJpaRepository dailyTodoCertificationMediaUrlJpaRepository;
     private final NotificationService notificationService;
     private final MemberService memberService;
 
@@ -60,5 +68,26 @@ public class DailyTodoCertificationService {
         if (!challengeGroup.isRunning()) {
             throw new NotRunningChallengeGroupException("현재 진행중인 챌린지 그룹이 아닙니다.");
         }
+    }
+
+    public List<DailyTodoCertificationDto> findAllTodoCertificationsForReview(final String authenticationToken) {
+        final MemberJpaEntity reviewerJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final List<DailyTodoCertificationJpaEntity> dailyTodoCertificationsForReview = dailyTodoCertificationJpaRepository.findAllByReviewerAndDailyTodo_StatusAndDailyTodo_ChallengeGroup_Status(
+            reviewerJpaEntity,
+            DailyTodoStatus.REVIEW_PENDING,
+            ChallengeGroupStatus.RUNNING);
+
+        return dailyTodoCertificationsForReview.stream()
+            .map(dailyTodoCertificationJpaEntity -> DailyTodoCertificationDto.from(
+                dailyTodoCertificationJpaEntity.toDomain(),
+                findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertificationJpaEntity)))
+            .toList();
+    }
+
+    private List<String> findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity) {
+        return dailyTodoCertificationMediaUrlJpaRepository.findAllByDailyTodoCertification(dailyTodoCertificationJpaEntity)
+            .stream()
+            .map(DailyTodoCertificationMediaUrlJpaEntity::getValue)
+            .toList();
     }
 }
