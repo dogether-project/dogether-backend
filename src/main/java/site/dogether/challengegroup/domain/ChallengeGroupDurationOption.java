@@ -1,5 +1,6 @@
 package site.dogether.challengegroup.domain;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -12,4 +13,11 @@ public enum ChallengeGroupDurationOption {
     ;
 
     private final int value;
+
+    public static ChallengeGroupDurationOption from(final int durationOption) {
+        return Arrays.stream(ChallengeGroupDurationOption.values())
+                .filter(option -> option.value == durationOption)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 기간 옵션입니다." + durationOption));
+    }
 }

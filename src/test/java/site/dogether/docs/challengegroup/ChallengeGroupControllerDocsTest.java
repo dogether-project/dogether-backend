@@ -1,15 +1,11 @@
 package site.dogether.docs.challengegroup;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.challengegroup.controller.ChallengeGroupController;
-import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
-import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
-import site.dogether.docs.util.RestDocsSupport;
-
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,12 +13,24 @@ import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GRO
 import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
 import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import site.dogether.challengegroup.controller.ChallengeGroupController;
+import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
+import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
+import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.docs.util.RestDocsSupport;
+
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
 
+    private final ChallengeGroupService challengeGroupService = mock(ChallengeGroupService.class);
+
     @Override
     protected Object initController() {
-        return new ChallengeGroupController();
+        return new ChallengeGroupController(challengeGroupService);
     }
 
     @DisplayName("챌린지 그룹 생성 API")
@@ -36,6 +44,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             5
         );
 
+        given(challengeGroupService.createChallengeGroup(any(CreateChallengeGroupRequest.class)))
+                .willReturn("Join Code");
+
         mockMvc.perform(
                 post("/api/groups")
                     .header("Authorization", "Bearer access_token")
@@ -44,11 +55,11 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             .andExpect(status().isOk())
             .andDo(createDocument(
                 requestFields(
-                    fieldWithPath("groupName")
+                    fieldWithPath("name")
                         .description("그룹명")
                         .type(JsonFieldType.STRING)
                         .attributes(constraints("1 ~ 20 길이 문자열")),
-                    fieldWithPath("memberCount")
+                    fieldWithPath("maximumMemberCount")
                         .description("참여 가능 인원수")
                         .type(JsonFieldType.NUMBER)
                         .attributes(constraints("2 ~ 20 범위 정수")),
@@ -56,11 +67,11 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description(generateLink(CHALLENGE_GROUP_START_AT_OPTION))
                         .type(JsonFieldType.STRING)
                         .attributes(constraints("정해진 값만 입력 허용")),
-                    fieldWithPath("challengeDuration")
+                    fieldWithPath("durationOption")
                         .description(generateLink(CHALLENGE_GROUP_DURATION_OPTION))
                         .type(JsonFieldType.NUMBER)
                         .attributes(constraints("정해진 값만 입력 허용")),
-                    fieldWithPath("dailyTodoLimit")
+                    fieldWithPath("maximumTodoCount")
                         .description("하루 최대 작성 가능 투두 개수")
                         .type(JsonFieldType.NUMBER)
                         .attributes(constraints("2 ~ 10 범위 정수"))
@@ -119,13 +130,13 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("message")
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.groupName")
+                    fieldWithPath("data.name")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.memberCount")
+                    fieldWithPath("data.maximumMemberCount")
                         .description("그룹 인원수")
                         .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.dailyTodoLimit")
+                    fieldWithPath("data.maximumTodoCount")
                         .description("하루 최대 작성 가능 투두 개수")
                         .type(JsonFieldType.NUMBER))));
     }

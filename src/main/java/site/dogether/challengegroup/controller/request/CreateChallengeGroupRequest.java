@@ -1,10 +1,10 @@
 package site.dogether.challengegroup.controller.request;
 
 public record CreateChallengeGroupRequest(
-    String groupName,
-    int memberCount,
+    String name,
+    int maximumMemberCount,
     String startAt,
-    int challengeDuration,
-    int dailyTodoLimit
+    int durationOption,
+    int maximumTodoCount
 ) {
 }

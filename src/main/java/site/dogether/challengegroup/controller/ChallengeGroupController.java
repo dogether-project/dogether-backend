@@ -7,6 +7,7 @@ import static site.dogether.challengegroup.controller.response.ChallengeGroupSuc
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,22 +20,27 @@ import site.dogether.challengegroup.controller.response.CreateChallengeGroupResp
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupInfoResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
+import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.common.config.web.resolver.Authentication;
 import site.dogether.common.controller.response.ApiResponse;
 
+@RequiredArgsConstructor
 @RequestMapping("/api/groups")
 @RestController
 public class ChallengeGroupController {
+
+    private final ChallengeGroupService challengeGroupService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CreateChallengeGroupResponse>> createChallengeGroup(
             @Authentication final String token,
             @RequestBody final CreateChallengeGroupRequest request
     ) {
+        String joinCode = challengeGroupService.createChallengeGroup(request);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 CREATE_CHALLENGE_GROUP,
-                new CreateChallengeGroupResponse("kelly-join-code")));
+                new CreateChallengeGroupResponse(joinCode)));
     }
 
     @PostMapping("/join")
