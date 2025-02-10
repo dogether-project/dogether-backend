@@ -35,6 +35,9 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private DailyTodoStatus status;
 
+    @Column(name = "reject_reason", length = 500, nullable = true)
+    private String rejectReason;
+
     public DailyTodoJpaEntity(
         final DailyTodo dailyTodo,
         final ChallengeGroupJpaEntity challengeGroup,
@@ -45,17 +48,9 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
             challengeGroup,
             member,
             dailyTodo.getContent(),
-            dailyTodo.getStatus()
+            dailyTodo.getStatus(),
+            dailyTodo.getRejectReason().get()
         );
-    }
-
-    public DailyTodoJpaEntity(
-        final ChallengeGroupJpaEntity challengeGroup,
-        final MemberJpaEntity member,
-        final String content,
-        final DailyTodoStatus status
-    ) {
-        this(null, challengeGroup, member, content, status);
     }
 
     public DailyTodoJpaEntity(
@@ -63,13 +58,15 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
         final ChallengeGroupJpaEntity challengeGroup,
         final MemberJpaEntity member,
         final String content,
-        final DailyTodoStatus status
+        final DailyTodoStatus status,
+        final String rejectReason
     ) {
         this.id = id;
         this.challengeGroup = challengeGroup;
         this.member = member;
         this.content = content;
         this.status = status;
+        this.rejectReason = rejectReason;
     }
 
     public DailyTodo toDomain() {
@@ -77,6 +74,7 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
             id,
             content,
             status,
+            rejectReason,
             getCreatedAt(),
             member.toDomain(),
             challengeGroup.toDomain()
@@ -85,5 +83,10 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
 
     public void changeStatusReviewPending() {
         this.status = DailyTodoStatus.REVIEW_PENDING;
+    }
+
+    public void changeReviewResult(final DailyTodo dailyTodo) {
+        this.status = dailyTodo.getStatus();
+        this.rejectReason = dailyTodo.getRejectReason().get();
     }
 }

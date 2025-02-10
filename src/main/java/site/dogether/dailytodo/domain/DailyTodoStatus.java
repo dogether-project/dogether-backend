@@ -9,8 +9,8 @@ public enum DailyTodoStatus {
 
     CERTIFY_PENDING("인증 대기"),
     REVIEW_PENDING("검사 대기"),
-    APPROVED("인정"),
-    REJECTED("노인정"),
+    APPROVE("인정"),
+    REJECT("노인정"),
     ;
 
     private final String description;

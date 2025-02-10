@@ -12,6 +12,8 @@ import site.dogether.docs.util.RestDocsSupport;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -105,8 +107,18 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     }
     
     @DisplayName("어제 작성한 투두 내용 조회 API")
-    @Test        
+    @Test
     void getYesterdayDailyTodos() throws Exception {
+        final List<String> yesterdayTodos = List.of(
+            "치킨 먹기",
+            "치즈볼 먹기",
+            "뒹굴거리기",
+            "승용님 괴롭히기"
+        );
+
+        given(dailyTodoService.findYesterdayDailyTodos(any()))
+            .willReturn(yesterdayTodos);
+
         mockMvc.perform(
                 get("/api/todos/my/yesterday")
                     .header("Authorization", "Bearer access_token")
