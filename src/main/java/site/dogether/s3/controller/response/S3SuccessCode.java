@@ -8,7 +8,7 @@ import site.dogether.common.controller.response.SuccessCode;
 @RequiredArgsConstructor
 public enum S3SuccessCode implements SuccessCode {
 
-    ISSUED_S3_PRESIGNED_URLS("s3s-0001", "presigned url이 생성되었습니다."),
+    ISSUED_S3_PRESIGNED_URLS("S3S-0001", "presigned url이 생성되었습니다."),
     ;
 
     private final String value;
