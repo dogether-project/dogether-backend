@@ -44,7 +44,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             5
         );
 
-        given(challengeGroupService.createChallengeGroup(any(CreateChallengeGroupRequest.class)))
+        given(challengeGroupService.createChallengeGroup(any(CreateChallengeGroupRequest.class), any()))
                 .willReturn("Join Code");
 
         mockMvc.perform(
