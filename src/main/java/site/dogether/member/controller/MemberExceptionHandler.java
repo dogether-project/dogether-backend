@@ -21,7 +21,7 @@ public class MemberExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(ApiResponse.failWithMessage(MemberExceptionCode.INVALID_MEMBER_EXCEPTION, e.getMessage()));
+                .body(ApiResponse.fail(MemberExceptionCode.INVALID_MEMBER_EXCEPTION, e.getMessage()));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
@@ -29,6 +29,6 @@ public class MemberExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(ApiResponse.failWithMessage(MemberExceptionCode.MEMBER_NOT_FOUND_EXCEPTION, e.getMessage()));
+                .body(ApiResponse.fail(MemberExceptionCode.MEMBER_NOT_FOUND_EXCEPTION, e.getMessage()));
     }
 }
