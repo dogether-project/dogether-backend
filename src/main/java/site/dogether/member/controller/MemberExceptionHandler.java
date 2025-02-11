@@ -12,7 +12,7 @@ import site.dogether.member.exception.MemberExceptionCode;
 import site.dogether.member.exception.MemberNotFoundException;
 
 @Slf4j
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
 public class MemberExceptionHandler {
 
@@ -21,7 +21,7 @@ public class MemberExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(ApiResponse.fail(MemberExceptionCode.INVALID_MEMBER_EXCEPTION));
+                .body(ApiResponse.failWithMessage(MemberExceptionCode.INVALID_MEMBER_EXCEPTION, e.getMessage()));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
@@ -29,6 +29,6 @@ public class MemberExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(ApiResponse.fail(MemberExceptionCode.MEMBER_NOT_FOUND_EXCEPTION));
+                .body(ApiResponse.failWithMessage(MemberExceptionCode.MEMBER_NOT_FOUND_EXCEPTION, e.getMessage()));
     }
 }
