@@ -3,9 +3,12 @@ package site.dogether.challengegroup.domain;
 import java.util.UUID;
 import lombok.Getter;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
+import site.dogether.dailytodo.domain.exception.InvalidDailyTodoException;
 
 @Getter
 public class ChallengeGroup {
+
+    private static final int MINIMUM_LIMIT_TODO_COUNT = 2;
 
     private final Long id;
     private final String name;
@@ -51,6 +54,17 @@ public class ChallengeGroup {
         this.maximumTodoCount = maximumTodoCount;
         this.status = status;
         this.joinCode = joinCode;
+    }
+
+    public void checkEnableTodoCount(final int todoCount) {
+        if (todoCount < MINIMUM_LIMIT_TODO_COUNT || todoCount > maximumTodoCount) {
+            final String exceptionMessage = String.format("데일리 투두는 %d ~ %d개만 등록할 수 있습니다.", MINIMUM_LIMIT_TODO_COUNT, maximumTodoCount);
+            throw new InvalidDailyTodoException(exceptionMessage);
+        }
+    }
+
+    public boolean isRunning() {
+        return status == ChallengeGroupStatus.RUNNING;
     }
 
     public boolean isFinished() {
