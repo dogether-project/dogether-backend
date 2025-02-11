@@ -21,6 +21,7 @@ import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroup
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.common.config.web.resolver.Authentication;
 import site.dogether.common.controller.response.ApiResponse;
 
@@ -54,11 +55,17 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/info/current")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupInfoResponse>> getJoiningChallengeGroupInfo() {
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupInfoResponse>> getJoiningChallengeGroupInfo(
+            @Authentication final String token
+    ) {
+        JoiningChallengeGroupInfo joiningGroupInfo = challengeGroupService.getJoiningChallengeGroupInfo(token);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_INFO,
-                new GetJoiningChallengeGroupInfoResponse("성욱이와 친구들", 7, 5)));
+                new GetJoiningChallengeGroupInfoResponse(
+                        joiningGroupInfo.name(),
+                        joiningGroupInfo.currentMemberCount(),
+                        joiningGroupInfo.maximumTodoCount())));
     }
 
     @GetMapping("/summary/my")

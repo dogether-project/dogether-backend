@@ -12,6 +12,7 @@ import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntit
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJpaEntity;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaRepository;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupMemberJpaRepository;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
@@ -60,10 +61,7 @@ public class ChallengeGroupService {
                 .orElseThrow(() -> new InvalidChallengeGroupException("존재하지 않는 그룹입니다."));
         final ChallengeGroup joinGroup = challengeGroupJpaEntity.toDomain();
 
-        final boolean isFinishedGroup = joinGroup.isFinished();
-        if (isFinishedGroup) {
-            throw new InvalidChallengeGroupException("이미 종료된 그룹입니다.");
-        }
+        isGroupFinished(joinGroup);
 
         final int maximumMemberCount = joinGroup.getMaximumMemberCount();
         final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
@@ -94,6 +92,33 @@ public class ChallengeGroupService {
                     "새로운 멤버가 참여했습니다.",
                     joinMember.getName() + "님이 " + joinGroup.getName() + " 그룹에 새로 합류했습니다."
             );
+        }
+    }
+
+    public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final String token) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup joiningGroup = challengeGroupJpaEntity.toDomain();
+
+        isGroupFinished(joiningGroup);
+
+        final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
+
+        return new JoiningChallengeGroupInfo(
+                joiningGroup.getName(),
+                currentMemberCount,
+                joiningGroup.getMaximumTodoCount()
+        );
+    }
+
+    private static void isGroupFinished(final ChallengeGroup joiningGroup) {
+        final boolean isFinishedGroup = joiningGroup.isFinished();
+        if (isFinishedGroup) {
+            throw new InvalidChallengeGroupException("이미 종료된 그룹입니다.");
         }
     }
 

@@ -1,6 +1,7 @@
 package site.dogether.challengegroup.infrastructure.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntity;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJpaEntity;
@@ -13,4 +14,6 @@ public interface ChallengeGroupMemberJpaRepository extends JpaRepository<Challen
     int countByChallengeGroup(ChallengeGroupJpaEntity challengeGroupJpaEntity);
 
     List<ChallengeGroupMemberJpaEntity> findAllByChallengeGroup(ChallengeGroupJpaEntity challengeGroupJpaEntity);
+
+    Optional<ChallengeGroupMemberJpaEntity> findByMember(MemberJpaEntity memberJpaEntity);
 }

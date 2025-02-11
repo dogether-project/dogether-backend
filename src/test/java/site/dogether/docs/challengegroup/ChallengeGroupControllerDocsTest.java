@@ -21,6 +21,7 @@ import site.dogether.challengegroup.controller.ChallengeGroupController;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.docs.util.RestDocsSupport;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
@@ -117,6 +118,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 그룹 정보 조회 API")
     @Test        
     void getJoiningChallengeGroupInfo() throws Exception {
+        given(challengeGroupService.getJoiningChallengeGroupInfo(any()))
+            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 5, 7));
+
         mockMvc.perform(
                 get("/api/groups/info/current")
                     .header("Authorization", "Bearer access_token")
@@ -133,7 +137,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.name")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.maximumMemberCount")
+                    fieldWithPath("data.currentMemberCount")
                         .description("그룹 인원수")
                         .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.maximumTodoCount")
