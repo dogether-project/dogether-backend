@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.domain.ChallengeGroup;
+import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntity;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJpaEntity;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaRepository;
@@ -26,6 +27,9 @@ public class ChallengeGroupService {
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupRequest request, final String token) {
         final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+        if (isAlreadyInGroup(groupCreatorJpaEntity)) {
+            throw new InvalidChallengeGroupException("이미 그룹에 속해있는 유저입니다.");
+        }
 
         ChallengeGroup challengeGroup = new ChallengeGroup(
                 request.name(),
@@ -44,5 +48,9 @@ public class ChallengeGroupService {
         challengeGroupMemberJpaRepository.save(challengeGroupMemberJpaEntity);
 
         return challengeGroup.getJoinCode();
+    }
+
+    private boolean isAlreadyInGroup(final MemberJpaEntity groupCreatorJpaEntity) {
+        return challengeGroupMemberJpaRepository.existsByMember(groupCreatorJpaEntity);
     }
 }
