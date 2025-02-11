@@ -3,6 +3,7 @@ package site.dogether.challengegroup.infrastructure.repository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntity;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJpaEntity;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
@@ -16,4 +17,7 @@ public interface ChallengeGroupMemberJpaRepository extends JpaRepository<Challen
     List<ChallengeGroupMemberJpaEntity> findAllByChallengeGroup(ChallengeGroupJpaEntity challengeGroupJpaEntity);
 
     Optional<ChallengeGroupMemberJpaEntity> findByMember(MemberJpaEntity memberJpaEntity);
+
+    Optional<ChallengeGroupMemberJpaEntity> findByChallengeGroup_StatusAndMember(ChallengeGroupStatus challengeGroupStatus, MemberJpaEntity member);
+
 }

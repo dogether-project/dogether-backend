@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.docs.challengegroup.enumtype.ChallengeGroupDurationOptionDocs;
 import site.dogether.docs.challengegroup.enumtype.ChallengeGroupStartAtOptionDocs;
 import site.dogether.docs.dailytodocertification.enumtype.DailyTodoCertificationReviewResultDocs;
+import site.dogether.docs.s3.enumtype.S3UploadFileTypeDocs;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -21,11 +22,13 @@ public class CommonDocsController {
         final Map<String, String> challengeGroupStartAtOption = convertToMap(ChallengeGroupStartAtOptionDocs.getValues());
         final Map<String, String> challengeGroupDurationOption = convertToMap(ChallengeGroupDurationOptionDocs.getValues());
         final Map<String, String> dailyTodoCertificationReviewResult = convertToMap(DailyTodoCertificationReviewResultDocs.getValues());
+        final Map<String, String> s3UploadFileType = convertToMap(S3UploadFileTypeDocs.getValues());
         return EnumDocs.builder()
-                   .challengeGroupStartAtOption(challengeGroupStartAtOption)
-                   .challengeGroupDurationOption(challengeGroupDurationOption)
-                   .dailyTodoCertificationReviewResult(dailyTodoCertificationReviewResult)
-                   .build();
+            .challengeGroupStartAtOption(challengeGroupStartAtOption)
+            .challengeGroupDurationOption(challengeGroupDurationOption)
+            .dailyTodoCertificationReviewResult(dailyTodoCertificationReviewResult)
+            .s3UploadFileType(s3UploadFileType)
+            .build();
     }
 
     private Map<String, String> convertToMap(final RestDocsEnumType[] restDocsEnumTypes) {

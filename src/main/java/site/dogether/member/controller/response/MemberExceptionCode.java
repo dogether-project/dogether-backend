@@ -1,4 +1,4 @@
-package site.dogether.member.exception;
+package site.dogether.member.controller.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,8 +9,9 @@ import site.dogether.common.exception.ExceptionCode;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public enum MemberExceptionCode implements ExceptionCode {
 
-    INVALID_MEMBER_EXCEPTION("MF-0001", "유효하지 않은 회원입니다.");
+    INVALID_MEMBER_EXCEPTION("MF-0001"),
+    MEMBER_NOT_FOUND_EXCEPTION("MF-0002");
 
     private final String value;
-    private final String message;
+
 }

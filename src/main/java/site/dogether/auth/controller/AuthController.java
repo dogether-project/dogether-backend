@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.controller.response.LoginResponse;
+import site.dogether.auth.service.AuthService;
 import site.dogether.common.config.web.resolver.Authentication;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.member.service.MemberService;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
 @Slf4j
@@ -25,13 +25,13 @@ import site.dogether.member.service.dto.AuthenticatedMember;
 @RestController
 public class AuthController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @RequestBody final LoginRequest request
     ) {
-        final AuthenticatedMember authenticatedMember = memberService.login(request);
+        final AuthenticatedMember authenticatedMember = authService.login(request);
         final LoginResponse response = new LoginResponse(authenticatedMember);
         return ResponseEntity.ok(ApiResponse.successWithData(
             LOGIN, response
@@ -43,7 +43,7 @@ public class AuthController {
             @Authentication final String token,
             @RequestBody final WithdrawRequest request
     ) {
-        memberService.withdraw(token, request);
+        authService.withdraw(token, request);
         return ResponseEntity.ok(ApiResponse.success(WITHDRAW));
     }
 }

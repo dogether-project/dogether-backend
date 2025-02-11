@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.dogether.challengegroup.domain.ChallengeGroup;
 import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 
 @Getter
@@ -37,5 +39,13 @@ public class ChallengeGroupMemberJpaEntity extends BaseTimeEntity {
         this.id = id;
         this.challengeGroup = challengeGroup;
         this.member = member;
+    }
+
+    public ChallengeGroup toChallengeGroupDomain() {
+        return challengeGroup.toDomain();
+    }
+
+    public Member toMemberDomain() {
+        return member.toDomain();
     }
 }

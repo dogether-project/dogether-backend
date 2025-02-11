@@ -23,6 +23,10 @@ public class DailyTodoCertificationMediaUrlJpaEntity extends BaseTimeEntity {
     @Column(name = "value", length = 500, nullable = false)
     private String value;
 
+    public DailyTodoCertificationMediaUrlJpaEntity(final String mediaUrlValue, DailyTodoCertificationJpaEntity dailyTodoCertification) {
+        this(null, dailyTodoCertification, mediaUrlValue);
+    }
+
     public DailyTodoCertificationMediaUrlJpaEntity(final DailyTodoCertificationJpaEntity dailyTodoCertification, final String value) {
         this(null, dailyTodoCertification, value);
     }
