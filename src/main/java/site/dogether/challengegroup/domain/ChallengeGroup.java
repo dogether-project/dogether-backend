@@ -9,6 +9,12 @@ import site.dogether.dailytodo.domain.exception.InvalidDailyTodoException;
 public class ChallengeGroup {
 
     private static final int MINIMUM_LIMIT_TODO_COUNT = 2;
+    private static final int MAXIMUM_LIMIT_TODO_COUNT = 10;
+    private static final int MAXIMUM_GROUP_NAME_LENGTH = 20;
+    public static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
+    public static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
+    public static final int JOIN_CODE_PARSING_START_INDEX = 0;
+    public static final int JOIN_CODE_PARSING_END_INDEX = 6;
 
     private final Long id;
     private final String name;
@@ -75,15 +81,16 @@ public class ChallengeGroup {
         if (name == null || name.isBlank()) {
             throw new InvalidChallengeGroupException("챌린지 그룹 이름은 필수 입력값입니다.");
         }
-        if (name.isEmpty() || name.length() > 20) {
-            throw new InvalidChallengeGroupException("챌린지 그룹 이름은 1자 이상 20자 이하로 입력해주세요.");
+        if (name.isEmpty() || name.length() > MAXIMUM_GROUP_NAME_LENGTH) {
+            throw new InvalidChallengeGroupException("챌린지 그룹 이름은 1자 이상 "+ MAXIMUM_GROUP_NAME_LENGTH +"자 이하로 입력해주세요.");
         }
         return name;
     }
 
     private int validateMaximumMemberCount(final int maximumMemberCount) {
-        if (maximumMemberCount < 2 || maximumMemberCount > 20) {
-            throw new InvalidChallengeGroupException("챌린지 그룹 최대 인원은 2명 이상 20명 이하로 입력해주세요.");
+        if (maximumMemberCount < MIN_MAXIMUM_MEMBER_COUNT || maximumMemberCount > MAX_MAXIMUM_MEMBER_COUNT) {
+            throw new InvalidChallengeGroupException("챌린지 그룹 최대 인원은 "+ MIN_MAXIMUM_MEMBER_COUNT +"명 이상 "
+                    + MAX_MAXIMUM_MEMBER_COUNT + "명 이하로 입력해주세요.");
         }
         return maximumMemberCount;
     }
@@ -97,8 +104,9 @@ public class ChallengeGroup {
     }
 
     private int validateMaximumTodoCount(final int maximumTodoCount) {
-        if (maximumTodoCount < 2 || maximumTodoCount > 10) {
-            throw new InvalidChallengeGroupException("챌린지 그룹 최대 할 일 개수는 2개 이상 10개 이하로 입력해주세요.");
+        if (maximumTodoCount < MINIMUM_LIMIT_TODO_COUNT || maximumTodoCount > MAXIMUM_LIMIT_TODO_COUNT) {
+            throw new InvalidChallengeGroupException("챌린지 그룹 최대 할 일 개수는 "+ MINIMUM_LIMIT_TODO_COUNT + "개 이상 "
+                    + MAXIMUM_LIMIT_TODO_COUNT +"개 이하로 입력해주세요.");
         }
         return maximumTodoCount;
     }
@@ -112,7 +120,7 @@ public class ChallengeGroup {
 
     private String createJoinCode() {
         return UUID.randomUUID().toString()
-                .substring(0, 6);
+                .substring(JOIN_CODE_PARSING_START_INDEX, JOIN_CODE_PARSING_END_INDEX);
     }
 
 }
