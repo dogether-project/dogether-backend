@@ -60,14 +60,14 @@ public class ChallengeGroupService {
         final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
         memberAlreadyInGroup(groupCreatorJpaEntity);
 
-        groupExists(joinCode);
+        final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupJpaRepository.findByJoinCode(joinCode)
+                .orElseThrow(() -> new InvalidChallengeGroupException("존재하지 않는 그룹입니다."));
+        ChallengeGroup joinGroup = challengeGroupJpaEntity.toDomain();
 
-    }
-
-    private void groupExists(final String joinCode) {
-        boolean groupExists = challengeGroupJpaRepository.existsByJoinCode(joinCode);
-        if (!groupExists) {
-            throw new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다.");
+        boolean isFinishedGroup = joinGroup.isFinished();
+        if (isFinishedGroup) {
+            throw new InvalidChallengeGroupException("이미 종료된 그룹입니다.");
         }
+
     }
 }

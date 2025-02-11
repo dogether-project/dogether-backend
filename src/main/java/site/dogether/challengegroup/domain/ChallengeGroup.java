@@ -53,6 +53,10 @@ public class ChallengeGroup {
         this.joinCode = joinCode;
     }
 
+    public boolean isFinished() {
+        return this.status == ChallengeGroupStatus.FINISHED;
+    }
+
     private String validateName(final String name) {
         if (name == null || name.isBlank()) {
             throw new InvalidChallengeGroupException("챌린지 그룹 이름은 필수 입력값입니다.");
