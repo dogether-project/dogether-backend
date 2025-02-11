@@ -48,13 +48,6 @@ public class ChallengeGroupService {
         return challengeGroup.getJoinCode();
     }
 
-    private void memberAlreadyInGroup(final MemberJpaEntity groupCreatorJpaEntity) {
-        boolean isAlreadyInGroup = challengeGroupMemberJpaRepository.existsByMember(groupCreatorJpaEntity);
-        if (isAlreadyInGroup) {
-            throw new InvalidChallengeGroupException("이미 그룹에 속해있는 유저입니다.");
-        }
-    }
-
     @Transactional
     public void joinChallengeGroup(final String joinCode, final String token) {
         final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
@@ -62,12 +55,25 @@ public class ChallengeGroupService {
 
         final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupJpaRepository.findByJoinCode(joinCode)
                 .orElseThrow(() -> new InvalidChallengeGroupException("존재하지 않는 그룹입니다."));
-        ChallengeGroup joinGroup = challengeGroupJpaEntity.toDomain();
+        final ChallengeGroup joinGroup = challengeGroupJpaEntity.toDomain();
 
         boolean isFinishedGroup = joinGroup.isFinished();
         if (isFinishedGroup) {
             throw new InvalidChallengeGroupException("이미 종료된 그룹입니다.");
         }
 
+        int maximumMemberCount = joinGroup.getMaximumMemberCount();
+        int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
+        if (currentMemberCount >= maximumMemberCount) {
+            throw new InvalidChallengeGroupException("그룹 인원이 가득 찼습니다.");
+        }
+
+    }
+
+    private void memberAlreadyInGroup(final MemberJpaEntity groupCreatorJpaEntity) {
+        final boolean isAlreadyInGroup = challengeGroupMemberJpaRepository.existsByMember(groupCreatorJpaEntity);
+        if (isAlreadyInGroup) {
+            throw new InvalidChallengeGroupException("이미 그룹에 속해있는 유저입니다.");
+        }
     }
 }
