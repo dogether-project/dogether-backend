@@ -19,18 +19,18 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.auth.controller.AuthController;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
+import site.dogether.auth.service.AuthService;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.member.service.MemberService;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
 @DisplayName("로그인 & 회원 탈퇴 API 문서화 테스트")
 public class AuthControllerDocsTest extends RestDocsSupport {
 
-    private final MemberService memberService = mock(MemberService.class);
+    private final AuthService authService = mock(AuthService.class);
 
     @Override
     protected Object initController() {
-        return new AuthController(memberService);
+        return new AuthController(authService);
     }
 
     @DisplayName("애플 로그인 API")
@@ -41,7 +41,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
             "idTokenidTokenidToken"
         );
 
-        given(memberService.login(any(LoginRequest.class)))
+        given(authService.login(any(LoginRequest.class)))
                 .willReturn(new AuthenticatedMember("김영재", "accessToken"));
 
         mockMvc.perform(
@@ -83,7 +83,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
             "authorizationCodeauthorizationCodeauthorizationCode"
         );
 
-        doNothing().when(memberService).withdraw(anyString(), any(WithdrawRequest.class));
+        doNothing().when(authService).withdraw(anyString(), any(WithdrawRequest.class));
 
         mockMvc.perform(
                 delete("/api/auth/withdraw")

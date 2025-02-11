@@ -8,6 +8,7 @@ secret:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
     expire-time: ${JWT_EXPIRE_TIME}
+
   aws:
     s3:
       bucket-name: ${AWS_S3_BUCKET_NAME}
@@ -15,3 +16,10 @@ secret:
     credentials:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
+
+  oauth:
+    apple:
+      key: ${APPLE_KEY_ID}
+      team-id: ${APPLE_TEAM_ID}
+      client-id: ${APPLE_CLIENT_ID}
+      private-key: ${APPLE_PRIVATE_KEY}
