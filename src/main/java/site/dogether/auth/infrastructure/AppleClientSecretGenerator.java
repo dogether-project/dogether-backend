@@ -19,13 +19,13 @@ public class AppleClientSecretGenerator {
 
     private final JwtHandler jwtHandler;
 
-    @Value("${oauth.apple.key}")
+    @Value("${secret.oauth.apple.key}")
     private String keyId;
-    @Value("${oauth.apple.team-id}")
+    @Value("${secret.oauth.apple.team-id}")
     private String teamId;
-    @Value("${oauth.apple.client-id}")
+    @Value("${secret.oauth.apple.client-id}")
     private String clientId;
-    @Value("${oauth.apple.private-key}")
+    @Value("${secret.oauth.apple.private-key}")
     private String privateKey;
 
     public String createClientSecret() throws NoSuchAlgorithmException, InvalidKeySpecException {

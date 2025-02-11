@@ -10,7 +10,7 @@ import site.dogether.auth.infrastructure.client.apple.response.AppleTokenRespons
 @Component
 public class AppleApiClient {
 
-    @Value("${oauth.apple.client-id}")
+    @Value("${secret.oauth.apple.client-id}")
     private String clientId;
 
     public ApplePublicKeySetResponse requestPublicKeySet() {
