@@ -37,6 +37,10 @@ jobs:
           DB_USERNAME: "sa"
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRE_TIME: ${{ secrets.JWT_EXPIRE_TIME }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+          APPLE_PRIVATE_KEY: ${{ secrets.APPLE_PRIVATE_KEY }}
         run: ./gradlew test --info
 
   set-environment:
@@ -135,6 +139,12 @@ jobs:
             # jwt environment
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             JWT_EXPIRE_TIME=${{ secrets.JWT_EXPIRE_TIME }}
+            
+            # apple oauth environment
+            APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
+            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+            APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+            APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
             EOF
 
             # deploy with docker
