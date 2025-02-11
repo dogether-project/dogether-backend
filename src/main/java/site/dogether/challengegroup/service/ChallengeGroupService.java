@@ -1,5 +1,6 @@
 package site.dogether.challengegroup.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaR
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupMemberJpaRepository;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
+import site.dogether.notification.service.NotificationService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class ChallengeGroupService {
 
     private final ChallengeGroupJpaRepository challengeGroupJpaRepository;
     private final ChallengeGroupMemberJpaRepository challengeGroupMemberJpaRepository;
+    private final NotificationService notificationService;
     private final MemberService memberService;
 
     @Transactional
@@ -50,24 +53,48 @@ public class ChallengeGroupService {
 
     @Transactional
     public void joinChallengeGroup(final String joinCode, final String token) {
-        final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
-        memberAlreadyInGroup(groupCreatorJpaEntity);
+        final MemberJpaEntity joinMember = memberService.findMemberEntityByAuthenticationToken(token);
+        memberAlreadyInGroup(joinMember);
 
         final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupJpaRepository.findByJoinCode(joinCode)
                 .orElseThrow(() -> new InvalidChallengeGroupException("존재하지 않는 그룹입니다."));
         final ChallengeGroup joinGroup = challengeGroupJpaEntity.toDomain();
 
-        boolean isFinishedGroup = joinGroup.isFinished();
+        final boolean isFinishedGroup = joinGroup.isFinished();
         if (isFinishedGroup) {
             throw new InvalidChallengeGroupException("이미 종료된 그룹입니다.");
         }
 
-        int maximumMemberCount = joinGroup.getMaximumMemberCount();
-        int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
+        final int maximumMemberCount = joinGroup.getMaximumMemberCount();
+        final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
         if (currentMemberCount >= maximumMemberCount) {
             throw new InvalidChallengeGroupException("그룹 인원이 가득 찼습니다.");
         }
 
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = new ChallengeGroupMemberJpaEntity(
+                challengeGroupJpaEntity, joinMember
+        );
+        challengeGroupMemberJpaRepository.save(challengeGroupMemberJpaEntity);
+
+        notificationService.sendNotification(
+                joinMember.getId(),
+                "챌린지 그룹에 참여하였습니다.",
+                "그룹명 : " + joinGroup.getName()
+        );
+
+        final List<ChallengeGroupMemberJpaEntity> groupMembers =
+                challengeGroupMemberJpaRepository.findAllByChallengeGroup(challengeGroupJpaEntity);
+        for (final ChallengeGroupMemberJpaEntity groupMemberJpaEntity : groupMembers) {
+            final Long groupMemberId = groupMemberJpaEntity.getMember().getId();
+            if (groupMemberId.equals(joinMember.getId())) {
+                continue;
+            }
+            notificationService.sendNotification(
+                    groupMemberId,
+                    "새로운 멤버가 참여했습니다.",
+                    joinMember.getName() + "님이 " + joinGroup.getName() + " 그룹에 새로 합류했습니다."
+            );
+        }
     }
 
     private void memberAlreadyInGroup(final MemberJpaEntity groupCreatorJpaEntity) {
