@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.member.exception.InvalidMemberException;
-import site.dogether.member.exception.MemberExceptionCode;
+import site.dogether.member.controller.response.MemberExceptionCode;
+import site.dogether.member.domain.exception.InvalidMemberException;
 import site.dogether.member.exception.MemberNotFoundException;
 
 @Slf4j

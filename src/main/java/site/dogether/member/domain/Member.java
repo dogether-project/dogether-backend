@@ -1,7 +1,7 @@
 package site.dogether.member.domain;
 
 import lombok.Getter;
-import site.dogether.member.exception.InvalidMemberException;
+import site.dogether.member.domain.exception.InvalidMemberException;
 
 @Getter
 public class Member {

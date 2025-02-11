@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import site.dogether.challengegroup.domain.ChallengeGroup;
 import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.common.audit.entity.BaseTimeEntity;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "challenge_group")
@@ -80,5 +83,18 @@ public class ChallengeGroupJpaEntity extends BaseTimeEntity {
         this.maximumTodoCount = maximumTodoCount;
         this.joinCode = joinCode;
         this.status = status;
+    }
+
+    public ChallengeGroup toDomain() {
+        return new ChallengeGroup(
+            id,
+            name,
+            maximumMemberCount,
+            maximumTodoCount,
+            joinCode,
+            startAt,
+            endAt,
+            status
+        );
     }
 }

@@ -20,11 +20,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(code.getValue(), code.getMessage(), data);
     }
 
-    public static ApiResponse<Void> fail(final ExceptionCode exceptionCode) {
-        return new ApiResponse<>(exceptionCode.getValue(), exceptionCode.getMessage(), null);
-    }
-
-    public static ApiResponse<Void> failWithMessage(final ExceptionCode exceptionCode, final String message) {
+    public static ApiResponse<Void> fail(final ExceptionCode exceptionCode, final String message) {
         return new ApiResponse<>(exceptionCode.getValue(), message, null);
     }
 

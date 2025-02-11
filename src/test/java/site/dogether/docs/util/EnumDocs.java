@@ -13,4 +13,5 @@ public class EnumDocs {
     Map<String, String> challengeGroupStartAtOption;
     Map<String, String> challengeGroupDurationOption;
     Map<String, String> dailyTodoCertificationReviewResult;
+    Map<String, String> s3UploadFileType;
 }

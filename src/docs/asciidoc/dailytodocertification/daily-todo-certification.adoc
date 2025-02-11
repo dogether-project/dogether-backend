@@ -9,7 +9,7 @@
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
@@ -32,7 +32,7 @@ include::{snippets}/daily-todo-certification-controller-docs-test/review-daily-t
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
@@ -53,7 +53,7 @@ include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X

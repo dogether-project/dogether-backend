@@ -1,4 +1,4 @@
-package site.dogether.member.exception;
+package site.dogether.member.domain.exception;
 
 public class MemberException extends RuntimeException {
 
