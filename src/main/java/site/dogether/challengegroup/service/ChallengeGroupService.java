@@ -27,9 +27,7 @@ public class ChallengeGroupService {
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupRequest request, final String token) {
         final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
-        if (isAlreadyInGroup(groupCreatorJpaEntity)) {
-            throw new InvalidChallengeGroupException("이미 그룹에 속해있는 유저입니다.");
-        }
+        memberAlreadyInGroup(groupCreatorJpaEntity);
 
         ChallengeGroup challengeGroup = new ChallengeGroup(
                 request.name(),
@@ -50,7 +48,26 @@ public class ChallengeGroupService {
         return challengeGroup.getJoinCode();
     }
 
-    private boolean isAlreadyInGroup(final MemberJpaEntity groupCreatorJpaEntity) {
-        return challengeGroupMemberJpaRepository.existsByMember(groupCreatorJpaEntity);
+    private void memberAlreadyInGroup(final MemberJpaEntity groupCreatorJpaEntity) {
+        boolean isAlreadyInGroup = challengeGroupMemberJpaRepository.existsByMember(groupCreatorJpaEntity);
+        if (isAlreadyInGroup) {
+            throw new InvalidChallengeGroupException("이미 그룹에 속해있는 유저입니다.");
+        }
+    }
+
+    @Transactional
+    public void joinChallengeGroup(final String joinCode, final String token) {
+        final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+        memberAlreadyInGroup(groupCreatorJpaEntity);
+
+        groupExists(joinCode);
+
+    }
+
+    private void groupExists(final String joinCode) {
+        boolean groupExists = challengeGroupJpaRepository.existsByJoinCode(joinCode);
+        if (!groupExists) {
+            throw new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다.");
+        }
     }
 }

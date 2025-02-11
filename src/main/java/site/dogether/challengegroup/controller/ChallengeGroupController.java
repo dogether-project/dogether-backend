@@ -45,7 +45,10 @@ public class ChallengeGroupController {
 
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<Void>> joinChallengeGroup(
-        @RequestBody final JoinChallengeGroupRequest request) {
+            @Authentication final String token,
+            @RequestBody final JoinChallengeGroupRequest request
+    ) {
+        challengeGroupService.joinChallengeGroup(request.joinCode(), token);
         return ResponseEntity.ok(
             ApiResponse.success(JOIN_CHALLENGE_GROUP));
     }
