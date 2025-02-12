@@ -22,6 +22,7 @@ import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroup
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.common.config.web.resolver.Authentication;
 import site.dogether.common.controller.response.ApiResponse;
 
@@ -69,11 +70,18 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/summary/my")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary() {
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary(
+            @Authentication final String token
+    ) {
+        JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivitySummary
+                = challengeGroupService.getJoiningChallengeGroupMyActivitySummary(token);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY,
-                new GetJoiningChallengeGroupMyActivitySummaryResponse(15, 10, 10)));
+                new GetJoiningChallengeGroupMyActivitySummaryResponse(
+                        joiningChallengeGroupMyActivitySummary.totalTodoCount(),
+                        joiningChallengeGroupMyActivitySummary.totalCertificatedCount(),
+                        joiningChallengeGroupMyActivitySummary.totalApprovedCount())));
     }
 
     @GetMapping("/summary/team")
