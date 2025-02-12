@@ -13,6 +13,7 @@ import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GRO
 import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
 import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -21,8 +22,10 @@ import site.dogether.challengegroup.controller.ChallengeGroupController;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
+import site.dogether.dailytodo.domain.Rank;
 import site.dogether.docs.util.RestDocsSupport;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
@@ -179,6 +182,14 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 그룹의 팀원 전체 누적 활동 통계 조회 API")
     @Test        
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
+        given(challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(any()))
+            .willReturn(new JoiningChallengeGroupTeamActivityDto(10, 5, 3,
+                List.of(
+                    new Rank(1, "성욱", 0.5, 0.3),
+                    new Rank(2, "영재", 0.4, 0.2),
+                    new Rank(3, "지원", 0.3, 0.1)
+            )));
+
         mockMvc.perform(
                 get("/api/groups/summary/team")
                     .header("Authorization", "Bearer access_token")

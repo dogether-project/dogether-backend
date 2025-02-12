@@ -21,6 +21,7 @@ import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroup
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.common.config.web.resolver.Authentication;
@@ -73,29 +74,46 @@ public class ChallengeGroupController {
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary(
             @Authentication final String authenticationToken
     ) {
-        JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivitySummary
-                = challengeGroupService.getJoiningChallengeGroupMyActivitySummary(authenticationToken);
+        JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivityDto =
+                challengeGroupService.getJoiningChallengeGroupMyActivitySummary(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY,
                 new GetJoiningChallengeGroupMyActivitySummaryResponse(
-                        joiningChallengeGroupMyActivitySummary.totalTodoCount(),
-                        joiningChallengeGroupMyActivitySummary.totalCertificatedCount(),
-                        joiningChallengeGroupMyActivitySummary.totalApprovedCount())));
+                        joiningChallengeGroupMyActivityDto.totalTodoCount(),
+                        joiningChallengeGroupMyActivityDto.totalCertificatedCount(),
+                        joiningChallengeGroupMyActivityDto.totalApprovedCount())));
     }
 
     @GetMapping("/summary/team")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamActivitySummary(
             @Authentication final String authenticationToken
     ) {
+        JoiningChallengeGroupTeamActivityDto joiningChallengeGroupTeamActivityDto =
+                challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY,
                 new GetJoiningChallengeGroupTeamActivitySummaryResponse(
-                    40, 30, 20,
-                    List.of(
-                        new GetJoiningChallengeGroupTeamActivitySummaryResponse.Rank(1, "양성욱", 100, 100),
-                        new GetJoiningChallengeGroupTeamActivitySummaryResponse.Rank(2, "김영재", 82, 76),
-                        new GetJoiningChallengeGroupTeamActivitySummaryResponse.Rank(3, "문지원", 68, 50)))));
+                        joiningChallengeGroupTeamActivityDto.totalTodoCount(),
+                        joiningChallengeGroupTeamActivityDto.totalCertificatedCount(),
+                        joiningChallengeGroupTeamActivityDto.totalApprovedCount(),
+                        List.of(
+                            new GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse(
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getRank(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getName(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getCertificationRate(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getApprovalRate()),
+                            new GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse(
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getRank(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getName(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getCertificationRate(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getApprovalRate()),
+                            new GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse(
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getRank(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getName(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getCertificationRate(),
+                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getApprovalRate())))
+            ));
     }
 }

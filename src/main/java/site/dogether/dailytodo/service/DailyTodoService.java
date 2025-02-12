@@ -210,4 +210,10 @@ public class DailyTodoService {
 
         return new MyTodoSummary(dailyTodos);
     }
+
+    public List<MyTodoSummary> getMyTodoSummaries(final List<MemberJpaEntity> groupMembers, final ChallengeGroupJpaEntity joiningGroupEntity) {
+        return groupMembers.stream()
+                .map(memberJpaEntity -> getMyTodoSummary(memberJpaEntity, joiningGroupEntity))
+                .toList();
+    }
 }

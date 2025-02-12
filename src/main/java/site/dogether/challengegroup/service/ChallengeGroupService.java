@@ -14,6 +14,7 @@ import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaR
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupMemberJpaRepository;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
+import site.dogether.dailytodo.domain.GroupTodoSummary;
 import site.dogether.dailytodo.domain.MyTodoSummary;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
@@ -142,12 +143,38 @@ public class ChallengeGroupService {
         final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
         isGroupFinished(joiningGroup);
 
-        MyTodoSummary myTodoSummary = dailyTodoService.getMyTodoSummary(memberJpaEntity, joiningGroupEntity);
+        final MyTodoSummary myTodoSummary = dailyTodoService.getMyTodoSummary(memberJpaEntity, joiningGroupEntity);
 
         return new JoiningChallengeGroupMyActivityDto(
                 myTodoSummary.calculateTotalTodoCount(),
                 myTodoSummary.calculateTotalCertificatedCount(),
                 myTodoSummary.calculateTotalApprovedCount()
+        );
+    }
+
+    public JoiningChallengeGroupTeamActivityDto getJoiningChallengeGroupTeamActivitySummary(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
+        isGroupFinished(joiningGroup);
+
+        final List<MemberJpaEntity> groupMembers = challengeGroupMemberJpaRepository.findAllByChallengeGroup(joiningGroupEntity)
+                .stream()
+                .map(ChallengeGroupMemberJpaEntity::getMember)
+                .toList();
+
+        final List<MyTodoSummary> myTodoSummaries = dailyTodoService.getMyTodoSummaries(groupMembers, joiningGroupEntity);
+        GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
+
+        return new JoiningChallengeGroupTeamActivityDto(
+                groupTodoSummary.calculateTotalTodoCount(),
+                groupTodoSummary.calculateTotalCertificatedCount(),
+                groupTodoSummary.calculateTotalApprovedCount(),
+                groupTodoSummary.getRanksOfTop3()
         );
     }
 }
