@@ -35,10 +35,10 @@ public class ChallengeGroupController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CreateChallengeGroupResponse>> createChallengeGroup(
-            @Authentication final String token,
+            @Authentication final String authenticationToken,
             @RequestBody final CreateChallengeGroupRequest request
     ) {
-        final String joinCode = challengeGroupService.createChallengeGroup(request, token);
+        final String joinCode = challengeGroupService.createChallengeGroup(request, authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 CREATE_CHALLENGE_GROUP,
@@ -47,19 +47,19 @@ public class ChallengeGroupController {
 
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<Void>> joinChallengeGroup(
-            @Authentication final String token,
+            @Authentication final String authenticationToken,
             @RequestBody final JoinChallengeGroupRequest request
     ) {
-        challengeGroupService.joinChallengeGroup(request.joinCode(), token);
+        challengeGroupService.joinChallengeGroup(request.joinCode(), authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.success(JOIN_CHALLENGE_GROUP));
     }
 
     @GetMapping("/info/current")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupInfoResponse>> getJoiningChallengeGroupInfo(
-            @Authentication final String token
+            @Authentication final String authenticationToken
     ) {
-        JoiningChallengeGroupInfo joiningGroupInfo = challengeGroupService.getJoiningChallengeGroupInfo(token);
+        JoiningChallengeGroupInfo joiningGroupInfo = challengeGroupService.getJoiningChallengeGroupInfo(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_INFO,
@@ -71,10 +71,10 @@ public class ChallengeGroupController {
 
     @GetMapping("/summary/my")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary(
-            @Authentication final String token
+            @Authentication final String authenticationToken
     ) {
         JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivitySummary
-                = challengeGroupService.getJoiningChallengeGroupMyActivitySummary(token);
+                = challengeGroupService.getJoiningChallengeGroupMyActivitySummary(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY,
@@ -85,7 +85,9 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/summary/team")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamActivitySummary() {
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamActivitySummary(
+            @Authentication final String authenticationToken
+    ) {
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY,

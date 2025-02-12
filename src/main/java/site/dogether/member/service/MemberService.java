@@ -35,16 +35,16 @@ public class MemberService {
         memberJpaRepository.delete(memberJpaEntity);
     }
 
-    public Member findMemberByAuthenticationToken(final String token) {
-        final Long memberId = jwtHandler.getMemberId(token);
+    public Member findMemberByAuthenticationToken(final String authenticationToken) {
+        final Long memberId = jwtHandler.getMemberId(authenticationToken);
 
         final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).orElseThrow(
                 () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         return memberJpaEntity.toDomain();
     }
 
-    public MemberJpaEntity findMemberEntityByAuthenticationToken(final String token) {
-        final Long memberId = jwtHandler.getMemberId(token);
+    public MemberJpaEntity findMemberEntityByAuthenticationToken(final String authenticationToken) {
+        final Long memberId = jwtHandler.getMemberId(authenticationToken);
         return memberJpaRepository.findById(memberId).orElseThrow(
                 () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
     }

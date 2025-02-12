@@ -33,8 +33,8 @@ public class ChallengeGroupService {
     private final DailyTodoService dailyTodoService;
 
     @Transactional
-    public String createChallengeGroup(final CreateChallengeGroupRequest request, final String token) {
-        final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+    public String createChallengeGroup(final CreateChallengeGroupRequest request, final String authenticationToken) {
+        final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
         memberAlreadyInGroup(groupCreatorJpaEntity);
 
         ChallengeGroup challengeGroup = new ChallengeGroup(
@@ -57,8 +57,8 @@ public class ChallengeGroupService {
     }
 
     @Transactional
-    public void joinChallengeGroup(final String joinCode, final String token) {
-        final MemberJpaEntity joinMember = memberService.findMemberEntityByAuthenticationToken(token);
+    public void joinChallengeGroup(final String joinCode, final String authenticationToken) {
+        final MemberJpaEntity joinMember = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
         memberAlreadyInGroup(joinMember);
 
         final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupJpaRepository.findByJoinCode(joinCode)
@@ -99,8 +99,8 @@ public class ChallengeGroupService {
         }
     }
 
-    public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final String token) {
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+    public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
 
         final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
                 challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
@@ -132,8 +132,8 @@ public class ChallengeGroupService {
         }
     }
 
-    public JoiningChallengeGroupMyActivityDto getJoiningChallengeGroupMyActivitySummary(final String token) {
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+    public JoiningChallengeGroupMyActivityDto getJoiningChallengeGroupMyActivitySummary(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
 
         final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
                 challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
