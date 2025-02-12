@@ -1,7 +1,9 @@
 package site.dogether.dailytodo.domain;
 
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class MyTodoSummary {
 
     private final List<DailyTodo> myTodos;
@@ -26,5 +28,17 @@ public class MyTodoSummary {
         return (int) myTodos.stream()
             .filter(DailyTodo::isApproved)
             .count();
+    }
+
+    public double calculateCertificationRate() {
+        int totalTodoCount = calculateTotalTodoCount();
+        int totalCertificatedCount = calculateTotalCertificatedCount();
+        return (double) totalCertificatedCount / totalTodoCount;
+    }
+
+    public double calculateApprovalRate() {
+        int totalTodoCount = calculateTotalTodoCount();
+        int totalApprovedCount = calculateTotalApprovedCount();
+        return (double) totalApprovedCount / totalTodoCount;
     }
 }
