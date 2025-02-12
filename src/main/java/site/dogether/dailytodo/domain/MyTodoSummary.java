@@ -8,7 +8,7 @@ public class MyTodoSummary {
 
     private final List<DailyTodo> myTodos;
 
-    public MyTodoSummary(List<DailyTodo> myTodos) {
+    public MyTodoSummary(final List<DailyTodo> myTodos) {
         this.myTodos = myTodos;
     }
 
@@ -31,14 +31,14 @@ public class MyTodoSummary {
     }
 
     public double calculateCertificationRate() {
-        int totalTodoCount = calculateTotalTodoCount();
-        int totalCertificatedCount = calculateTotalCertificatedCount();
+        final int totalTodoCount = calculateTotalTodoCount();
+        final int totalCertificatedCount = calculateTotalCertificatedCount();
         return (double) totalCertificatedCount / totalTodoCount;
     }
 
     public double calculateApprovalRate() {
-        int totalTodoCount = calculateTotalTodoCount();
-        int totalApprovedCount = calculateTotalApprovedCount();
+        final int totalTodoCount = calculateTotalTodoCount();
+        final int totalApprovedCount = calculateTotalApprovedCount();
         return (double) totalApprovedCount / totalTodoCount;
     }
 }

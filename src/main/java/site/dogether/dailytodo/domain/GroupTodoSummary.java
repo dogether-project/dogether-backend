@@ -7,7 +7,7 @@ public class GroupTodoSummary {
 
     private final List<MyTodoSummary> myTodoSummaries;
 
-    public GroupTodoSummary(List<MyTodoSummary> myTodoSummaries) {
+    public GroupTodoSummary(final List<MyTodoSummary> myTodoSummaries) {
         this.myTodoSummaries = myTodoSummaries;
     }
 
@@ -30,7 +30,7 @@ public class GroupTodoSummary {
     }
 
     public List<Rank> getRanksOfTop3() {
-        List<Rank> allRanking = myTodoSummaries.stream()
+        final List<Rank> allRanking = myTodoSummaries.stream()
                 .map(myTodoSummary -> new Rank(
                         0,
                         myTodoSummary.getMyTodos().get(0).getMember().getName(),

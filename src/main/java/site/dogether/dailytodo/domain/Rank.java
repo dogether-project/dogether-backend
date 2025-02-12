@@ -12,7 +12,10 @@ public class Rank {
     private final double certificationRate;
     private final double approvalRate;
 
-    public Rank(int rank, String name, double certificationRate, double approvalRate) {
+    public Rank(final int rank,
+                final String name,
+                final double certificationRate,
+                final double approvalRate) {
         this.rank = rank;
         this.name = name;
         this.certificationRate = certificationRate;

@@ -201,10 +201,10 @@ public class DailyTodoService {
     }
 
     public MyTodoSummary getMyTodoSummary(final MemberJpaEntity memberJpaEntity, final ChallengeGroupJpaEntity joiningGroupEntity) {
-        List<DailyTodoJpaEntity> dailyTodoJpaEntities = dailyTodoJpaRepository.findAllByChallengeGroupAndMember(
+        final List<DailyTodoJpaEntity> dailyTodoJpaEntities = dailyTodoJpaRepository.findAllByChallengeGroupAndMember(
                 joiningGroupEntity, memberJpaEntity);
 
-        List<DailyTodo> dailyTodos = dailyTodoJpaEntities.stream()
+        final List<DailyTodo> dailyTodos = dailyTodoJpaEntities.stream()
                 .map(DailyTodoJpaEntity::toDomain)
                 .toList();
 

@@ -60,7 +60,7 @@ public class ChallengeGroupController {
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupInfoResponse>> getJoiningChallengeGroupInfo(
             @Authentication final String authenticationToken
     ) {
-        JoiningChallengeGroupInfo joiningGroupInfo = challengeGroupService.getJoiningChallengeGroupInfo(authenticationToken);
+        final JoiningChallengeGroupInfo joiningGroupInfo = challengeGroupService.getJoiningChallengeGroupInfo(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_INFO,
@@ -74,7 +74,7 @@ public class ChallengeGroupController {
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary(
             @Authentication final String authenticationToken
     ) {
-        JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivityDto =
+        final JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivityDto =
                 challengeGroupService.getJoiningChallengeGroupMyActivitySummary(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
@@ -89,7 +89,7 @@ public class ChallengeGroupController {
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamActivitySummary(
             @Authentication final String authenticationToken
     ) {
-        JoiningChallengeGroupTeamActivityDto joiningChallengeGroupTeamActivityDto =
+        final JoiningChallengeGroupTeamActivityDto joiningChallengeGroupTeamActivityDto =
                 challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(authenticationToken);
         return ResponseEntity.ok(
             ApiResponse.successWithData(

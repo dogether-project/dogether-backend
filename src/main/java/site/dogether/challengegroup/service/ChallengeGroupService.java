@@ -168,7 +168,7 @@ public class ChallengeGroupService {
                 .toList();
 
         final List<MyTodoSummary> myTodoSummaries = dailyTodoService.getMyTodoSummaries(groupMembers, joiningGroupEntity);
-        GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
+        final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
 
         return new JoiningChallengeGroupTeamActivityDto(
                 groupTodoSummary.calculateTotalTodoCount(),
