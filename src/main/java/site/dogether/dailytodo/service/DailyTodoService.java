@@ -1,5 +1,10 @@
 package site.dogether.dailytodo.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,9 +19,14 @@ import site.dogether.challengegroup.service.exception.NotEnoughChallengeGroupMem
 import site.dogether.challengegroup.service.exception.NotRunningChallengeGroupException;
 import site.dogether.dailytodo.domain.DailyTodo;
 import site.dogether.dailytodo.domain.DailyTodoStatus;
+import site.dogether.dailytodo.domain.MyTodoSummary;
 import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
 import site.dogether.dailytodo.infrastructure.repository.DailyTodoJpaRepository;
-import site.dogether.dailytodo.service.exception.*;
+import site.dogether.dailytodo.service.exception.DailyTodoCreatedDateException;
+import site.dogether.dailytodo.service.exception.DailyTodoNotFoundException;
+import site.dogether.dailytodo.service.exception.DailyTodoStatusException;
+import site.dogether.dailytodo.service.exception.NotDailyTodoOwnerException;
+import site.dogether.dailytodo.service.exception.UnreviewedDailyTodoExistsException;
 import site.dogether.dailytodocertification.domain.DailyTodoCertification;
 import site.dogether.dailytodocertification.domain.DailyTodoCertificationMediaUrls;
 import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationJpaEntity;
@@ -27,12 +37,6 @@ import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -194,5 +198,22 @@ public class DailyTodoService {
             .stream()
             .map(DailyTodoJpaEntity::getContent)
             .toList();
+    }
+
+    public MyTodoSummary getMyTodoSummary(final MemberJpaEntity memberJpaEntity, final ChallengeGroupJpaEntity joiningGroupEntity) {
+        final List<DailyTodoJpaEntity> dailyTodoJpaEntities = dailyTodoJpaRepository.findAllByChallengeGroupAndMember(
+                joiningGroupEntity, memberJpaEntity);
+
+        final List<DailyTodo> dailyTodos = dailyTodoJpaEntities.stream()
+                .map(DailyTodoJpaEntity::toDomain)
+                .toList();
+
+        return new MyTodoSummary(dailyTodos);
+    }
+
+    public List<MyTodoSummary> getMyTodoSummaries(final List<MemberJpaEntity> groupMembers, final ChallengeGroupJpaEntity joiningGroupEntity) {
+        return groupMembers.stream()
+                .map(memberJpaEntity -> getMyTodoSummary(memberJpaEntity, joiningGroupEntity))
+                .toList();
     }
 }

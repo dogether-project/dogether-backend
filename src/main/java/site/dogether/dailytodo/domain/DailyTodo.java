@@ -1,15 +1,16 @@
 package site.dogether.dailytodo.domain;
 
+import static site.dogether.dailytodo.domain.DailyTodoStatus.APPROVE;
+import static site.dogether.dailytodo.domain.DailyTodoStatus.CERTIFY_PENDING;
+import static site.dogether.dailytodo.domain.DailyTodoStatus.REJECT;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.Getter;
 import site.dogether.challengegroup.domain.ChallengeGroup;
 import site.dogether.dailytodo.domain.exception.InvalidDailyTodoException;
 import site.dogether.dailytodocertification.domain.exception.InvalidDailyTodoRejectReasonException;
 import site.dogether.member.domain.Member;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static site.dogether.dailytodo.domain.DailyTodoStatus.*;
 
 @Getter
 public class DailyTodo {
@@ -120,5 +121,13 @@ public class DailyTodo {
 
     public Optional<String> getRejectReason() {
         return Optional.ofNullable(rejectReason);
+    }
+
+    public boolean isCertifyPending() {
+        return status == CERTIFY_PENDING;
+    }
+
+    public boolean isApproved() {
+        return status == APPROVE;
     }
 }

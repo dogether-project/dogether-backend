@@ -40,10 +40,10 @@ public class AuthController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
-            @Authentication final String token,
+            @Authentication final String authenticationToken,
             @RequestBody final WithdrawRequest request
     ) {
-        authService.withdraw(token, request);
+        authService.withdraw(authenticationToken, request);
         return ResponseEntity.ok(ApiResponse.success(WITHDRAW));
     }
 }

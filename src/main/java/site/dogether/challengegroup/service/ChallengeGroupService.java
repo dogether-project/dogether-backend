@@ -13,6 +13,10 @@ import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJp
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaRepository;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupMemberJpaRepository;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
+import site.dogether.dailytodo.domain.GroupTodoSummary;
+import site.dogether.dailytodo.domain.MyTodoSummary;
+import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
@@ -27,10 +31,11 @@ public class ChallengeGroupService {
     private final ChallengeGroupMemberJpaRepository challengeGroupMemberJpaRepository;
     private final NotificationService notificationService;
     private final MemberService memberService;
+    private final DailyTodoService dailyTodoService;
 
     @Transactional
-    public String createChallengeGroup(final CreateChallengeGroupRequest request, final String token) {
-        final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+    public String createChallengeGroup(final CreateChallengeGroupRequest request, final String authenticationToken) {
+        final MemberJpaEntity groupCreatorJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
         memberAlreadyInGroup(groupCreatorJpaEntity);
 
         ChallengeGroup challengeGroup = new ChallengeGroup(
@@ -53,8 +58,8 @@ public class ChallengeGroupService {
     }
 
     @Transactional
-    public void joinChallengeGroup(final String joinCode, final String token) {
-        final MemberJpaEntity joinMember = memberService.findMemberEntityByAuthenticationToken(token);
+    public void joinChallengeGroup(final String joinCode, final String authenticationToken) {
+        final MemberJpaEntity joinMember = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
         memberAlreadyInGroup(joinMember);
 
         final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupJpaRepository.findByJoinCode(joinCode)
@@ -95,15 +100,14 @@ public class ChallengeGroupService {
         }
     }
 
-    public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final String token) {
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(token);
+    public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
 
         final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
                 challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
                         .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
         final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
         final ChallengeGroup joiningGroup = challengeGroupJpaEntity.toDomain();
-
         isGroupFinished(joiningGroup);
 
         final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
@@ -127,5 +131,50 @@ public class ChallengeGroupService {
         if (isAlreadyInGroup) {
             throw new InvalidChallengeGroupException("이미 그룹에 속해있는 유저입니다.");
         }
+    }
+
+    public JoiningChallengeGroupMyActivityDto getJoiningChallengeGroupMyActivitySummary(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
+        isGroupFinished(joiningGroup);
+
+        final MyTodoSummary myTodoSummary = dailyTodoService.getMyTodoSummary(memberJpaEntity, joiningGroupEntity);
+
+        return new JoiningChallengeGroupMyActivityDto(
+                myTodoSummary.calculateTotalTodoCount(),
+                myTodoSummary.calculateTotalCertificatedCount(),
+                myTodoSummary.calculateTotalApprovedCount()
+        );
+    }
+
+    public JoiningChallengeGroupTeamActivityDto getJoiningChallengeGroupTeamActivitySummary(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
+        isGroupFinished(joiningGroup);
+
+        final List<MemberJpaEntity> groupMembers = challengeGroupMemberJpaRepository.findAllByChallengeGroup(joiningGroupEntity)
+                .stream()
+                .map(ChallengeGroupMemberJpaEntity::getMember)
+                .toList();
+
+        final List<MyTodoSummary> myTodoSummaries = dailyTodoService.getMyTodoSummaries(groupMembers, joiningGroupEntity);
+        final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
+
+        return new JoiningChallengeGroupTeamActivityDto(
+                groupTodoSummary.calculateTotalTodoCount(),
+                groupTodoSummary.calculateTotalCertificatedCount(),
+                groupTodoSummary.calculateTotalApprovedCount(),
+                groupTodoSummary.getRanksOfTop3()
+        );
     }
 }

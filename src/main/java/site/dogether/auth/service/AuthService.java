@@ -32,14 +32,14 @@ public class AuthService {
         );
         member = memberService.save(member);
 
-        final String token = jwtHandler.createToken(member.getId());
+        final String authenticationToken = jwtHandler.createToken(member.getId());
 
-        return new AuthenticatedMember(member.getName(), token);
+        return new AuthenticatedMember(member.getName(), authenticationToken);
     }
 
     @Transactional
-    public void withdraw(final String token, final WithdrawRequest request) {
-        final Long memberId = jwtHandler.getMemberId(token);
+    public void withdraw(final String authenticationToken, final WithdrawRequest request) {
+        final Long memberId = jwtHandler.getMemberId(authenticationToken);
 
         try {
             appleOAuthProvider.revoke(request.authorizationCode());

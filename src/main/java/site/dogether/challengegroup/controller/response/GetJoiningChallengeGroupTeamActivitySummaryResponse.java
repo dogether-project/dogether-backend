@@ -6,12 +6,12 @@ public record GetJoiningChallengeGroupTeamActivitySummaryResponse(
     int totalTodoCount,
     int totalCertificatedCount,
     int totalApprovedCount,
-    List<Rank> ranking
+    List<RankResponse> ranking
 ) {
-    public record Rank(
+    public record RankResponse(
         int rank,
         String name,
-        int certificationRate,
-        int approvalRate
+        double certificationRate,
+        double approvalRate
     ) {}
 }
