@@ -77,6 +77,14 @@ public class DailyTodoCertification {
         return dailyTodo.getChallengeGroup();
     }
 
+    public String getReviewerName() {
+        return reviewer.getName();
+    }
+
+    public String getDoerName() {
+        return dailyTodo.getMember().getName();
+    }
+
     public DailyTodo review(final String result, final String rejectReason) {
         return new DailyTodo(
             dailyTodo.getId(),
