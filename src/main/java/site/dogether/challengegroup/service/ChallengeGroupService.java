@@ -1,5 +1,8 @@
 package site.dogether.challengegroup.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -110,12 +113,18 @@ public class ChallengeGroupService {
         final ChallengeGroup joiningGroup = challengeGroupJpaEntity.toDomain();
         isGroupFinished(joiningGroup);
 
-        final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // TODO : 도메인으로 이동
+        LocalDateTime endAt = challengeGroupJpaEntity.getEndAt();
+        String endAtFormatted = endAt.format(formatter);
+
+        long remainingDays = LocalDateTime.now().until(endAt, ChronoUnit.DAYS);
 
         return new JoiningChallengeGroupInfo(
                 joiningGroup.getName(),
-                currentMemberCount,
-                joiningGroup.getMaximumTodoCount()
+                joiningGroup.getDurationOption().getValue(),
+                joiningGroup.getJoinCode(),
+                endAtFormatted,
+                (int) remainingDays
         );
     }
 
@@ -148,7 +157,8 @@ public class ChallengeGroupService {
         return new JoiningChallengeGroupMyActivityDto(
                 myTodoSummary.calculateTotalTodoCount(),
                 myTodoSummary.calculateTotalCertificatedCount(),
-                myTodoSummary.calculateTotalApprovedCount()
+                myTodoSummary.calculateTotalApprovedCount(),
+                myTodoSummary.calculateTotalRejectedCount()
         );
     }
 
@@ -171,10 +181,18 @@ public class ChallengeGroupService {
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
 
         return new JoiningChallengeGroupTeamActivityDto(
-                groupTodoSummary.calculateTotalTodoCount(),
-                groupTodoSummary.calculateTotalCertificatedCount(),
-                groupTodoSummary.calculateTotalApprovedCount(),
-                groupTodoSummary.getRanksOfTop3()
+                groupTodoSummary.getRanks()
         );
+    }
+
+    public boolean isJoinedChallengeGroup(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
+
+        return joiningGroup.isRunning();
     }
 }

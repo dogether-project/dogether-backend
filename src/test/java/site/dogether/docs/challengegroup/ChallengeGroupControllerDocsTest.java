@@ -123,7 +123,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @Test        
     void getJoiningChallengeGroupInfo() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupInfo(any()))
-            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 5, 7));
+            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 7, "Join Code", "2025-02-25", 5));
 
         mockMvc.perform(
                 get("/api/groups/info/current")
@@ -141,11 +141,17 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.name")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.currentMemberCount")
-                        .description("그룹 인원수")
+                    fieldWithPath("data.duration")
+                        .description("챌린지 기간")
                         .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.maximumTodoCount")
-                        .description("하루 최대 작성 가능 투두 개수")
+                    fieldWithPath("data.joinCode")
+                        .description("그룹 참여 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.endAt")
+                        .description("챌린지 종료일")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.remainingDays")
+                        .description("남은 일수")
                         .type(JsonFieldType.NUMBER))));
     }
     
@@ -153,7 +159,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @Test        
     void getJoiningChallengeGroupMyActivitySummary() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupMyActivitySummary(any()))
-            .willReturn(new JoiningChallengeGroupMyActivityDto(10, 5, 3));
+            .willReturn(new JoiningChallengeGroupMyActivityDto(10, 5, 3, 2));
 
         mockMvc.perform(
                 get("/api/groups/summary/my")
@@ -175,7 +181,10 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("인증한 전체 투두 개수")
                         .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.totalApprovedCount")
-                        .description("인정받은 전체 투두 개수")
+                        .description("인정받은 투두 개수")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.totalRejectedCount")
+                        .description("노인정 투두 개수")
                         .type(JsonFieldType.NUMBER))));
     }
     
@@ -183,11 +192,11 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @Test        
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(any()))
-            .willReturn(new JoiningChallengeGroupTeamActivityDto(10, 5, 3,
+            .willReturn(new JoiningChallengeGroupTeamActivityDto(
                 List.of(
-                    new Rank(1, "성욱", 0.5, 0.3),
-                    new Rank(2, "영재", 0.4, 0.2),
-                    new Rank(3, "지원", 0.3, 0.1)
+                    new Rank(1, "성욱", 0.5),
+                    new Rank(2, "영재", 0.4),
+                    new Rank(3, "지원", 0.3)
             )));
 
         mockMvc.perform(
@@ -203,15 +212,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("message")
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.totalTodoCount")
-                        .description("작성한 전체 투두 개수")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.totalCertificatedCount")
-                        .description("인증한 전체 투두 개수")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.totalApprovedCount")
-                        .description("인정받은 전체 투두 개수")
-                        .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.ranking")
                         .description("그룹 내 활동 순위")
                         .type(JsonFieldType.ARRAY)
@@ -224,9 +224,29 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.ranking[].certificationRate")
                         .description("데일리 투두 인증률")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.ranking[].approvalRate")
-                        .description("데일리 투두 인정률")
-                        .type(JsonFieldType.NUMBER))));
+                        .type(JsonFieldType.NUMBER))
+            ));
+    }
+
+
+    @DisplayName("챌린지 그룹 참여 여부 조회 API")
+    @Test
+    void isJoiningChallengeGroup() throws Exception {
+        mockMvc.perform(
+                        get("/api/groups/isJoined")
+                                .header("Authorization", "Bearer access_token")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                        responseFields(
+                                fieldWithPath("code")
+                                        .description("응답 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("message")
+                                        .description("응답 메시지")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data")
+                                        .description("참여중인 그룹 여부")
+                                        .type(JsonFieldType.BOOLEAN))));
     }
 }
