@@ -13,6 +13,7 @@ public enum ChallengeGroupSuccessCode implements SuccessCode {
     GET_JOINING_CHALLENGE_GROUP_INFO("CGS-0003", "참여중인 그룹 정보를 조회하였습니다."),
     GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY("CGS-0004", "참여중인 그룹의 내 누적 활동 통계 정보를 조회하였습니다."),
     GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY("CGS-0005", "참여중인 그룹의 팀 전체 누적 활동 통계 정보를 조회하였습니다."),
+    GET_IS_JOINED_CHALLENGE_GROUP("CGS-0006", "챌린지 그룹 참여 여부를 조회하였습니다."),
     ;
 
     private final String value;

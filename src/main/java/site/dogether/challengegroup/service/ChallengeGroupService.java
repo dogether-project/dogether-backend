@@ -184,4 +184,15 @@ public class ChallengeGroupService {
                 groupTodoSummary.getRanks()
         );
     }
+
+    public boolean isJoinedChallengeGroup(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
+
+        return joiningGroup.isRunning();
+    }
 }

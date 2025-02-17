@@ -227,4 +227,26 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.NUMBER))
             ));
     }
+
+
+    @DisplayName("챌린지 그룹 참여 여부 조회 API")
+    @Test
+    void isJoiningChallengeGroup() throws Exception {
+        mockMvc.perform(
+                        get("/api/groups/isJoined")
+                                .header("Authorization", "Bearer access_token")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                        responseFields(
+                                fieldWithPath("code")
+                                        .description("응답 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("message")
+                                        .description("응답 메시지")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data")
+                                        .description("참여중인 그룹 여부")
+                                        .type(JsonFieldType.BOOLEAN))));
+    }
 }
