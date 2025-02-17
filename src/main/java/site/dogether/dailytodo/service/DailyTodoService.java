@@ -135,11 +135,6 @@ public class DailyTodoService {
             certifyingMember.getName() + "님의 투두 수행 검사자로 배정되었습니다!",
             "투두 내용 : " + dailyTodo.getContent()
         );
-        notificationService.sendNotification(
-            certifyingMember.getId(),
-            dailyTodoCertificationReviewer.getName() + "님이 투두 수행 검사자로 배정되었습니다!",
-            "투두 내용 : " + dailyTodo.getContent()
-        );
     }
 
     private void checkDailyTodoOwner(final DailyTodo dailyTodo, final Long memberId) {
