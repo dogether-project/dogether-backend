@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.dogether.common.config.web.resolver.Authentication;
-import site.dogether.dailytodo.controller.request.CertifyDailyTodoRequest;
 import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.dailytodo.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
-import site.dogether.dailytodo.controller.request.GetYesterdayDailyTodosResponse;
+import site.dogether.dailytodo.controller.response.GetMyDailyTodosResponse;
+import site.dogether.dailytodo.controller.response.GetYesterdayDailyTodosResponse;
 import site.dogether.dailytodo.service.DailyTodoService;
+import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
+import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.*;
@@ -47,5 +51,20 @@ public class DailyTodoController {
         final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(authenticationToken);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodos(
+        @Authentication String authenticationToken,
+        @RequestParam final LocalDate date,
+        @RequestParam(required = false) final String status
+    ) {
+        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = FindMyDailyTodosConditionDto.of(authenticationToken, date, status);
+        final List<DailyTodoAndDailyTodoCertificationDto> myDailyTodos = dailyTodoService.findMyDailyTodo(findMyDailyTodosConditionDto);
+
+        return ResponseEntity.ok(ApiResponse.successWithData(
+            GET_MY_DAILY_TODOS,
+            GetMyDailyTodosResponse.of(myDailyTodos)
+        ));
     }
 }

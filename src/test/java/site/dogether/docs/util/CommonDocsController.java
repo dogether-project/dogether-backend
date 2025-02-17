@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.docs.challengegroup.enumtype.ChallengeGroupDurationOptionDocs;
 import site.dogether.docs.challengegroup.enumtype.ChallengeGroupStartAtOptionDocs;
+import site.dogether.docs.dailytodo.enumtype.DailyTodoStatusDocs;
 import site.dogether.docs.dailytodocertification.enumtype.DailyTodoCertificationReviewResultDocs;
 import site.dogether.docs.s3.enumtype.S3UploadFileTypeDocs;
 
@@ -23,11 +24,13 @@ public class CommonDocsController {
         final Map<String, String> challengeGroupDurationOption = convertToMap(ChallengeGroupDurationOptionDocs.getValues());
         final Map<String, String> dailyTodoCertificationReviewResult = convertToMap(DailyTodoCertificationReviewResultDocs.getValues());
         final Map<String, String> s3UploadFileType = convertToMap(S3UploadFileTypeDocs.getValues());
+        final Map<String, String> dailyTodoStatus = convertToMap(DailyTodoStatusDocs.getValues());
         return EnumDocs.builder()
             .challengeGroupStartAtOption(challengeGroupStartAtOption)
             .challengeGroupDurationOption(challengeGroupDurationOption)
             .dailyTodoCertificationReviewResult(dailyTodoCertificationReviewResult)
             .s3UploadFileType(s3UploadFileType)
+            .dailyTodoStatus(dailyTodoStatus)
             .build();
     }
 

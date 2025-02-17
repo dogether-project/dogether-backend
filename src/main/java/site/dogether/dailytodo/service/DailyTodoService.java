@@ -1,10 +1,5 @@
 package site.dogether.dailytodo.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,21 +17,27 @@ import site.dogether.dailytodo.domain.DailyTodoStatus;
 import site.dogether.dailytodo.domain.MyTodoSummary;
 import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
 import site.dogether.dailytodo.infrastructure.repository.DailyTodoJpaRepository;
-import site.dogether.dailytodo.service.exception.DailyTodoCreatedDateException;
-import site.dogether.dailytodo.service.exception.DailyTodoNotFoundException;
-import site.dogether.dailytodo.service.exception.DailyTodoStatusException;
-import site.dogether.dailytodo.service.exception.NotDailyTodoOwnerException;
-import site.dogether.dailytodo.service.exception.UnreviewedDailyTodoExistsException;
+import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
+import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
+import site.dogether.dailytodo.service.exception.*;
 import site.dogether.dailytodocertification.domain.DailyTodoCertification;
 import site.dogether.dailytodocertification.domain.DailyTodoCertificationMediaUrls;
 import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationJpaEntity;
 import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationMediaUrlJpaEntity;
 import site.dogether.dailytodocertification.infrastructure.repository.DailyTodoCertificationJpaRepository;
 import site.dogether.dailytodocertification.infrastructure.repository.DailyTodoCertificationMediaUrlJpaRepository;
+import site.dogether.dailytodocertification.service.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -215,5 +216,42 @@ public class DailyTodoService {
         return groupMembers.stream()
                 .map(memberJpaEntity -> getMyTodoSummary(memberJpaEntity, joiningGroupEntity))
                 .toList();
+    }
+
+    public List<DailyTodoAndDailyTodoCertificationDto> findMyDailyTodo(final FindMyDailyTodosConditionDto condition) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(condition.getAuthenticationToken());
+        final List<DailyTodoJpaEntity> dailyTodoJpaEntities = condition.getDailyTodoStatus()
+            .map(status -> dailyTodoJpaRepository.findAllByMemberAndCreatedAtBetweenAndStatus(
+                memberJpaEntity,
+                condition.getCreatedAt().atStartOfDay(),
+                condition.getCreatedAt().atTime(LocalTime.MAX),
+                status))
+            .orElse(dailyTodoJpaRepository.findAllByMemberAndCreatedAtBetween(
+                memberJpaEntity,
+                condition.getCreatedAt().atStartOfDay(),
+                condition.getCreatedAt().atTime(LocalTime.MAX)));
+
+        return dailyTodoJpaEntities.stream()
+            .map(this::convertToDto)
+            .toList();
+    }
+
+    private DailyTodoAndDailyTodoCertificationDto convertToDto(final DailyTodoJpaEntity dailyTodoJpaEntity) {
+        if (dailyTodoJpaEntity.getStatus() == DailyTodoStatus.CERTIFY_PENDING) {
+            return DailyTodoAndDailyTodoCertificationDto.of(dailyTodoJpaEntity.toDomain());
+        }
+
+        final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity = dailyTodoCertificationJpaRepository.findByDailyTodo(dailyTodoJpaEntity)
+            .orElseThrow(() -> new DailyTodoCertificationNotFoundException("데일리 투두 인증이 존재하지 않습니다."));
+        final DailyTodoCertificationMediaUrls certificationMediaUrls = dailyTodoCertificationMediaUrlJpaRepository.findAllByDailyTodoCertification(dailyTodoCertificationJpaEntity)
+            .stream()
+            .map(DailyTodoCertificationMediaUrlJpaEntity::getValue)
+            .collect(Collectors.collectingAndThen(Collectors.toList(), DailyTodoCertificationMediaUrls::new));
+
+        return new DailyTodoAndDailyTodoCertificationDto(
+            dailyTodoJpaEntity.toDomain(),
+            dailyTodoCertificationJpaEntity.toDomain(),
+            certificationMediaUrls
+        );
     }
 }

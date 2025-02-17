@@ -4,23 +4,36 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import site.dogether.challengegroup.domain.ChallengeGroup;
+import site.dogether.challengegroup.domain.ChallengeGroupDurationOption;
+import site.dogether.challengegroup.domain.ChallengeGroupStartAtOption;
+import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.dailytodo.controller.DailyTodoController;
 import site.dogether.dailytodo.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
+import site.dogether.dailytodo.domain.DailyTodo;
+import site.dogether.dailytodo.domain.DailyTodoStatus;
 import site.dogether.dailytodo.service.DailyTodoService;
+import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
+import site.dogether.dailytodocertification.domain.DailyTodoCertification;
+import site.dogether.dailytodocertification.domain.DailyTodoCertificationMediaUrls;
 import site.dogether.docs.util.RestDocsSupport;
+import site.dogether.member.domain.Member;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.DAILY_TODO_STATUS;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("데일리 투두 API 문서화 테스트")
 public class DailyTodoControllerDocsTest extends RestDocsSupport {
@@ -136,5 +149,128 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("어제 작성한 투두 내용 리스트")
                         .optional()
                         .type(JsonFieldType.ARRAY))));
+    }
+
+    @DisplayName("내 투두 전체 조회 API")
+    @Test
+    void getMyDailyTodos() throws Exception {
+        final Member doer = new Member(1L, "kelly-id", "kelly");
+        final Member reviewer = new Member(2L, "elmo-id", "elmo");
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, ChallengeGroupStartAtOption.TODAY, ChallengeGroupDurationOption.SEVEN_DAYS, 5, ChallengeGroupStatus.RUNNING, "CODE");
+        final List<DailyTodo> dailyTodos = List.of(
+            new DailyTodo(1L, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null, LocalDateTime.now().plusHours(10), doer, challengeGroup),
+            new DailyTodo(2L, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null, LocalDateTime.now().plusHours(8), doer, challengeGroup),
+            new DailyTodo(3L, "인강 듣기", DailyTodoStatus.APPROVE, null, LocalDateTime.now().plusHours(7), doer, challengeGroup),
+            new DailyTodo(4L, "DND API 구현", DailyTodoStatus.REJECT, "지금 이걸 코드라고 작성한거야? 진짜 실화야?", LocalDateTime.now().plusHours(6), doer, challengeGroup)
+        );
+        final List<DailyTodoCertification> dailyTodoCertifications = List.of(
+            new DailyTodoCertification(1L, dailyTodos.get(1), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", LocalDateTime.now().plusHours(9)),
+            new DailyTodoCertification(2L, dailyTodos.get(2), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", LocalDateTime.now().plusHours(8)),
+            new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", LocalDateTime.now().plusHours(7))
+        );
+        final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(
+            DailyTodoAndDailyTodoCertificationDto.of(dailyTodos.get(0)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(0), new DailyTodoCertificationMediaUrls(List.of("운동 조지는 짤.png"))),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(2), dailyTodoCertifications.get(1), new DailyTodoCertificationMediaUrls(List.of("인강 달리는 짤.png"))),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(3), dailyTodoCertifications.get(2), new DailyTodoCertificationMediaUrls(List.of("API 명세짤.png")))
+        );
+
+        given(dailyTodoService.findMyDailyTodo(any()))
+            .willReturn(dailyTodoAndDailyTodoCertificationDtos);
+
+        mockMvc.perform(
+                get("/api/todos/my")
+                    .param("date", LocalDate.now().toString())
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                queryParameters(
+                    parameterWithName("date")
+                        .description("데일리 투두 날짜")),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos")
+                        .description("조회한 투두 리스트")
+                        .type(JsonFieldType.ARRAY),
+                    fieldWithPath("data.todos[].id")
+                        .description("데일리 투두 id")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.todos[].content")
+                        .description("데일리 투두 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].status")
+                        .description("데일리 투두 상태")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].certificationContent")
+                        .description("데일리 투두 인증글 내용")
+                        .optional()
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].certificationMediaUrl")
+                        .description("데일리 투두 인증글 이미지 URL")
+                        .optional()
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].rejectReason")
+                        .description("데일리 투두 인증 노인정 사유")
+                        .optional()
+                        .type(JsonFieldType.STRING))));
+    }
+
+    @DisplayName("내 투두 전체 조회 - 투두 상태 필터링 API")
+    @Test
+    void getMyDailyTodosWithDailyTodoStatus() throws Exception {
+        final Member doer = new Member(1L, "kelly-id", "kelly");
+        final Member reviewer = new Member(2L, "elmo-id", "elmo");
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, ChallengeGroupStartAtOption.TODAY, ChallengeGroupDurationOption.SEVEN_DAYS, 5, ChallengeGroupStatus.RUNNING, "CODE");
+        final DailyTodo dailyTodo = new DailyTodo(2L, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null, LocalDateTime.now().plusHours(8), doer, challengeGroup);
+        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", LocalDateTime.now().plusHours(9));
+        final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification, new DailyTodoCertificationMediaUrls(List.of("운동 조지는 짤.png"))));
+
+        given(dailyTodoService.findMyDailyTodo(any()))
+            .willReturn(dailyTodoAndDailyTodoCertificationDtos);
+
+        mockMvc.perform(
+                get("/api/todos/my")
+                    .param("date", LocalDate.now().toString())
+                    .param("status", DailyTodoStatus.REVIEW_PENDING.name())
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                queryParameters(
+                    parameterWithName("date")
+                        .description("데일리 투두 날짜"),
+                    parameterWithName("status")
+                        .description(generateLink(DAILY_TODO_STATUS))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos")
+                        .description("조회한 투두 리스트")
+                        .type(JsonFieldType.ARRAY),
+                    fieldWithPath("data.todos[].id")
+                        .description("데일리 투두 id")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.todos[].content")
+                        .description("데일리 투두 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].status")
+                        .description("데일리 투두 상태")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].certificationContent")
+                        .description("데일리 투두 인증글 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].certificationMediaUrl")
+                        .description("데일리 투두 인증글 이미지 URL")
+                        .type(JsonFieldType.STRING))));
     }
 }
