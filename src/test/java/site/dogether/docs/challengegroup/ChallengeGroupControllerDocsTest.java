@@ -123,7 +123,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @Test        
     void getJoiningChallengeGroupInfo() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupInfo(any()))
-            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 5, 7));
+            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 7, "Join Code", "2025-02-25", 5));
 
         mockMvc.perform(
                 get("/api/groups/info/current")
@@ -141,11 +141,17 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.name")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.currentMemberCount")
-                        .description("그룹 인원수")
+                    fieldWithPath("data.duration")
+                        .description("챌린지 기간")
                         .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.maximumTodoCount")
-                        .description("하루 최대 작성 가능 투두 개수")
+                    fieldWithPath("data.joinCode")
+                        .description("그룹 참여 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.endAt")
+                        .description("챌린지 종료일")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.remainingDays")
+                        .description("남은 일수")
                         .type(JsonFieldType.NUMBER))));
     }
     

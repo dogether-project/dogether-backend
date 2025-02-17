@@ -122,5 +122,4 @@ public class ChallengeGroup {
         return UUID.randomUUID().toString()
                 .substring(JOIN_CODE_PARSING_START_INDEX, JOIN_CODE_PARSING_END_INDEX);
     }
-
 }

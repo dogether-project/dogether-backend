@@ -66,8 +66,10 @@ public class ChallengeGroupController {
                 GET_JOINING_CHALLENGE_GROUP_INFO,
                 new GetJoiningChallengeGroupInfoResponse(
                         joiningGroupInfo.name(),
-                        joiningGroupInfo.currentMemberCount(),
-                        joiningGroupInfo.maximumTodoCount())));
+                        joiningGroupInfo.duration(),
+                        joiningGroupInfo.joinCode(),
+                        joiningGroupInfo.endAt(),
+                        joiningGroupInfo.remainingDays())));
     }
 
     @GetMapping("/summary/my")

@@ -2,7 +2,9 @@ package site.dogether.challengegroup.controller.response;
 
 public record GetJoiningChallengeGroupInfoResponse(
     String name,
-    int currentMemberCount,
-    int maximumTodoCount
+    int duration,
+    String joinCode,
+    String endAt,
+    int remainingDays
 ) {
 }

@@ -1,5 +1,8 @@
 package site.dogether.challengegroup.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -110,12 +113,18 @@ public class ChallengeGroupService {
         final ChallengeGroup joiningGroup = challengeGroupJpaEntity.toDomain();
         isGroupFinished(joiningGroup);
 
-        final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // TODO : 도메인으로 이동
+        LocalDateTime endAt = challengeGroupJpaEntity.getEndAt();
+        String endAtFormatted = endAt.format(formatter);
+
+        long remainingDays = LocalDateTime.now().until(endAt, ChronoUnit.DAYS);
 
         return new JoiningChallengeGroupInfo(
                 joiningGroup.getName(),
-                currentMemberCount,
-                joiningGroup.getMaximumTodoCount()
+                joiningGroup.getDurationOption().getValue(),
+                joiningGroup.getJoinCode(),
+                endAtFormatted,
+                (int) remainingDays
         );
     }
 
