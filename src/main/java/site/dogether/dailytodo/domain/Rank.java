@@ -10,16 +10,13 @@ public class Rank {
     private int rank;
     private final String name;
     private final double certificationRate;
-    private final double approvalRate;
 
     public Rank(final int rank,
                 final String name,
-                final double certificationRate,
-                final double approvalRate) {
+                final double certificationRate) {
         this.rank = rank;
         this.name = name;
         this.certificationRate = certificationRate;
-        this.approvalRate = approvalRate;
     }
 
 }

@@ -6,7 +6,6 @@ import static site.dogether.challengegroup.controller.response.ChallengeGroupSuc
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import site.dogether.challengegroup.controller.response.CreateChallengeGroupResp
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupInfoResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
+import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
@@ -98,25 +98,6 @@ public class ChallengeGroupController {
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY,
                 new GetJoiningChallengeGroupTeamActivitySummaryResponse(
-                        joiningChallengeGroupTeamActivityDto.totalTodoCount(),
-                        joiningChallengeGroupTeamActivityDto.totalCertificatedCount(),
-                        joiningChallengeGroupTeamActivityDto.totalApprovedCount(),
-                        List.of(
-                            new GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse(
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getRank(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getName(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getCertificationRate(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(0).getApprovalRate()),
-                            new GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse(
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getRank(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getName(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getCertificationRate(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(1).getApprovalRate()),
-                            new GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse(
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getRank(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getName(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getCertificationRate(),
-                                    joiningChallengeGroupTeamActivityDto.ranking().get(2).getApprovalRate())))
-            ));
+                        RankResponse.of(joiningChallengeGroupTeamActivityDto.ranking()))));
     }
 }

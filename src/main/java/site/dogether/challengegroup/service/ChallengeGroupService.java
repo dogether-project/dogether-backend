@@ -181,10 +181,7 @@ public class ChallengeGroupService {
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
 
         return new JoiningChallengeGroupTeamActivityDto(
-                groupTodoSummary.calculateTotalTodoCount(),
-                groupTodoSummary.calculateTotalCertificatedCount(),
-                groupTodoSummary.calculateTotalApprovedCount(),
-                groupTodoSummary.getRanksOfTop3()
+                groupTodoSummary.getRanks()
         );
     }
 }
