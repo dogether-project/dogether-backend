@@ -130,4 +130,8 @@ public class DailyTodo {
     public boolean isApproved() {
         return status == APPROVE;
     }
+
+    public boolean isRejected() {
+        return status == REJECT;
+    }
 }

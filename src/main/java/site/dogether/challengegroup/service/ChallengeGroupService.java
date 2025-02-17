@@ -157,7 +157,8 @@ public class ChallengeGroupService {
         return new JoiningChallengeGroupMyActivityDto(
                 myTodoSummary.calculateTotalTodoCount(),
                 myTodoSummary.calculateTotalCertificatedCount(),
-                myTodoSummary.calculateTotalApprovedCount()
+                myTodoSummary.calculateTotalApprovedCount(),
+                myTodoSummary.calculateTotalRejectedCount()
         );
     }
 

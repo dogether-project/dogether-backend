@@ -84,7 +84,8 @@ public class ChallengeGroupController {
                 new GetJoiningChallengeGroupMyActivitySummaryResponse(
                         joiningChallengeGroupMyActivityDto.totalTodoCount(),
                         joiningChallengeGroupMyActivityDto.totalCertificatedCount(),
-                        joiningChallengeGroupMyActivityDto.totalApprovedCount())));
+                        joiningChallengeGroupMyActivityDto.totalApprovedCount(),
+                        joiningChallengeGroupMyActivityDto.totalRejectedCount())));
     }
 
     @GetMapping("/summary/team")

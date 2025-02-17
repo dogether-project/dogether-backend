@@ -41,4 +41,10 @@ public class MyTodoSummary {
         final int totalApprovedCount = calculateTotalApprovedCount();
         return (double) totalApprovedCount / totalTodoCount;
     }
+
+    public int calculateTotalRejectedCount() {
+        return (int) myTodos.stream()
+            .filter(DailyTodo::isRejected)
+            .count();
+    }
 }
