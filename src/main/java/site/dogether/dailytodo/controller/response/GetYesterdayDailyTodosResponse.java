@@ -1,4 +1,4 @@
-package site.dogether.dailytodo.controller.request;
+package site.dogether.dailytodo.controller.response;
 
 import java.util.List;
 

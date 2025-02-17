@@ -49,8 +49,10 @@ public class CommonDocsControllerTest extends RestDocsSupport {
                     convertEnumToFieldDescriptor((enumDocs.getDailyTodoCertificationReviewResult()))),
                 customResponseFields("custom-response", beneathPath("s3UploadFileType"),
                     attributes(key("title").value("S3 업로드 파일 타입 옵션")),
-                    convertEnumToFieldDescriptor((enumDocs.getS3UploadFileType())))
-            ));
+                    convertEnumToFieldDescriptor((enumDocs.getS3UploadFileType()))),
+                customResponseFields("custom-response", beneathPath("dailyTodoStatus"),
+                    attributes(key("title").value("데일리 투두 상태 옵션")),
+                    convertEnumToFieldDescriptor((enumDocs.getDailyTodoStatus())))));
     }
 
     public static CustomResponseFieldsSnippet customResponseFields(

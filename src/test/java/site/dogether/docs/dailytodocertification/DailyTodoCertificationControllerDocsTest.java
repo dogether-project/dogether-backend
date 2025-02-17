@@ -84,7 +84,9 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
                     "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
                 ),
-                "유산소 & 무산소 1시간 조지기"
+                "진채영",
+                "유산소 & 무산소 1시간 조지기",
+                "승용차"
             ),
             new DailyTodoCertificationDto(
                 2L,
@@ -93,7 +95,9 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s1.png",
                     "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s2.png"
                 ),
-                "공부 3시간 조지기"
+                "문지원",
+                "공부 3시간 조지기",
+                "박지은"
             )
         );
 
@@ -126,10 +130,13 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.dailyTodoCertifications[].mediaUrls")
                         .description("인증에 포함된 미디어 리소스")
                         .type(JsonFieldType.ARRAY),
+                    fieldWithPath("data.dailyTodoCertifications[].reviewer")
+                        .description("투두 수행 검사자 이름"),
                     fieldWithPath("data.dailyTodoCertifications[].todoContent")
                         .description("수행 인증한 투두 내용")
-                        .type(JsonFieldType.STRING)
-                )));
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.dailyTodoCertifications[].doer")
+                        .description("투두 수행자 이름"))));
     }
 
     @DisplayName("특정 투두 수행 인증 상세 조회 API")
@@ -143,7 +150,9 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                 "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
                 "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
             ),
-            "유산소 & 무산소 1시간 조지기"
+            "진채영",
+            "유산소 & 무산소 1시간 조지기",
+            "승용차"
         );
 
         given(dailyTodoCertificationService.findTodoCertificationById(todoCertificationId))
@@ -175,9 +184,12 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.mediaUrls")
                         .description("인증에 포함된 미디어 리소스")
                         .type(JsonFieldType.ARRAY),
+                    fieldWithPath("data.reviewer")
+                        .description("투두 수행 검사자 이름"),
                     fieldWithPath("data.todoContent")
                         .description("수행 인증한 투두 내용")
-                        .type(JsonFieldType.STRING)
-                )));
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.doer")
+                        .description("투두 수행자 이름"))));
     }
 }
