@@ -21,6 +21,7 @@ import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroup
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse;
+import site.dogether.challengegroup.controller.response.IsJoiningResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
@@ -102,15 +103,15 @@ public class ChallengeGroupController {
                         RankResponse.of(joiningChallengeGroupTeamActivityDto.ranking()))));
     }
 
-    @GetMapping("/isJoined")
-    public ResponseEntity<ApiResponse<Boolean>> isJoinedChallengeGroup(
+    @GetMapping("/isJoining")
+    public ResponseEntity<ApiResponse<IsJoiningResponse>> isJoinedChallengeGroup(
             @Authentication final String authenticationToken
     ) {
-        final boolean isJoined = challengeGroupService.isJoinedChallengeGroup(authenticationToken);
+        final boolean isJoined = challengeGroupService.isJoiningChallengeGroup(authenticationToken);
         return ResponseEntity.ok(
                 ApiResponse.successWithData(
                         GET_IS_JOINED_CHALLENGE_GROUP,
-                        isJoined
+                        new IsJoiningResponse(isJoined)
                 ));
     }
 }
