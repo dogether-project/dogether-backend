@@ -6,9 +6,11 @@ import static site.dogether.challengegroup.controller.response.ChallengeGroupSuc
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.LEAVE_CHALLENGE_GROUP;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +23,7 @@ import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroup
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse;
+import site.dogether.challengegroup.controller.response.IsJoiningResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
@@ -102,15 +105,25 @@ public class ChallengeGroupController {
                         RankResponse.of(joiningChallengeGroupTeamActivityDto.ranking()))));
     }
 
-    @GetMapping("/isJoined")
-    public ResponseEntity<ApiResponse<Boolean>> isJoinedChallengeGroup(
+    @GetMapping("/isJoining")
+    public ResponseEntity<ApiResponse<IsJoiningResponse>> isJoinedChallengeGroup(
             @Authentication final String authenticationToken
     ) {
-        final boolean isJoined = challengeGroupService.isJoinedChallengeGroup(authenticationToken);
+        final boolean isJoined = challengeGroupService.isJoiningChallengeGroup(authenticationToken);
         return ResponseEntity.ok(
                 ApiResponse.successWithData(
                         GET_IS_JOINED_CHALLENGE_GROUP,
-                        isJoined
+                        new IsJoiningResponse(isJoined)
                 ));
+    }
+
+    @DeleteMapping("/leave")
+    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
+            @Authentication final String authenticationToken
+    ) {
+        challengeGroupService.leaveChallengeGroup(authenticationToken);
+        return ResponseEntity.ok(ApiResponse.success(
+                LEAVE_CHALLENGE_GROUP
+        ));
     }
 }

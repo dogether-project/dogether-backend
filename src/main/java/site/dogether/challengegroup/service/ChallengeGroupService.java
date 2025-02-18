@@ -185,14 +185,30 @@ public class ChallengeGroupService {
         );
     }
 
-    public boolean isJoinedChallengeGroup(final String authenticationToken) {
+    public boolean isJoiningChallengeGroup(final String authenticationToken) {
         final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
         final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
-                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
-                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity).orElse(null);
+        if (challengeGroupMemberJpaEntity == null) {
+            return false;
+        }
         final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
         final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
 
         return joiningGroup.isRunning();
+    }
+
+    @Transactional
+    public void leaveChallengeGroup(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity =
+                challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
+        final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
+        final ChallengeGroup challengeGroup = challengeGroupJpaEntity.toDomain();
+        isGroupFinished(challengeGroup);
+
+        challengeGroupMemberJpaRepository.delete(challengeGroupMemberJpaEntity);
     }
 }

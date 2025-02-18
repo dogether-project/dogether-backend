@@ -128,3 +128,24 @@ include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-gr
 ==== HTTP Response
 include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-group/http-response.adoc[]
 include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-group/response-fields.adoc[]
+
+[[leave-challenge-group]]
+=== 챌린지 그룹 탈퇴
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/challenge-group-controller-docs-test/leave-challenge-group/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/challenge-group-controller-docs-test/leave-challenge-group/http-response.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/leave-challenge-group/response-fields.adoc[]
