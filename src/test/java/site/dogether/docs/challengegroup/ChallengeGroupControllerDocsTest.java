@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -118,9 +119,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING))));
     }
-    
+
     @DisplayName("참여중인 그룹 정보 조회 API")
-    @Test        
+    @Test
     void getJoiningChallengeGroupInfo() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupInfo(any()))
             .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 7, "Join Code", "2025-02-25", 5));
@@ -154,9 +155,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("남은 일수")
                         .type(JsonFieldType.NUMBER))));
     }
-    
+
     @DisplayName("참여중인 그룹의 내 누적 활동 통계 조회 API")
-    @Test        
+    @Test
     void getJoiningChallengeGroupMyActivitySummary() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupMyActivitySummary(any()))
             .willReturn(new JoiningChallengeGroupMyActivityDto(10, 5, 3, 2));
@@ -187,9 +188,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("노인정 투두 개수")
                         .type(JsonFieldType.NUMBER))));
     }
-    
+
     @DisplayName("참여중인 그룹의 팀원 전체 누적 활동 통계 조회 API")
-    @Test        
+    @Test
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(any()))
             .willReturn(new JoiningChallengeGroupTeamActivityDto(
@@ -251,5 +252,23 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                             fieldWithPath("data.isJoining")
                                 .description("그룹에 참여중인지 여부")
                                 .type(JsonFieldType.BOOLEAN))));
+    }
+
+    @DisplayName("챌린지 그룹 탈퇴 API")
+    @Test
+    void leaveChallengeGroup() throws Exception {
+        mockMvc.perform(
+                delete("/api/groups/leave")
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING))));
     }
 }
