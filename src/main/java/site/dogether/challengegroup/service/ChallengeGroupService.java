@@ -1,5 +1,9 @@
 package site.dogether.challengegroup.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,11 +25,6 @@ import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -198,7 +197,7 @@ public class ChallengeGroupService {
         final ChallengeGroupJpaEntity joiningGroupEntity = challengeGroupMemberJpaEntity.getChallengeGroup();
         final ChallengeGroup joiningGroup = joiningGroupEntity.toDomain();
 
-        return joiningGroup.isRunning();
+        return !joiningGroup.isFinished();
     }
 
     @Transactional
