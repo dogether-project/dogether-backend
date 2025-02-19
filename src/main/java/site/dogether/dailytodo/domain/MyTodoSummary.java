@@ -7,9 +7,11 @@ import lombok.Getter;
 public class MyTodoSummary {
 
     private final List<DailyTodo> myTodos;
+    private final String memberName;
 
-    public MyTodoSummary(final List<DailyTodo> myTodos) {
+    public MyTodoSummary(final List<DailyTodo> myTodos, String memberName) {
         this.myTodos = myTodos;
+        this.memberName = memberName;
     }
 
     public int calculateTotalTodoCount() {
@@ -32,12 +34,18 @@ public class MyTodoSummary {
 
     public double calculateCertificationRate() {
         final int totalTodoCount = calculateTotalTodoCount();
+        if (totalTodoCount == 0) {
+            return 0;
+        }
         final int totalCertificatedCount = calculateTotalCertificatedCount();
         return (double) totalCertificatedCount / totalTodoCount;
     }
 
     public double calculateApprovalRate() {
         final int totalTodoCount = calculateTotalTodoCount();
+        if (totalTodoCount == 0) {
+            return 0;
+        }
         final int totalApprovedCount = calculateTotalApprovedCount();
         return (double) totalApprovedCount / totalTodoCount;
     }
