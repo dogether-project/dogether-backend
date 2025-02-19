@@ -67,11 +67,11 @@ public class ChallengeGroupService {
 
         final ChallengeGroupJpaEntity challengeGroupJpaEntity = challengeGroupJpaRepository.findByJoinCode(joinCode)
                 .orElseThrow(() -> new InvalidChallengeGroupException("존재하지 않는 그룹입니다."));
-        final ChallengeGroup joinGroup = challengeGroupJpaEntity.toDomain();
+        final ChallengeGroup joiningGroup = challengeGroupJpaEntity.toDomain();
 
-        isGroupFinished(joinGroup);
+        isGroupFinished(joiningGroup);
 
-        final int maximumMemberCount = joinGroup.getMaximumMemberCount();
+        final int maximumMemberCount = joiningGroup.getMaximumMemberCount();
         final int currentMemberCount = challengeGroupMemberJpaRepository.countByChallengeGroup(challengeGroupJpaEntity);
         if (currentMemberCount >= maximumMemberCount) {
             throw new InvalidChallengeGroupException("그룹 인원이 가득 찼습니다.");
@@ -85,7 +85,7 @@ public class ChallengeGroupService {
         notificationService.sendNotification(
                 joinMember.getId(),
                 "챌린지 그룹에 참여하였습니다.",
-                "그룹명 : " + joinGroup.getName()
+                "그룹명 : " + joiningGroup.getName()
         );
 
         final List<ChallengeGroupMemberJpaEntity> groupMembers =
@@ -98,7 +98,7 @@ public class ChallengeGroupService {
             notificationService.sendNotification(
                     groupMemberId,
                     "새로운 멤버가 참여했습니다.",
-                    joinMember.getName() + "님이 " + joinGroup.getName() + " 그룹에 새로 합류했습니다."
+                    joinMember.getName() + "님이 " + joiningGroup.getName() + " 그룹에 새로 합류했습니다."
             );
         }
     }
@@ -113,7 +113,7 @@ public class ChallengeGroupService {
         final ChallengeGroup joiningGroup = challengeGroupJpaEntity.toDomain();
         isGroupFinished(joiningGroup);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // TODO : 도메인으로 이동
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd"); // TODO : 도메인으로 이동
         LocalDateTime endAt = challengeGroupJpaEntity.getEndAt();
         String endAtFormatted = endAt.format(formatter);
 
