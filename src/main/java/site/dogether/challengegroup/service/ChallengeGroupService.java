@@ -1,15 +1,12 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.domain.ChallengeGroup;
+import site.dogether.challengegroup.domain.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntity;
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJpaEntity;
@@ -17,12 +14,18 @@ import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaR
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupMemberJpaRepository;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
+import site.dogether.challengegroup.service.exception.MemberNotInChallengeGroupException;
 import site.dogether.dailytodo.domain.GroupTodoSummary;
 import site.dogether.dailytodo.domain.MyTodoSummary;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -210,5 +213,12 @@ public class ChallengeGroupService {
         isGroupFinished(challengeGroup);
 
         challengeGroupMemberJpaRepository.delete(challengeGroupMemberJpaEntity);
+    }
+
+    public ChallengeGroupStatus getMyChallengeGroupStatus(final String authenticationToken) {
+        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByMember(memberJpaEntity)
+            .orElseThrow(() -> new MemberNotInChallengeGroupException("회원이 속한 챌린지 그룹이 존재하지 않습니다."));
+        return challengeGroupMemberJpaEntity.getChallengeGroup().getStatus();
     }
 }

@@ -64,7 +64,6 @@ public class DailyTodoService {
         final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, memberJpaEntity)
             .orElseThrow(() -> new MemberNotInChallengeGroupException("현재 진행중인 챌린지 그룹에 참여하고 있지 않습니다."));
         checkExistPendingReviewDailyTodos(memberJpaEntity);
-        checkGroupMemberCounts(challengeGroupMemberJpaEntity);
 
         final List<DailyTodoJpaEntity> dailyTodoJpaEntities = convertDailyTodoContentsToEntities(dailyTodoContents, challengeGroupMemberJpaEntity, memberJpaEntity);
         dailyTodoJpaRepository.saveAll(dailyTodoJpaEntities);
