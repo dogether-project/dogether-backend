@@ -124,7 +124,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @Test
     void getJoiningChallengeGroupInfo() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupInfo(any()))
-            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 7, "Join Code", "2025-02-25", 5));
+            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 7, "Join Code", "25.02.25", 5));
 
         mockMvc.perform(
                 get("/api/groups/info/current")
