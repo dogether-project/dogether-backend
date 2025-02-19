@@ -15,7 +15,7 @@ public class GroupTodoSummary {
         final List<Rank> allRanking = myTodoSummaries.stream()
                 .map(myTodoSummary -> new Rank(
                         0,
-                        myTodoSummary.getMyTodos().get(0).getMember().getName(),
+                        myTodoSummary.getMemberName(),
                         myTodoSummary.calculateCertificationRate()
                 ))
                 .sorted((o1, o2) -> (int) (o2.getCertificationRate() - o1.getCertificationRate()))
