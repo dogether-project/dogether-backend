@@ -9,7 +9,7 @@ public record GetJoiningChallengeGroupTeamActivitySummaryResponse(
     public record RankResponse(
         int rank,
         String name,
-        double certificationRate
+        int certificationRate
     ) {
         public static List<RankResponse> of(List<Rank> ranks) {
             return ranks.stream()

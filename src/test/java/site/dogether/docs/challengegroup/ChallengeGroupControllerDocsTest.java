@@ -9,6 +9,7 @@ import site.dogether.challengegroup.controller.request.CreateChallengeGroupReque
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
+import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.dailytodo.domain.Rank;
@@ -96,6 +97,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     void joinChallengeGroup() throws Exception {
         final JoinChallengeGroupRequest request = new JoinChallengeGroupRequest("kelly-join-code");
 
+        given(challengeGroupService.joinChallengeGroup(any(), any()))
+            .willReturn(new JoinChallengeGroupDto("성욱이와 친구들", 7, "2025.02.25", 7));
+
         mockMvc.perform(
                 post("/api/groups/join")
                     .header("Authorization", "Bearer access_token")
@@ -114,7 +118,19 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING),
                     fieldWithPath("message")
                         .description("응답 메시지")
-                        .type(JsonFieldType.STRING))));
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.name")
+                        .description("그룹명")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.maximumMemberCount")
+                        .description("총 인원수")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.startAt")
+                        .description("챌린지 시작일")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.durationOption")
+                        .description("챌린지 기간")
+                        .type(JsonFieldType.NUMBER))));
     }
 
     @DisplayName("참여중인 그룹 정보 조회 API")
@@ -195,9 +211,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
         given(challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(any()))
             .willReturn(new JoiningChallengeGroupTeamActivityDto(
                 List.of(
-                    new Rank(1, "성욱", 0.5),
-                    new Rank(2, "영재", 0.4),
-                    new Rank(3, "지원", 0.3)
+                    new Rank(1, "성욱", 80),
+                    new Rank(2, "영재", 50),
+                    new Rank(3, "지원", 30)
             )));
 
         mockMvc.perform(
