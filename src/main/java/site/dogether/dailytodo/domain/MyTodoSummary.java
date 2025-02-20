@@ -32,13 +32,15 @@ public class MyTodoSummary {
             .count();
     }
 
-    public double calculateCertificationRate() {
+    public int calculateCertificationRate() {
         final int totalTodoCount = calculateTotalTodoCount();
+
         if (totalTodoCount == 0) {
             return 0;
         }
         final int totalCertificatedCount = calculateTotalCertificatedCount();
-        return (double) totalCertificatedCount / totalTodoCount;
+        double certificationRate = (double) totalCertificatedCount / totalTodoCount;
+        return (int) Math.floor(certificationRate * 100);
     }
 
     public double calculateApprovalRate() {

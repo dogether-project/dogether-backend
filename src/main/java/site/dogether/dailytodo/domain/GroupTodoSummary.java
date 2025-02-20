@@ -18,7 +18,7 @@ public class GroupTodoSummary {
                         myTodoSummary.getMemberName(),
                         myTodoSummary.calculateCertificationRate()
                 ))
-                .sorted((o1, o2) -> (int) (o2.getCertificationRate() - o1.getCertificationRate()))
+                .sorted((o1, o2) -> (o2.getCertificationRate() - o1.getCertificationRate()))
                 .toList();
 
         IntStream.range(0, allRanking.size())

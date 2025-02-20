@@ -211,9 +211,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
         given(challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(any()))
             .willReturn(new JoiningChallengeGroupTeamActivityDto(
                 List.of(
-                    new Rank(1, "성욱", 0.5),
-                    new Rank(2, "영재", 0.4),
-                    new Rank(3, "지원", 0.3)
+                    new Rank(1, "성욱", 80),
+                    new Rank(2, "영재", 50),
+                    new Rank(3, "지원", 30)
             )));
 
         mockMvc.perform(
