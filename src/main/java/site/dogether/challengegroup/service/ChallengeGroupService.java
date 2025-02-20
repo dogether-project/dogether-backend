@@ -1,9 +1,5 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +22,11 @@ import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -85,11 +86,11 @@ public class ChallengeGroupService {
         );
         challengeGroupMemberJpaRepository.save(challengeGroupMemberJpaEntity);
 
-        notificationService.sendNotification(
-                joinMember.getId(),
-                "챌린지 그룹에 참여하였습니다.",
-                "그룹명 : " + joiningGroup.getName()
-        );
+//        notificationService.sendNotification(
+//                joinMember.getId(),
+//                "챌린지 그룹에 참여하였습니다.",
+//                "그룹명 : " + joiningGroup.getName()
+//        );
 
         final List<ChallengeGroupMemberJpaEntity> groupMembers =
                 challengeGroupMemberJpaRepository.findAllByChallengeGroup(challengeGroupJpaEntity);
@@ -99,9 +100,10 @@ public class ChallengeGroupService {
                 continue;
             }
             notificationService.sendNotification(
-                    groupMemberId,
-                    "새로운 멤버가 참여했습니다.",
-                    joinMember.getName() + "님이 " + joiningGroup.getName() + " 그룹에 새로 합류했습니다."
+                groupMemberId,
+                "새로운 멤버가 참여했습니다.",
+                joinMember.getName() + "님이 " + joiningGroup.getName() + " 그룹에 새로 합류했습니다.",
+                "JOIN"
             );
         }
 
@@ -133,11 +135,12 @@ public class ChallengeGroupService {
         long remainingDays = LocalDateTime.now().until(endAt, ChronoUnit.DAYS);
 
         return new JoiningChallengeGroupInfo(
-                joiningGroup.getName(),
-                joiningGroup.getDurationOption().getValue(),
-                joiningGroup.getJoinCode(),
-                endAtFormatted,
-                (int) remainingDays
+            joiningGroup.getName(),
+            joiningGroup.getDurationOption().getValue(),
+            joiningGroup.getJoinCode(),
+            joiningGroup.getMaximumTodoCount(),
+            endAtFormatted,
+            (int) remainingDays
         );
     }
 

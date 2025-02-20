@@ -26,15 +26,16 @@ public class NotificationService {
     public void sendNotification(
         final Long recipientId,
         final String title,
-        final String body
+        final String body,
+        final String type
     ) {
         notificationTokenJpaRepository.findAllByMember_Id(recipientId).forEach(
-            notificationToken -> sndNotification(notificationToken, title, body));
+            notificationToken -> sndNotification(notificationToken, title, body, type));
     }
 
-    private void sndNotification(final NotificationTokenJpaEntity notificationToken, String title, String body) {
+    private void sndNotification(final NotificationTokenJpaEntity notificationToken, String title, String body, String type) {
         try {
-            final SimpleFcmNotificationRequest simpleFcmNotificationRequest = new SimpleFcmNotificationRequest(notificationToken.getValue(), title, body);
+            final SimpleFcmNotificationRequest simpleFcmNotificationRequest = new SimpleFcmNotificationRequest(notificationToken.getValue(), title, body, type);
             notificationSender.send(simpleFcmNotificationRequest);
         } catch (final InvalidNotificationTokenException e) {
             notificationTokenJpaRepository.deleteAllByValue(notificationToken.getValue());

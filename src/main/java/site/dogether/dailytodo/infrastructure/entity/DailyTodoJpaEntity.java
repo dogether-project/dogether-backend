@@ -49,7 +49,7 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
             member,
             dailyTodo.getContent(),
             dailyTodo.getStatus(),
-            dailyTodo.getRejectReason().get()
+            dailyTodo.getRejectReason().orElse(null)
         );
     }
 
@@ -87,6 +87,6 @@ public class DailyTodoJpaEntity extends BaseTimeEntity {
 
     public void changeReviewResult(final DailyTodo dailyTodo) {
         this.status = dailyTodo.getStatus();
-        this.rejectReason = dailyTodo.getRejectReason().get();
+        this.rejectReason = dailyTodo.getRejectReason().orElse(null);
     }
 }
