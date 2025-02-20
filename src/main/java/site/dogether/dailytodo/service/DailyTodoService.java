@@ -1,11 +1,5 @@
 package site.dogether.dailytodo.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,11 +19,7 @@ import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
 import site.dogether.dailytodo.infrastructure.repository.DailyTodoJpaRepository;
 import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
 import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
-import site.dogether.dailytodo.service.exception.DailyTodoCreatedDateException;
-import site.dogether.dailytodo.service.exception.DailyTodoNotFoundException;
-import site.dogether.dailytodo.service.exception.DailyTodoStatusException;
-import site.dogether.dailytodo.service.exception.NotDailyTodoOwnerException;
-import site.dogether.dailytodo.service.exception.UnreviewedDailyTodoExistsException;
+import site.dogether.dailytodo.service.exception.*;
 import site.dogether.dailytodocertification.domain.DailyTodoCertification;
 import site.dogether.dailytodocertification.domain.DailyTodoCertificationMediaUrls;
 import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationJpaEntity;
@@ -41,6 +31,13 @@ import site.dogether.member.domain.Member;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -135,7 +132,8 @@ public class DailyTodoService {
         notificationService.sendNotification(
             dailyTodoCertificationReviewer.getId(),
             certifyingMember.getName() + "님의 투두 수행 검사자로 배정되었습니다!",
-            "투두 내용 : " + dailyTodo.getContent()
+            "투두 내용 : " + dailyTodo.getContent(),
+            "CERTIFICATION"
         );
     }
 

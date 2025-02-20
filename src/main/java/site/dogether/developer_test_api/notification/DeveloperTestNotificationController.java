@@ -28,7 +28,9 @@ public class DeveloperTestNotificationController {
         final SimpleFcmNotificationRequest notificationRequest = new SimpleFcmNotificationRequest(
             request.token(),
             request.title(),
-            request.body());
+            request.body(),
+            "NOTIFICATION_TEST"
+        );
         notificationSender.send(notificationRequest);
         return new DeveloperTestApiResponse("푸시 알림 테스트 API 실행 완료.");
     }
