@@ -85,11 +85,11 @@ public class ChallengeGroupService {
         );
         challengeGroupMemberJpaRepository.save(challengeGroupMemberJpaEntity);
 
-        notificationService.sendNotification(
-                joinMember.getId(),
-                "챌린지 그룹에 참여하였습니다.",
-                "그룹명 : " + joiningGroup.getName()
-        );
+//        notificationService.sendNotification(
+//                joinMember.getId(),
+//                "챌린지 그룹에 참여하였습니다.",
+//                "그룹명 : " + joiningGroup.getName()
+//        );
 
         final List<ChallengeGroupMemberJpaEntity> groupMembers =
                 challengeGroupMemberJpaRepository.findAllByChallengeGroup(challengeGroupJpaEntity);
@@ -99,9 +99,10 @@ public class ChallengeGroupService {
                 continue;
             }
             notificationService.sendNotification(
-                    groupMemberId,
-                    "새로운 멤버가 참여했습니다.",
-                    joinMember.getName() + "님이 " + joiningGroup.getName() + " 그룹에 새로 합류했습니다."
+                groupMemberId,
+                "새로운 멤버가 참여했습니다.",
+                joinMember.getName() + "님이 " + joiningGroup.getName() + " 그룹에 새로 합류했습니다.",
+                "JOIN"
             );
         }
     }

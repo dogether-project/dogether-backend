@@ -53,9 +53,9 @@ public class DailyTodoCertificationService {
         final DailyTodoJpaEntity dailyTodoJpaEntity = dailyTodoCertificationJpaEntity.getDailyTodo();
         dailyTodoJpaEntity.changeReviewResult(reviewedDailyTodo);
 
-        final String notificationTitle = String.format("%s님이 투두 수행 인증을 검사해줬어요! 🫣", reviewerJpaEntity.getName());
+        final String notificationTitle = String.format("투두 수행 인증 검사 결과가 도착했어! 🫣", reviewerJpaEntity.getName());
         final String notificationMessage = String.format("투두 내용 : %s\n검사 결과 : %s", reviewedDailyTodo.getContent(), reviewedDailyTodo.getStatusDescription());
-        notificationService.sendNotification(reviewedDailyTodo.getMemberId(), notificationTitle, notificationMessage);
+        notificationService.sendNotification(reviewedDailyTodo.getMemberId(), notificationTitle, notificationMessage, "REVIEW");
     }
 
     private void checkDailyTodoCertificationReviewer(final DailyTodoCertification dailyTodoCertification, final Long reviewer) {
