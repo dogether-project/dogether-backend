@@ -58,6 +58,7 @@ public class ChallengeGroupController {
                         joiningGroupInfo.name(),
                         joiningGroupInfo.duration(),
                         joiningGroupInfo.joinCode(),
+                        joiningGroupInfo.maximumTodoCount(),
                         joiningGroupInfo.endAt(),
                         joiningGroupInfo.remainingDays())));
     }
