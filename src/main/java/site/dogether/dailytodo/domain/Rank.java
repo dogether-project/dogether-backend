@@ -9,11 +9,11 @@ public class Rank {
     @Setter
     private int rank;
     private final String name;
-    private final double certificationRate;
+    private final int certificationRate;
 
     public Rank(final int rank,
                 final String name,
-                final double certificationRate) {
+                final int certificationRate) {
         this.rank = rank;
         this.name = name;
         this.certificationRate = certificationRate;

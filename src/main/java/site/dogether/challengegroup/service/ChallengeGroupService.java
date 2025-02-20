@@ -12,6 +12,7 @@ import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupJpaEntit
 import site.dogether.challengegroup.infrastructure.entity.ChallengeGroupMemberJpaEntity;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupJpaRepository;
 import site.dogether.challengegroup.infrastructure.repository.ChallengeGroupMemberJpaRepository;
+import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.challengegroup.service.exception.MemberNotInChallengeGroupException;
@@ -64,7 +65,7 @@ public class ChallengeGroupService {
     }
 
     @Transactional
-    public void joinChallengeGroup(final String joinCode, final String authenticationToken) {
+    public JoinChallengeGroupDto joinChallengeGroup(final String joinCode, final String authenticationToken) {
         final MemberJpaEntity joinMember = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
         memberAlreadyInGroup(joinMember);
 
@@ -105,6 +106,16 @@ public class ChallengeGroupService {
                 "JOIN"
             );
         }
+
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        final String startAtFormatted = challengeGroupJpaEntity.getStartAt().format(formatter);
+
+        return new JoinChallengeGroupDto(
+                joiningGroup.getName(),
+                joiningGroup.getMaximumMemberCount(),
+                startAtFormatted,
+                joiningGroup.getDurationOption().getValue()
+        );
     }
 
     public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final String authenticationToken) {
