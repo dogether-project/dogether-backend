@@ -1,14 +1,15 @@
 package site.dogether.challengegroup.domain;
 
-import java.util.UUID;
 import lombok.Getter;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.dailytodo.domain.exception.InvalidDailyTodoException;
 
+import java.util.UUID;
+
 @Getter
 public class ChallengeGroup {
 
-    private static final int MINIMUM_LIMIT_TODO_COUNT = 2;
+    private static final int MINIMUM_LIMIT_TODO_COUNT = 1;
     private static final int MAXIMUM_LIMIT_TODO_COUNT = 10;
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 20;
     public static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
