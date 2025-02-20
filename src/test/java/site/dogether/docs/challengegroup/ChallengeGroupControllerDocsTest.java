@@ -1,5 +1,20 @@
 package site.dogether.docs.challengegroup;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -14,18 +29,6 @@ import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.dailytodo.domain.Rank;
 import site.dogether.docs.util.RestDocsSupport;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
@@ -98,7 +101,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
         final JoinChallengeGroupRequest request = new JoinChallengeGroupRequest("kelly-join-code");
 
         given(challengeGroupService.joinChallengeGroup(any(), any()))
-            .willReturn(new JoinChallengeGroupDto("성욱이와 친구들", 7, "2025.02.25", 7));
+            .willReturn(new JoinChallengeGroupDto("성욱이와 친구들", 7, "2025.02.17", "2025.02.23", 7));
 
         mockMvc.perform(
                 post("/api/groups/join")
@@ -127,6 +130,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.startAt")
                         .description("챌린지 시작일")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.endAt")
+                        .description("챌린지 종료일")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.durationOption")
                         .description("챌린지 기간")

@@ -68,6 +68,7 @@ public class ChallengeGroupController {
                             joinChallengeGroupDto.name(),
                             joinChallengeGroupDto.maximumMemberCount(),
                             joinChallengeGroupDto.startAt(),
+                            joinChallengeGroupDto.endAt(),
                             joinChallengeGroupDto.durationOption())
             ));
     }
