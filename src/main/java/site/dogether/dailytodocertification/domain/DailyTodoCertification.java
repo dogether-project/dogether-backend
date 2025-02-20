@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 public class DailyTodoCertification {
 
-    private static final int MAXIMUM_LIMIT_CONTENT_LENGTH = 40;
+    private static final int MAXIMUM_LIMIT_CONTENT_LENGTH = 50;
 
     private final Long id;
     private final DailyTodo dailyTodo;
