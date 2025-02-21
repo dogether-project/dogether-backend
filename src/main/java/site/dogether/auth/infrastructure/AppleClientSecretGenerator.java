@@ -10,9 +10,11 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class AppleClientSecretGenerator {
@@ -28,7 +30,7 @@ public class AppleClientSecretGenerator {
     @Value("${secret.oauth.apple.private-key}")
     private String privateKey;
 
-    public String createClientSecret() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public String createClientSecret() {
         final Date expireDate = Date.from(
                 LocalDateTime.now()
                         .plusMinutes(5)
@@ -45,10 +47,18 @@ public class AppleClientSecretGenerator {
         );
     }
 
-    private PrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private PrivateKey getPrivateKey() {
         final byte[] keyBytes = Base64.getDecoder().decode(privateKey);
         final PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        final KeyFactory kf = KeyFactory.getInstance("EC");
-        return kf.generatePrivate(spec);
+        try {
+            final KeyFactory kf = KeyFactory.getInstance("EC");
+            return kf.generatePrivate(spec);
+        } catch (NoSuchAlgorithmException e) {
+            log.warn("존재하지 않는 키 생성 알고리즘입니다.");
+            throw new RuntimeException();
+        } catch (InvalidKeySpecException e) {
+            log.warn("Apple Private Key를 생성할 수 없습니다.");
+            throw new RuntimeException();
+        }
     }
 }

@@ -28,9 +28,9 @@ public class JwtHandler {
                     .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                     .build()
                     .parse(token);
-            log.info("토큰 검증에 성공하였습니다.");
+            log.info("JWT 검증에 성공하였습니다.");
         } catch (Exception e) {
-            log.info("토큰 검증에 실패하였습니다.");
+            log.info("JWT 검증에 실패하였습니다.");
         }
     }
 
@@ -58,7 +58,7 @@ public class JwtHandler {
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
 
-        log.info("토큰을 생성합니다. {}", token);
+        log.info("JWT를 생성합니다. {}", token);
         return token;
     }
 

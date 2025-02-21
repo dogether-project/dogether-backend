@@ -25,12 +25,14 @@ public class AuthService {
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
         final String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
+        log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
 
         Member member = new Member(
                 subject,
                 request.name()
         );
         member = memberService.save(member);
+        log.info("회원을 저장 or 조회합니다. providerId: {}", member.getProviderId());
 
         final String authenticationToken = jwtHandler.createToken(member.getId());
 
@@ -41,12 +43,8 @@ public class AuthService {
     public void withdraw(final String authenticationToken, final WithdrawRequest request) {
         final Long memberId = jwtHandler.getMemberId(authenticationToken);
 
-        try {
-            appleOAuthProvider.revoke(request.authorizationCode());
-            memberService.delete(memberId);
-        } catch (Exception e) {
-            throw new RuntimeException("애플 계정 해지(revoke) 실패로 회원 탈퇴를 진행할 수 없습니다.");
-        }
+        appleOAuthProvider.revoke(request.authorizationCode());
+        memberService.delete(memberId);
     }
 
 }
