@@ -40,9 +40,13 @@ public class AppleOAuthProvider {
         return null;
     }
 
-    public void revoke(String authorizationCode) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public void revoke(String authorizationCode) {
         final String clientSecret = appleClientSecretGenerator.createClientSecret();
+        log.info("Apple client secret을 생성합니다. clientSecret: {}", clientSecret);
+
         final String refreshToken = appleApiClient.requestRefreshToken(clientSecret, authorizationCode);
+        log.info("Apple refresh token을 요청합니다. refreshToken: {}", refreshToken);
+
         appleApiClient.requestRevoke(clientSecret, refreshToken);
     }
 
