@@ -168,21 +168,12 @@ jobs:
 
       - name: notify
         if: always()
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: tsickert/discord-webhook@v7.0.0
         with:
-          payload: |
-            {
-              "text": "Backend 배포 결과 알림 🔥",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "오늘은 퇴근할 수 있을까...\nEnvironment : backend-${{ matrix.environment }}, Result : ${{ steps.deploy-status.outcome == 'success' && 'success 🎉' || 'fail 💀' }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "Backend 배포 결과 알림 🔥"
+          embed-description: |
+            오늘은 퇴근할 수 있을까...
+            Environment : backend-${{ matrix.environment }}
+            Result : ${{ steps.deploy-status.outcome == 'success' && '✅ 성공!' || '❌ 실패!' }}
+          embed-color: ${{ steps.deploy-status.outcome == 'success' && '3066993' || '15158332' }}
