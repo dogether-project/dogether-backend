@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.auth.infrastructure.JwtHandler;
 import site.dogether.member.domain.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
@@ -17,7 +16,6 @@ import site.dogether.member.infrastructure.repository.MemberJpaRepository;
 public class MemberService {
 
     private final MemberJpaRepository memberJpaRepository;
-    private final JwtHandler jwtHandler;
 
     @Transactional
     public Member save(final Member member) {
@@ -25,28 +23,19 @@ public class MemberService {
                 .orElseGet(() -> {
                     MemberJpaEntity memberJpaEntity = new MemberJpaEntity(member);
                     return memberJpaRepository.save(memberJpaEntity);
-                }).toDomain();
+                })
+            .toDomain();
     }
 
     @Transactional
     public void delete(final Long memberId) {
-        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).orElseThrow(
-                () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId)
+            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원입니다. (%d)", memberId)));
         memberJpaRepository.delete(memberJpaEntity);
     }
 
-    public Member findMemberByAuthenticationToken(final String authenticationToken) {
-        final Long memberId = jwtHandler.getMemberId(authenticationToken);
-
-        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId).orElseThrow(
-                () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        return memberJpaEntity.toDomain();
+    public MemberJpaEntity getMemberEntityById(final Long memberId) {
+        return memberJpaRepository.findById(memberId)
+            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원입니다. (%d)", memberId)));
     }
-
-    public MemberJpaEntity findMemberEntityByAuthenticationToken(final String authenticationToken) {
-        final Long memberId = jwtHandler.getMemberId(authenticationToken);
-        return memberJpaRepository.findById(memberId).orElseThrow(
-                () -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-    }
-
 }

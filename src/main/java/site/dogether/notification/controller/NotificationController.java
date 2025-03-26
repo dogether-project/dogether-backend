@@ -3,7 +3,7 @@ package site.dogether.notification.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.dogether.common.config.web.resolver.Authentication;
+import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.notification.controller.request.DeleteNotificationTokenRequest;
 import site.dogether.notification.controller.request.SaveNotificationTokenRequest;
@@ -21,17 +21,17 @@ public class NotificationController {
 
     @PostMapping("/tokens")
     public ResponseEntity<ApiResponse<Void>> saveNotificationToken(
-            @Authentication final String authenticationToken,
+            @Authenticated final Long memberId,
             @RequestBody final SaveNotificationTokenRequest request) {
-        notificationService.saveNotificationToken(authenticationToken, request.token());
+        notificationService.saveNotificationToken(memberId, request.token());
         return ResponseEntity.ok(ApiResponse.success(SAVE_NOTIFICATION_TOKEN));
     }
 
     @DeleteMapping("/tokens")
     public ResponseEntity<ApiResponse<Void>> deleteNotificationToken(
-            @Authentication final String authenticationToken,
+            @Authenticated final Long memberId,
             @RequestBody final DeleteNotificationTokenRequest request) {
-        notificationService.deleteNotificationToken(authenticationToken, request.token());
+        notificationService.deleteNotificationToken(memberId, request.token());
         return ResponseEntity.ok(ApiResponse.success(DELETE_NOTIFICATION_TOKEN));
     }
 }

@@ -44,10 +44,10 @@ public class NotificationService {
     }
 
     @Transactional
-    public void saveNotificationToken(final String authenticationToken, final String notificationToken) {
+    public void saveNotificationToken(final Long memberId, final String notificationToken) {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final MemberJpaEntity memberJpaEntity = memberService.getMemberEntityById(memberId);
         if (notificationTokenJpaRepository.existsByMemberAndValue(memberJpaEntity, notificationToken)) {
             return;
         }
@@ -65,10 +65,10 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteNotificationToken(final String authenticationToken, final String notificationToken) {
+    public void deleteNotificationToken(final Long memberId, final String notificationToken) {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final MemberJpaEntity memberJpaEntity = memberService.getMemberEntityById(memberId);
         notificationTokenJpaRepository.findByMemberAndValue(memberJpaEntity, notificationToken)
                 .ifPresent(notificationTokenJpaEntity -> {
                     notificationTokenJpaRepository.delete(notificationTokenJpaEntity);
