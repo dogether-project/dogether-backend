@@ -1,17 +1,5 @@
 package site.dogether.docs.auth;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -22,6 +10,16 @@ import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.service.AuthService;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.member.service.dto.AuthenticatedMember;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("로그인 & 회원 탈퇴 API 문서화 테스트")
 public class AuthControllerDocsTest extends RestDocsSupport {
@@ -83,7 +81,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
             "authorizationCodeauthorizationCodeauthorizationCode"
         );
 
-        doNothing().when(authService).withdraw(anyString(), any(WithdrawRequest.class));
+        doNothing().when(authService).withdraw(anyLong(), any(WithdrawRequest.class));
 
         mockMvc.perform(
                 delete("/api/auth/withdraw")

@@ -3,12 +3,12 @@ package site.dogether.dailytodocertification.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.dogether.common.config.web.resolver.Authentication;
+import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
+import site.dogether.dailytodocertification.controller.response.DailyTodoCertificationResponse;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationByIdResponse;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
-import site.dogether.dailytodocertification.controller.response.DailyTodoCertificationResponse;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 
@@ -27,12 +27,12 @@ public class DailyTodoCertificationController {
 
     @PostMapping("{todoCertificationId}/review")
     public ResponseEntity<ApiResponse<Void>> reviewDailyTodoCertification(
-        @Authentication String authenticationToken,
+        @Authenticated Long memberId,
         @PathVariable Long todoCertificationId,
         @RequestBody final ReviewDailyTodoCertificationRequest request
     ) {
         dailyTodoCertificationService.reviewDailyTodoCertification(
-            authenticationToken,
+            memberId,
             todoCertificationId,
             request.result(),
             request.rejectReason()
@@ -42,9 +42,9 @@ public class DailyTodoCertificationController {
 
     @GetMapping("/pending-review")
     public ResponseEntity<ApiResponse<GetDailyTodoCertificationsForReviewResponse>> getDailyTodoCertificationsForReview(
-        @Authentication String authenticationToken
+        @Authenticated Long memberId
     ) {
-        final List<DailyTodoCertificationDto> todoCertificationsForReview = dailyTodoCertificationService.findAllTodoCertificationsForReview(authenticationToken);
+        final List<DailyTodoCertificationDto> todoCertificationsForReview = dailyTodoCertificationService.findAllTodoCertificationsForReview(memberId);
         final GetDailyTodoCertificationsForReviewResponse response = todoCertificationsForReview.stream()
             .map(DailyTodoCertificationResponse::of)
             .collect(collectingAndThen(toList(), GetDailyTodoCertificationsForReviewResponse::new));

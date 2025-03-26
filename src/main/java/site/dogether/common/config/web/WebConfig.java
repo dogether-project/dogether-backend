@@ -1,23 +1,23 @@
 package site.dogether.common.config.web;
 
-import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import site.dogether.common.config.web.resolver.AuthenticationArgumentResolver;
+import site.dogether.auth.resolver.AuthenticatedArgumentResolver;
+
+import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final AuthenticationArgumentResolver authenticationArgumentResolver;
+    private final AuthenticatedArgumentResolver authenticatedArgumentResolver;
 
-    public WebConfig(final AuthenticationArgumentResolver authenticationArgumentResolver) {
-        this.authenticationArgumentResolver = authenticationArgumentResolver;
+    public WebConfig(final AuthenticatedArgumentResolver authenticatedArgumentResolver) {
+        this.authenticatedArgumentResolver = authenticatedArgumentResolver;
     }
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(authenticationArgumentResolver);
+        resolvers.add(authenticatedArgumentResolver);
     }
-
 }

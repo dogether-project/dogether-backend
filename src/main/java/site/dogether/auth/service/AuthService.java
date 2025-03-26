@@ -27,10 +27,7 @@ public class AuthService {
         final String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
         log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
 
-        Member member = new Member(
-                subject,
-                request.name()
-        );
+        Member member = new Member(subject, request.name());
         member = memberService.save(member);
         log.info("회원을 저장 or 조회합니다. providerId: {}", member.getProviderId());
 
@@ -40,11 +37,8 @@ public class AuthService {
     }
 
     @Transactional
-    public void withdraw(final String authenticationToken, final WithdrawRequest request) {
-        final Long memberId = jwtHandler.getMemberId(authenticationToken);
-
+    public void withdraw(final Long memberId, final WithdrawRequest request) {
         appleOAuthProvider.revoke(request.authorizationCode());
         memberService.delete(memberId);
     }
-
 }

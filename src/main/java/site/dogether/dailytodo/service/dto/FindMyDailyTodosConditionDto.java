@@ -9,18 +9,18 @@ import java.util.Optional;
 public class FindMyDailyTodosConditionDto {
 
     @Getter
-    private final String authenticationToken;
+    private final Long memberId;
     @Getter
     private final LocalDate createdAt;
     private final DailyTodoStatus status;
 
     public static FindMyDailyTodosConditionDto of(
-        final String authenticationToken,
+        final Long memberId,
         final LocalDate createdAt,
         final String status
     ) {
         return new FindMyDailyTodosConditionDto(
-            authenticationToken,
+            memberId,
             createdAt,
             convertDailyTodoStatus(status)
         );
@@ -34,11 +34,11 @@ public class FindMyDailyTodosConditionDto {
     }
 
     public FindMyDailyTodosConditionDto(
-        final String authenticationToken,
+        final Long memberId,
         final LocalDate createdAt,
         final DailyTodoStatus status
     ) {
-        this.authenticationToken = authenticationToken;
+        this.memberId = memberId;
         this.createdAt = createdAt;
         this.status = status;
     }

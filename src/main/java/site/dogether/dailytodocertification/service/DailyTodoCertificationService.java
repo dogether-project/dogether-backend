@@ -37,14 +37,14 @@ public class DailyTodoCertificationService {
 
     @Transactional
     public void reviewDailyTodoCertification(
-        final String authenticationToken,
+        final Long memberId,
         final Long dailyTodoCertificationId,
         final String reviewResult,
         final String rejectReason
     ) {
         final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity = dailyTodoCertificationJpaRepository.findById(dailyTodoCertificationId)
             .orElseThrow(() -> new DailyTodoCertificationNotFoundException("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다.))"));
-        final MemberJpaEntity reviewerJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final MemberJpaEntity reviewerJpaEntity = memberService.getMemberEntityById(memberId);
         final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationJpaEntity.toDomain();
         checkDailyTodoCertificationReviewer(dailyTodoCertification, reviewerJpaEntity.getId());
         checkChallengeGroupIsRunning(dailyTodoCertification.getChallengeGroup());
@@ -70,8 +70,8 @@ public class DailyTodoCertificationService {
         }
     }
 
-    public List<DailyTodoCertificationDto> findAllTodoCertificationsForReview(final String authenticationToken) {
-        final MemberJpaEntity reviewerJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+    public List<DailyTodoCertificationDto> findAllTodoCertificationsForReview(final Long memberId) {
+        final MemberJpaEntity reviewerJpaEntity = memberService.getMemberEntityById(memberId);
         final List<DailyTodoCertificationJpaEntity> dailyTodoCertificationsForReview = dailyTodoCertificationJpaRepository.findAllByReviewerAndDailyTodo_StatusAndDailyTodo_ChallengeGroup_Status(
             reviewerJpaEntity,
             DailyTodoStatus.REVIEW_PENDING,

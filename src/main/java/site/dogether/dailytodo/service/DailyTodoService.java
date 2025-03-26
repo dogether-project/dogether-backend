@@ -56,13 +56,13 @@ public class DailyTodoService {
     private final MemberService memberService;
 
     @Transactional
-    public void saveDailyTodo(final String authenticationToken, final List<String> dailyTodoContents) {
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
-        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, memberJpaEntity)
+    public void saveDailyTodo(final Long memberId, final List<String> dailyTodoContents) {
+        final MemberJpaEntity memberEntity = memberService.getMemberEntityById(memberId);
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, memberEntity)
             .orElseThrow(() -> new MemberNotInChallengeGroupException("현재 진행중인 챌린지 그룹에 참여하고 있지 않습니다."));
-        checkExistPendingReviewDailyTodos(memberJpaEntity);
+        checkExistPendingReviewDailyTodos(memberEntity);
 
-        final List<DailyTodoJpaEntity> dailyTodoJpaEntities = convertDailyTodoContentsToEntities(dailyTodoContents, challengeGroupMemberJpaEntity, memberJpaEntity);
+        final List<DailyTodoJpaEntity> dailyTodoJpaEntities = convertDailyTodoContentsToEntities(dailyTodoContents, challengeGroupMemberJpaEntity, memberEntity);
         dailyTodoJpaRepository.saveAll(dailyTodoJpaEntities);
     }
 
@@ -96,15 +96,14 @@ public class DailyTodoService {
 
     @Transactional
     public void certifyDailyTodo(
-        final String authenticationToken,
+        final Long memberId,
         final Long dailyTodoId,
         final String content,
         final List<String> mediaUrls
     ) {
         final DailyTodoJpaEntity dailyTodoJpaEntity = dailyTodoJpaRepository.findById(dailyTodoId)
             .orElseThrow(() -> new DailyTodoNotFoundException("해당 id의 데일리 투두가 존재하지 않습니다."));
-
-        final MemberJpaEntity certifyingMember = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
+        final MemberJpaEntity certifyingMember = memberService.getMemberEntityById(memberId);
         final DailyTodo dailyTodo = dailyTodoJpaEntity.toDomain();
         checkDailyTodoOwner(dailyTodo, certifyingMember.getId());
 
@@ -180,9 +179,9 @@ public class DailyTodoService {
         return pickedReviewer;
     }
 
-    public List<String> findYesterdayDailyTodos(final String authenticationToken) {
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(authenticationToken);
-        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, memberJpaEntity)
+    public List<String> findYesterdayDailyTodos(final Long memberId) {
+        final MemberJpaEntity memberEntity = memberService.getMemberEntityById(memberId);
+        final ChallengeGroupMemberJpaEntity challengeGroupMemberJpaEntity = challengeGroupMemberJpaRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, memberEntity)
             .orElseThrow(() -> new MemberNotInChallengeGroupException("현재 진행중인 챌린지 그룹에 참여하고 있지 않습니다."));
 
         final LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -214,7 +213,7 @@ public class DailyTodoService {
     }
 
     public List<DailyTodoAndDailyTodoCertificationDto> findMyDailyTodo(final FindMyDailyTodosConditionDto condition) {
-        final MemberJpaEntity memberJpaEntity = memberService.findMemberEntityByAuthenticationToken(condition.getAuthenticationToken());
+        final MemberJpaEntity memberJpaEntity = memberService.getMemberEntityById(condition.getMemberId());
         final List<DailyTodoJpaEntity> dailyTodoJpaEntities = condition.getDailyTodoStatus()
             .map(status -> dailyTodoJpaRepository.findAllByMemberAndCreatedAtBetweenAndStatus(
                 memberJpaEntity,
