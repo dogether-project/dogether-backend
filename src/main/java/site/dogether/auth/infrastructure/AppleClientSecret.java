@@ -31,16 +31,16 @@ public class AppleClientSecret {
     private String privateKey;
 
     public String generate() {
-        final Date expireDate = Date.from(
+        final Date expireTime = Date.from(
                 LocalDateTime.now()
-                        .plusMinutes(5)
+                        .plusHours(1)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
         );
         return jwtHandler.createClientSecret(
                 keyId,
                 teamId,
-                expireDate,
+                expireTime,
                 "https://appleid.apple.com",
                 clientId,
                 getPrivateKey()

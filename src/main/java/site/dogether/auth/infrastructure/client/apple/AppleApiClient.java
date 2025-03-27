@@ -30,6 +30,7 @@ public class AppleApiClient {
         final AppleTokenResponse response = RestClient.create()
                 .post()
                 .uri("https://appleid.apple.com/auth/token")
+                .header("Content-Type", "application/x-www-form-urlencoded")
                 .body("client_id=" + clientId
                         + "&client_secret=" + clientSecret
                         + "&code=" + authorizationCode
