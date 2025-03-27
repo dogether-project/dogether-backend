@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class AppleClientSecretGenerator {
+public class AppleClientSecret {
 
     private final JwtHandler jwtHandler;
 
@@ -30,7 +30,7 @@ public class AppleClientSecretGenerator {
     @Value("${secret.oauth.apple.private-key}")
     private String privateKey;
 
-    public String createClientSecret() {
+    public String generate() {
         final Date expireDate = Date.from(
                 LocalDateTime.now()
                         .plusMinutes(5)

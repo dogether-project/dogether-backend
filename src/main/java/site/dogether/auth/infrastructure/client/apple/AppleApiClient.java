@@ -42,19 +42,34 @@ public class AppleApiClient {
         return response.refreshToken();
     }
 
-    public void requestRevoke(final String clientSecret, final String refreshToken) {
-        RestClient.create()
-                .post()
-                .uri("https://appleid.apple.com/auth/revoke")
-                .body("client_id=" + clientId
-                        + "&client_secret=" + clientSecret
-                        + "&token=" + refreshToken
-                        + "&token_type_hint=" + "refresh_token")
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    log.warn("Apple Revoke 요청에 실패하였습니다.");
-                    throw new RuntimeException("Apple Revoke 요청에 실패하였습니다.");
-                });
-        log.info("Apple Revoke 요청에 성공하였습니다.");
+    public boolean requestRevoke(final String clientSecret, final String refreshToken) {
+        try {
+            HttpStatusCode statusCode = RestClient.create()
+                    .post()
+                    .uri("https://appleid.apple.com/auth/revoke")
+                    .body("client_id=" + clientId
+                            + "&client_secret=" + clientSecret
+                            + "&token=" + refreshToken
+                            + "&token_type_hint=refresh_token")
+                    .retrieve()
+                    .toBodilessEntity()
+                    .getStatusCode();
+
+            return isRevokeSucceed(statusCode);
+        } catch (Exception e) {
+            log.warn("Apple Revoke 요청 중 예외가 발생하였습니다: {}", e.getMessage());
+            return false;
+        }
     }
+
+    private boolean isRevokeSucceed(HttpStatusCode statusCode) {
+        if (statusCode.is2xxSuccessful()) {
+            log.info("Apple Revoke 요청에 성공하였습니다.");
+            return true;
+        } else {
+            log.warn("Apple Revoke 요청에 실패하였습니다. statusCode: {}", statusCode);
+            return false;
+        }
+    }
+
 }

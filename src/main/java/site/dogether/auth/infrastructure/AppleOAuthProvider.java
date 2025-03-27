@@ -23,7 +23,7 @@ import site.dogether.auth.infrastructure.client.apple.response.ApplePublicKeySet
 public class AppleOAuthProvider {
 
     private final AppleApiClient appleApiClient;
-    private final AppleClientSecretGenerator appleClientSecretGenerator;
+    private final AppleClientSecret appleClientSecret;
     private final JwtHandler jwtHandler;
     private final ObjectMapper objectMapper;
 
@@ -40,14 +40,14 @@ public class AppleOAuthProvider {
         return null;
     }
 
-    public void revoke(String authorizationCode) {
-        final String clientSecret = appleClientSecretGenerator.createClientSecret();
+    public boolean revoke(String authorizationCode) {
+        final String clientSecret = appleClientSecret.generate();
         log.info("Apple client secret을 생성합니다. clientSecret: {}", clientSecret);
 
         final String refreshToken = appleApiClient.requestRefreshToken(clientSecret, authorizationCode);
         log.info("Apple refresh token을 요청합니다. refreshToken: {}", refreshToken);
 
-        appleApiClient.requestRevoke(clientSecret, refreshToken);
+        return appleApiClient.requestRevoke(clientSecret, refreshToken);
     }
 
     private PublicKey getApplePublicKey(final Map<String, String> header)

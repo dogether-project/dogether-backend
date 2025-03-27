@@ -62,18 +62,29 @@ public class JwtHandler {
         return token;
     }
 
-    public String createClientSecret(final String keyId, final String teamId, final Date expireDate,
-                                     final String audience, final String clientId, final PrivateKey privateKey) {
-        return Jwts.builder()
-                .header()
-                    .add("alg", Jwts.SIG.ES256).add("kid", keyId).and()
-                .issuer(teamId)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(expireDate)
-                .audience().add(audience).and()
-                .subject(clientId)
-                .signWith(privateKey, Jwts.SIG.ES256)
-                .compact();
+    public String createClientSecret(final String keyId,
+                                     final String teamId,
+                                     final Date expireDate,
+                                     final String audience,
+                                     final String clientId,
+                                     final PrivateKey privateKey) {
+        try {
+            return Jwts.builder()
+                    .header()
+                    .add("alg", "ES256")
+                    .add("kid", keyId)
+                    .and()
+                    .issuer(teamId)
+                    .issuedAt(new Date())
+                    .expiration(expireDate)
+                    .audience().add(audience).and()
+                    .subject(clientId)
+                    .signWith(privateKey, Jwts.SIG.ES256)
+                    .compact();
+        } catch (Exception e) {
+            log.warn("Apple Client Secret 생성에 실패하였습니다.");
+            throw new RuntimeException();
+        }
     }
 
     public Long getMemberId(final String bearerToken) {

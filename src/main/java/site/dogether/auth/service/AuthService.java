@@ -38,7 +38,9 @@ public class AuthService {
 
     @Transactional
     public void withdraw(final Long memberId, final WithdrawRequest request) {
-        appleOAuthProvider.revoke(request.authorizationCode());
-        memberService.delete(memberId);
+        boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
+        if (isRevoked) {
+            memberService.delete(memberId);
+        }
     }
 }
