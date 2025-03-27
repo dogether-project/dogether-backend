@@ -37,7 +37,7 @@ public class AppleApiClient {
                         + "&grant_type=" + "authorization_code")
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new RuntimeException("Apple RefreshToken 요청에 실패하였습니다.");
+                    throw new RuntimeException("Apple RefreshToken 요청에 실패하였습니다. statusCode: " + res.getStatusCode());
                 })
                 .body(AppleTokenResponse.class);
         return response.refreshToken();
