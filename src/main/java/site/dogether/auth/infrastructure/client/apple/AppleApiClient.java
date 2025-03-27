@@ -1,9 +1,13 @@
 package site.dogether.auth.infrastructure.client.apple;
 
+import java.io.InputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import site.dogether.auth.infrastructure.client.apple.response.ApplePublicKeySetResponse;
 import site.dogether.auth.infrastructure.client.apple.response.AppleTokenResponse;
@@ -27,19 +31,25 @@ public class AppleApiClient {
     }
 
     public String requestRefreshToken(final String clientSecret, final String authorizationCode) {
-        final AppleTokenResponse response = RestClient.create()
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("code", authorizationCode);
+        params.add("grant_type", "authorization_code");
+
+        AppleTokenResponse response = RestClient.create()
                 .post()
                 .uri("https://appleid.apple.com/auth/token")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .body("client_id=" + clientId
-                        + "&client_secret=" + clientSecret
-                        + "&code=" + authorizationCode
-                        + "&grant_type=" + "authorization_code")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(params)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new RuntimeException("Apple RefreshToken 요청에 실패하였습니다. statusCode: " + res.getStatusCode());
+                    String errorBody = res.getBody().toString();
+                    throw new RuntimeException("Apple RefreshToken 요청에 실패하였습니다."
+                            + " statusCode: " + res.getStatusCode() + ", body: " + errorBody);
                 })
                 .body(AppleTokenResponse.class);
+
         return response.refreshToken();
     }
 
