@@ -24,7 +24,7 @@ public class AuthService {
 
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
-        final String subject = appleOAuthProvider.getSubjectFromIdToken(request.idToken());
+        final String subject = appleOAuthProvider.parseSubject(request.idToken());
         log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
 
         Member member = new Member(subject, request.name());

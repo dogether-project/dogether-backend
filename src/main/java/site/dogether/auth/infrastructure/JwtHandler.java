@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtHandler {
 
-    public static final String PREFIX = "Bearer ";
+    private static final String PREFIX = "Bearer ";
 
     @Value("${secret.jwt.secret-key}")
     private String secret;

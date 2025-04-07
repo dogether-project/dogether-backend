@@ -27,7 +27,7 @@ public class AppleOAuthProvider {
     private final JwtHandler jwtHandler;
     private final ObjectMapper objectMapper;
 
-    public String getSubjectFromIdToken(final String idToken) {
+    public String parseSubject(final String idToken) {
         final String headerOfIdToken = idToken.split("\\.")[0];
         final String decodedHeader = new String(Base64.getDecoder().decode(headerOfIdToken));
         try {
