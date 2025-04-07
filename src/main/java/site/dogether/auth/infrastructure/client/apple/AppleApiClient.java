@@ -73,14 +73,18 @@ public class AppleApiClient {
     public record ErrorResponse(String error) {}
 
     public boolean requestRevoke(final String clientSecret, final String refreshToken) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("token", refreshToken);
+        params.add("token_type_hint", "refresh_token");
+
         try {
             HttpStatusCode statusCode = RestClient.create()
                     .post()
                     .uri("https://appleid.apple.com/auth/revoke")
-                    .body("client_id=" + clientId
-                            + "&client_secret=" + clientSecret
-                            + "&token=" + refreshToken
-                            + "&token_type_hint=refresh_token")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(params)
                     .retrieve()
                     .toBodilessEntity()
                     .getStatusCode();
