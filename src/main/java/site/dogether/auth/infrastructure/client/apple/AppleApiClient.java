@@ -1,6 +1,6 @@
 package site.dogether.auth.infrastructure.client.apple;
 
-import java.io.InputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
@@ -37,6 +37,8 @@ public class AppleApiClient {
         params.add("code", authorizationCode);
         params.add("grant_type", "authorization_code");
 
+        log.debug("Apple RefreshToken 요청 파라미터: client_id={}, code={}", clientId, authorizationCode);
+
         AppleTokenResponse response = RestClient.create()
                 .post()
                 .uri("https://appleid.apple.com/auth/token")
@@ -44,14 +46,29 @@ public class AppleApiClient {
                 .body(params)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    String errorBody = res.getBody().toString();
-                    throw new RuntimeException("Apple RefreshToken 요청에 실패하였습니다."
-                            + " statusCode: " + res.getStatusCode() + ", body: " + errorBody);
+                    ErrorResponse errorResponse = new ObjectMapper().readValue(res.getBody().readAllBytes(), ErrorResponse.class);
+                    log.warn("Apple RefreshToken 요청 실패: statusCode={}, error={}", res.getStatusCode(), errorResponse.error());
+                    throw new RuntimeException("Apple RefreshToken 요청에 실패하였습니다. "
+                            + "statusCode: " + res.getStatusCode() + ", "
+                            + "error: " + errorResponse.error());
                 })
                 .body(AppleTokenResponse.class);
 
+        if (response == null) {
+            log.warn("Apple 응답이 null입니다.");
+            throw new RuntimeException("Apple 응답이 null입니다.");
+        }
+
+        if (response.refreshToken() == null) {
+            log.warn("Apple 응답에 refreshToken이 포함되지 않았습니다. 응답: {}", response);
+            throw new RuntimeException("Apple 응답에 refreshToken이 없습니다.");
+        }
+
+        log.info("Apple RefreshToken 요청에 성공하였습니다.");
         return response.refreshToken();
     }
+
+    public record ErrorResponse(String error) {}
 
     public boolean requestRevoke(final String clientSecret, final String refreshToken) {
         try {

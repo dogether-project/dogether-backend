@@ -28,9 +28,8 @@ public class AuthController {
             @RequestBody final LoginRequest request
     ) {
         final AuthenticatedMember authenticatedMember = authService.login(request);
-        final LoginResponse response = new LoginResponse(authenticatedMember);
         return ResponseEntity.ok(ApiResponse.successWithData(
-            LOGIN, response
+            LOGIN, new LoginResponse(authenticatedMember)
         ));
     }
 
