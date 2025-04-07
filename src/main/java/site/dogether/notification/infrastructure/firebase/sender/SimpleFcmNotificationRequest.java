@@ -1,7 +1,6 @@
 package site.dogether.notification.infrastructure.firebase.sender;
 
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 
 public class SimpleFcmNotificationRequest extends FcmNotificationRequest {
 
@@ -26,7 +25,24 @@ public class SimpleFcmNotificationRequest extends FcmNotificationRequest {
         return Message.builder()
             .setNotification(createNotification())
             .setToken(fcmToken)
+            .setApnsConfig(createApnsConfig())
+            .setAndroidConfig(createAndroidConfig())
             .putData("type", type)
+            .build();
+    }
+
+    private ApnsConfig createApnsConfig() {
+        return ApnsConfig.builder()
+            .setAps(
+                Aps.builder()
+                    .setContentAvailable(true)
+                    .build())
+            .build();
+    }
+
+    private static AndroidConfig createAndroidConfig() {
+        return AndroidConfig.builder()
+            .setPriority(AndroidConfig.Priority.HIGH)
             .build();
     }
 
