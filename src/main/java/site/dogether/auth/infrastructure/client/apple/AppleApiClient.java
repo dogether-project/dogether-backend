@@ -62,11 +62,6 @@ public class AppleApiClient {
         }
 
         if (response.refreshToken() == null) {
-            log.warn("idToken: {}", response.idToken());
-            log.warn("accessToken: {}", response.accessToken());
-            log.warn("expireIn: {}", response.expiresIn());
-            log.warn("tokenType: {}", response.tokenType());
-
             log.warn("Apple 응답에 refreshToken이 포함되지 않았습니다. 응답: {}", response);
             throw new RuntimeException("Apple 응답에 refreshToken이 없습니다.");
         }
