@@ -31,6 +31,8 @@ public class AppleApiClient {
     }
 
     public String requestRefreshToken(final String clientSecret, final String authorizationCode) {
+        log.info("Apple RefreshToken 요청을 시작합니다. code: {}", authorizationCode);
+
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
@@ -60,6 +62,11 @@ public class AppleApiClient {
         }
 
         if (response.refreshToken() == null) {
+            log.warn("idToken: {}", response.idToken());
+            log.warn("accessToken: {}", response.accessToken());
+            log.warn("expireIn: {}", response.expiresIn());
+            log.warn("tokenType: {}", response.tokenType());
+
             log.warn("Apple 응답에 refreshToken이 포함되지 않았습니다. 응답: {}", response);
             throw new RuntimeException("Apple 응답에 refreshToken이 없습니다.");
         }
