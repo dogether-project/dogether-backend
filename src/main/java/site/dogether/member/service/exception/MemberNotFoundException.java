@@ -1,4 +1,4 @@
-package site.dogether.member.exception;
+package site.dogether.member.service.exception;
 
 import site.dogether.member.domain.exception.MemberException;
 

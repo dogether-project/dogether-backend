@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.member.domain.Member;
-import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.infrastructure.entity.MemberJpaEntity;
 import site.dogether.member.infrastructure.repository.MemberJpaRepository;
+import site.dogether.member.service.exception.MemberNotFoundException;
 
 @Slf4j
 @RequiredArgsConstructor
