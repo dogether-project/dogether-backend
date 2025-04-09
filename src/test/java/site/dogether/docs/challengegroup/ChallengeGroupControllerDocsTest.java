@@ -23,11 +23,11 @@ import site.dogether.challengegroup.controller.ChallengeGroupController;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.service.ChallengeGroupService;
-import site.dogether.challengegroup.service.JoiningChallengeGroupTeamActivityDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
-import site.dogether.dailytodo.domain.Rank;
+import site.dogether.dailytodo.entity.Rank;
 import site.dogether.docs.util.RestDocsSupport;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")

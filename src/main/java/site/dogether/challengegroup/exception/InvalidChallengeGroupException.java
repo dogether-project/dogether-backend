@@ -1,6 +1,6 @@
 package site.dogether.challengegroup.exception;
 
-public class InvalidChallengeGroupException extends ChallengeGroupException {
+public class InvalidChallengeGroupException extends RuntimeException {
 
     public InvalidChallengeGroupException(String message) {
         super(message);

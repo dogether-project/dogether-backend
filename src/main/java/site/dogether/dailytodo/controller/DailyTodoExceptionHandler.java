@@ -7,8 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.dailytodo.domain.exception.InvalidDailyTodoException;
-import site.dogether.dailytodo.service.exception.*;
+import site.dogether.dailytodo.exception.*;
 
 import static site.dogether.dailytodo.controller.response.DailyTodoExceptionCode.*;
 

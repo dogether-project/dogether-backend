@@ -1,7 +1,7 @@
 package site.dogether.dailytodo.service.dto;
 
 import lombok.Getter;
-import site.dogether.dailytodo.domain.DailyTodoStatus;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 
 import java.time.LocalDate;
 import java.util.Optional;

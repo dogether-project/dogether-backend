@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.challengegroup.service.exception.MemberNotInChallengeGroupException;
-import site.dogether.challengegroup.service.exception.NotEnoughChallengeGroupMembersException;
-import site.dogether.challengegroup.service.exception.NotRunningChallengeGroupException;
+import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
+import site.dogether.challengegroup.exception.NotEnoughChallengeGroupMembersException;
+import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.common.controller.response.ApiResponse;
 
 @Slf4j

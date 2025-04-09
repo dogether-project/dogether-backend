@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.member.domain.Member;
-import site.dogether.member.infrastructure.entity.MemberJpaEntity;
-import site.dogether.member.infrastructure.repository.MemberJpaRepository;
-import site.dogether.member.service.exception.MemberNotFoundException;
+import site.dogether.member.entity.Member;
+import site.dogether.member.exception.MemberNotFoundException;
+import site.dogether.member.repository.MemberRepository;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -15,27 +14,22 @@ import site.dogether.member.service.exception.MemberNotFoundException;
 @Service
 public class MemberService {
 
-    private final MemberJpaRepository memberJpaRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Member save(final Member member) {
-        return memberJpaRepository.findByProviderId(member.getProviderId())
-                .orElseGet(() -> {
-                    MemberJpaEntity memberJpaEntity = new MemberJpaEntity(member);
-                    return memberJpaRepository.save(memberJpaEntity);
-                })
-            .toDomain();
+        return memberRepository.findByProviderId(member.getProviderId())
+            .orElseGet(() -> memberRepository.save(member));
     }
 
     @Transactional
     public void delete(final Long memberId) {
-        final MemberJpaEntity memberJpaEntity = memberJpaRepository.findById(memberId)
-            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원입니다. (%d)", memberId)));
-        memberJpaRepository.delete(memberJpaEntity);
+        final Member member = getMember(memberId);
+        memberRepository.delete(member);
     }
 
-    public MemberJpaEntity getMemberEntityById(final Long memberId) {
-        return memberJpaRepository.findById(memberId)
-            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원입니다. (%d)", memberId)));
+    public Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 정보입니다. (memberId : %d)", memberId)));
     }
 }

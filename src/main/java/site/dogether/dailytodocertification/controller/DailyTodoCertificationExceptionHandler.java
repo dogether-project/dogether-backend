@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.dailytodocertification.domain.exception.InvalidDailyTodoCertificationException;
-import site.dogether.dailytodocertification.service.exception.DailyTodoCertificationNotFoundException;
-import site.dogether.dailytodocertification.service.exception.NotDailyTodoCertificationReviewerException;
+import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificationException;
+import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
+import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
 
 import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationExceptionCode.*;
 

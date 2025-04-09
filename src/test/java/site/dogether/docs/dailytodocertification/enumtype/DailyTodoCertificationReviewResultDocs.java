@@ -2,7 +2,7 @@ package site.dogether.docs.dailytodocertification.enumtype;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import site.dogether.dailytodocertification.domain.DailyTodoCertificationReviewResult;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewResult;
 import site.dogether.docs.util.RestDocsEnumType;
 
 @Getter

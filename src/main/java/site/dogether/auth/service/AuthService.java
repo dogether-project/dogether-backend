@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
-import site.dogether.auth.infrastructure.AppleOAuthProvider;
-import site.dogether.auth.infrastructure.JwtHandler;
-import site.dogether.member.domain.Member;
+import site.dogether.auth.oauth.AppleOAuthProvider;
+import site.dogether.auth.oauth.JwtHandler;
+import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
@@ -27,13 +27,12 @@ public class AuthService {
         final String subject = appleOAuthProvider.parseSubject(request.idToken());
         log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
 
-        Member member = new Member(subject, request.name());
-        member = memberService.save(member);
-        log.info("회원을 저장 or 조회합니다. providerId: {}", member.getProviderId());
+        final Member savedMember = memberService.save(Member.create(subject, request.name()));
+        log.info("회원을 저장 or 조회합니다. providerId: {}", savedMember.getProviderId());
 
-        final String authenticationToken = jwtHandler.createToken(member.getId());
+        final String authenticationToken = jwtHandler.createToken(savedMember.getId());
 
-        return new AuthenticatedMember(member.getName(), authenticationToken);
+        return new AuthenticatedMember(savedMember.getName(), authenticationToken);
     }
 
     @Transactional

@@ -2,7 +2,7 @@ package site.dogether.docs.dailytodo.enumtype;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import site.dogether.dailytodo.domain.DailyTodoStatus;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.docs.util.RestDocsEnumType;
 
 @Getter
