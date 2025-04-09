@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-public enum CommonExceptionCode implements ExceptionCode {
+public enum CommonErrorCode implements ErrorCode {
     INTERNAL_SERVER_APPLICATION("IA-0001"),
     ;
 

@@ -1,10 +1,5 @@
 package site.dogether.challengegroup.controller;
 
-import static site.dogether.challengegroup.controller.response.ChallengeGroupExceptionCode.MEMBER_NOT_IN_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupExceptionCode.NOT_ENOUGH_CHALLENGE_GROUP_MEMBERS;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupExceptionCode.NOT_RUNNING_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.exception.ChallengeGroupExceptionCode.INVALID_CHALLENGE_GROUP_EXCEPTION;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,6 +11,8 @@ import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException
 import site.dogether.challengegroup.exception.NotEnoughChallengeGroupMembersException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.common.controller.response.ApiResponse;
+
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.*;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)

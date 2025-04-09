@@ -11,7 +11,7 @@ import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificat
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
 
-import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationExceptionCode.*;
+import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationErrorCode.*;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)

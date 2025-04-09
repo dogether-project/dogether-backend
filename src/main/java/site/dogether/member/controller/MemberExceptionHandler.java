@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.member.controller.response.MemberExceptionCode;
+import site.dogether.member.controller.response.MemberErrorCode;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.member.exception.MemberNotFoundException;
 
@@ -21,7 +21,7 @@ public class MemberExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(ApiResponse.fail(MemberExceptionCode.INVALID_MEMBER,
+                .body(ApiResponse.fail(MemberErrorCode.INVALID_MEMBER,
                     e.getMessage()));
     }
 
@@ -34,7 +34,7 @@ public class MemberExceptionHandler {
          */
         return ResponseEntity.badRequest()
                 .body(ApiResponse.fail(
-                    MemberExceptionCode.MEMBER_NOT_FOUND,
-                    MemberExceptionCode.MEMBER_NOT_FOUND.getMessage()));
+                    MemberErrorCode.MEMBER_NOT_FOUND,
+                    MemberErrorCode.MEMBER_NOT_FOUND.getMessage()));
     }
 }

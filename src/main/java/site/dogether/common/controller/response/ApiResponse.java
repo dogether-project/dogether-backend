@@ -2,7 +2,7 @@ package site.dogether.common.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import site.dogether.common.exception.ExceptionCode;
+import site.dogether.common.exception.ErrorCode;
 
 @Getter
 public class ApiResponse<T> {
@@ -20,8 +20,8 @@ public class ApiResponse<T> {
         return new ApiResponse<>(code.getValue(), code.getMessage(), data);
     }
 
-    public static ApiResponse<Void> fail(final ExceptionCode exceptionCode, final String message) {
-        return new ApiResponse<>(exceptionCode.getValue(), message, null);
+    public static ApiResponse<Void> fail(final ErrorCode errorCode, final String message) {
+        return new ApiResponse<>(errorCode.getValue(), message, null);
     }
 
     private ApiResponse(

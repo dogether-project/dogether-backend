@@ -2,11 +2,11 @@ package site.dogether.dailytodocertification.controller.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import site.dogether.common.exception.ExceptionCode;
+import site.dogether.common.exception.ErrorCode;
 
 @Getter
 @RequiredArgsConstructor
-public enum DailyTodoCertificationExceptionCode implements ExceptionCode {
+public enum DailyTodoCertificationErrorCode implements ErrorCode {
 
     INVALID_DAILY_TODO_CERTIFICATION("TCF-0001"),
     DAILY_TODO_CERTIFICATION_NOT_FOUND("TCF-0002"),
