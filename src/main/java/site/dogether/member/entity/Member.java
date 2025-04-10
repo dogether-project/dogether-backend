@@ -29,10 +29,6 @@ public class Member extends BaseTimeEntity {
         return new Member(null, providerId, name);
     }
 
-    public Member(final String providerId, final String name) {
-        this(null, providerId, name);
-    }
-
     public Member(final Long id, final String providerId, final String name) {
         validateProviderId(providerId);
         validateName(name);
