@@ -13,6 +13,8 @@ public enum ChallengeGroupStartAtOption {
     TOMORROW(() -> LocalDateTime.now().plusDays(1)),
     ;
 
+    private final Supplier<LocalDateTime> startAtCalculator;
+
     public static ChallengeGroupStartAtOption from(final String startAt) {
         validateStartAt(startAt);
         return ChallengeGroupStartAtOption.valueOf(startAt.toUpperCase());
@@ -27,8 +29,6 @@ public enum ChallengeGroupStartAtOption {
             throw new InvalidChallengeGroupException("유효하지 않은 시작일 옵션입니다.");
         }
     }
-
-    private final Supplier<LocalDateTime> startAtCalculator;
 
     public LocalDateTime calculateStartAt() {
         return startAtCalculator.get();
