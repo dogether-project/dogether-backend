@@ -1,5 +1,9 @@
 package site.dogether.challengegroup.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,11 +26,6 @@ import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -78,6 +77,10 @@ public class ChallengeGroupService {
         }
 
         final ChallengeGroupMember challengeGroupMember = new ChallengeGroupMember(challengeGroup, joinMember);
+
+        if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
+            throw new InvalidChallengeGroupException("이미 참여 중인 그룹입니다.");
+        }
         challengeGroupMemberRepository.save(challengeGroupMember);
 
         final List<ChallengeGroupMember> groupMembers =
