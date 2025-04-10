@@ -7,7 +7,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.developer_test_api.notification.DeveloperTestNotificationController;
 import site.dogether.developer_test_api.notification.SendNotificationRequest;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.notification.infrastructure.firebase.sender.FcmNotificationSender;
+import site.dogether.notification.firebase.sender.FcmNotificationSender;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;

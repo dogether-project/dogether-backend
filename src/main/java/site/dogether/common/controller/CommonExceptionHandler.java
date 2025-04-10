@@ -10,7 +10,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import site.dogether.common.controller.response.ApiResponse;
 
 import static org.springframework.http.ResponseEntity.internalServerError;
-import static site.dogether.common.exception.CommonExceptionCode.INTERNAL_SERVER_APPLICATION;
+import static site.dogether.common.exception.CommonErrorCode.INTERNAL_SERVER_APPLICATION;
 
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE)

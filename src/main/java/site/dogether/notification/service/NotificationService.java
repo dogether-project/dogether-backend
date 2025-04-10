@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.member.infrastructure.entity.MemberJpaEntity;
+import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
-import site.dogether.notification.infrastructure.entity.NotificationTokenJpaEntity;
-import site.dogether.notification.infrastructure.firebase.sender.SimpleFcmNotificationRequest;
-import site.dogether.notification.infrastructure.repository.NotificationTokenJpaRepository;
+import site.dogether.notification.entity.NotificationTokenJpaEntity;
+import site.dogether.notification.firebase.sender.SimpleFcmNotificationRequest;
+import site.dogether.notification.repository.NotificationTokenJpaRepository;
 import site.dogether.notification.sender.NotificationSender;
-import site.dogether.notification.service.exception.InvalidNotificationTokenException;
+import site.dogether.notification.exception.InvalidNotificationTokenException;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -47,12 +47,12 @@ public class NotificationService {
     public void saveNotificationToken(final Long memberId, final String notificationToken) {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
-        final MemberJpaEntity memberJpaEntity = memberService.getMemberEntityById(memberId);
-        if (notificationTokenJpaRepository.existsByMemberAndValue(memberJpaEntity, notificationToken)) {
+        final Member member = memberService.getMember(memberId);
+        if (notificationTokenJpaRepository.existsByMemberAndValue(member, notificationToken)) {
             return;
         }
 
-        final NotificationTokenJpaEntity notificationTokenJpaEntity = new NotificationTokenJpaEntity(memberJpaEntity, notificationToken);
+        final NotificationTokenJpaEntity notificationTokenJpaEntity = new NotificationTokenJpaEntity(member, notificationToken);
         notificationTokenJpaRepository.save(notificationTokenJpaEntity);
         log.info("푸시 알림 토큰 저장 - {}", notificationToken);
     }
@@ -68,8 +68,8 @@ public class NotificationService {
     public void deleteNotificationToken(final Long memberId, final String notificationToken) {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
-        final MemberJpaEntity memberJpaEntity = memberService.getMemberEntityById(memberId);
-        notificationTokenJpaRepository.findByMemberAndValue(memberJpaEntity, notificationToken)
+        final Member member = memberService.getMember(memberId);
+        notificationTokenJpaRepository.findByMemberAndValue(member, notificationToken)
                 .ifPresent(notificationTokenJpaEntity -> {
                     notificationTokenJpaRepository.delete(notificationTokenJpaEntity);
                     log.info("푸시 알림 토큰 제거 - {}", notificationToken);});

@@ -1,7 +1,7 @@
 package site.dogether.dailytodo.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import site.dogether.dailytodo.domain.DailyTodoStatus;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
 
 import java.util.List;

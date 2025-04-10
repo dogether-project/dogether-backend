@@ -19,10 +19,10 @@ public class BaseTimeEntity {
     @CreatedDate
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     @LastModifiedDate
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(columnDefinition = "TIMESTAMP")
-    private LocalDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 }

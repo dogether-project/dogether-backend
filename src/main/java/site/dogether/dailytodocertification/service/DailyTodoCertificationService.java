@@ -4,21 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.challengegroup.domain.ChallengeGroup;
-import site.dogether.challengegroup.domain.ChallengeGroupStatus;
-import site.dogether.challengegroup.service.exception.NotRunningChallengeGroupException;
-import site.dogether.dailytodo.domain.DailyTodo;
-import site.dogether.dailytodo.domain.DailyTodoStatus;
-import site.dogether.dailytodo.infrastructure.entity.DailyTodoJpaEntity;
-import site.dogether.dailytodocertification.domain.DailyTodoCertification;
-import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationJpaEntity;
-import site.dogether.dailytodocertification.infrastructure.entity.DailyTodoCertificationMediaUrlJpaEntity;
-import site.dogether.dailytodocertification.infrastructure.repository.DailyTodoCertificationJpaRepository;
-import site.dogether.dailytodocertification.infrastructure.repository.DailyTodoCertificationMediaUrlJpaRepository;
+import site.dogether.challengegroup.entity.ChallengeGroup;
+import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
+import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationMediaUrl;
+import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
+import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationMediaUrlRepository;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
-import site.dogether.dailytodocertification.service.exception.DailyTodoCertificationNotFoundException;
-import site.dogether.dailytodocertification.service.exception.NotDailyTodoCertificationReviewerException;
-import site.dogether.member.infrastructure.entity.MemberJpaEntity;
+import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
@@ -30,8 +28,8 @@ import java.util.List;
 @Service
 public class DailyTodoCertificationService {
 
-    private final DailyTodoCertificationJpaRepository dailyTodoCertificationJpaRepository;
-    private final DailyTodoCertificationMediaUrlJpaRepository dailyTodoCertificationMediaUrlJpaRepository;
+    private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    private final DailyTodoCertificationMediaUrlRepository dailyTodoCertificationMediaUrlRepository;
     private final NotificationService notificationService;
     private final MemberService memberService;
 
@@ -42,62 +40,60 @@ public class DailyTodoCertificationService {
         final String reviewResult,
         final String rejectReason
     ) {
-        final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity = dailyTodoCertificationJpaRepository.findById(dailyTodoCertificationId)
-            .orElseThrow(() -> new DailyTodoCertificationNotFoundException("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다.))"));
-        final MemberJpaEntity reviewerJpaEntity = memberService.getMemberEntityById(memberId);
-        final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationJpaEntity.toDomain();
-        checkDailyTodoCertificationReviewer(dailyTodoCertification, reviewerJpaEntity.getId());
+        final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findById(dailyTodoCertificationId)
+            .orElseThrow(() -> new DailyTodoCertificationNotFoundException(String.format("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다. (input : %d)", dailyTodoCertificationId)));
+        final Member reviewer = memberService.getMember(memberId);
+        checkDailyTodoCertificationReviewer(dailyTodoCertification, reviewer);
         checkChallengeGroupIsRunning(dailyTodoCertification.getChallengeGroup());
 
-        final DailyTodo reviewedDailyTodo = dailyTodoCertification.review(reviewResult, rejectReason);
-        final DailyTodoJpaEntity dailyTodoJpaEntity = dailyTodoCertificationJpaEntity.getDailyTodo();
-        dailyTodoJpaEntity.changeReviewResult(reviewedDailyTodo);
+        final DailyTodo dailyTodo = dailyTodoCertification.getDailyTodo();
+        dailyTodo.review(DailyTodoStatus.valueOf(reviewResult), rejectReason);
 
-        final String notificationTitle = String.format("투두 수행 인증 검사 결과가 도착했어! 🫣", reviewerJpaEntity.getName());
-        final String notificationMessage = String.format("투두 내용 : %s\n검사 결과 : %s", reviewedDailyTodo.getContent(), reviewedDailyTodo.getStatusDescription());
-        notificationService.sendNotification(reviewedDailyTodo.getMemberId(), notificationTitle, notificationMessage, "REVIEW");
+        final String notificationTitle = "투두 수행 인증 검사 결과가 도착했어! 🫣";
+        final String notificationMessage = String.format("투두 내용 : %s\n검사 결과 : %s", dailyTodo.getContent(), dailyTodo.getStatusDescription());
+        notificationService.sendNotification(dailyTodo.getMemberId(), notificationTitle, notificationMessage, "REVIEW");
     }
 
-    private void checkDailyTodoCertificationReviewer(final DailyTodoCertification dailyTodoCertification, final Long reviewer) {
+    private void checkDailyTodoCertificationReviewer(final DailyTodoCertification dailyTodoCertification, final Member reviewer) {
         if (!dailyTodoCertification.checkReviewer(reviewer)) {
-            throw new NotDailyTodoCertificationReviewerException("해당 데일리 투두 수행 인증의 검사자가 아닙니다.");
+            throw new NotDailyTodoCertificationReviewerException(String.format("해당 데일리 투두 수행 인증의 검사자가 아닙니다. (certification : %s) (member : %s)", dailyTodoCertification, reviewer));
         }
     }
 
     private void checkChallengeGroupIsRunning(final ChallengeGroup challengeGroup) {
         if (!challengeGroup.isRunning()) {
-            throw new NotRunningChallengeGroupException("현재 진행중인 챌린지 그룹이 아닙니다.");
+            throw new NotRunningChallengeGroupException(String.format("현재 진행중인 챌린지 그룹이 아닙니다. (%s)", challengeGroup));
         }
     }
 
     public List<DailyTodoCertificationDto> findAllTodoCertificationsForReview(final Long memberId) {
-        final MemberJpaEntity reviewerJpaEntity = memberService.getMemberEntityById(memberId);
-        final List<DailyTodoCertificationJpaEntity> dailyTodoCertificationsForReview = dailyTodoCertificationJpaRepository.findAllByReviewerAndDailyTodo_StatusAndDailyTodo_ChallengeGroup_Status(
-            reviewerJpaEntity,
+        final Member reviewer = memberService.getMember(memberId);
+        final List<DailyTodoCertification> dailyTodoCertificationsForReview = dailyTodoCertificationRepository.findAllByReviewerAndDailyTodo_StatusAndDailyTodo_ChallengeGroup_Status(
+            reviewer,
             DailyTodoStatus.REVIEW_PENDING,
             ChallengeGroupStatus.RUNNING);
 
         return dailyTodoCertificationsForReview.stream()
-            .map(dailyTodoCertificationJpaEntity -> DailyTodoCertificationDto.from(
-                dailyTodoCertificationJpaEntity.toDomain(),
-                findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertificationJpaEntity)))
+            .map(dailyTodoCertification -> DailyTodoCertificationDto.from(
+                dailyTodoCertification,
+                findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertification)))
             .toList();
     }
 
-    private List<String> findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity) {
-        return dailyTodoCertificationMediaUrlJpaRepository.findAllByDailyTodoCertification(dailyTodoCertificationJpaEntity)
+    private List<String> findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(final DailyTodoCertification dailyTodoCertification) {
+        return dailyTodoCertificationMediaUrlRepository.findAllByDailyTodoCertification(dailyTodoCertification)
             .stream()
-            .map(DailyTodoCertificationMediaUrlJpaEntity::getValue)
+            .map(DailyTodoCertificationMediaUrl::getValue)
             .toList();
     }
 
     public DailyTodoCertificationDto findTodoCertificationById(final Long todoCertificationId) {
-        final DailyTodoCertificationJpaEntity dailyTodoCertificationJpaEntity = dailyTodoCertificationJpaRepository.findById(todoCertificationId)
-            .orElseThrow(() -> new DailyTodoCertificationNotFoundException("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다. - " + todoCertificationId));
+        final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findById(todoCertificationId)
+            .orElseThrow(() -> new DailyTodoCertificationNotFoundException(String.format(("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다. (input : %d)" + todoCertificationId))));
 
         return DailyTodoCertificationDto.from(
-            dailyTodoCertificationJpaEntity.toDomain(),
-            findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertificationJpaEntity)
+            dailyTodoCertification,
+            findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertification)
         );
     }
 }

@@ -1,6 +1,6 @@
 package site.dogether.dailytodocertification.service.dto;
 
-import site.dogether.dailytodocertification.domain.DailyTodoCertification;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 
 import java.util.List;
 

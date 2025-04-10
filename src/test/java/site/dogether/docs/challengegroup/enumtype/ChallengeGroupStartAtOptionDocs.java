@@ -2,7 +2,7 @@ package site.dogether.docs.challengegroup.enumtype;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import site.dogether.challengegroup.domain.ChallengeGroupStartAtOption;
+import site.dogether.challengegroup.entity.ChallengeGroupStartAtOption;
 import site.dogether.docs.util.RestDocsEnumType;
 
 @Getter

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.developer_test_api.DeveloperTestApiResponse;
-import site.dogether.notification.infrastructure.firebase.sender.SimpleFcmNotificationRequest;
+import site.dogether.notification.firebase.sender.SimpleFcmNotificationRequest;
 import site.dogether.notification.sender.NotificationSender;
 
 /**

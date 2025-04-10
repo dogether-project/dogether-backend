@@ -8,7 +8,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import site.dogether.auth.infrastructure.JwtHandler;
+import site.dogether.auth.oauth.JwtHandler;
 
 @RequiredArgsConstructor
 public class AuthFilter implements Filter {

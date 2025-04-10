@@ -1,7 +1,7 @@
 package site.dogether.challengegroup.controller.response;
 
 import java.util.List;
-import site.dogether.dailytodo.domain.Rank;
+import site.dogether.dailytodo.entity.Rank;
 
 public record GetJoiningChallengeGroupTeamActivitySummaryResponse(
     List<RankResponse> ranking
