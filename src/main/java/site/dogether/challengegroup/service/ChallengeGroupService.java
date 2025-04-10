@@ -80,13 +80,6 @@ public class ChallengeGroupService {
         final ChallengeGroupMember challengeGroupMember = new ChallengeGroupMember(challengeGroup, joinMember);
         challengeGroupMemberRepository.save(challengeGroupMember);
 
-        // TODO : 질문! 이거 영재님이 주석하셨나요?
-//        notificationService.sendNotification(
-//                joinMember.getId(),
-//                "챌린지 그룹에 참여하였습니다.",
-//                "그룹명 : " + challengeGroup.getName()
-//        );
-
         final List<ChallengeGroupMember> groupMembers =
                 challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
         for (final ChallengeGroupMember groupMemberJpaEntity : groupMembers) {
