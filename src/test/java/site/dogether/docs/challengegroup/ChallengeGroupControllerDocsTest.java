@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -211,9 +213,11 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.NUMBER))));
     }
 
-    @DisplayName("참여중인 그룹의 팀원 전체 누적 활동 통계 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회 API")
     @Test
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
+        final long groupId = 1L;
+
         given(challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(any()))
             .willReturn(new JoiningChallengeGroupTeamActivityDto(
                 List.of(
@@ -223,11 +227,15 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             )));
 
         mockMvc.perform(
-                get("/api/groups/summary/team")
+                get("/api/groups/{groupId}/ranking", groupId)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                            .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"), pathVariableExample(groupId))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")

@@ -88,7 +88,7 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-my-activity-summary/response-fields.adoc[]
 
 [[get-joining-challenge-group-team-activity-summary]]
-=== 참여중인 그룹의 팀원 전체 누적 활동 통계 조회
+=== 참여중인 특정 챌린지 그룹 활동 통계 조회
 
 ==== 개발 상태
 |===
@@ -103,6 +103,7 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 
 ==== HTTP Request
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-team-activity-summary/http-request.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-team-activity-summary/path-parameters.adoc[]
 
 ==== HTTP Response
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-team-activity-summary/http-response.adoc[]
