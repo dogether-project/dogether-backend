@@ -2,6 +2,7 @@ package site.dogether.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.auth.controller.request.LoginRequest;
@@ -41,5 +42,11 @@ public class AuthService {
         if (isRevoked) {
             memberService.delete(memberId);
         }
+    }
+
+    @Profile("local")
+    public String issueTestUserJwt(final Long testUserId) {
+        final Member member = memberService.getMember(testUserId);
+        return jwtHandler.createToken(member.getId());
     }
 }

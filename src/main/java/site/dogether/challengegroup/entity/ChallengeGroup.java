@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
 
 import java.time.LocalDate;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "challenge_group")
 @Entity
-public class ChallengeGroup extends BaseTimeEntity {
+public class ChallengeGroup extends BaseEntity {
 
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 20;
     public static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
