@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.exception.InvalidMemberException;
 
 @ToString
@@ -13,7 +13,7 @@ import site.dogether.member.exception.InvalidMemberException;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
 @Entity
-public class Member extends BaseTimeEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

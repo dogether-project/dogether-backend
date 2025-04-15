@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(value = {AuditingEntityListener.class})
-public class BaseTimeEntity {
+public class BaseEntity {
 
     @CreatedDate
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -25,4 +25,7 @@ public class BaseTimeEntity {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(columnDefinition = "TIMESTAMP")
     protected LocalDateTime updatedAt;
+
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0", nullable = false)
+    protected boolean isDeleted = false;
 }

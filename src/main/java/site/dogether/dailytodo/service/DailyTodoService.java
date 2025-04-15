@@ -11,17 +11,15 @@ import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException
 import site.dogether.challengegroup.exception.NotEnoughChallengeGroupMembersException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.MyTodoSummary;
 import site.dogether.dailytodo.exception.*;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
 import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.entity.DailyTodoCertificationMediaUrl;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
-import site.dogether.dailytodocertification.repository.DailyTodoCertificationMediaUrlRepository;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
@@ -44,7 +42,6 @@ public class DailyTodoService {
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
-    private final DailyTodoCertificationMediaUrlRepository dailyTodoCertificationMediaUrlRepository;
     private final NotificationService notificationService;
     private final MemberService memberService;
 
@@ -55,7 +52,6 @@ public class DailyTodoService {
         checkExistPendingReviewDailyTodos(member);
 
         final ChallengeGroup challengeGroup = challengeGroupMember.getChallengeGroup();
-        challengeGroup.checkEnableTodoCount(dailyTodoContents.size());
         final List<DailyTodo> dailyTodos = createDailyTodos(dailyTodoContents, challengeGroupMember);
         dailyTodoRepository.saveAll(dailyTodos);
     }
@@ -98,14 +94,10 @@ public class DailyTodoService {
         checkDailyTodoStatusIsCertifyPending(dailyTodo);
         checkDailyTodoCreatedToday(dailyTodo);
 
-        final DailyTodoCertification dailyTodoCertification = DailyTodoCertification.create(certifyContent, dailyTodo, member);
+        final DailyTodoCertification dailyTodoCertification = DailyTodoCertification.create(certifyContent, dailyTodo, member, certifyMediaUrls.get(0)); // TODO : 이제 인증 사진은 1장만 받으므로 LIST 타입 제거
         final Member dailyTodoCertificationReviewer = pickDailyTodoCertificationReviewer(challengeGroup, member);
         dailyTodoCertificationRepository.save(dailyTodoCertification);
 
-        final List<DailyTodoCertificationMediaUrl> dailyTodoCertificationMediaUrls = certifyMediaUrls.stream()
-            .map(mediaUrlValue -> DailyTodoCertificationMediaUrl.create(mediaUrlValue, dailyTodoCertification))
-            .toList();
-        dailyTodoCertificationMediaUrlRepository.saveAll(dailyTodoCertificationMediaUrls);
         dailyTodo.changeStatusReviewPending();
 
         notificationService.sendNotification(
@@ -215,12 +207,6 @@ public class DailyTodoService {
 
         final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)
             .orElseThrow(() -> new DailyTodoCertificationNotFoundException("데일리 투두 인증이 존재하지 않습니다."));
-        final List<DailyTodoCertificationMediaUrl> certificationMediaUrls = dailyTodoCertificationMediaUrlRepository.findAllByDailyTodoCertification(dailyTodoCertification);
-
-        return new DailyTodoAndDailyTodoCertificationDto(
-            dailyTodo,
-            dailyTodoCertification,
-            certificationMediaUrls
-        );
+        return new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification);
     }
 }

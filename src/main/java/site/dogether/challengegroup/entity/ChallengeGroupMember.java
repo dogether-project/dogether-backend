@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.entity.Member;
 
 @ToString
@@ -13,7 +13,7 @@ import site.dogether.member.entity.Member;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "challenge_group_member")
 @Entity
-public class ChallengeGroupMember extends BaseTimeEntity {
+public class ChallengeGroupMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

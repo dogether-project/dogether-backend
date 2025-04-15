@@ -3,29 +3,24 @@ package site.dogether.dailytodo.service.dto;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.entity.DailyTodoCertificationMediaUrl;
 
-import java.util.List;
 import java.util.Optional;
 
 public class DailyTodoAndDailyTodoCertificationDto {
 
     private final DailyTodo dailyTodo;
     private final DailyTodoCertification dailyTodoCertification;
-    private final List<DailyTodoCertificationMediaUrl> dailyTodoCertificationMediaUrls;
 
     public static DailyTodoAndDailyTodoCertificationDto of(final DailyTodo dailyTodo) {
-        return new DailyTodoAndDailyTodoCertificationDto(dailyTodo, null, null);
+        return new DailyTodoAndDailyTodoCertificationDto(dailyTodo, null);
     }
 
     public DailyTodoAndDailyTodoCertificationDto(
         final DailyTodo dailyTodo,
-        final DailyTodoCertification dailyTodoCertification,
-        final List<DailyTodoCertificationMediaUrl> dailyTodoCertificationMediaUrls
+        final DailyTodoCertification dailyTodoCertification
     ) {
         this.dailyTodo = dailyTodo;
         this.dailyTodoCertification = dailyTodoCertification;
-        this.dailyTodoCertificationMediaUrls = dailyTodoCertificationMediaUrls;
     }
 
     public Long getDailyTodoId() {
@@ -49,11 +44,11 @@ public class DailyTodoAndDailyTodoCertificationDto {
     }
 
     public Optional<String> findDailyTodoCertificationMediaUrl() {
-        if (dailyTodoCertificationMediaUrls == null) {
+        if (dailyTodoCertification == null) {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(dailyTodoCertificationMediaUrls.get(0).getValue());
+        return Optional.of(dailyTodoCertification.getMediaUrl());
     }
 
     public Optional<String> findRejectReason() {

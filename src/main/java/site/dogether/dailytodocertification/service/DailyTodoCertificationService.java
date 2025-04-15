@@ -10,10 +10,8 @@ import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.entity.DailyTodoCertificationMediaUrl;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
-import site.dogether.dailytodocertification.repository.DailyTodoCertificationMediaUrlRepository;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 import site.dogether.member.entity.Member;
@@ -29,7 +27,6 @@ import java.util.List;
 public class DailyTodoCertificationService {
 
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
-    private final DailyTodoCertificationMediaUrlRepository dailyTodoCertificationMediaUrlRepository;
     private final NotificationService notificationService;
     private final MemberService memberService;
 
@@ -76,14 +73,7 @@ public class DailyTodoCertificationService {
         return dailyTodoCertificationsForReview.stream()
             .map(dailyTodoCertification -> DailyTodoCertificationDto.from(
                 dailyTodoCertification,
-                findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertification)))
-            .toList();
-    }
-
-    private List<String> findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(final DailyTodoCertification dailyTodoCertification) {
-        return dailyTodoCertificationMediaUrlRepository.findAllByDailyTodoCertification(dailyTodoCertification)
-            .stream()
-            .map(DailyTodoCertificationMediaUrl::getValue)
+                List.of(dailyTodoCertification.getMediaUrl()))) // TODO : 인증 사진을 한 장만 넘길 수 있도록 로직 수정
             .toList();
     }
 
@@ -93,7 +83,7 @@ public class DailyTodoCertificationService {
 
         return DailyTodoCertificationDto.from(
             dailyTodoCertification,
-            findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertification)
+            List.of(dailyTodoCertification.getMediaUrl()) // TODO : 인증 사진을 한 장만 넘길 수 있도록 로직 수정
         );
     }
 }

@@ -1,9 +1,5 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +22,11 @@ import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,8 +51,7 @@ public class ChallengeGroupService {
             request.name(),
             request.maximumMemberCount(),
             startAt,
-            endAt,
-            request.maximumTodoCount()
+            endAt
         );
 
         final ChallengeGroup savedChallengeGroup = challengeGroupRepository.save(challengeGroup);
@@ -130,7 +130,7 @@ public class ChallengeGroupService {
             challengeGroup.getName(),
             challengeGroup.getDurationDays(),
             challengeGroup.getJoinCode(),
-            challengeGroup.getMaximumTodoCount(),
+            -1, // TODO : 이 부분 제거 필요
             endAtFormatted,
             (int) remainingDays
         );
