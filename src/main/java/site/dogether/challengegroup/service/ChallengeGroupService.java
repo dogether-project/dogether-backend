@@ -169,21 +169,18 @@ public class ChallengeGroupService {
         );
     }
 
-    public JoiningChallengeGroupTeamActivityDto getJoiningChallengeGroupTeamActivitySummary(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
+    public JoiningChallengeGroupTeamActivityDto getJoiningChallengeGroupTeamActivitySummary(final Long groupId) {
+        final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
+                .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
 
-        final ChallengeGroupMember challengeGroupMember =
-                challengeGroupMemberRepository.findByMember(member)
-                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
-        final ChallengeGroup joiningGroup = challengeGroupMember.getChallengeGroup();
-        isGroupFinished(joiningGroup);
+        isGroupFinished(challengeGroup);
 
-        final List<Member> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(joiningGroup)
+        final List<Member> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup)
                 .stream()
                 .map(ChallengeGroupMember::getMember)
                 .toList();
 
-        final List<MyTodoSummary> myTodoSummaries = dailyTodoService.getMyTodoSummaries(groupMembers, joiningGroup);
+        final List<MyTodoSummary> myTodoSummaries = dailyTodoService.getMyTodoSummaries(groupMembers, challengeGroup);
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
 
         return new JoiningChallengeGroupTeamActivityDto(

@@ -88,12 +88,12 @@ public class ChallengeGroupController {
                         joiningChallengeGroupMyActivityDto.totalRejectedCount())));
     }
 
-    @GetMapping("/summary/team")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamActivitySummary(
-            @Authenticated final Long memberId
+    @GetMapping("/{groupId}/ranking")
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamRanking(
+            @PathVariable Long groupId
     ) {
         final JoiningChallengeGroupTeamActivityDto joiningChallengeGroupTeamActivityDto =
-                challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(memberId);
+                challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(groupId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY,
