@@ -3,17 +3,17 @@ package site.dogether.challengegroup.entity;
 import lombok.RequiredArgsConstructor;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 public enum ChallengeGroupStartAtOption {
 
-    TODAY(LocalDateTime::now),
-    TOMORROW(() -> LocalDateTime.now().plusDays(1)),
+    TODAY(LocalDate::now),
+    TOMORROW(() -> LocalDate.now().plusDays(1)),
     ;
 
-    private final Supplier<LocalDateTime> startAtCalculator;
+    private final Supplier<LocalDate> startAtCalculator;
 
     public static ChallengeGroupStartAtOption from(final String startAt) {
         validateStartAt(startAt);
@@ -30,7 +30,7 @@ public enum ChallengeGroupStartAtOption {
         }
     }
 
-    public LocalDateTime calculateStartAt() {
+    public LocalDate calculateStartAt() {
         return startAtCalculator.get();
     }
 }

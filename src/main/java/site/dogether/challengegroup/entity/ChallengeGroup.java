@@ -9,7 +9,6 @@ import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.common.audit.entity.BaseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @ToString
@@ -34,10 +33,10 @@ public class ChallengeGroup extends BaseEntity {
     private int maximumMemberCount;
 
     @Column(name = "start_at", nullable = false)
-    private LocalDateTime startAt;
+    private LocalDate startAt;
 
     @Column(name = "end_at", nullable = false)
-    private LocalDateTime endAt;
+    private LocalDate endAt;
 
     @Column(name = "join_code", length = 20, nullable = false, unique = true)
     private String joinCode;
@@ -49,8 +48,8 @@ public class ChallengeGroup extends BaseEntity {
     public static ChallengeGroup create(
         final String name,
         final int maximumMemberCount,
-        final LocalDateTime startAt,
-        final LocalDateTime endAt
+        final LocalDate startAt,
+        final LocalDate endAt
     ) {
         return new ChallengeGroup(
             null,
@@ -67,8 +66,8 @@ public class ChallengeGroup extends BaseEntity {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private static ChallengeGroupStatus determineStatus(final LocalDateTime startAt) {
-        if (startAt.toLocalDate().equals(LocalDate.now())) {
+    private static ChallengeGroupStatus determineStatus(final LocalDate startAt) {
+        if (startAt.equals(LocalDate.now())) {
             return ChallengeGroupStatus.RUNNING;
         }
 
@@ -79,8 +78,8 @@ public class ChallengeGroup extends BaseEntity {
         final Long id,
         final String name,
         final int maximumMemberCount,
-        final LocalDateTime startAt,
-        final LocalDateTime endAt,
+        final LocalDate startAt,
+        final LocalDate endAt,
         final String joinCode,
         final ChallengeGroupStatus status
     ) {

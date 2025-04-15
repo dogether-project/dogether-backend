@@ -9,8 +9,8 @@ import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.dailytodo.controller.DailyTodoController;
 import site.dogether.dailytodo.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
@@ -18,7 +18,6 @@ import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -153,7 +152,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     void getMyDailyTodos() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final List<DailyTodo> dailyTodos = List.of(
             new DailyTodo(1L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null),
             new DailyTodo(2L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null),
@@ -222,7 +221,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     void getMyDailyTodosWithDailyTodoStatus() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", DailyTodoStatus.REVIEW_PENDING, null);
         final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url");
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification));

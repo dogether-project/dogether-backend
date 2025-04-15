@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.function.Function;
 
@@ -19,12 +19,7 @@ public enum ChallengeGroupDurationOption {
     ;
 
     private final int value;
-    private final Function<LocalDateTime, LocalDateTime> endAtCalculator;
-
-    public static ChallengeGroupDurationOption from(final LocalDateTime startAt, final LocalDateTime endAt) {
-        final int duration = endAt.getDayOfYear() - startAt.getDayOfYear();
-        return from(duration);
-    }
+    private final Function<LocalDate, LocalDate> endAtCalculator;
 
     public static ChallengeGroupDurationOption from(final int durationOption) {
         return Arrays.stream(ChallengeGroupDurationOption.values())
@@ -33,7 +28,7 @@ public enum ChallengeGroupDurationOption {
             .orElseThrow(() -> new InvalidChallengeGroupException("유효하지 않은 기간 옵션입니다. " + durationOption + "일"));
     }
 
-    public LocalDateTime calculateEndAt(final LocalDateTime startAt) {
+    public LocalDate calculateEndAt(final LocalDate startAt) {
         return endAtCalculator.apply(startAt);
     }
 }
