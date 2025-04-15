@@ -154,7 +154,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     void getMyDailyTodos() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), 5, "CODE", ChallengeGroupStatus.RUNNING);
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final List<DailyTodo> dailyTodos = List.of(
             new DailyTodo(1L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null),
             new DailyTodo(2L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null),
@@ -223,7 +223,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     void getMyDailyTodosWithDailyTodoStatus() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), 5, "CODE", ChallengeGroupStatus.RUNNING);
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", DailyTodoStatus.REVIEW_PENDING, null);
         final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ");
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification, List.of(new DailyTodoCertificationMediaUrl(1L, dailyTodoCertification, "운동 조지는 짤.png"))));

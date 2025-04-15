@@ -55,7 +55,7 @@ public class DailyTodoService {
         checkExistPendingReviewDailyTodos(member);
 
         final ChallengeGroup challengeGroup = challengeGroupMember.getChallengeGroup();
-        challengeGroup.checkEnableTodoCount(dailyTodoContents.size());
+//        challengeGroup.checkEnableTodoCount(dailyTodoContents.size());
         final List<DailyTodo> dailyTodos = createDailyTodos(dailyTodoContents, challengeGroupMember);
         dailyTodoRepository.saveAll(dailyTodos);
     }
