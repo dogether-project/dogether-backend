@@ -14,7 +14,6 @@ import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.entity.DailyTodoCertificationMediaUrl;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.member.entity.Member;
 
@@ -162,15 +161,15 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             new DailyTodo(4L, challengeGroup, doer, "DND API 구현", DailyTodoStatus.REJECT, null)
         );
         final List<DailyTodoCertification> dailyTodoCertifications = List.of(
-            new DailyTodoCertification(1L, dailyTodos.get(1), reviewer, "운동 개조짐 ㅋㅋㅋㅋ"),
-            new DailyTodoCertification(2L, dailyTodos.get(2), reviewer, "인강 진짜 열심히 들었습니다. ㅎ"),
-            new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ")
+            new DailyTodoCertification(1L, dailyTodos.get(1), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),
+            new DailyTodoCertification(2L, dailyTodos.get(2), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url"),
+            new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", "https://image.url")
         );
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(
             DailyTodoAndDailyTodoCertificationDto.of(dailyTodos.get(0)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(0), List.of(new DailyTodoCertificationMediaUrl(1L, dailyTodoCertifications.get(0), "운동 조지는 짤.png"))),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(2), dailyTodoCertifications.get(1), List.of(new DailyTodoCertificationMediaUrl(2L, dailyTodoCertifications.get(1), "인강 달리는 짤.png"))),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(3), dailyTodoCertifications.get(2), List.of(new DailyTodoCertificationMediaUrl(3L, dailyTodoCertifications.get(2), "API 명세짤.png"))));
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(0)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(2), dailyTodoCertifications.get(1)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(3), dailyTodoCertifications.get(2)));
 
         given(dailyTodoService.findMyDailyTodo(any()))
             .willReturn(dailyTodoAndDailyTodoCertificationDtos);
@@ -225,8 +224,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDateTime.now(), LocalDateTime.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", DailyTodoStatus.REVIEW_PENDING, null);
-        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ");
-        final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification, List.of(new DailyTodoCertificationMediaUrl(1L, dailyTodoCertification, "운동 조지는 짤.png"))));
+        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url");
+        final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification));
 
         given(dailyTodoService.findMyDailyTodo(any()))
             .willReturn(dailyTodoAndDailyTodoCertificationDtos);

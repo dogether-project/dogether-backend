@@ -32,16 +32,21 @@ public class DailyTodoCertification extends BaseEntity {
     @Column(name = "content", length = 200, nullable = false)
     private String content;
 
+    @Column(name = "media_url", length = 500, nullable = false)
+    private String mediaUrl;
+
     public static DailyTodoCertification create(
         final String content,
         final DailyTodo dailyTodo,
-        final Member member
+        final Member member,
+        final String mediaUrl
     ) {
         return new DailyTodoCertification(
             null,
             dailyTodo,
             member,
-            content
+            content,
+            mediaUrl
         );
     }
 
@@ -49,12 +54,14 @@ public class DailyTodoCertification extends BaseEntity {
         final Long id,
         final DailyTodo dailyTodo,
         final Member reviewer,
-        final String content
+        final String content,
+        final String mediaUrl
     ) {
         this.id = id;
         this.dailyTodo = dailyTodo;
         this.reviewer = reviewer;
         this.content = content;
+        this.mediaUrl = mediaUrl;
     }
 
     // TODO : 검증 조건 및 단위 테스트 추가
