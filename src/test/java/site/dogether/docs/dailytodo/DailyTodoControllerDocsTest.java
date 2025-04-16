@@ -147,9 +147,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.ARRAY))));
     }
 
-    @DisplayName("내 투두 전체 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹의 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
     @Test
-    void getMyDailyTodos() throws Exception {
+    void getMyDailyTodosWithCertificationInputDate() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
@@ -174,12 +174,16 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(dailyTodoAndDailyTodoCertificationDtos);
 
         mockMvc.perform(
-                get("/api/todos/my")
+                get("/api/challenge-groups/{groupId}/my-todos", 1)
                     .param("date", LocalDate.now().toString())
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 queryParameters(
                     parameterWithName("date")
                         .description("데일리 투두 날짜")),
@@ -216,9 +220,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("내 투두 전체 조회 - 투두 상태 필터링 API")
+    @DisplayName("참여중인 특정 챌린지 그룹의 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
     @Test
-    void getMyDailyTodosWithDailyTodoStatus() throws Exception {
+    void getMyDailyTodosWithCertificationInputDateAndTodoStatus() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
@@ -230,13 +234,17 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(dailyTodoAndDailyTodoCertificationDtos);
 
         mockMvc.perform(
-                get("/api/todos/my")
+                get("/api/challenge-groups/{groupId}/my-todos", 1)
                     .param("date", LocalDate.now().toString())
                     .param("status", DailyTodoStatus.REVIEW_PENDING.name())
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 queryParameters(
                     parameterWithName("date")
                         .description("데일리 투두 날짜"),

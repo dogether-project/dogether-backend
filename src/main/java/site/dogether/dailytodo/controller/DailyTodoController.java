@@ -19,13 +19,13 @@ import java.util.List;
 import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/todos")
+@RequestMapping("/api")
 @RestController
 public class DailyTodoController {
 
     private final DailyTodoService dailyTodoService;
 
-    @PostMapping
+    @PostMapping("/todos")
     public ResponseEntity<ApiResponse<Void>> createDailyTodos(
         @Authenticated Long memberId,
         @RequestBody final CreateDailyTodosRequest request
@@ -34,7 +34,7 @@ public class DailyTodoController {
         return ResponseEntity.ok(ApiResponse.success(CREATE_DAILY_TODOS));
     }
 
-    @PostMapping("/{todoId}/certify")
+    @PostMapping("/todos/{todoId}/certify")
     public ResponseEntity<ApiResponse<Void>> certifyDailyTodo(
         @Authenticated Long memberId,
         @PathVariable final Long todoId,
@@ -44,7 +44,7 @@ public class DailyTodoController {
         return ResponseEntity.ok(ApiResponse.success(CERTIFY_DAILY_TODO));
     }
 
-    @GetMapping("/my/yesterday")
+    @GetMapping("/todos/my/yesterday")
     public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos(
         @Authenticated Long memberId
     ) {
@@ -53,9 +53,10 @@ public class DailyTodoController {
         return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
     }
 
-    @GetMapping("/my")
-    public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodos(
+    @GetMapping("/challenge-groups/{groupId}/my-todos")
+    public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodosWithCertification(
         @Authenticated Long memberId,
+        @PathVariable final Long groupId,
         @RequestParam final LocalDate date,
         @RequestParam(required = false) final String status
     ) {
