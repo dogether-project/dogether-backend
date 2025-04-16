@@ -1,6 +1,29 @@
 [[daily-todo-certification-api]]
 == 데일리 투두 수행 인증 API
 
+[[certify-daily-todo]]
+=== 데일리 투두 수행 인증 생성
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/http-request.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/path-parameters.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/http-response.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/response-fields.adoc[]
+
 [[review-daily-todo-certification]]
 === 데일리 투두 수행 인증 검사
 

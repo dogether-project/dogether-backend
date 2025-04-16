@@ -82,7 +82,7 @@ public class DailyTodoService {
         final Long memberId,
         final Long dailyTodoId,
         final String certifyContent,
-        final List<String> certifyMediaUrls
+        final String certifyMediaUrl
     ) {
         final DailyTodo dailyTodo = getDailyTodo(dailyTodoId);
         final Member member = memberService.getMember(memberId);
@@ -94,7 +94,7 @@ public class DailyTodoService {
         checkDailyTodoStatusIsCertifyPending(dailyTodo);
         checkDailyTodoCreatedToday(dailyTodo);
 
-        final DailyTodoCertification dailyTodoCertification = DailyTodoCertification.create(certifyContent, dailyTodo, member, certifyMediaUrls.get(0)); // TODO : 이제 인증 사진은 1장만 받으므로 LIST 타입 제거
+        final DailyTodoCertification dailyTodoCertification = DailyTodoCertification.create(certifyContent, dailyTodo, member, certifyMediaUrl);
         final Member dailyTodoCertificationReviewer = pickDailyTodoCertificationReviewer(challengeGroup, member);
         dailyTodoCertificationRepository.save(dailyTodoCertification);
 

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
+import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.controller.DailyTodoCertificationController;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
@@ -27,11 +29,50 @@ import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 @DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
 public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
 
+    private final DailyTodoService dailyTodoService = mock(DailyTodoService.class);
     private final DailyTodoCertificationService dailyTodoCertificationService = mock(DailyTodoCertificationService.class);
 
     @Override
     protected Object initController() {
-        return new DailyTodoCertificationController(dailyTodoCertificationService);
+        return new DailyTodoCertificationController(dailyTodoService, dailyTodoCertificationService);
+    }
+
+    @DisplayName("데일리 투두 수행 인증 생성 API")
+    @Test
+    void certifyDailyTodo() throws Exception {
+        final long todoId = 1L;
+        final CertifyDailyTodoRequest request = new CertifyDailyTodoRequest(
+            "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
+            "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png"
+        );
+
+        mockMvc.perform(
+                post("/api/todos/{todoId}/certify", todoId)
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(convertToJson(request)))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("todoId")
+                        .description("데일리 투두 id")
+                        .attributes(constraints("존재하는 데일리 투두 id만 입력 가능"), pathVariableExample(todoId))),
+                requestFields(
+                    fieldWithPath("content")
+                        .description("데일리 투두 인증 본문")
+                        .type(JsonFieldType.STRING)
+                        .attributes(constraints("2 ~ 50 길이 문자열")),
+                    fieldWithPath("mediaUrl")
+                        .description("데일리 투두 인증 미디어 리소스")
+                        .type(JsonFieldType.STRING)
+                        .attributes(constraints("이미지를 올린 S3 URL 형식만 입력 가능"))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING))));
     }
 
     @DisplayName("데일리 투두 수행 인증 검사 API")
