@@ -25,15 +25,15 @@ import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRank
 import site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode;
 import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRank;
-import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupInfoResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
+import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupsResponse;
 import site.dogether.challengegroup.controller.response.GetMyChallengeGroupStatusResponse;
 import site.dogether.challengegroup.controller.response.IsJoiningResponse;
 import site.dogether.challengegroup.controller.response.JoinChallengeGroupResponse;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.common.controller.response.ApiResponse;
 
@@ -64,30 +64,25 @@ public class ChallengeGroupController {
         JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(request.joinCode(), memberId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
-                    JOIN_CHALLENGE_GROUP,
-                    new JoinChallengeGroupResponse(
-                            joinChallengeGroupDto.groupName(),
-                            joinChallengeGroupDto.duration(),
-                            joinChallengeGroupDto.maximumMemberCount(),
-                            joinChallengeGroupDto.startAt(),
-                            joinChallengeGroupDto.endAt())));
+                JOIN_CHALLENGE_GROUP,
+                new JoinChallengeGroupResponse(
+                        joinChallengeGroupDto.groupName(),
+                        joinChallengeGroupDto.duration(),
+                        joinChallengeGroupDto.maximumMemberCount(),
+                        joinChallengeGroupDto.startAt(),
+                        joinChallengeGroupDto.endAt())));
     }
 
     @GetMapping("/members/me")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupInfoResponse>> getJoiningChallengeGroupInfo(
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsResponse>> getJoiningChallengeGroups(
             @Authenticated final Long memberId
     ) {
-        final JoiningChallengeGroupInfo joiningGroupInfo = challengeGroupService.getJoiningChallengeGroupInfo(memberId);
+        final List<JoiningChallengeGroupDto> joiningChallengeGroups = challengeGroupService.getJoiningChallengeGroups(memberId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_INFO,
-                new GetJoiningChallengeGroupInfoResponse(
-                        joiningGroupInfo.name(),
-                        joiningGroupInfo.duration(),
-                        joiningGroupInfo.joinCode(),
-                        joiningGroupInfo.maximumTodoCount(),
-                        joiningGroupInfo.endAt(),
-                        joiningGroupInfo.remainingDays())));
+                new GetJoiningChallengeGroupsResponse(joiningChallengeGroups))
+        );
     }
 
     @GetMapping("/summary/my")

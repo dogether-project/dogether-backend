@@ -19,7 +19,7 @@ import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.dailytodo.entity.GroupTodoSummary;
 import site.dogether.dailytodo.entity.MyTodoSummary;
@@ -111,7 +111,7 @@ public class ChallengeGroupService {
         );
     }
 
-    public JoiningChallengeGroupInfo getJoiningChallengeGroupInfo(final Long memberId) {
+    public List<JoiningChallengeGroupDto> getJoiningChallengeGroups(final Long memberId) {
         final Member member = memberService.getMember(memberId);
 
         final ChallengeGroupMember challengeGroupMember =
@@ -126,13 +126,13 @@ public class ChallengeGroupService {
 
         long remainingDays = LocalDateTime.now().until(endAt, ChronoUnit.DAYS);
 
-        return new JoiningChallengeGroupInfo(
-            challengeGroup.getName(),
-            challengeGroup.getDurationDays(),
-            challengeGroup.getJoinCode(),
-            -1, // TODO : 이 부분 제거 필요
-            endAtFormatted,
-            (int) remainingDays
+        return List.of(
+                new JoiningChallengeGroupDto(
+                    challengeGroup.getName(),
+                    challengeGroup.getJoinCode(),
+                    endAtFormatted,
+                    challengeGroup.getDurationDays()
+                )
         );
     }
 
