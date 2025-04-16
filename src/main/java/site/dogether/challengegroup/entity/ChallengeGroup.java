@@ -6,11 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.common.audit.entity.BaseTimeEntity;
-import site.dogether.dailytodo.exception.InvalidDailyTodoException;
+import site.dogether.common.audit.entity.BaseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @ToString
@@ -18,13 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "challenge_group")
 @Entity
-public class ChallengeGroup extends BaseTimeEntity {
+public class ChallengeGroup extends BaseEntity {
 
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 20;
     public static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
     public static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
-    private static final int MINIMUM_LIMIT_TODO_COUNT = 1;
-    private static final int MAXIMUM_LIMIT_TODO_COUNT = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,13 +33,10 @@ public class ChallengeGroup extends BaseTimeEntity {
     private int maximumMemberCount;
 
     @Column(name = "start_at", nullable = false)
-    private LocalDateTime startAt;
+    private LocalDate startAt;
 
     @Column(name = "end_at", nullable = false)
-    private LocalDateTime endAt;
-
-    @Column(name = "maximum_todo_count", nullable = false)
-    private int maximumTodoCount;
+    private LocalDate endAt;
 
     @Column(name = "join_code", length = 20, nullable = false, unique = true)
     private String joinCode;
@@ -55,9 +48,8 @@ public class ChallengeGroup extends BaseTimeEntity {
     public static ChallengeGroup create(
         final String name,
         final int maximumMemberCount,
-        final LocalDateTime startAt,
-        final LocalDateTime endAt,
-        final int maximumTodoCount
+        final LocalDate startAt,
+        final LocalDate endAt
     ) {
         return new ChallengeGroup(
             null,
@@ -65,7 +57,6 @@ public class ChallengeGroup extends BaseTimeEntity {
             maximumMemberCount,
             startAt,
             endAt,
-            maximumTodoCount,
             generateJoinCode(),
             determineStatus(startAt)
         );
@@ -75,8 +66,8 @@ public class ChallengeGroup extends BaseTimeEntity {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private static ChallengeGroupStatus determineStatus(final LocalDateTime startAt) {
-        if (startAt.toLocalDate().equals(LocalDate.now())) {
+    private static ChallengeGroupStatus determineStatus(final LocalDate startAt) {
+        if (startAt.equals(LocalDate.now())) {
             return ChallengeGroupStatus.RUNNING;
         }
 
@@ -87,9 +78,8 @@ public class ChallengeGroup extends BaseTimeEntity {
         final Long id,
         final String name,
         final int maximumMemberCount,
-        final LocalDateTime startAt,
-        final LocalDateTime endAt,
-        final int maximumTodoCount,
+        final LocalDate startAt,
+        final LocalDate endAt,
         final String joinCode,
         final ChallengeGroupStatus status
     ) {
@@ -98,7 +88,6 @@ public class ChallengeGroup extends BaseTimeEntity {
         this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
         this.startAt = startAt;
         this.endAt = endAt;
-        this.maximumTodoCount = validateMaximumTodoCount(maximumTodoCount);
         this.joinCode = joinCode;
         this.status = status;
     }
@@ -124,15 +113,6 @@ public class ChallengeGroup extends BaseTimeEntity {
         return maximumMemberCount;
     }
 
-    private int validateMaximumTodoCount(final int maximumTodoCount) {
-        if (maximumTodoCount < MINIMUM_LIMIT_TODO_COUNT || maximumTodoCount > MAXIMUM_LIMIT_TODO_COUNT) {
-            throw new InvalidChallengeGroupException("챌린지 그룹 최대 할 일 개수는 "+ MINIMUM_LIMIT_TODO_COUNT + "개 이상 "
-                + MAXIMUM_LIMIT_TODO_COUNT +"개 이하로 입력해주세요.");
-        }
-
-        return maximumTodoCount;
-    }
-
     // TODO : startAT이 endAt보다 늦은 날짜가 아닌지 검증
 
     public boolean isFinished() {
@@ -141,13 +121,6 @@ public class ChallengeGroup extends BaseTimeEntity {
 
     public int getDurationDays() {
         return endAt.getDayOfYear() - startAt.getDayOfYear();
-    }
-
-    public void checkEnableTodoCount(final int todoCount) {
-        if (todoCount < MINIMUM_LIMIT_TODO_COUNT || todoCount > maximumTodoCount) {
-            final String exceptionMessage = String.format("데일리 투두는 %d ~ %d개만 등록할 수 있습니다. (input : %d)", MINIMUM_LIMIT_TODO_COUNT, maximumTodoCount, todoCount);
-            throw new InvalidDailyTodoException(exceptionMessage);
-        }
     }
 
     public boolean isRunning() {

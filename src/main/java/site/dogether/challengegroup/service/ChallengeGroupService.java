@@ -21,6 +21,8 @@ import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
+import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -43,14 +45,13 @@ public class ChallengeGroupService {
         final Member member = memberService.getMember(memberId);
         memberAlreadyInGroup(member);
 
-        final LocalDateTime startAt = request.challengeGroupStartAtOption().calculateStartAt();
-        final LocalDateTime endAt = request.challengeGroupDurationOption().calculateEndAt(startAt);
+        final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
+        final LocalDate endAt = request.challengeGroupDurationOption().calculateEndAt(startAt);
         final ChallengeGroup challengeGroup = ChallengeGroup.create(
             request.name(),
             request.maximumMemberCount(),
             startAt,
-            endAt,
-            request.maximumTodoCount()
+            endAt
         );
 
         final ChallengeGroup savedChallengeGroup = challengeGroupRepository.save(challengeGroup);
@@ -120,7 +121,7 @@ public class ChallengeGroupService {
         isGroupFinished(challengeGroup);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd"); // TODO : 도메인으로 이동
-        LocalDateTime endAt = challengeGroup.getEndAt();
+        LocalDate endAt = challengeGroup.getEndAt();
         String endAtFormatted = endAt.format(formatter);
 
         long remainingDays = LocalDateTime.now().until(endAt, ChronoUnit.DAYS);
@@ -129,7 +130,7 @@ public class ChallengeGroupService {
             challengeGroup.getName(),
             challengeGroup.getDurationDays(),
             challengeGroup.getJoinCode(),
-            challengeGroup.getMaximumTodoCount(),
+            -1, // TODO : 이 부분 제거 필요
             endAtFormatted,
             (int) remainingDays
         );

@@ -1,6 +1,29 @@
 [[daily-todo-certification-api]]
 == 데일리 투두 수행 인증 API
 
+[[certify-daily-todo]]
+=== 데일리 투두 수행 인증 생성
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/http-request.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/path-parameters.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/http-response.adoc[]
+include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-todo/response-fields.adoc[]
+
 [[review-daily-todo-certification]]
 === 데일리 투두 수행 인증 검사
 
@@ -25,7 +48,7 @@ include::{snippets}/daily-todo-certification-controller-docs-test/review-daily-t
 include::{snippets}/daily-todo-certification-controller-docs-test/review-daily-todo-certification/response-fields.adoc[]
 
 [[get-daily-todo-certifications-for-review]]
-=== 검사할 투두 수행 인증 전체 조회
+=== 본인이 검사해 줘야 하는 투두 수행 인증 전체 조회
 
 ==== 개발 상태
 |===
@@ -44,25 +67,3 @@ include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo
 ==== HTTP Response
 include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certifications-for-review/http-response.adoc[]
 include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certifications-for-review/response-fields.adoc[]
-
-[[get-daily-todo-certification-by-id]]
-=== 특정 투두 수행 인증 상세 조회
-
-==== 개발 상태
-|===
-| 환경 | 구현 여부
-
-| 개발
-| O
-
-| 운영
-| X
-|===
-
-==== HTTP Request
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/http-request.adoc[]
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/path-parameters.adoc[]
-
-==== HTTP Response
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/http-response.adoc[]
-include::{snippets}/daily-todo-certification-controller-docs-test/get-daily-todo-certification-by-id/response-fields.adoc[]

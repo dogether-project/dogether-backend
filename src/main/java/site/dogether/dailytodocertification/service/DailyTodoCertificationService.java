@@ -10,10 +10,8 @@ import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.entity.DailyTodoCertificationMediaUrl;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
-import site.dogether.dailytodocertification.repository.DailyTodoCertificationMediaUrlRepository;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 import site.dogether.member.entity.Member;
@@ -29,7 +27,6 @@ import java.util.List;
 public class DailyTodoCertificationService {
 
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
-    private final DailyTodoCertificationMediaUrlRepository dailyTodoCertificationMediaUrlRepository;
     private final NotificationService notificationService;
     private final MemberService memberService;
 
@@ -74,26 +71,7 @@ public class DailyTodoCertificationService {
             ChallengeGroupStatus.RUNNING);
 
         return dailyTodoCertificationsForReview.stream()
-            .map(dailyTodoCertification -> DailyTodoCertificationDto.from(
-                dailyTodoCertification,
-                findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertification)))
+            .map(DailyTodoCertificationDto::from)
             .toList();
-    }
-
-    private List<String> findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(final DailyTodoCertification dailyTodoCertification) {
-        return dailyTodoCertificationMediaUrlRepository.findAllByDailyTodoCertification(dailyTodoCertification)
-            .stream()
-            .map(DailyTodoCertificationMediaUrl::getValue)
-            .toList();
-    }
-
-    public DailyTodoCertificationDto findTodoCertificationById(final Long todoCertificationId) {
-        final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findById(todoCertificationId)
-            .orElseThrow(() -> new DailyTodoCertificationNotFoundException(String.format(("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다. (input : %d)" + todoCertificationId))));
-
-        return DailyTodoCertificationDto.from(
-            dailyTodoCertification,
-            findAllDailyTodoCertificationMediaUrlValuesByDailyTodoCertification(dailyTodoCertification)
-        );
     }
 }

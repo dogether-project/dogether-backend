@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.common.audit.entity.BaseTimeEntity;
+import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "daily_todo")
 @Entity
-public class DailyTodo extends BaseTimeEntity {
+public class DailyTodo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
