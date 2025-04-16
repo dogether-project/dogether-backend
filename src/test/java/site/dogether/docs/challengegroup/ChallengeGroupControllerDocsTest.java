@@ -1,5 +1,22 @@
 package site.dogether.docs.challengegroup;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -14,20 +31,6 @@ import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.docs.util.RestDocsSupport;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
@@ -44,14 +47,13 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     void createChallengeGroup() throws Exception {
         final CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
             "성욱이와 친구들",
-            7,
-            "TODAY",
-            7,
-            5
+            8,
+            "TOMORROW",
+            3
         );
 
         given(challengeGroupService.createChallengeGroup(any(CreateChallengeGroupRequest.class), any()))
-                .willReturn("Join Code");
+                .willReturn("A1Bc4dEf");
 
         mockMvc.perform(
                 post("/api/groups")
@@ -61,10 +63,10 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             .andExpect(status().isOk())
             .andDo(createDocument(
                 requestFields(
-                    fieldWithPath("name")
+                    fieldWithPath("groupName")
                         .description("그룹명")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("1 ~ 20 길이 문자열")),
+                        .attributes(constraints("1 ~ 10 길이 문자열")),
                     fieldWithPath("maximumMemberCount")
                         .description("참여 가능 인원수")
                         .type(JsonFieldType.NUMBER)
@@ -73,14 +75,10 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description(generateLink(CHALLENGE_GROUP_START_AT_OPTION))
                         .type(JsonFieldType.STRING)
                         .attributes(constraints("정해진 값만 입력 허용")),
-                    fieldWithPath("durationOption")
+                    fieldWithPath("duration")
                         .description(generateLink(CHALLENGE_GROUP_DURATION_OPTION))
                         .type(JsonFieldType.NUMBER)
-                        .attributes(constraints("정해진 값만 입력 허용")),
-                    fieldWithPath("maximumTodoCount")
-                        .description("하루 최대 작성 가능 투두 개수")
-                        .type(JsonFieldType.NUMBER)
-                        .attributes(constraints("2 ~ 10 범위 정수"))
+                        .attributes(constraints("정해진 값만 입력 허용"))
                 ),
                 responseFields(
                     fieldWithPath("code")
@@ -97,10 +95,16 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("챌린지 그룹 참가 API")
     @Test
     void joinChallengeGroup() throws Exception {
-        final JoinChallengeGroupRequest request = new JoinChallengeGroupRequest("kelly-join-code");
+        final JoinChallengeGroupRequest request = new JoinChallengeGroupRequest("A1Bc4dEf");
 
         given(challengeGroupService.joinChallengeGroup(any(), any()))
-            .willReturn(new JoinChallengeGroupDto("성욱이와 친구들", 7, "2025.02.17", "2025.02.23", 7));
+            .willReturn(new JoinChallengeGroupDto(
+                    "성욱이와 친구들",
+                    3,
+                    8,
+                    "2025.03.02",
+                    "2025.03.05"
+            ));
 
         mockMvc.perform(
                 post("/api/groups/join")
@@ -113,7 +117,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("joinCode")
                         .description("그룹 참여 코드")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("서버에서 발급한 코드만 사용 갸능"))),
+                        .attributes(constraints("서버에서 발급한 코드(영문, 숫자 조합 8자리)"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
@@ -121,9 +125,12 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("message")
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.name")
+                    fieldWithPath("data.groupName")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),
+                    fieldWithPath("data.duration")
+                        .description("챌린지 기간")
+                        .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.maximumMemberCount")
                         .description("총 인원수")
                         .type(JsonFieldType.NUMBER),
@@ -132,17 +139,21 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.endAt")
                         .description("챌린지 종료일")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.durationOption")
-                        .description("챌린지 기간")
-                        .type(JsonFieldType.NUMBER))));
+                        .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 그룹 정보 조회 API")
+    @DisplayName("참여중인 챌린지 그룹 정보 전체 조회 API")
     @Test
     void getJoiningChallengeGroupInfo() throws Exception {
         given(challengeGroupService.getJoiningChallengeGroupInfo(any()))
-            .willReturn(new JoiningChallengeGroupInfo("성욱이와 친구들", 7, "Join Code", 5, "25.02.25", 5));
+            .willReturn(new JoiningChallengeGroupInfo(
+                    "성욱이와 친구들",
+                    7,
+                    "Join Code",
+                    5,
+                    "25.02.25",
+                    5
+            ));
 
         mockMvc.perform(
                 get("/api/groups/info/current")

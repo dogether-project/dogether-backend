@@ -31,7 +31,7 @@ include::{snippets}/challenge-group-controller-docs-test/create-challenge-group/
 | 환경 | 구현 여부
 
 | 개발
-| O
+| x
 
 | 운영
 | X
@@ -53,7 +53,7 @@ include::{snippets}/challenge-group-controller-docs-test/join-challenge-group/re
 | 환경 | 구현 여부
 
 | 개발
-| O
+| x
 
 | 운영
 | X

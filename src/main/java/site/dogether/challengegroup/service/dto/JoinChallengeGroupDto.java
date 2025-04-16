@@ -1,10 +1,10 @@
 package site.dogether.challengegroup.service.dto;
 
 public record JoinChallengeGroupDto(
-        String name,
+        String groupName,
+        int duration,
         int maximumMemberCount,
         String startAt,
-        String endAt,
-        int durationOption
+        String endAt
 ) {
 }

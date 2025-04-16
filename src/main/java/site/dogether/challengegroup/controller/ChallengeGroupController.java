@@ -1,23 +1,41 @@
 package site.dogether.challengegroup.controller;
 
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.CREATE_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_IS_JOINED_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_INFO;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.LEAVE_CHALLENGE_GROUP;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
+
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
-import site.dogether.challengegroup.controller.response.*;
+import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
+import site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode;
+import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
+import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRank;
+import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupInfoResponse;
+import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
+import site.dogether.challengegroup.controller.response.GetMyChallengeGroupStatusResponse;
+import site.dogether.challengegroup.controller.response.IsJoiningResponse;
+import site.dogether.challengegroup.controller.response.JoinChallengeGroupResponse;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.common.controller.response.ApiResponse;
-
-import java.util.List;
-
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.*;
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
@@ -38,8 +56,8 @@ public class ChallengeGroupController {
                 new CreateChallengeGroupResponse(joinCode)));
     }
 
-    @PostMapping("/join")
-            public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
+    @PostMapping("/members/me")
+    public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
             @Authenticated final Long memberId,
             @RequestBody final JoinChallengeGroupRequest request
     ) {
@@ -48,15 +66,14 @@ public class ChallengeGroupController {
             ApiResponse.successWithData(
                     JOIN_CHALLENGE_GROUP,
                     new JoinChallengeGroupResponse(
-                            joinChallengeGroupDto.name(),
+                            joinChallengeGroupDto.groupName(),
+                            joinChallengeGroupDto.duration(),
                             joinChallengeGroupDto.maximumMemberCount(),
                             joinChallengeGroupDto.startAt(),
-                            joinChallengeGroupDto.endAt(),
-                            joinChallengeGroupDto.durationOption())
-            ));
+                            joinChallengeGroupDto.endAt())));
     }
 
-    @GetMapping("/info/current")
+    @GetMapping("/members/me")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupInfoResponse>> getJoiningChallengeGroupInfo(
             @Authenticated final Long memberId
     ) {

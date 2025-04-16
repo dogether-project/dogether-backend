@@ -1,5 +1,10 @@
 package site.dogether.challengegroup.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,20 +18,15 @@ import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
-import site.dogether.challengegroup.service.dto.*;
+import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.dailytodo.entity.GroupTodoSummary;
 import site.dogether.dailytodo.entity.MyTodoSummary;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
-
-import java.time.LocalDate;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class ChallengeGroupService {
         final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
         final LocalDate endAt = request.challengeGroupDurationOption().calculateEndAt(startAt);
         final ChallengeGroup challengeGroup = ChallengeGroup.create(
-            request.name(),
+            request.groupName(),
             request.maximumMemberCount(),
             startAt,
             endAt
@@ -104,10 +104,10 @@ public class ChallengeGroupService {
 
         return new JoinChallengeGroupDto(
             challengeGroup.getName(),
+            challengeGroup.getDurationDays(),
             challengeGroup.getMaximumMemberCount(),
             startAtFormatted,
-            endAtFormatted,
-            challengeGroup.getDurationDays()
+            endAtFormatted
         );
     }
 
