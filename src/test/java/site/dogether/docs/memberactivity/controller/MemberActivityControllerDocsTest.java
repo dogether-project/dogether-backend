@@ -7,9 +7,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.memberactivity.controller.MemberActivityController;
-import site.dogether.memberactivity.controller.response.*;
-
-import java.util.List;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -88,40 +85,6 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API")
     @Test
     void getMemberAllStats() throws Exception {
-        final GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
-                5,
-                3,
-                2
-        );
-
-        final List<GetMemberAllStatsResponse.DailyTodoCertifications> certifications = List.of(
-                new GetMemberAllStatsResponse.DailyTodoCertifications(
-                        1L,
-                        "운동 하기",
-                        "REVIEW_PENDING",
-                        "운동 개조짐 ㅋㅋㅋㅋ",
-                        "운동 조지는 짤.png",
-                        null
-                ),
-                new GetMemberAllStatsResponse.DailyTodoCertifications(
-                        2L,
-                        "인강 듣기",
-                        "APPROVE",
-                        "인강 진짜 열심히 들었습니다. ㅎ",
-                        "인강 달리는 짤.png",
-                        null
-                ),
-                new GetMemberAllStatsResponse.DailyTodoCertifications(
-                        3L,
-                        "DND API 구현",
-                        "REJECT",
-                        "API 좀 잘 만든듯 ㅋ",
-                        "API 명세짤.png",
-                        "아 별론데?"
-                )
-        );
-
-        final GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certifications);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/activity")
