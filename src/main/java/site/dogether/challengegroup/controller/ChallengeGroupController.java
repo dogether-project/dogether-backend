@@ -26,6 +26,7 @@ import site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCod
 import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRank;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupMyActivitySummaryResponse;
+import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupNamesResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupsResponse;
 import site.dogether.challengegroup.controller.response.GetMyChallengeGroupStatusResponse;
 import site.dogether.challengegroup.controller.response.IsJoiningResponse;
@@ -35,6 +36,7 @@ import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupName;
 import site.dogether.common.controller.response.ApiResponse;
 
 @RequiredArgsConstructor
@@ -82,6 +84,21 @@ public class ChallengeGroupController {
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUP_INFO,
                 new GetJoiningChallengeGroupsResponse(joiningChallengeGroups))
+        );
+    }
+
+    @GetMapping("/names/members/me")
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupNamesResponse>> getJoiningChallengeGroupNames(
+            @Authenticated final Long memberId
+    ) {
+        final List<JoiningChallengeGroupName> joiningChallengeGroups = List.of(
+                new JoiningChallengeGroupName("켈리와 친구들"),
+                new JoiningChallengeGroupName("폰트와 친구들")
+        );
+        return ResponseEntity.ok(
+                ApiResponse.successWithData(
+                        GET_JOINING_CHALLENGE_GROUP_INFO,
+                        new GetJoiningChallengeGroupNamesResponse(joiningChallengeGroups))
         );
     }
 

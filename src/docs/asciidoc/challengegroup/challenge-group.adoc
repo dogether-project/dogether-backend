@@ -66,6 +66,27 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/http-response.adoc[]
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/response-fields.adoc[]
 
+[[get-joining-challenge-group-names]]
+=== 참여중인 챌린지 그룹 목록 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| x
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-names/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-names/http-response.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-names/response-fields.adoc[]
+
 [[get-joining-challenge-group-my-activity-summary]]
 === 참여중인 그룹의 내 누적 활동 통계 조회
 
