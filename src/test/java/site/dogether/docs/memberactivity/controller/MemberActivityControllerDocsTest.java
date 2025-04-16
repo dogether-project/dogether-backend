@@ -53,11 +53,9 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.ARRAY),
                                 fieldWithPath("data.groups[].id")
                                         .description("챌린지 그룹 id")
-                                        .optional()
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("data.groups[].name")
                                         .description("그룹 이름")
-                                        .optional()
                                         .type(JsonFieldType.STRING))));
     }
 
