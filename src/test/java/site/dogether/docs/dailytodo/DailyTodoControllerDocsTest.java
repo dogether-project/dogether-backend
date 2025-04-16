@@ -7,7 +7,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.dailytodo.controller.DailyTodoController;
-import site.dogether.dailytodo.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
@@ -41,7 +40,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         return new DailyTodoController(dailyTodoService);
     }
 
-    @DisplayName("데일리 투두 작성 API")
+    @DisplayName("데일리 투두 생성 API")
     @Test        
     void createDailyTodos() throws Exception {
         final CreateDailyTodosRequest request = new CreateDailyTodosRequest(List.of(
@@ -51,12 +50,16 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         ));
 
         mockMvc.perform(
-                post("/api/todos")
+                post("/api/challenge-groups/{groupId}/todos", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 requestFields(
                     fieldWithPath("todos")
                         .description("데일리 투두 리스트")
@@ -73,49 +76,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING))));
     }
-    
-    @DisplayName("데일리 투두 수행 인증 API")
-    @Test        
-    void certifyDailyTodo() throws Exception {
-        final long todoId = 1L;
-        final CertifyDailyTodoRequest request = new CertifyDailyTodoRequest(
-            "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
-            List.of(
-                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
-                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
-            )
-        );
 
-        mockMvc.perform(
-                post("/api/todos/{todoId}/certify", todoId)
-                    .header("Authorization", "Bearer access_token")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content(convertToJson(request)))
-            .andExpect(status().isOk())
-            .andDo(createDocument(
-                pathParameters(
-                    parameterWithName("todoId")
-                        .description("데일리 투두 id")
-                        .attributes(constraints("존재하는 데일리 투두 id만 입력 가능"), pathVariableExample(todoId))),
-                requestFields(
-                    fieldWithPath("content")
-                        .description("데일리 투두 인증 본문")
-                        .type(JsonFieldType.STRING)
-                        .attributes(constraints("2 ~ 50 길이 문자열")),
-                    fieldWithPath("mediaUrls")
-                        .description("데일리 투두 인증 미디어 리소스")
-                        .type(JsonFieldType.ARRAY)
-                        .attributes(constraints("MVP에서는 이미지를 올린 S3 URL만 입력 가능"))),
-                responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("message")
-                        .description("응답 메시지")
-                        .type(JsonFieldType.STRING))));
-    }
-    
-    @DisplayName("어제 작성한 투두 내용 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹에서 어제 본인이 작성한 투두 내용 전체 조회 API")
     @Test
     void getYesterdayDailyTodos() throws Exception {
         final List<String> yesterdayTodos = List.of(
@@ -129,11 +91,15 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(yesterdayTodos);
 
         mockMvc.perform(
-                get("/api/todos/my/yesterday")
+                get("/api/challenge-groups/{groupId}/my-yesterday-todos", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
@@ -147,9 +113,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.ARRAY))));
     }
 
-    @DisplayName("내 투두 전체 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
     @Test
-    void getMyDailyTodos() throws Exception {
+    void getMyDailyTodosWithCertificationInputDate() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
@@ -174,12 +140,16 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(dailyTodoAndDailyTodoCertificationDtos);
 
         mockMvc.perform(
-                get("/api/todos/my")
+                get("/api/challenge-groups/{groupId}/my-todos", 1)
                     .param("date", LocalDate.now().toString())
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 queryParameters(
                     parameterWithName("date")
                         .description("데일리 투두 날짜")),
@@ -216,9 +186,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("내 투두 전체 조회 - 투두 상태 필터링 API")
+    @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
     @Test
-    void getMyDailyTodosWithDailyTodoStatus() throws Exception {
+    void getMyDailyTodosWithCertificationInputDateAndTodoStatus() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
         final Member reviewer = new Member(2L, "elmo-id", "elmo");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
@@ -230,13 +200,17 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(dailyTodoAndDailyTodoCertificationDtos);
 
         mockMvc.perform(
-                get("/api/todos/my")
+                get("/api/challenge-groups/{groupId}/my-todos", 1)
                     .param("date", LocalDate.now().toString())
                     .param("status", DailyTodoStatus.REVIEW_PENDING.name())
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 queryParameters(
                     parameterWithName("date")
                         .description("데일리 투두 날짜"),
@@ -266,6 +240,60 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.todos[].certificationMediaUrl")
                         .description("데일리 투두 인증글 이미지 URL")
+                        .type(JsonFieldType.STRING))));
+    }
+
+    @DisplayName("참여중인 특정 챌린지 그룹의 특정 그룹원이 당일 작성한 데일리 투두 전체 조회 API")
+    @Test
+    void getChallengeGroupMemberTodayTodos() throws Exception {
+        mockMvc.perform(
+                get("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todos", 1, 2)
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1)),
+                    parameterWithName("challengeGroupMemberId")
+                        .description("조회할 챌린지 그룹 멤버 id")
+                        .attributes(constraints("유효한 챌린지 그룹 멤버 id만 입력 가능"), pathVariableExample(2))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.memberProfileImageUrl")
+                        .description("조회한 챌린지 그룹 멤버 프로필 이미지 url")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.memberName")
+                        .description("조회한 챌린지 그룹 멤버 이름")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.achievementRate")
+                        .description("조회한 챌린지 그룹 멤버 달성률")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.todos")
+                        .description("조회한 챌린지 그룹 멤버 투두 리스트")
+                        .type(JsonFieldType.ARRAY),
+                    fieldWithPath("data.todos[].id")
+                        .description("데일리 투두 id")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.todos[].content")
+                        .description("데일리 투두 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].status")
+                        .description("데일리 투두 상태")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].certificationContent")
+                        .description("데일리 투두 인증글 내용")
+                        .optional()
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].certificationMediaUrl")
+                        .description("데일리 투두 인증글 이미지 URL")
+                        .optional()
                         .type(JsonFieldType.STRING))));
     }
 }

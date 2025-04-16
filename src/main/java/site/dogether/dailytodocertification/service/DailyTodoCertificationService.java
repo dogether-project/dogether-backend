@@ -71,19 +71,7 @@ public class DailyTodoCertificationService {
             ChallengeGroupStatus.RUNNING);
 
         return dailyTodoCertificationsForReview.stream()
-            .map(dailyTodoCertification -> DailyTodoCertificationDto.from(
-                dailyTodoCertification,
-                List.of(dailyTodoCertification.getMediaUrl()))) // TODO : 인증 사진을 한 장만 넘길 수 있도록 로직 수정
+            .map(DailyTodoCertificationDto::from)
             .toList();
-    }
-
-    public DailyTodoCertificationDto findTodoCertificationById(final Long todoCertificationId) {
-        final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findById(todoCertificationId)
-            .orElseThrow(() -> new DailyTodoCertificationNotFoundException(String.format(("해당 id의 데일리 투두 수행 인증 정보가 존재하지 않습니다. (input : %d)" + todoCertificationId))));
-
-        return DailyTodoCertificationDto.from(
-            dailyTodoCertification,
-            List.of(dailyTodoCertification.getMediaUrl()) // TODO : 인증 사진을 한 장만 넘길 수 있도록 로직 수정
-        );
     }
 }
