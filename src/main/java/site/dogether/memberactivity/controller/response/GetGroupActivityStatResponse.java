@@ -9,4 +9,13 @@ public record GetGroupActivityStatResponse(
         RankingResponse ranking,
         MemberStatsResponse stats
         ) {
+
+        public record CertificationPeriodResponse(int day, int createdCount, int certificatedCount, int certificationRate) {
+        }
+
+        public record RankingResponse(int totalMemberCount, int myRank) {
+        }
+
+        public record MemberStatsResponse(int certificatedCount, int approvedCount, int rejectedCount) {
+        }
 }
