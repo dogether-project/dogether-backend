@@ -12,8 +12,7 @@ import site.dogether.memberactivity.controller.response.*;
 
 import java.util.List;
 
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_All_GROUP_NAMES;
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/my")
@@ -56,5 +55,47 @@ public class MemberActivityController {
         );
 
         return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
+    }
+
+    @GetMapping("/activity")
+    public ResponseEntity<ApiResponse<GetMemberAllStatsResponse>> getMemberAllStats(
+            @Authenticated final Long memberId
+    ) {
+        GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
+                5,
+                3,
+                2
+        );
+
+        List<GetMemberAllStatsResponse.DailyTodoCertifications> certifications = List.of(
+                new GetMemberAllStatsResponse.DailyTodoCertifications(
+                        1L,
+                        "운동 하기",
+                        "REVIEW_PENDING",
+                        "운동 개조짐 ㅋㅋㅋㅋ",
+                        "운동 조지는 짤.png",
+                        null
+                ),
+                new GetMemberAllStatsResponse.DailyTodoCertifications(
+                        2L,
+                        "인강 듣기",
+                        "APPROVE",
+                        "인강 진짜 열심히 들었습니다. ㅎ",
+                        "인강 달리는 짤.png",
+                        null
+                ),
+                new GetMemberAllStatsResponse.DailyTodoCertifications(
+                        3L,
+                        "DND API 구현",
+                        "REJECT",
+                        "API 좀 잘 만든듯 ㅋ",
+                        "API 명세짤.png",
+                        "아 별론데?"
+                )
+        );
+
+        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certifications);
+
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_MEMBER_ALL_STATS, response));
     }
 }

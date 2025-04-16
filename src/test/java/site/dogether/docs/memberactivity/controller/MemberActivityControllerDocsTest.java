@@ -142,4 +142,90 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                         .description("노인정 받은 투두 개수")
                                         .type(JsonFieldType.NUMBER))));
     }
+
+    @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API")
+    @Test
+    void getMemberAllStats() throws Exception {
+        final GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
+                5,
+                3,
+                2
+        );
+
+        final List<GetMemberAllStatsResponse.DailyTodoCertifications> certifications = List.of(
+                new GetMemberAllStatsResponse.DailyTodoCertifications(
+                        1L,
+                        "운동 하기",
+                        "REVIEW_PENDING",
+                        "운동 개조짐 ㅋㅋㅋㅋ",
+                        "운동 조지는 짤.png",
+                        null
+                ),
+                new GetMemberAllStatsResponse.DailyTodoCertifications(
+                        2L,
+                        "인강 듣기",
+                        "APPROVE",
+                        "인강 진짜 열심히 들었습니다. ㅎ",
+                        "인강 달리는 짤.png",
+                        null
+                ),
+                new GetMemberAllStatsResponse.DailyTodoCertifications(
+                        3L,
+                        "DND API 구현",
+                        "REJECT",
+                        "API 좀 잘 만든듯 ㅋ",
+                        "API 명세짤.png",
+                        "아 별론데?"
+                )
+        );
+
+        final GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certifications);
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/my/activity")
+                                .header("Authorization", "Bearer access_token")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                        responseFields(
+                                fieldWithPath("code")
+                                        .description("응답 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("message")
+                                        .description("응답 메시지")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoStats.totalCertificatedCount")
+                                        .description("사용자의 인증 목록 개수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoStats.totalApprovedCount")
+                                        .description("사용자의 인정받은 투두 개수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoStats.totalRejectedCount")
+                                        .description("사용자의 노인정 받은 투두 개수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoCertifications")
+                                        .description("개인 인증 목록 전체 조회")
+                                        .optional()
+                                        .type(JsonFieldType.ARRAY),
+                                fieldWithPath("data.dailyTodoCertifications[].id")
+                                        .description("데일리 투두 id")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoCertifications[].content")
+                                        .description("데일리 투두 내용")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].status")
+                                        .description("데일리 투두 상태")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].certificationContent")
+                                        .description("데일리 투두 인증글 내용")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].certificationMediaUrl")
+                                        .description("데일리 투두 인증글 이미지 URL")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[]rejectReason")
+                                        .description("데일리 투두 인증 노인정 사유")
+                                        .optional()
+                                        .type(JsonFieldType.STRING)
+                        )));
+    }
 }
