@@ -91,3 +91,25 @@ include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-cert
 ==== HTTP Response
 include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-certification-input-date-and-todo-status/http-response.adoc[]
 include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-certification-input-date-and-todo-status/response-fields.adoc[]
+
+[[get-challenge-group-member-today-todos]]
+=== 참여중인 특정 챌린지 그룹의 특정 그룹원이 당일 작성한 데일리 투두 전체 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| X
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/http-request.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/http-response.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/response-fields.adoc[]
