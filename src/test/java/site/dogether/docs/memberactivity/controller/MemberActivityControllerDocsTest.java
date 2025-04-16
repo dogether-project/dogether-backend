@@ -24,42 +24,6 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
         return new MemberActivityController();
     }
 
-    @DisplayName("참여중인 챌린지 그룹 목록 조회 API")
-    @Test
-    void getAllGroupsName() throws Exception {
-        final List<GetAllGroupNamesResponse.GroupNameResponse> groups = List.of(
-                new GetAllGroupNamesResponse.GroupNameResponse(1L, "성욱이와 친구들"),
-                new GetAllGroupNamesResponse.GroupNameResponse(2L, "스콘 먹기 챌린지"),
-                new GetAllGroupNamesResponse.GroupNameResponse(3L, "성욱이의 일기")
-        );
-
-        final GetAllGroupNamesResponse response = new GetAllGroupNamesResponse(groups);
-
-        mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my/groups")
-                                .header("Authorization", "Bearer access_token")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andDo(createDocument(
-                        responseFields(
-                                fieldWithPath("code")
-                                        .description("응답 코드")
-                                        .type(JsonFieldType.STRING),
-                                fieldWithPath("message")
-                                        .description("응답 메시지")
-                                        .type(JsonFieldType.STRING),
-                                fieldWithPath("data.groups")
-                                        .description("그룹 이름 목록")
-                                        .optional()
-                                        .type(JsonFieldType.ARRAY),
-                                fieldWithPath("data.groups[].id")
-                                        .description("챌린지 그룹 id")
-                                        .type(JsonFieldType.NUMBER),
-                                fieldWithPath("data.groups[].name")
-                                        .description("그룹 이름")
-                                        .type(JsonFieldType.STRING))));
-    }
-
     @DisplayName("참여중인 특정 챌린지 그룹 활동 통계 조회 API")
     @Test
     void getGroupActivityStat() throws Exception {

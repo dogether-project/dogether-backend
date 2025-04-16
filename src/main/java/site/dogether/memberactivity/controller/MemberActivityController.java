@@ -19,21 +19,6 @@ import static site.dogether.memberactivity.controller.response.MemberActivitySuc
 @RestController
 public class MemberActivityController {
 
-    @GetMapping("/groups")
-    public ResponseEntity<ApiResponse<GetAllGroupNamesResponse>> getAllGroupNames(
-            @Authenticated Long memberId
-    ) {
-        List<GetAllGroupNamesResponse.GroupNameResponse> groups = List.of(
-                new GetAllGroupNamesResponse.GroupNameResponse(1L, "성욱이와 친구들"),
-                new GetAllGroupNamesResponse.GroupNameResponse(2L, "스콘 먹기 챌린지"),
-                new GetAllGroupNamesResponse.GroupNameResponse(3L, "성욱이의 일기")
-        );
-
-        GetAllGroupNamesResponse response = new GetAllGroupNamesResponse(groups);
-
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_ALL_GROUP_NAMES, response));
-    }
-
     @GetMapping("/groups/{groupId}/activity")
     public ResponseEntity<ApiResponse<GetGroupActivityStatResponse>> getGroupActivityStat(
             @Authenticated final Long memberId, @PathVariable final Long groupId
