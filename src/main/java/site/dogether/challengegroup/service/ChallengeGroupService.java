@@ -186,7 +186,7 @@ public class ChallengeGroupService {
         return List.of();
     }
 
-    public boolean isJoiningChallengeGroup(final Long memberId) {
+    public boolean hasChallengeGroup(final Long memberId) {
         final Member member = memberService.getMember(memberId);
         final ChallengeGroupMember challengeGroupMember =
                 challengeGroupMemberRepository.findByMember(member).orElse(null);

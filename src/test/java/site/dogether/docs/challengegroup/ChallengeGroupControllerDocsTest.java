@@ -214,6 +214,30 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
+    @DisplayName("챌린지 그룹 참여 여부 조회 API")
+    @Test
+    void hasChallengeGroup() throws Exception {
+        given(challengeGroupService.hasChallengeGroup(any()))
+                .willReturn(true);
+
+        mockMvc.perform(
+                        get("/api/groups/members/me/joined")
+                                .header("Authorization", "Bearer access_token")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                        responseFields(
+                                fieldWithPath("code")
+                                        .description("응답 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("message")
+                                        .description("응답 메시지")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.hasGroup")
+                                        .description("그룹에 참여중인지 여부")
+                                        .type(JsonFieldType.BOOLEAN))));
+    }
+
     @DisplayName("참여중인 그룹의 내 누적 활동 통계 조회 API")
     @Test
     void getJoiningChallengeGroupMyActivitySummary() throws Exception {
@@ -293,31 +317,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("데일리 투두 인증률")
                         .type(JsonFieldType.NUMBER))
             ));
-    }
-
-
-    @DisplayName("챌린지 그룹 참여 여부 조회 API")
-    @Test
-    void isJoiningChallengeGroup() throws Exception {
-        given(challengeGroupService.isJoiningChallengeGroup(any()))
-                .willReturn(true);
-
-        mockMvc.perform(
-                        get("/api/groups/isJoining")
-                                .header("Authorization", "Bearer access_token")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andDo(createDocument(
-                    responseFields(
-                            fieldWithPath("code")
-                                .description("응답 코드")
-                                .type(JsonFieldType.STRING),
-                            fieldWithPath("message")
-                                .description("응답 메시지")
-                                .type(JsonFieldType.STRING),
-                            fieldWithPath("data.isJoining")
-                                .description("그룹에 참여중인지 여부")
-                                .type(JsonFieldType.BOOLEAN))));
     }
 
     @DisplayName("챌린지 그룹 탈퇴 API")

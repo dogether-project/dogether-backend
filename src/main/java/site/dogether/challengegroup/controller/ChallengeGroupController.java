@@ -1,9 +1,10 @@
 package site.dogether.challengegroup.controller;
 
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.CREATE_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_IS_JOINED_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_INFO;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUPS;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_NAMES;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.HAS_CHALLENGE_GROUP;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.LEAVE_CHALLENGE_GROUP;
 import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
@@ -29,7 +30,7 @@ import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroup
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupNamesResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupsResponse;
 import site.dogether.challengegroup.controller.response.GetMyChallengeGroupStatusResponse;
-import site.dogether.challengegroup.controller.response.IsJoiningResponse;
+import site.dogether.challengegroup.controller.response.HasChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.JoinChallengeGroupResponse;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.service.ChallengeGroupService;
@@ -82,7 +83,7 @@ public class ChallengeGroupController {
         final List<JoiningChallengeGroupDto> joiningChallengeGroups = challengeGroupService.getJoiningChallengeGroups(memberId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
-                GET_JOINING_CHALLENGE_GROUP_INFO,
+                GET_JOINING_CHALLENGE_GROUPS,
                 new GetJoiningChallengeGroupsResponse(joiningChallengeGroups))
         );
     }
@@ -96,10 +97,22 @@ public class ChallengeGroupController {
                 new JoiningChallengeGroupName("폰트와 친구들")
         );
         return ResponseEntity.ok(
-                ApiResponse.successWithData(
-                        GET_JOINING_CHALLENGE_GROUP_INFO,
-                        new GetJoiningChallengeGroupNamesResponse(joiningChallengeGroups))
+            ApiResponse.successWithData(
+                GET_JOINING_CHALLENGE_GROUP_NAMES,
+                new GetJoiningChallengeGroupNamesResponse(joiningChallengeGroups))
         );
+    }
+
+    @GetMapping("/members/me/joined")
+    public ResponseEntity<ApiResponse<HasChallengeGroupResponse>> hasChallengeGroup(
+            @Authenticated final Long memberId
+    ) {
+        final boolean hasGroup = challengeGroupService.hasChallengeGroup(memberId);
+        return ResponseEntity.ok(
+                ApiResponse.successWithData(
+                        HAS_CHALLENGE_GROUP,
+                        new HasChallengeGroupResponse(hasGroup)
+                ));
     }
 
     @GetMapping("/summary/my")
@@ -131,28 +144,6 @@ public class ChallengeGroupController {
         return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
     }
 
-    @GetMapping("/isJoining")
-    public ResponseEntity<ApiResponse<IsJoiningResponse>> isJoinedChallengeGroup(
-            @Authenticated final Long memberId
-    ) {
-        final boolean isJoined = challengeGroupService.isJoiningChallengeGroup(memberId);
-        return ResponseEntity.ok(
-                ApiResponse.successWithData(
-                        GET_IS_JOINED_CHALLENGE_GROUP,
-                        new IsJoiningResponse(isJoined)
-                ));
-    }
-
-    @DeleteMapping("/leave")
-    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
-            @Authenticated final Long memberId
-    ) {
-        challengeGroupService.leaveChallengeGroup(memberId);
-        return ResponseEntity.ok(ApiResponse.success(
-                LEAVE_CHALLENGE_GROUP
-        ));
-    }
-
     @GetMapping("/my/status")
     public ResponseEntity<ApiResponse<GetMyChallengeGroupStatusResponse>> getMyChallengeGroupStatus(
         @Authenticated final Long memberId
@@ -164,5 +155,15 @@ public class ChallengeGroupController {
                 new GetMyChallengeGroupStatusResponse(myChallengeGroupStatus)
             )
         );
+    }
+
+    @DeleteMapping("/leave")
+    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
+            @Authenticated final Long memberId
+    ) {
+        challengeGroupService.leaveChallengeGroup(memberId);
+        return ResponseEntity.ok(ApiResponse.success(
+                LEAVE_CHALLENGE_GROUP
+        ));
     }
 }
