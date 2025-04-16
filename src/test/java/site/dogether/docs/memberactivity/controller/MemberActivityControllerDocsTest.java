@@ -110,19 +110,15 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.ARRAY),
                                 fieldWithPath("data.certificationPeriods[].day")
                                         .description("일차")
-                                        .optional()
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("data.certificationPeriods[].createdCount")
                                         .description("작성한 투두 개수")
-                                        .optional()
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("data.certificationPeriods[].certificatedCount")
                                         .description("인증한 투두 개수")
-                                        .optional()
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("data.certificationPeriods[].certificationRate")
                                         .description("달성률")
-                                        .optional()
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("data.ranking.totalMemberCount")
                                         .description("그룹원 수")
