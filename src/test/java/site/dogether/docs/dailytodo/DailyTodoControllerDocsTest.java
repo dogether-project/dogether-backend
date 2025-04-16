@@ -116,8 +116,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
     @Test
     void getMyDailyTodosWithCertificationInputDate() throws Exception {
-        final Member doer = new Member(1L, "kelly-id", "kelly");
-        final Member reviewer = new Member(2L, "elmo-id", "elmo");
+        final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png");
+        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final List<DailyTodo> dailyTodos = List.of(
             new DailyTodo(1L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null),
@@ -189,8 +189,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
     @Test
     void getMyDailyTodosWithCertificationInputDateAndTodoStatus() throws Exception {
-        final Member doer = new Member(1L, "kelly-id", "kelly");
-        final Member reviewer = new Member(2L, "elmo-id", "elmo");
+        final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png");
+        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", DailyTodoStatus.REVIEW_PENDING, null);
         final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url");
