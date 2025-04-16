@@ -34,7 +34,7 @@ public class MemberActivityController {
         return ResponseEntity.ok(ApiResponse.successWithData(GET_All_GROUP_NAMES, response));
     }
 
-    @GetMapping("/{groupId}/activity")
+    @GetMapping("/groups/{groupId}/activity")
     public ResponseEntity<ApiResponse<GetGroupActivityStatResponse>> getGroupActivityStat(
             @Authenticated final Long memberId, @PathVariable final Long groupId
     ) {

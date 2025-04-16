@@ -84,7 +84,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
         );
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my/{groupId}/activity", groupId)
+                        MockMvcRequestBuilders.get("/api/my//groups/{groupId}/activity", groupId)
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
