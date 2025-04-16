@@ -25,9 +25,10 @@ public class DailyTodoController {
 
     private final DailyTodoService dailyTodoService;
 
-    @PostMapping("/todos")
+    @PostMapping("/challenge-groups/{groupId}/todos")
     public ResponseEntity<ApiResponse<Void>> createDailyTodos(
         @Authenticated Long memberId,
+        @PathVariable Long groupId,
         @RequestBody final CreateDailyTodosRequest request
     ) {
         dailyTodoService.saveDailyTodo(memberId, request.todos());

@@ -41,7 +41,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         return new DailyTodoController(dailyTodoService);
     }
 
-    @DisplayName("데일리 투두 작성 API")
+    @DisplayName("데일리 투두 생성 API")
     @Test        
     void createDailyTodos() throws Exception {
         final CreateDailyTodosRequest request = new CreateDailyTodosRequest(List.of(
@@ -51,12 +51,16 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         ));
 
         mockMvc.perform(
-                post("/api/todos")
+                post("/api/challenge-groups/{groupId}/todos", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 requestFields(
                     fieldWithPath("todos")
                         .description("데일리 투두 리스트")
