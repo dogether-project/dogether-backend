@@ -1,5 +1,17 @@
 package site.dogether.docs.auth;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -10,16 +22,6 @@ import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.service.AuthService;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.member.service.dto.AuthenticatedMember;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("로그인 & 회원 탈퇴 API 문서화 테스트")
 public class AuthControllerDocsTest extends RestDocsSupport {
@@ -36,11 +38,11 @@ public class AuthControllerDocsTest extends RestDocsSupport {
     void login() throws Exception {
         final LoginRequest request = new LoginRequest(
             "김영재",
-            "idTokenidTokenidToken"
+            "idToken"
         );
 
         given(authService.login(any(LoginRequest.class)))
-                .willReturn(new AuthenticatedMember("김영재", "accessToken"));
+                .willReturn(new AuthenticatedMember("김영재", "idToken"));
 
         mockMvc.perform(
                 post("/api/auth/login")
@@ -55,8 +57,8 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                         .optional()
                         .attributes(constraints("OAuth Provider(Apple)상의 사용자 이름")),
                     fieldWithPath("idToken")
-                        .description("IdentityToken")
-                        .attributes(constraints("애플이 제공하는 id_token만 가능"))
+                        .description("애플 유저 식별 토큰")
+                        .attributes(constraints("애플이 제공하는 id_token"))
                         .type(JsonFieldType.STRING)
                 ),
                 responseFields(
@@ -70,7 +72,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                         .description("사용자 이름")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.accessToken")
-                        .description("JWT accessToken")
+                        .description("JWT")
                         .type(JsonFieldType.STRING))));
     }
 
@@ -78,7 +80,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
     @Test
     void withdraw() throws Exception {
         final WithdrawRequest request = new WithdrawRequest(
-            "authorizationCodeauthorizationCodeauthorizationCode"
+            "authorizationCode"
         );
 
         doNothing().when(authService).withdraw(anyLong(), any(WithdrawRequest.class));
@@ -94,7 +96,7 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("authorizationCode")
                         .description("인가 코드")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("애플이 제공하는 인가 코드만 가능"))
+                        .attributes(constraints("애플이 제공하는 인가 코드"))
                 ),
                 responseFields(
                     fieldWithPath("code")
