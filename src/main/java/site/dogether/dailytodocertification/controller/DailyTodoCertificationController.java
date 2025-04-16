@@ -5,11 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.service.DailyTodoService;
+import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.controller.response.DailyTodoCertificationResponse;
-import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationByIdResponse;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
@@ -19,7 +18,8 @@ import java.util.List;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.CERTIFY_DAILY_TODO;
-import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationSuccessCode.*;
+import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationSuccessCode.GET_DAILY_TODO_CERTIFICATIONS_FOR_REVIEW;
+import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationSuccessCode.REVIEW_DAILY_TODO_CERTIFICATION;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -64,13 +64,5 @@ public class DailyTodoCertificationController {
             .collect(collectingAndThen(toList(), GetDailyTodoCertificationsForReviewResponse::new));
 
         return ResponseEntity.ok(ApiResponse.successWithData(GET_DAILY_TODO_CERTIFICATIONS_FOR_REVIEW, response));
-    }
-
-    @GetMapping("/todo-certifications/{todoCertificationId}")
-    public ResponseEntity<ApiResponse<GetDailyTodoCertificationByIdResponse>> getDailyTodoCertificationById(@PathVariable Long todoCertificationId) {
-        final DailyTodoCertificationDto dailyTodoCertification = dailyTodoCertificationService.findTodoCertificationById(todoCertificationId);
-        final GetDailyTodoCertificationByIdResponse response = new GetDailyTodoCertificationByIdResponse(DailyTodoCertificationResponse.of(dailyTodoCertification));
-
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_DAILY_TODO_CERTIFICATION_BY_ID, response));
     }
 }

@@ -114,17 +114,14 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
     
-    @DisplayName("검사할 투두 수행 인증 전체 조회 API")
+    @DisplayName("본인이 검사해 줘야 하는 투두 수행 인증 전체 조회 API")
     @Test        
     void getDailyTodoCertificationsForReview() throws Exception {
         final List<DailyTodoCertificationDto> dailyTodoCertificationDtos = List.of(
             new DailyTodoCertificationDto(
                 1L,
                 "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
-                List.of(
-                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
-                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
-                ),
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
                 "진채영",
                 "유산소 & 무산소 1시간 조지기",
                 "승용차"
@@ -132,10 +129,7 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
             new DailyTodoCertificationDto(
                 2L,
                 "공부까지 갓벽...",
-                List.of(
-                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s1.png",
-                    "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s2.png"
-                ),
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s1.png",
                 "문지원",
                 "공부 3시간 조지기",
                 "박지은"
@@ -168,69 +162,15 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.dailyTodoCertifications[].content")
                         .description("수행 인증 본문")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.dailyTodoCertifications[].mediaUrls")
+                    fieldWithPath("data.dailyTodoCertifications[].mediaUrl")
                         .description("인증에 포함된 미디어 리소스")
-                        .type(JsonFieldType.ARRAY),
+                        .type(JsonFieldType.STRING),
                     fieldWithPath("data.dailyTodoCertifications[].reviewer")
                         .description("투두 수행 검사자 이름"),
                     fieldWithPath("data.dailyTodoCertifications[].todoContent")
                         .description("수행 인증한 투두 내용")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.dailyTodoCertifications[].doer")
-                        .description("투두 수행자 이름"))));
-    }
-
-    @DisplayName("특정 투두 수행 인증 상세 조회 API")
-    @Test
-    void getDailyTodoCertificationById() throws Exception {
-        final long todoCertificationId = 1L;
-        final DailyTodoCertificationDto dailyTodoCertificationDto = new DailyTodoCertificationDto(
-            1L,
-            "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
-            List.of(
-                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
-                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e2.png"
-            ),
-            "진채영",
-            "유산소 & 무산소 1시간 조지기",
-            "승용차"
-        );
-
-        given(dailyTodoCertificationService.findTodoCertificationById(todoCertificationId))
-            .willReturn(dailyTodoCertificationDto);
-
-        mockMvc.perform(
-                get("/api/todo-certifications/{todoCertificationId}", todoCertificationId)
-                    .header("Authorization", "Bearer access_token")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andDo(createDocument(
-                pathParameters(
-                    parameterWithName("todoCertificationId")
-                        .description("데일리 투두 인증 id")
-                        .attributes(constraints("등록된 데일리 투두 인증 id만 입력 가능"), pathVariableExample(todoCertificationId))),
-                responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("message")
-                        .description("응답 메시지")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.id")
-                        .description("투두 수행 인증 id")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.content")
-                        .description("수행 인증 본문")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.mediaUrls")
-                        .description("인증에 포함된 미디어 리소스")
-                        .type(JsonFieldType.ARRAY),
-                    fieldWithPath("data.reviewer")
-                        .description("투두 수행 검사자 이름"),
-                    fieldWithPath("data.todoContent")
-                        .description("수행 인증한 투두 내용")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.doer")
                         .description("투두 수행자 이름"))));
     }
 }
