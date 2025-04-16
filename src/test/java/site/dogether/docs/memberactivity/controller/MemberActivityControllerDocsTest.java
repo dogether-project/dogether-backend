@@ -27,12 +27,13 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 챌린지 그룹 목록 조회 API")
     @Test
     void getAllGroupsName() throws Exception {
-        final List<GroupNameResponse> groups = List.of(
-                new GroupNameResponse(1L, "성욱이와 친구들"),
-                new GroupNameResponse(2L, "스콘 먹기 챌린지"),
-                new GroupNameResponse(3L, "성욱이의 일기")
+        final List<GetAllGroupNamesResponse.GroupNameResponse> groups = List.of(
+                new GetAllGroupNamesResponse.GroupNameResponse(1L, "성욱이와 친구들"),
+                new GetAllGroupNamesResponse.GroupNameResponse(2L, "스콘 먹기 챌린지"),
+                new GetAllGroupNamesResponse.GroupNameResponse(3L, "성욱이의 일기")
         );
-        GetAllGroupNamesResponse response = new GetAllGroupNamesResponse(groups);
+
+        final GetAllGroupNamesResponse response = new GetAllGroupNamesResponse(groups);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/groups")

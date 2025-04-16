@@ -23,14 +23,15 @@ public class MemberActivityController {
     public ResponseEntity<ApiResponse<GetAllGroupNamesResponse>> getAllGroupNames(
             @Authenticated Long memberId
     ) {
-        List<GroupNameResponse> groups = List.of(
-                new GroupNameResponse(1L, "성욱이와 친구들"),
-                new GroupNameResponse(2L, "스콘 먹기 챌린지"),
-                new GroupNameResponse(3L, "성욱이의 일기")
+        List<GetAllGroupNamesResponse.GroupNameResponse> groups = List.of(
+                new GetAllGroupNamesResponse.GroupNameResponse(1L, "성욱이와 친구들"),
+                new GetAllGroupNamesResponse.GroupNameResponse(2L, "스콘 먹기 챌린지"),
+                new GetAllGroupNamesResponse.GroupNameResponse(3L, "성욱이의 일기")
         );
+
         GetAllGroupNamesResponse response = new GetAllGroupNamesResponse(groups);
 
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_All_GROUP_NAMES, response));
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_ALL_GROUP_NAMES, response));
     }
 
     @GetMapping("/groups/{groupId}/activity")
