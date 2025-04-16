@@ -47,7 +47,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("message")
                                         .description("응답 메시지")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("groups")
+                                fieldWithPath("data.groups")
                                         .description("그룹 이름 목록")
                                         .optional()
                                         .type(JsonFieldType.ARRAY),
