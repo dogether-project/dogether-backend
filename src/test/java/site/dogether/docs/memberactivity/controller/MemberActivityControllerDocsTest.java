@@ -29,23 +29,6 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     void getGroupActivityStat() throws Exception {
         final long groupId = 1L;
 
-        final List<CertificationPeriodResponse> certificationPeriods = List.of(
-                new CertificationPeriodResponse(1, 8, 2, 25),
-                new CertificationPeriodResponse(2, 6, 3, 50),
-                new CertificationPeriodResponse(3, 3, 3, 100)
-        );
-
-        final RankingResponse ranking = new RankingResponse(10, 3);
-        final MemberStatsResponse stats = new MemberStatsResponse(123, 123, 123);
-
-        final GetGroupActivityStatResponse response = new GetGroupActivityStatResponse(
-                "성욱이와 친구들",
-                "25.02.25",
-                certificationPeriods,
-                ranking,
-                stats
-        );
-
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my//groups/{groupId}/activity", groupId)
                                 .header("Authorization", "Bearer access_token")
