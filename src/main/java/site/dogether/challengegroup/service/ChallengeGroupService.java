@@ -1,14 +1,11 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
+import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
@@ -16,16 +13,18 @@ import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
-import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupTeamActivityDto;
+import site.dogether.challengegroup.service.dto.*;
 import site.dogether.dailytodo.entity.GroupTodoSummary;
 import site.dogether.dailytodo.entity.MyTodoSummary;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -169,7 +168,7 @@ public class ChallengeGroupService {
         );
     }
 
-    public JoiningChallengeGroupTeamActivityDto getJoiningChallengeGroupTeamActivitySummary(final Long groupId) {
+    public List<ChallengeGroupMemberRankResponse> getJoiningChallengeGroupTeamActivitySummary(final Long groupId) {
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
 
@@ -183,9 +182,7 @@ public class ChallengeGroupService {
         final List<MyTodoSummary> myTodoSummaries = dailyTodoService.getMyTodoSummaries(groupMembers, challengeGroup);
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
 
-        return new JoiningChallengeGroupTeamActivityDto(
-                groupTodoSummary.getRanks()
-        );
+        return List.of();
     }
 
     public boolean isJoiningChallengeGroup(final Long memberId) {

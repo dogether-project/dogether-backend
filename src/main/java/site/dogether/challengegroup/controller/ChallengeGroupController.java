@@ -7,16 +7,17 @@ import site.dogether.auth.resolver.Authenticated;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.controller.response.*;
-import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupTeamActivitySummaryResponse.RankResponse;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.service.ChallengeGroupService;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupTeamActivityDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupInfo;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupMyActivityDto;
 import site.dogether.common.controller.response.ApiResponse;
 
+import java.util.List;
+
 import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.*;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
@@ -89,16 +90,16 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/{groupId}/ranking")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupTeamActivitySummaryResponse>> getJoiningChallengeGroupTeamRanking(
+    public ResponseEntity<ApiResponse<GetChallengeGroupMembersRank>> getJoiningChallengeGroupTeamRanking(
             @PathVariable Long groupId
     ) {
-        final JoiningChallengeGroupTeamActivityDto joiningChallengeGroupTeamActivityDto =
-                challengeGroupService.getJoiningChallengeGroupTeamActivitySummary(groupId);
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                GET_JOINING_CHALLENGE_GROUP_TEAM_ACTIVITY_SUMMARY,
-                new GetJoiningChallengeGroupTeamActivitySummaryResponse(
-                        RankResponse.of(joiningChallengeGroupTeamActivityDto.ranking()))));
+        final List<ChallengeGroupMemberRankResponse> groupMemberRanks = List.of(
+                new ChallengeGroupMemberRankResponse(1, "성욱이의 셀카.png", "성욱", 100),
+                new ChallengeGroupMemberRankResponse(2, "고양이.png", "영재", 80),
+                new ChallengeGroupMemberRankResponse(3, "그로밋.png", "서은", 60)
+        );
+        GetChallengeGroupMembersRank response = new GetChallengeGroupMembersRank(groupMemberRanks);
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
     }
 
     @GetMapping("/isJoining")
