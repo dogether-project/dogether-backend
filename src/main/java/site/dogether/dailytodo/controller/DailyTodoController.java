@@ -44,9 +44,10 @@ public class DailyTodoController {
         return ResponseEntity.ok(ApiResponse.success(CERTIFY_DAILY_TODO));
     }
 
-    @GetMapping("/todos/my/yesterday")
+    @GetMapping("/challenge-groups/{groupId}/my-yesterday-todos")
     public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos(
-        @Authenticated Long memberId
+        @Authenticated Long memberId,
+        @PathVariable Long groupId
     ) {
         final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);

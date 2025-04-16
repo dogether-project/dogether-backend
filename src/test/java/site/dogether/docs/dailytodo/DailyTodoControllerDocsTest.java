@@ -115,7 +115,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
     
-    @DisplayName("어제 작성한 투두 내용 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹에서 어제 본인이 작성한 투두 내용 전체 조회 API")
     @Test
     void getYesterdayDailyTodos() throws Exception {
         final List<String> yesterdayTodos = List.of(
@@ -129,11 +129,15 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(yesterdayTodos);
 
         mockMvc.perform(
-                get("/api/todos/my/yesterday")
+                get("/api/challenge-groups/{groupId}/my-yesterday-todos", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("groupId")
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("유효한 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
@@ -147,7 +151,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.ARRAY))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹의 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
+    @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
     @Test
     void getMyDailyTodosWithCertificationInputDate() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
@@ -220,7 +224,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹의 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
+    @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
     @Test
     void getMyDailyTodosWithCertificationInputDateAndTodoStatus() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly");
