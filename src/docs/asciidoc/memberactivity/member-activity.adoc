@@ -21,3 +21,25 @@ include::{snippets}/member-activity-controller-docs-test/get-all-groups-name/htt
 ==== HTTP Response
 include::{snippets}/member-activity-controller-docs-test/get-all-groups-name/http-response.adoc[]
 include::{snippets}/member-activity-controller-docs-test/get-all-groups-name/response-fields.adoc[]
+
+[[get-group-activity-stat]]
+=== 참여중인 특정 챌린지 그룹 활동 통계 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| X
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/member-activity-controller-docs-test/get-group-activity-stat/http-request.adoc[]
+include::{snippets}/member-activity-controller-docs-test/get-group-activity-stat/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-activity-controller-docs-test/get-group-activity-stat/http-response.adoc[]
+include::{snippets}/member-activity-controller-docs-test/get-group-activity-stat/response-fields.adoc[]
