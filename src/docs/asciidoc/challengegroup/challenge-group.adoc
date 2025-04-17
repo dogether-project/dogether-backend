@@ -31,7 +31,7 @@ include::{snippets}/challenge-group-controller-docs-test/create-challenge-group/
 | 환경 | 구현 여부
 
 | 개발
-| O
+| X
 
 | 운영
 | X
@@ -45,8 +45,50 @@ include::{snippets}/challenge-group-controller-docs-test/join-challenge-group/re
 include::{snippets}/challenge-group-controller-docs-test/join-challenge-group/http-response.adoc[]
 include::{snippets}/challenge-group-controller-docs-test/join-challenge-group/response-fields.adoc[]
 
-[[get-joining-challenge-group-info]]
-=== 참여중인 그룹 정보 조회
+[[get-joining-challenge-groups]]
+=== 참여중인 챌린지 그룹 정보 전체 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| X
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/http-response.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/response-fields.adoc[]
+
+[[get-joining-challenge-group-names]]
+=== 참여중인 챌린지 그룹 목록 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| X
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-names/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-names/http-response.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-names/response-fields.adoc[]
+
+[[is-joined-challenge-group]]
+=== 챌린지 그룹 참여 여부 조회
 
 ==== 개발 상태
 |===
@@ -60,11 +102,11 @@ include::{snippets}/challenge-group-controller-docs-test/join-challenge-group/re
 |===
 
 ==== HTTP Request
-include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-info/http-request.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/has-challenge-group/http-request.adoc[]
 
 ==== HTTP Response
-include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-info/http-response.adoc[]
-include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-info/response-fields.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/has-challenge-group/http-response.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/has-challenge-group/response-fields.adoc[]
 
 [[get-joining-challenge-group-my-activity-summary]]
 === 참여중인 그룹의 내 누적 활동 통계 조회
@@ -109,27 +151,6 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-team-activity-summary/http-response.adoc[]
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-team-activity-summary/response-fields.adoc[]
 
-[[is-joined-challenge-group]]
-=== 챌린지 그룹 참여 여부 확인
-
-==== 개발 상태
-|===
-| 환경 | 구현 여부
-
-| 개발
-| O
-
-| 운영
-| X
-|===
-
-==== HTTP Request
-include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-group/http-request.adoc[]
-
-==== HTTP Response
-include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-group/http-response.adoc[]
-include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-group/response-fields.adoc[]
-
 [[leave-challenge-group]]
 === 챌린지 그룹 탈퇴
 
@@ -138,7 +159,7 @@ include::{snippets}/challenge-group-controller-docs-test/is-joining-challenge-gr
 | 환경 | 구현 여부
 
 | 개발
-| O
+| X
 
 | 운영
 | X

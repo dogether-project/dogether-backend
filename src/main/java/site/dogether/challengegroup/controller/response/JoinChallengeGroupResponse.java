@@ -1,10 +1,10 @@
 package site.dogether.challengegroup.controller.response;
 
 public record JoinChallengeGroupResponse(
-    String name,
+    String groupName,
+    int duration,
     int maximumMemberCount,
     String startAt,
-    String endAt,
-    int durationOption
+    String endAt
 ) {
 }

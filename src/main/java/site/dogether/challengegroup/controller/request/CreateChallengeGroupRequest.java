@@ -4,17 +4,16 @@ import site.dogether.challengegroup.entity.ChallengeGroupDurationOption;
 import site.dogether.challengegroup.entity.ChallengeGroupStartAtOption;
 
 public record CreateChallengeGroupRequest(
-    String name,
+    String groupName,
     int maximumMemberCount,
     String startAt,
-    int durationOption,
-    int maximumTodoCount
+    int duration
 ) {
     public ChallengeGroupStartAtOption challengeGroupStartAtOption() {
         return ChallengeGroupStartAtOption.from(startAt);
     }
 
     public ChallengeGroupDurationOption challengeGroupDurationOption() {
-        return ChallengeGroupDurationOption.from(durationOption);
+        return ChallengeGroupDurationOption.from(duration);
     }
 }
