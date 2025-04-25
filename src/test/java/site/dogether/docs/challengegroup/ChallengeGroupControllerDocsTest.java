@@ -147,6 +147,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     void getJoiningChallengeGroups() throws Exception {
         List<JoiningChallengeGroupDto> joiningChallengeGroups = List.of(
             new JoiningChallengeGroupDto(
+                    1L,
                     "폰트의 챌린지",
                     1,
                     10,
@@ -154,6 +155,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     "25.03.05",
                     5),
             new JoiningChallengeGroupDto(
+                    2L,
                     "켈리와 친구들",
                     1,
                     10,
@@ -182,6 +184,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("참여중인 챌린지 그룹")
                         .type(JsonFieldType.ARRAY)
                         .optional(),
+                    fieldWithPath("data.joiningChallengeGroups[].groupId")
+                        .description("챌린지 그룹 id")
+                        .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.joiningChallengeGroups[].groupName")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),

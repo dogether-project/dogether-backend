@@ -125,6 +125,7 @@ public class ChallengeGroupService {
 
         return List.of(
                 new JoiningChallengeGroupDto(
+                    challengeGroup.getId(),
                     challengeGroup.getName(),
                     1,
                     10,
