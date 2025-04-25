@@ -186,18 +186,6 @@ public class ChallengeGroupService {
         return List.of();
     }
 
-    public boolean hasChallengeGroup(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
-        final ChallengeGroupMember challengeGroupMember =
-                challengeGroupMemberRepository.findByMember(member).orElse(null);
-        if (challengeGroupMember == null) {
-            return false;
-        }
-        final ChallengeGroup joiningGroup = challengeGroupMember.getChallengeGroup();
-
-        return !joiningGroup.isFinished();
-    }
-
     @Transactional
     public void leaveChallengeGroup(final Long memberId) {
         final Member member = memberService.getMember(memberId);
@@ -209,12 +197,5 @@ public class ChallengeGroupService {
         isGroupFinished(challengeGroup);
 
         challengeGroupMemberRepository.delete(challengeGroupMember);
-    }
-
-    public ChallengeGroupStatus getMyChallengeGroupStatus(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
-        final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByMember(member)
-            .orElseThrow(() -> new MemberNotInChallengeGroupException("회원이 속한 챌린지 그룹이 존재하지 않습니다."));
-        return challengeGroupMember.getChallengeGroup().getStatus();
     }
 }

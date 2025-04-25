@@ -185,59 +185,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.NUMBER))));
     }
 
-    @DisplayName("참여중인 챌린지 그룹 목록 조회 API")
-    @Test
-    void getJoiningChallengeGroupNames() throws Exception {
-        List<JoiningChallengeGroupName> joiningChallengeGroupNames = List.of(
-            new JoiningChallengeGroupName("폰트의 챌린지"), new JoiningChallengeGroupName("켈리와 친구들")
-        );
-
-        mockMvc.perform(
-                get("/api/groups/names/members/me")
-                    .header("Authorization", "Bearer access_token")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andDo(createDocument(
-                responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("message")
-                        .description("응답 메시지")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.joiningChallengeGroupNames")
-                        .description("참여중인 챌린지 그룹 목록")
-                        .type(JsonFieldType.ARRAY)
-                        .optional(),
-                    fieldWithPath("data.joiningChallengeGroupNames[].groupName")
-                        .description("그룹명")
-                        .type(JsonFieldType.STRING))));
-    }
-
-    @DisplayName("챌린지 그룹 참여 여부 조회 API")
-    @Test
-    void hasChallengeGroup() throws Exception {
-        given(challengeGroupService.hasChallengeGroup(any()))
-                .willReturn(true);
-
-        mockMvc.perform(
-                        get("/api/groups/members/me/joined")
-                                .header("Authorization", "Bearer access_token")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andDo(createDocument(
-                        responseFields(
-                                fieldWithPath("code")
-                                        .description("응답 코드")
-                                        .type(JsonFieldType.STRING),
-                                fieldWithPath("message")
-                                        .description("응답 메시지")
-                                        .type(JsonFieldType.STRING),
-                                fieldWithPath("data.hasGroup")
-                                        .description("그룹에 참여중인지 여부")
-                                        .type(JsonFieldType.BOOLEAN))));
-    }
-
     @DisplayName("참여중인 그룹의 내 누적 활동 통계 조회 API")
     @Test
     void getJoiningChallengeGroupMyActivitySummary() throws Exception {
