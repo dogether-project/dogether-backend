@@ -13,9 +13,7 @@ import site.dogether.challengegroup.controller.request.CreateChallengeGroupReque
 import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -98,7 +96,7 @@ public class ChallengeGroupService {
             );
         }
 
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
         final String startAtFormatted = challengeGroup.getStartAt().format(formatter);
         final String endAtFormatted = challengeGroup.getEndAt().format(formatter);
 
@@ -114,8 +112,7 @@ public class ChallengeGroupService {
     public List<JoiningChallengeGroupDto> getJoiningChallengeGroups(final Long memberId) {
         final Member member = memberService.getMember(memberId);
 
-        final ChallengeGroupMember challengeGroupMember =
-                challengeGroupMemberRepository.findByMember(member)
+        final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByMember(member)
                         .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
         final ChallengeGroup challengeGroup = challengeGroupMember.getChallengeGroup();
         isGroupFinished(challengeGroup);
@@ -129,6 +126,8 @@ public class ChallengeGroupService {
         return List.of(
                 new JoiningChallengeGroupDto(
                     challengeGroup.getName(),
+                    1,
+                    10,
                     challengeGroup.getJoinCode(),
                     endAtFormatted,
                     challengeGroup.getDurationDays()
