@@ -107,9 +107,9 @@ include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-cert
 |===
 
 ==== HTTP Request
-include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/http-request.adoc[]
-include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/path-parameters.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todo-history/http-request.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todo-history/path-parameters.adoc[]
 
 ==== HTTP Response
-include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/http-response.adoc[]
-include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todos/response-fields.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todo-history/http-response.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todo-history/response-fields.adoc[]
