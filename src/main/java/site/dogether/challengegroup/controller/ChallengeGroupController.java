@@ -46,12 +46,12 @@ public class ChallengeGroupController {
     ) {
         final String joinCode = challengeGroupService.createChallengeGroup(request, memberId);
         return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                CREATE_CHALLENGE_GROUP,
-                new CreateChallengeGroupResponse(joinCode)));
+                ApiResponse.successWithData(
+                        CREATE_CHALLENGE_GROUP,
+                        new CreateChallengeGroupResponse(joinCode)));
     }
 
-    @PostMapping("/members/me")
+    @PostMapping("/join")
     public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
             @Authenticated final Long memberId,
             @RequestBody final JoinChallengeGroupRequest request
@@ -60,15 +60,10 @@ public class ChallengeGroupController {
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 JOIN_CHALLENGE_GROUP,
-                new JoinChallengeGroupResponse(
-                        joinChallengeGroupDto.groupName(),
-                        joinChallengeGroupDto.duration(),
-                        joinChallengeGroupDto.maximumMemberCount(),
-                        joinChallengeGroupDto.startAt(),
-                        joinChallengeGroupDto.endAt())));
+                JoinChallengeGroupResponse.from(joinChallengeGroupDto)));
     }
 
-    @GetMapping("/members/me")
+    @GetMapping("/my")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsResponse>> getJoiningChallengeGroups(
             @Authenticated final Long memberId
     ) {
@@ -78,6 +73,17 @@ public class ChallengeGroupController {
                 GET_JOINING_CHALLENGE_GROUPS,
                 new GetJoiningChallengeGroupsResponse(joiningChallengeGroups))
         );
+    }
+
+    @DeleteMapping("/{groupId}/leave")
+    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
+            @Authenticated final Long memberId,
+            @PathVariable final Long groupId
+    ) {
+        challengeGroupService.leaveChallengeGroup(memberId, groupId);
+        return ResponseEntity.ok(ApiResponse.success(
+                LEAVE_CHALLENGE_GROUP
+        ));
     }
 
     @GetMapping("/summary/my")
@@ -107,15 +113,5 @@ public class ChallengeGroupController {
         );
         GetChallengeGroupMembersRank response = new GetChallengeGroupMembersRank(groupMemberRanks);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
-    }
-
-    @DeleteMapping("/leave")
-    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
-            @Authenticated final Long memberId
-    ) {
-        challengeGroupService.leaveChallengeGroup(memberId);
-        return ResponseEntity.ok(ApiResponse.success(
-                LEAVE_CHALLENGE_GROUP
-        ));
     }
 }
