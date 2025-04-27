@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.challengegroup.exception.JoinChallengeGroupMaxCountException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotEnoughChallengeGroupMembersException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
@@ -53,7 +53,7 @@ public class ChallengeGroupExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleJoinChallengeGroupMaxCountException(final JoinChallengeGroupMaxCountException e) {
+    public ResponseEntity<ApiResponse<Void>> handleJoinChallengeGroupMaxCountException(final JoiningChallengeGroupMaxCountException e) {
         log.info("handle JoinChallengeGroupMaxCountException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(JOIN_CHALLENGE_GROUP_MAX_COUNT, e.getMessage()));

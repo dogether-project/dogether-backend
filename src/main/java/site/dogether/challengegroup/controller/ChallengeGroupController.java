@@ -60,12 +60,8 @@ public class ChallengeGroupController {
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 JOIN_CHALLENGE_GROUP,
-                new JoinChallengeGroupResponse(
-                        joinChallengeGroupDto.groupName(),
-                        joinChallengeGroupDto.duration(),
-                        joinChallengeGroupDto.maximumMemberCount(),
-                        joinChallengeGroupDto.startAt(),
-                        joinChallengeGroupDto.endAt())));
+                JoinChallengeGroupResponse.from(joinChallengeGroupDto))
+        );
     }
 
     @GetMapping("/members/me")
