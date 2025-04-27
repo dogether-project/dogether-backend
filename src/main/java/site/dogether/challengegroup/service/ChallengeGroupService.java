@@ -1,9 +1,6 @@
 package site.dogether.challengegroup.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -122,28 +119,16 @@ public class ChallengeGroupService {
     public List<JoiningChallengeGroupDto> getJoiningChallengeGroups(final Long memberId) {
         final Member member = memberService.getMember(memberId);
 
-        final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByMember(member)
-                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
-        final ChallengeGroup challengeGroup = challengeGroupMember.getChallengeGroup();
-        isFinishedGroup(challengeGroup);
+        List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
+        List<ChallengeGroup> joiningGroups = challengeGroupMembers.stream()
+                .map(ChallengeGroupMember::getChallengeGroup)
+                .toList();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd"); // TODO : 도메인으로 이동
-        LocalDate endAt = challengeGroup.getEndAt();
-        String endAtFormatted = endAt.format(formatter);
-
-        long remainingDays = LocalDateTime.now().until(endAt, ChronoUnit.DAYS);
-
-        return List.of(
-                new JoiningChallengeGroupDto(
-                    challengeGroup.getId(),
-                    challengeGroup.getName(),
-                    1,
-                    10,
-                    challengeGroup.getJoinCode(),
-                    endAtFormatted,
-                    challengeGroup.getDurationDays()
-                )
-        );
+        return joiningGroups.stream()
+                .map(joiningGroup -> JoiningChallengeGroupDto.from(
+                        joiningGroup,
+                        challengeGroupMemberRepository.countByChallengeGroup(joiningGroup)))
+                .toList();
     }
 
     private void isFinishedGroup(final ChallengeGroup joiningGroup) {

@@ -24,6 +24,15 @@ public interface ChallengeGroupMemberRepository extends JpaRepository<ChallengeG
 
     List<ChallengeGroupMember> findAllByChallengeGroup(ChallengeGroup challengeGroup);
 
+    @Query("""
+            select cgm
+            from ChallengeGroupMember cgm
+            join fetch cgm.challengeGroup cg
+            where cg.status != "FINISHED"
+            and cgm.member = :member
+            """)
+    List<ChallengeGroupMember> findNotFinishedGroupByMember(Member member);
+
     Optional<ChallengeGroupMember> findByMember(Member member);
 
     Optional<ChallengeGroupMember> findByChallengeGroup_StatusAndMember(ChallengeGroupStatus challengeGroupStatus, Member member);

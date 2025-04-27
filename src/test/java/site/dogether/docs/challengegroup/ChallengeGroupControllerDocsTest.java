@@ -153,7 +153,8 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     10,
                     "G3hIj4kLm",
                     "25.03.05",
-                    5),
+                    5,
+                    0.3),
             new JoiningChallengeGroupDto(
                     2L,
                     "켈리와 친구들",
@@ -161,7 +162,8 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     10,
                     "A1Bc4dEf",
                     "25.03.02",
-                    2)
+                    2,
+                    0.5)
         );
 
         given(challengeGroupService.getJoiningChallengeGroups(any()))
@@ -202,9 +204,13 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.joiningChallengeGroups[].endAt")
                         .description("챌린지 종료일")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.joiningChallengeGroups[].currentDay")
+                    fieldWithPath("data.joiningChallengeGroups[].progressDay")
                         .description("활동 진행 일수")
-                        .type(JsonFieldType.NUMBER))));
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.joiningChallengeGroups[].progressRate")
+                        .description("활동 진행률")
+                        .type(JsonFieldType.NUMBER)
+                )));
     }
 
     @DisplayName("참여중인 그룹의 내 누적 활동 통계 조회 API")

@@ -131,4 +131,12 @@ public class ChallengeGroup extends BaseEntity {
     public boolean isRunning() {
         return status == ChallengeGroupStatus.RUNNING;
     }
+
+    public int getCurrentDay() {
+        return LocalDate.now().getDayOfYear() - startAt.getDayOfYear();
+    }
+
+    public double getProgressRate() {
+        return (double) getCurrentDay() / getDurationDays();
+    }
 }
