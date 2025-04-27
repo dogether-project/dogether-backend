@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
-import site.dogether.dailytodo.controller.response.GetChallengeMemberTodayTodosResponse;
+import site.dogether.dailytodo.controller.response.GetChallengeMemberTodayTodoHistoryResponse;
 import site.dogether.dailytodo.controller.response.GetMyDailyTodosResponse;
 import site.dogether.dailytodo.controller.response.GetYesterdayDailyTodosResponse;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
@@ -20,35 +20,34 @@ import java.util.List;
 import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/challenge-groups/{groupId}")
 @RestController
 public class DailyTodoController {
 
     private final DailyTodoService dailyTodoService;
 
-    @PostMapping("/todos")
+    @PostMapping("/api/challenge-groups/{groupId}/todos")
     public ResponseEntity<ApiResponse<Void>> createDailyTodos(
-        @Authenticated Long memberId,
-        @PathVariable Long groupId,
+        @Authenticated final Long memberId,
+        @PathVariable final Long groupId,
         @RequestBody final CreateDailyTodosRequest request
     ) {
         dailyTodoService.saveDailyTodo(memberId, request.todos());
         return ResponseEntity.ok(ApiResponse.success(CREATE_DAILY_TODOS));
     }
 
-    @GetMapping("/my-yesterday-todos")
+    @GetMapping("/api/challenge-groups/{groupId}/my-yesterday-todos")
     public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos(
-        @Authenticated Long memberId,
-        @PathVariable Long groupId
+        @Authenticated final Long memberId,
+        @PathVariable final Long groupId
     ) {
         final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
     }
 
-    @GetMapping("/my-todos")
+    @GetMapping("/api/challenge-groups/{groupId}/my-todos")
     public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodosWithCertification(
-        @Authenticated Long memberId,
+        @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @RequestParam final LocalDate date,
         @RequestParam(required = false) final String status
@@ -62,26 +61,33 @@ public class DailyTodoController {
         ));
     }
 
-    @GetMapping("/challenge-group-members/{challengeGroupMemberId}/today-todos")
-    public ResponseEntity<ApiResponse<GetChallengeMemberTodayTodosResponse>> getChallengeGroupMemberTodayTodos(
-        @Authenticated Long memberId,
+    @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history")
+    public ResponseEntity<ApiResponse<GetChallengeMemberTodayTodoHistoryResponse>> getChallengeGroupMemberTodayTodoHistory(
+        @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @PathVariable final Long challengeGroupMemberId
     ) {
         return ResponseEntity.ok(ApiResponse.successWithData(
-            GET_CHALLENGE_GROUP_MEMBER_TODAY_TODOS,
-            new GetChallengeMemberTodayTodosResponse(
-                "https://승용님_얼짱_각도.png",
-                "승용",
-                76,
+            GET_CHALLENGE_GROUP_MEMBER_TODAY_TODO_HISTORY,
+            new GetChallengeMemberTodayTodoHistoryResponse(
+                3,
                 List.of(
-                    new GetChallengeMemberTodayTodosResponse.TodoData(1L, "신규 기능 개발", DailyTodoStatus.CERTIFY_PENDING, null, null),
-                    new GetChallengeMemberTodayTodosResponse.TodoData(2L, "테스트 코드 작성", DailyTodoStatus.CERTIFY_PENDING, null, null),
-                    new GetChallengeMemberTodayTodosResponse.TodoData(3L, "치킨 먹기", DailyTodoStatus.REVIEW_PENDING, "개꿀맛 치킨 냠냠", "https://치킨.png"),
-                    new GetChallengeMemberTodayTodosResponse.TodoData(4L, "재홍님 갈구기", DailyTodoStatus.APPROVE, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png"),
-                    new GetChallengeMemberTodayTodosResponse.TodoData(5L, "디자인팀 갈구기", DailyTodoStatus.REJECT, "디자인!!!!!!!", "https://갈굼2.png")
+                    new GetChallengeMemberTodayTodoHistoryResponse.TodoData(1L, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null, null, true),
+                    new GetChallengeMemberTodayTodoHistoryResponse.TodoData(2L, "재홍님 갈구기", DailyTodoStatus.CERTIFY_PENDING, null, null, true),
+                    new GetChallengeMemberTodayTodoHistoryResponse.TodoData(3L, "치킨 먹기", DailyTodoStatus.REVIEW_PENDING, "개꿀맛 치킨 냠냠", "https://치킨.png", true),
+                    new GetChallengeMemberTodayTodoHistoryResponse.TodoData(4L, "재홍님 갈구기", DailyTodoStatus.REVIEW_PENDING, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false),
+                    new GetChallengeMemberTodayTodoHistoryResponse.TodoData(5L, "재홍님 갈구기", DailyTodoStatus.APPROVE, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false),
+        new GetChallengeMemberTodayTodoHistoryResponse.TodoData(6L, "치킨 먹기", DailyTodoStatus.REJECT, "개꿀맛 치킨 냠냠", "https://치킨.png", false)
                 )
             )
         ));
+    }
+
+    @PostMapping("/api/todo-history/{todoHistoryId}")
+    public ResponseEntity<ApiResponse<Void>> markTodoHistoryAsRead(
+        @Authenticated final Long memberId,
+        @PathVariable final Long todoHistoryId
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(MARK_TODO_HISTORY_AS_READ));
     }
 }

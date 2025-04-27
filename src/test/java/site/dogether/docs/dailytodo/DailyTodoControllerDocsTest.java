@@ -243,11 +243,11 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹의 특정 그룹원이 당일 작성한 데일리 투두 전체 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹에 속한 특정 그룹원의 당일 데일리 투두 히스토리 전체 조회 API")
     @Test
-    void getChallengeGroupMemberTodayTodos() throws Exception {
+    void getChallengeGroupMemberTodayTodoHistory() throws Exception {
         mockMvc.perform(
-                get("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todos", 1, 2)
+                get("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history", 1, 2)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -266,14 +266,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("message")
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.memberProfileImageUrl")
-                        .description("조회한 챌린지 그룹 멤버 프로필 이미지 url")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.memberName")
-                        .description("조회한 챌린지 그룹 멤버 이름")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.achievementRate")
-                        .description("조회한 챌린지 그룹 멤버 달성률")
+                    fieldWithPath("data.currentTodoHistoryToReadIndex")
+                        .description("현재 읽어야하는 투두 순서 (0부터 시작)")
                         .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.todos")
                         .description("조회한 챌린지 그룹 멤버 투두 리스트")
@@ -294,6 +288,31 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.todos[].certificationMediaUrl")
                         .description("데일리 투두 인증글 이미지 URL")
                         .optional()
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].isRead")
+                        .description("투두 읽음 여부")
+                        .type(JsonFieldType.BOOLEAN))));
+    }
+
+    @DisplayName("특정 투두 히스토리 읽음 처리 API")
+    @Test
+    void markTodoHistoryAsRead() throws Exception {
+        mockMvc.perform(
+                post("/api/todo-history/{todoHistoryId}", 1)
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("todoHistoryId")
+                        .description("투두 히스토리 id")
+                        .attributes(constraints("유효한 투두 히스토리 id만 입력 가능"), pathVariableExample(1))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
                         .type(JsonFieldType.STRING))));
     }
 }
