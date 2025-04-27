@@ -1,12 +1,11 @@
 package site.dogether.challengegroup.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.function.Function;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import site.dogether.challengegroup.exception.InvalidChallengeGroupDurationException;
 
 @Getter
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public enum ChallengeGroupDurationOption {
         return Arrays.stream(ChallengeGroupDurationOption.values())
             .filter(option -> option.value == durationOption)
             .findAny()
-            .orElseThrow(() -> new InvalidChallengeGroupException("유효하지 않은 기간 옵션입니다. " + durationOption + "일"));
+            .orElseThrow(() -> new InvalidChallengeGroupDurationException("유효하지 않은 기간 옵션입니다. " + durationOption + "일"));
     }
 
     public LocalDate calculateEndAt(final LocalDate startAt) {

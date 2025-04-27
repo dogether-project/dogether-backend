@@ -107,20 +107,14 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             ));
 
         mockMvc.perform(
-                post("/api/groups/members/me")
+                post("/api/groups/join")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
             .andExpect(status().isOk())
             .andDo(createDocument(
-                requestFields(
-                    fieldWithPath("joinCode")
-                        .description("그룹 참여 코드")
-                        .type(JsonFieldType.STRING)
-                        .attributes(constraints("서버에서 발급한 코드(영문, 숫자 조합 8자리)"))),
                 responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
+                    fieldWithPath("code").description("응답 코드")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("message")
                         .description("응답 메시지")
@@ -152,23 +146,27 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     1,
                     10,
                     "G3hIj4kLm",
+                    "RUNNING",
                     "25.03.05",
-                    5),
+                    5,
+                    0.3),
             new JoiningChallengeGroupDto(
                     2L,
                     "켈리와 친구들",
                     1,
                     10,
                     "A1Bc4dEf",
+                    "RUNNING",
                     "25.03.02",
-                    2)
+                    2,
+                    0.5)
         );
 
         given(challengeGroupService.getJoiningChallengeGroups(any()))
             .willReturn(joiningChallengeGroups);
 
         mockMvc.perform(
-                get("/api/groups/members/me")
+                get("/api/groups/my")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -199,12 +197,42 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.joiningChallengeGroups[].joinCode")
                         .description("그룹 참여 코드")
                         .type(JsonFieldType.STRING),
+                    fieldWithPath("data.joiningChallengeGroups[].status")
+                        .description("챌린지 그룹 상태")
+                        .type(JsonFieldType.STRING),
                     fieldWithPath("data.joiningChallengeGroups[].endAt")
                         .description("챌린지 종료일")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.joiningChallengeGroups[].currentDay")
+                    fieldWithPath("data.joiningChallengeGroups[].progressDay")
                         .description("활동 진행 일수")
-                        .type(JsonFieldType.NUMBER))));
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.joiningChallengeGroups[].progressRate")
+                        .description("활동 진행률")
+                        .type(JsonFieldType.NUMBER)
+                )));
+    }
+
+    @DisplayName("챌린지 그룹 탈퇴 API")
+    @Test
+    void leaveChallengeGroup() throws Exception {
+        final Long groupId = 1L;
+
+        mockMvc.perform(
+                delete("/api/groups/{groupId}/leave", groupId)
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                    pathParameters(
+                        parameterWithName("groupId")
+                            .description("탈퇴할 챌린지 그룹의 ID")),
+                    responseFields(
+                        fieldWithPath("code")
+                            .description("응답 코드")
+                            .type(JsonFieldType.STRING),
+                        fieldWithPath("message")
+                            .description("응답 메시지")
+                            .type(JsonFieldType.STRING))));
     }
 
     @DisplayName("참여중인 그룹의 내 누적 활동 통계 조회 API")
@@ -287,21 +315,5 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             ));
     }
 
-    @DisplayName("챌린지 그룹 탈퇴 API")
-    @Test
-    void leaveChallengeGroup() throws Exception {
-        mockMvc.perform(
-                delete("/api/groups/leave")
-                    .header("Authorization", "Bearer access_token")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andDo(createDocument(
-                responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("message")
-                        .description("응답 메시지")
-                        .type(JsonFieldType.STRING))));
-    }
+
 }
