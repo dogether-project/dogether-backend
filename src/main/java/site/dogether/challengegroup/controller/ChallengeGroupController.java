@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
-import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRank;
@@ -51,12 +50,12 @@ public class ChallengeGroupController {
                         new CreateChallengeGroupResponse(joinCode)));
     }
 
-    @PostMapping("/members/me")
+    @PostMapping("/{join-code}")
     public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
             @Authenticated final Long memberId,
-            @RequestBody final JoinChallengeGroupRequest request
+            @PathVariable("join-code") final String joinCode
     ) {
-        JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(request.joinCode(), memberId);
+        JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(joinCode, memberId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 JOIN_CHALLENGE_GROUP,
