@@ -17,6 +17,8 @@ public enum ChallengeGroupErrorCode implements ErrorCode {
     MEMBER_ALREADY_IN_CHALLENGE_GROUP("CGF-0007"),
     FULL_MEMBER_IN_CHALLENGE_GROUP("CGF-0008"),
     FINISHED_CHALLENGE_GROUP("CGF-0009"),
+    INVALID_CHALLENGE_GROUP_DURATION("CGF-0010"),
+    INVALID_CHALLENGE_GROUP_START_AT("CGF-0011"),
     ;
 
     private final String value;

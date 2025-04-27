@@ -1,10 +1,9 @@
 package site.dogether.challengegroup.entity;
 
-import lombok.RequiredArgsConstructor;
-import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-
 import java.time.LocalDate;
 import java.util.function.Supplier;
+import lombok.RequiredArgsConstructor;
+import site.dogether.challengegroup.exception.InvalidChallengeGroupStartAtException;
 
 @RequiredArgsConstructor
 public enum ChallengeGroupStartAtOption {
@@ -22,11 +21,11 @@ public enum ChallengeGroupStartAtOption {
 
     private static void validateStartAt(final String startAt) {
         if (startAt == null || startAt.isBlank()) {
-            throw new InvalidChallengeGroupException("시작일은 필수 입력값입니다.");
+            throw new InvalidChallengeGroupStartAtException("시작일은 필수 입력값입니다.");
         }
 
         if (!startAt.equals("TODAY") && !startAt.equals("TOMORROW")) {
-            throw new InvalidChallengeGroupException("유효하지 않은 시작일 옵션입니다.");
+            throw new InvalidChallengeGroupStartAtException("유효하지 않은 시작일 옵션입니다.");
         }
     }
 

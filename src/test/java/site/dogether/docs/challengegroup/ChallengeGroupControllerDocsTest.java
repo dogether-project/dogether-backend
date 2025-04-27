@@ -166,7 +166,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             .willReturn(joiningChallengeGroups);
 
         mockMvc.perform(
-                get("/api/groups/me")
+                get("/api/groups/my")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

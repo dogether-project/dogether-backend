@@ -55,16 +55,15 @@ public class ChallengeGroupController {
     public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
             @Authenticated final Long memberId,
             @RequestBody final JoinChallengeGroupRequest request
-            ) {
+    ) {
         JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(request.joinCode(), memberId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 JOIN_CHALLENGE_GROUP,
-                JoinChallengeGroupResponse.from(joinChallengeGroupDto))
-        );
+                JoinChallengeGroupResponse.from(joinChallengeGroupDto)));
     }
 
-    @GetMapping("/me")
+    @GetMapping("/my")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsResponse>> getJoiningChallengeGroups(
             @Authenticated final Long memberId
     ) {
