@@ -243,7 +243,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹의 특정 그룹원이 당일 작성한 데일리 투두 전체 조회 API")
+    @DisplayName("참여중인 특정 챌린지 그룹에 속한 특정 그룹원의 당일 데일리 투두 히스토리 전체 조회 API")
     @Test
     void getChallengeGroupMemberTodayTodoHistory() throws Exception {
         mockMvc.perform(
