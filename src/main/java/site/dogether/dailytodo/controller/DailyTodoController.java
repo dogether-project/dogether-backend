@@ -20,35 +20,34 @@ import java.util.List;
 import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/challenge-groups/{groupId}")
 @RestController
 public class DailyTodoController {
 
     private final DailyTodoService dailyTodoService;
 
-    @PostMapping("/todos")
+    @PostMapping("/api/challenge-groups/{groupId}/todos")
     public ResponseEntity<ApiResponse<Void>> createDailyTodos(
-        @Authenticated Long memberId,
-        @PathVariable Long groupId,
+        @Authenticated final Long memberId,
+        @PathVariable final Long groupId,
         @RequestBody final CreateDailyTodosRequest request
     ) {
         dailyTodoService.saveDailyTodo(memberId, request.todos());
         return ResponseEntity.ok(ApiResponse.success(CREATE_DAILY_TODOS));
     }
 
-    @GetMapping("/my-yesterday-todos")
+    @GetMapping("/api/challenge-groups/{groupId}/my-yesterday-todos")
     public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos(
-        @Authenticated Long memberId,
-        @PathVariable Long groupId
+        @Authenticated final Long memberId,
+        @PathVariable final Long groupId
     ) {
         final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
     }
 
-    @GetMapping("/my-todos")
+    @GetMapping("/api/challenge-groups/{groupId}/my-todos")
     public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodosWithCertification(
-        @Authenticated Long memberId,
+        @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @RequestParam final LocalDate date,
         @RequestParam(required = false) final String status
@@ -62,14 +61,14 @@ public class DailyTodoController {
         ));
     }
 
-    @GetMapping("/challenge-group-members/{challengeGroupMemberId}/today-todo-history")
+    @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history")
     public ResponseEntity<ApiResponse<GetChallengeMemberTodayTodoHistoryResponse>> getChallengeGroupMemberTodayTodoHistory(
-        @Authenticated Long memberId,
+        @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @PathVariable final Long challengeGroupMemberId
     ) {
         return ResponseEntity.ok(ApiResponse.successWithData(
-            GET_CHALLENGE_GROUP_MEMBER_TODAY_TODOS,
+            GET_CHALLENGE_GROUP_MEMBER_TODAY_TODO_HISTORY,
             new GetChallengeMemberTodayTodoHistoryResponse(
                 3,
                 List.of(
@@ -82,5 +81,13 @@ public class DailyTodoController {
                 )
             )
         ));
+    }
+
+    @PostMapping("/api/todo-history/{todoHistoryId}")
+    public ResponseEntity<ApiResponse<Void>> markTodoHistoryAsRead(
+        @Authenticated final Long memberId,
+        @PathVariable final Long todoHistoryId
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(MARK_TODO_HISTORY_AS_READ));
     }
 }

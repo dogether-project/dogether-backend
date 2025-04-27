@@ -293,4 +293,26 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("투두 읽음 여부")
                         .type(JsonFieldType.BOOLEAN))));
     }
+
+    @DisplayName("특정 투두 히스토리 읽음 처리 API")
+    @Test
+    void markTodoHistoryAsRead() throws Exception {
+        mockMvc.perform(
+                post("/api/todo-history/{todoHistoryId}", 1)
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("todoHistoryId")
+                        .description("투두 히스토리 id")
+                        .attributes(constraints("유효한 투두 히스토리 id만 입력 가능"), pathVariableExample(1))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING))));
+    }
 }

@@ -113,3 +113,25 @@ include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-t
 ==== HTTP Response
 include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todo-history/http-response.adoc[]
 include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-today-todo-history/response-fields.adoc[]
+
+[[mark-todo-history-as-read]]
+=== 특정 투두 히스토리 읽음 처리
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| X
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-controller-docs-test/mark-todo-history-as-read/http-request.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/mark-todo-history-as-read/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-controller-docs-test/mark-todo-history-as-read/http-response.adoc[]
+include::{snippets}/daily-todo-controller-docs-test/mark-todo-history-as-read/response-fields.adoc[]
