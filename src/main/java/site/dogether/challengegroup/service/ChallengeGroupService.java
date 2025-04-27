@@ -154,25 +154,6 @@ public class ChallengeGroupService {
         }
     }
 
-/*    public JoiningChallengeGroupMyActivityDto getJoiningChallengeGroupMyActivitySummary(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
-
-        final ChallengeGroupMember challengeGroupMember =
-                challengeGroupMemberRepository.findByMember(member)
-                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
-        final ChallengeGroup joiningGroup = challengeGroupMember.getChallengeGroup();
-        isGroupFinished(joiningGroup);
-
-        final MyTodoSummary myTodoSummary = dailyTodoService.getMyTodoSummary(member, joiningGroup);
-
-        return new JoiningChallengeGroupMyActivityDto(
-                myTodoSummary.calculateTotalTodoCount(),
-                myTodoSummary.calculateTotalCertificatedCount(),
-                myTodoSummary.calculateTotalApprovedCount(),
-                myTodoSummary.calculateTotalRejectedCount()
-        );
-    }*/
-
     public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long groupId) {
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));

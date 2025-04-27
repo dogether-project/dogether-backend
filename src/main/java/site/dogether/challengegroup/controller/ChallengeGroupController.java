@@ -94,51 +94,6 @@ public class ChallengeGroupController {
                 ));
     }
 
-/*    @GetMapping("/summary/my")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary(
-            @Authenticated final Long memberId
-    ) {
-        final JoiningChallengeGroupMyActivityDto joiningChallengeGroupMyActivityDto =
-                challengeGroupService.getJoiningChallengeGroupMyActivitySummary(memberId);
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY,
-                new GetJoiningChallengeGroupMyActivitySummaryResponse(
-                        joiningChallengeGroupMyActivityDto.totalTodoCount(),
-                        joiningChallengeGroupMyActivityDto.totalCertificatedCount(),
-                        joiningChallengeGroupMyActivityDto.totalApprovedCount(),
-                        joiningChallengeGroupMyActivityDto.totalRejectedCount())));
-    }*/
-
-/*    @GetMapping("/{groupId}/ranking")
-    public ResponseEntity<ApiResponse<GetChallengeGroupMembersRank>> getJoiningChallengeGroupTeamRanking(
-            @PathVariable Long groupId
-    ) {
-        final List<ChallengeGroupMemberRankResponse> groupMemberRanks = List.of(
-                ChallengeGroupMemberRankResponse.builder()
-                        .rank(1)
-                        .profileImageUrl("성욱이의 셀카.png")
-                        .name("성욱")
-                        .achievementRate(100)
-                        .build(),
-                ChallengeGroupMemberRankResponse.builder()
-                        .rank(2)
-                        .profileImageUrl("고양이.png")
-                        .name("영재")
-                        .achievementRate(80)
-                        .build(),
-                ChallengeGroupMemberRankResponse.builder()
-                        .rank(3)
-                        .profileImageUrl("그로밋.png")
-                        .name("서은")
-                        .achievementRate(60)
-                        .build()
-        );
-
-        GetChallengeGroupMembersRank response = new GetChallengeGroupMembersRank(groupMemberRanks);
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
-    }*/
-
     @GetMapping("/{groupId}/ranking")
     public ResponseEntity<ApiResponse<GetChallengeGroupMembersRank>> getJoiningChallengeGroupTeamRanking(
             @PathVariable Long groupId

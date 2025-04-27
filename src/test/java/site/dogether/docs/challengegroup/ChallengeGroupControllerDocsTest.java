@@ -233,39 +233,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.BOOLEAN))));
     }
 
-    /*@DisplayName("참여중인 그룹의 내 누적 활동 통계 조회 API")
-    @Test
-    void getJoiningChallengeGroupMyActivitySummary() throws Exception {
-        given(challengeGroupService.getJoiningChallengeGroupMyActivitySummary(any()))
-            .willReturn(new JoiningChallengeGroupMyActivityDto(10, 5, 3, 2));
-
-        mockMvc.perform(
-                get("/api/groups/summary/my")
-                    .header("Authorization", "Bearer access_token")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andDo(createDocument(
-                responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("message")
-                        .description("응답 메시지")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("data.totalTodoCount")
-                        .description("작성한 전체 투두 개수")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.totalCertificatedCount")
-                        .description("인증한 전체 투두 개수")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.totalApprovedCount")
-                        .description("인정받은 투두 개수")
-                        .type(JsonFieldType.NUMBER),
-                    fieldWithPath("data.totalRejectedCount")
-                        .description("노인정 투두 개수")
-                        .type(JsonFieldType.NUMBER))));
-    }*/
-
     @DisplayName("참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회 API")
     @Test
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
