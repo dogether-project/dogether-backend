@@ -46,9 +46,9 @@ public class ChallengeGroupController {
     ) {
         final String joinCode = challengeGroupService.createChallengeGroup(request, memberId);
         return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                CREATE_CHALLENGE_GROUP,
-                new CreateChallengeGroupResponse(joinCode)));
+                ApiResponse.successWithData(
+                        CREATE_CHALLENGE_GROUP,
+                        new CreateChallengeGroupResponse(joinCode)));
     }
 
     @PostMapping("/members/me")
