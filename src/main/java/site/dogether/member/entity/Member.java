@@ -1,6 +1,12 @@
 package site.dogether.member.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +34,30 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image_url", length = 500, nullable = false)
     private String profileImageUrl;
 
-    public static Member create(final String providerId, final String name, final String profileImageUrl) {
-        return new Member(null, providerId, name, profileImageUrl);
+    public static Member create(final String providerId, final String name) {
+        return new Member(null, providerId, name, saveRandomProfileImageUrl());
+    }
+
+    private static String saveRandomProfileImageUrl() {
+        List<String> profileImageUrls = List.of(
+                "s3://dogether-bucket-dev/member_profile_image/blue_1",
+                "s3://dogether-bucket-dev/member_profile_image/blue_2",
+                "s3://dogether-bucket-dev/member_profile_image/blue_3",
+                "s3://dogether-bucket-dev/member_profile_image/blue_4",
+                "s3://dogether-bucket-dev/member_profile_image/blue_5",
+                "s3://dogether-bucket-dev/member_profile_image/red_1",
+                "s3://dogether-bucket-dev/member_profile_image/red_2",
+                "s3://dogether-bucket-dev/member_profile_image/red_3",
+                "s3://dogether-bucket-dev/member_profile_image/red_4",
+                "s3://dogether-bucket-dev/member_profile_image/red_5",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_1",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_2",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_3",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_4",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_5"
+        );
+
+        return profileImageUrls.get((int) (Math.random() * profileImageUrls.size()));
     }
 
     public Member(final Long id, final String providerId, final String name, final String profileImageUrl) {

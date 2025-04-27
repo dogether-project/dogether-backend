@@ -28,7 +28,7 @@ public class AuthService {
         final String subject = appleOAuthProvider.parseSubject(request.idToken());
         log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
 
-        final Member savedMember = memberService.save(Member.create(subject, request.name(), "https://영재님_얼짱_각도.png"));  // TODO : 랜덤하게 회원 프로필 이미지를 삽입하는 로직 추가할것!
+        final Member savedMember = memberService.save(Member.create(subject, request.name()));
         log.info("회원을 저장 or 조회합니다. providerId: {}", savedMember.getProviderId());
 
         final String authenticationToken = jwtHandler.createToken(savedMember.getId());
