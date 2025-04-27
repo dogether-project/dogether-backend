@@ -1,7 +1,11 @@
 package site.dogether.challengegroup.controller;
 
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.CHALLENGE_GROUP_NOT_FOUND;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.FINISHED_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.FULL_MEMBER_IN_CHALLENGE_GROUP;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.INVALID_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.JOIN_CHALLENGE_GROUP_MAX_COUNT;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.JOINING_CHALLENGE_GROUP_MAX_COUNT;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.MEMBER_ALREADY_IN_CHALLENGE_GROUP;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.MEMBER_NOT_IN_CHALLENGE_GROUP;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.NOT_ENOUGH_CHALLENGE_GROUP_MEMBERS;
 import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.NOT_RUNNING_CHALLENGE_GROUP;
@@ -53,10 +57,38 @@ public class ChallengeGroupExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleJoinChallengeGroupMaxCountException(final JoiningChallengeGroupMaxCountException e) {
+    public ResponseEntity<ApiResponse<Void>> handleJoiningChallengeGroupMaxCountException(final JoiningChallengeGroupMaxCountException e) {
         log.info("handle JoinChallengeGroupMaxCountException", e);
         return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(JOIN_CHALLENGE_GROUP_MAX_COUNT, e.getMessage()));
+            .body(ApiResponse.fail(JOINING_CHALLENGE_GROUP_MAX_COUNT, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleChallengeGroupNotFoundException(final Exception e) {
+        log.info("handle ChallengeGroupNotFoundException", e);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.fail(CHALLENGE_GROUP_NOT_FOUND, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleMemberAlreadyInChallengeGroupException(final Exception e) {
+        log.info("handle MemberAlreadyInChallengeGroupException", e);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.fail(MEMBER_ALREADY_IN_CHALLENGE_GROUP, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleFullMemberInChallengeGroupException(final Exception e) {
+        log.info("handle FullMemberInChallengeGroupException", e);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.fail(FULL_MEMBER_IN_CHALLENGE_GROUP, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleFinishedChallengeGroupException(final Exception e) {
+        log.info("handle FinishedChallengeGroupException", e);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.fail(FINISHED_CHALLENGE_GROUP, e.getMessage()));
     }
 
 }

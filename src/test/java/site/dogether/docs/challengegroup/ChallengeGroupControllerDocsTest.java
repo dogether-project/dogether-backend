@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.challengegroup.controller.ChallengeGroupController;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
+import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
 import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRank;
 import site.dogether.challengegroup.service.ChallengeGroupService;
@@ -94,7 +95,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("챌린지 그룹 참가 API")
     @Test
     void joinChallengeGroup() throws Exception {
-        final String joinCode = "A1Bc4dEf";
+        final JoinChallengeGroupRequest request = new JoinChallengeGroupRequest("A1Bc4dEf");
 
         given(challengeGroupService.joinChallengeGroup(any(), any()))
             .willReturn(new JoinChallengeGroupDto(
@@ -106,18 +107,14 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             ));
 
         mockMvc.perform(
-                post("/api/groups/{join-code}", joinCode)
+                post("/api/groups/join")
                     .header("Authorization", "Bearer access_token")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(convertToJson(request)))
             .andExpect(status().isOk())
             .andDo(createDocument(
-                pathParameters(
-                    parameterWithName("join-code")
-                        .description("그룹 참여 코드")
-                        .attributes(constraints("서버에서 발급한 코드(영문, 숫자 조합 8자리)"))),
                 responseFields(
-                    fieldWithPath("code")
-                        .description("응답 코드")
+                    fieldWithPath("code").description("응답 코드")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("message")
                         .description("응답 메시지")
@@ -169,7 +166,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             .willReturn(joiningChallengeGroups);
 
         mockMvc.perform(
-                get("/api/groups/members/me")
+                get("/api/groups/me")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
