@@ -75,6 +75,17 @@ public class ChallengeGroupController {
         );
     }
 
+    @DeleteMapping("/{groupId}/leave")
+    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
+            @Authenticated final Long memberId,
+            @PathVariable final Long groupId
+    ) {
+        challengeGroupService.leaveChallengeGroup(memberId, groupId);
+        return ResponseEntity.ok(ApiResponse.success(
+                LEAVE_CHALLENGE_GROUP
+        ));
+    }
+
     @GetMapping("/summary/my")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupMyActivitySummaryResponse>> getJoiningChallengeGroupMyActivitySummary(
             @Authenticated final Long memberId
@@ -102,15 +113,5 @@ public class ChallengeGroupController {
         );
         GetChallengeGroupMembersRank response = new GetChallengeGroupMembersRank(groupMemberRanks);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
-    }
-
-    @DeleteMapping("/leave")
-    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
-            @Authenticated final Long memberId
-    ) {
-        challengeGroupService.leaveChallengeGroup(memberId);
-        return ResponseEntity.ok(ApiResponse.success(
-                LEAVE_CHALLENGE_GROUP
-        ));
     }
 }

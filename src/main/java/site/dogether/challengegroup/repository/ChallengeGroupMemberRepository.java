@@ -38,4 +38,6 @@ public interface ChallengeGroupMemberRepository extends JpaRepository<ChallengeG
     Optional<ChallengeGroupMember> findByChallengeGroup_StatusAndMember(ChallengeGroupStatus challengeGroupStatus, Member member);
 
     boolean existsByChallengeGroupAndMember(ChallengeGroup challengeGroup, Member joinMember);
+
+    Optional<ChallengeGroupMember> findByMemberAndChallengeGroup(Member member, ChallengeGroup challengeGroup);
 }

@@ -131,6 +131,19 @@ public class ChallengeGroupService {
                 .toList();
     }
 
+    @Transactional
+    public void leaveChallengeGroup(final Long memberId, Long groupId) {
+        final Member member = memberService.getMember(memberId);
+        final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
+                .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
+
+        final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByMemberAndChallengeGroup(member, challengeGroup)
+                .orElseThrow(() -> new InvalidChallengeGroupException(
+                        String.format("해당 그룹에 속해있지 않습니다. (memberId : %d, groupId : %d)", memberId, groupId)));
+
+        challengeGroupMemberRepository.delete(challengeGroupMember);
+    }
+
     private void isFinishedGroup(final ChallengeGroup joiningGroup) {
         if (joiningGroup.isFinished()) {
             throw new InvalidChallengeGroupException(
@@ -172,18 +185,5 @@ public class ChallengeGroupService {
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(myTodoSummaries);
 
         return List.of();
-    }
-
-    @Transactional
-    public void leaveChallengeGroup(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
-
-        final ChallengeGroupMember challengeGroupMember =
-                challengeGroupMemberRepository.findByMember(member)
-                        .orElseThrow(() -> new InvalidChallengeGroupException("그룹에 속해있지 않은 유저입니다."));
-        final ChallengeGroup challengeGroup = challengeGroupMember.getChallengeGroup();
-        isFinishedGroup(challengeGroup);
-
-        challengeGroupMemberRepository.delete(challengeGroupMember);
     }
 }
