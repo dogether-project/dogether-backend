@@ -14,7 +14,7 @@ import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRank
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.challengegroup.exception.JoinGroupMaxCountException;
+import site.dogether.challengegroup.exception.JoinChallengeGroupMaxCountException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -42,7 +42,6 @@ public class ChallengeGroupService {
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupRequest request, final Long memberId) {
         final Member member = memberService.getMember(memberId);
-
         validateJoinGroupMaxCount(member);
 
         final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
@@ -55,8 +54,7 @@ public class ChallengeGroupService {
         );
 
         final ChallengeGroup savedChallengeGroup = challengeGroupRepository.save(challengeGroup);
-        final ChallengeGroupMember challengeGroupMember = new ChallengeGroupMember(savedChallengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(savedChallengeGroup, member));
 
         return challengeGroup.getJoinCode();
     }
@@ -65,7 +63,7 @@ public class ChallengeGroupService {
         final int joiningGroupCount = challengeGroupMemberRepository.countNotFinishedGroupByMemberId(member.getId());
         if (joiningGroupCount >= 5) {
             log.info("해당 멤버의 참여중인 그룹이 5개입니다. memberId : {}", member.getId());
-            throw new JoinGroupMaxCountException("참여할 수 있는 그룹은 최대 5개입니다.");
+            throw new JoinChallengeGroupMaxCountException("참여할 수 있는 그룹은 최대 5개입니다.");
         }
     }
 
