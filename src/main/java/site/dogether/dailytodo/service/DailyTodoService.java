@@ -13,7 +13,6 @@ import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
-import site.dogether.dailytodo.entity.MyTodoSummary;
 import site.dogether.dailytodo.exception.*;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
@@ -171,15 +170,13 @@ public class DailyTodoService {
             .toList();
     }
 
-    public MyTodoSummary getMyTodoSummary(final Member member, final ChallengeGroup joiningGroup) {
+/*    public MyTodoSummary getMyTodoSummary(final Member member, final ChallengeGroup joiningGroup) {
         final List<DailyTodo> dailyTodos = dailyTodoRepository.findAllByChallengeGroupAndMember(joiningGroup, member);
         return new MyTodoSummary(dailyTodos, member.getName());
-    }
+    }*/
 
-    public List<MyTodoSummary> getMyTodoSummaries(final List<Member> groupMembers, final ChallengeGroup joiningGroupEntity) {
-        return groupMembers.stream()
-                .map(memberJpaEntity -> getMyTodoSummary(memberJpaEntity, joiningGroupEntity))
-                .toList();
+    public List<DailyTodo> getMemberTodos(final ChallengeGroup challengeGroup, final Member member) {
+        return dailyTodoRepository.findAllByChallengeGroupAndMember(challengeGroup, member);
     }
 
     public List<DailyTodoAndDailyTodoCertificationDto> findMyDailyTodo(final FindMyDailyTodosConditionDto condition) {
