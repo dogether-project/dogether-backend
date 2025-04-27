@@ -9,6 +9,7 @@ public record JoiningChallengeGroupDto(
     int currentMemberCount,
     int maximumMemberCount,
     String joinCode,
+    String status,
     String endAt,
     int progressDay,
     double progressRate
@@ -25,6 +26,7 @@ public record JoiningChallengeGroupDto(
             currentMemberCount,
             joiningGroup.getMaximumMemberCount(),
             joiningGroup.getJoinCode(),
+            joiningGroup.getStatus().name(),
             joiningGroup.getEndAt().format(formatter),
             joiningGroup.getCurrentDay(),
             joiningGroup.getProgressRate()
