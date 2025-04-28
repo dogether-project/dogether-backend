@@ -48,7 +48,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<ChallengeGroupMember> challengeGroupMembers;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE)
     private List<DailyTodoCertification> dailyTodoCertifications;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
