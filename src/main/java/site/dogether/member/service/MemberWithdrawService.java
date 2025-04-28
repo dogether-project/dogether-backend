@@ -27,16 +27,19 @@ public class MemberWithdrawService {
     public void delete(final Long memberId) {
         final Member member = memberService.getMember(memberId);
         member.softDelete();
+        log.info("회원 컬럼 soft delete. memberId: {}", memberId);
 
         challengeGroupMemberRepository.findAllByMember(member)
                 .forEach(BaseEntity::softDelete);
+        log.info("회원의 챌린지 그룹 멤버 컬럼 soft delete");
         notificationTokenJpaRepository.findAllByMember(member)
                 .forEach(BaseEntity::softDelete);
+        log.info("회원의 알림 토큰 컬럼 soft delete");
         dailyTodoRepository.findAllByMember(member)
                 .forEach(BaseEntity::softDelete);
+        log.info("회원의 데일리 투두 컬럼 soft delete");
         dailyTodoCertificationRepository.findAllByReviewer(member)
                 .forEach(BaseEntity::softDelete);
-
-        log.info("회원 탈퇴 처리 완료. memberId: {}", memberId);
+        log.info("회원의 데일리 투두 인증 컬럼 soft delete");
     }
 }

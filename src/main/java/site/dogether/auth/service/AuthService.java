@@ -45,6 +45,7 @@ public class AuthService {
         final boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
         if (isRevoked) {
             memberWithdrawService.delete(memberId);
+            log.info("회원 탈퇴 처리 완료. memberId: {}", memberId);
         }
     }
 

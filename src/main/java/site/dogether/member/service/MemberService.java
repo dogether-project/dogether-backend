@@ -24,15 +24,18 @@ public class MemberService {
         if (found.isPresent()) {
             Member member = found.get();
             if (!member.isDeleted()) {
+                log.info("가입한 회원을 조회합니다. memberId: {}", member.getId());
                 return member;
             }
             hardDelete(member);
             return createMember(providerId, name);
         }
+        log.info("신규 가입 회원을 저장합니다. providerId: {}", providerId);
         return createMember(providerId, name);
     }
 
     private void hardDelete(Member member) {
+        log.info("재가입을 위한 회원 정보 삭제. memberId: {}", member.getId());
         memberRepository.delete(member);
     }
 
