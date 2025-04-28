@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
@@ -18,6 +19,7 @@ import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.exception.InvalidMemberException;
+import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.notification.entity.NotificationTokenJpaEntity;
 
 @ToString
@@ -51,6 +53,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodo> dailyTodos;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private DailyTodoStats dailyTodoStats;
 
     public static Member create(final String providerId, final String name) {
         return new Member(null, providerId, name, saveRandomProfileImageUrl());
