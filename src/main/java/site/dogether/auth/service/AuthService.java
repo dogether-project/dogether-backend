@@ -11,6 +11,7 @@ import site.dogether.auth.oauth.AppleOAuthProvider;
 import site.dogether.auth.oauth.JwtHandler;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
+import site.dogether.member.service.MemberWithdrawService;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
 @Slf4j
@@ -22,13 +23,16 @@ public class AuthService {
     private final JwtHandler jwtHandler;
     private final AppleOAuthProvider appleOAuthProvider;
     private final MemberService memberService;
+    private final MemberWithdrawService memberWithdrawService;
 
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
+        log.info("로그인 요청을 받습니다. idToken: {}", request.idToken());
+
         final String subject = appleOAuthProvider.parseSubject(request.idToken());
         log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
 
-        final Member savedMember = memberService.save(Member.create(subject, request.name(), "https://영재님_얼짱_각도.png"));  // TODO : 랜덤하게 회원 프로필 이미지를 삽입하는 로직 추가할것!
+        final Member savedMember = memberService.save(subject, request.name());
         log.info("회원을 저장 or 조회합니다. providerId: {}", savedMember.getProviderId());
 
         final String authenticationToken = jwtHandler.createToken(savedMember.getId());
@@ -38,9 +42,10 @@ public class AuthService {
 
     @Transactional
     public void withdraw(final Long memberId, final WithdrawRequest request) {
-        boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
+        final boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
         if (isRevoked) {
-            memberService.delete(memberId);
+            memberWithdrawService.delete(memberId);
+            log.info("회원 탈퇴 처리 완료. memberId: {}", memberId);
         }
     }
 

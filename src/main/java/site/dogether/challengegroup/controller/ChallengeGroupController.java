@@ -1,17 +1,28 @@
 package site.dogether.challengegroup.controller;
 
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.CREATE_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUPS;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUP_MY_ACTIVITY_SUMMARY;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.LEAVE_CHALLENGE_GROUP;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
+
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
+
 import site.dogether.challengegroup.controller.response.*;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupName;
+
 import site.dogether.common.controller.response.ApiResponse;
 
 import java.util.List;
@@ -33,12 +44,12 @@ public class ChallengeGroupController {
     ) {
         final String joinCode = challengeGroupService.createChallengeGroup(request, memberId);
         return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                CREATE_CHALLENGE_GROUP,
-                new CreateChallengeGroupResponse(joinCode)));
+                ApiResponse.successWithData(
+                        CREATE_CHALLENGE_GROUP,
+                        new CreateChallengeGroupResponse(joinCode)));
     }
 
-    @PostMapping("/members/me")
+    @PostMapping("/join")
     public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
             @Authenticated final Long memberId,
             @RequestBody final JoinChallengeGroupRequest request
@@ -47,15 +58,10 @@ public class ChallengeGroupController {
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 JOIN_CHALLENGE_GROUP,
-                new JoinChallengeGroupResponse(
-                        joinChallengeGroupDto.groupName(),
-                        joinChallengeGroupDto.duration(),
-                        joinChallengeGroupDto.maximumMemberCount(),
-                        joinChallengeGroupDto.startAt(),
-                        joinChallengeGroupDto.endAt())));
+                JoinChallengeGroupResponse.from(joinChallengeGroupDto)));
     }
 
-    @GetMapping("/members/me")
+    @GetMapping("/my")
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsResponse>> getJoiningChallengeGroups(
             @Authenticated final Long memberId
     ) {
@@ -67,31 +73,15 @@ public class ChallengeGroupController {
         );
     }
 
-    @GetMapping("/names/members/me")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupNamesResponse>> getJoiningChallengeGroupNames(
-            @Authenticated final Long memberId
+    @DeleteMapping("/{groupId}/leave")
+    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
+            @Authenticated final Long memberId,
+            @PathVariable final Long groupId
     ) {
-        final List<JoiningChallengeGroupName> joiningChallengeGroups = List.of(
-                new JoiningChallengeGroupName("켈리와 친구들"),
-                new JoiningChallengeGroupName("폰트와 친구들")
-        );
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                GET_JOINING_CHALLENGE_GROUP_NAMES,
-                new GetJoiningChallengeGroupNamesResponse(joiningChallengeGroups))
-        );
-    }
-
-    @GetMapping("/members/me/joined")
-    public ResponseEntity<ApiResponse<HasChallengeGroupResponse>> hasChallengeGroup(
-            @Authenticated final Long memberId
-    ) {
-        final boolean hasGroup = challengeGroupService.hasChallengeGroup(memberId);
-        return ResponseEntity.ok(
-                ApiResponse.successWithData(
-                        HAS_CHALLENGE_GROUP,
-                        new HasChallengeGroupResponse(hasGroup)
-                ));
+        challengeGroupService.leaveChallengeGroup(memberId, groupId);
+        return ResponseEntity.ok(ApiResponse.success(
+                LEAVE_CHALLENGE_GROUP
+        ));
     }
 
     @GetMapping("/{groupId}/ranking")
@@ -103,28 +93,5 @@ public class ChallengeGroupController {
         GetChallengeGroupMembersRank response = new GetChallengeGroupMembersRank(groupMemberRanks);
 
         return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
-    }
-
-    @GetMapping("/my/status")
-    public ResponseEntity<ApiResponse<GetMyChallengeGroupStatusResponse>> getMyChallengeGroupStatus(
-        @Authenticated final Long memberId
-    ) {
-        final ChallengeGroupStatus myChallengeGroupStatus = challengeGroupService.getMyChallengeGroupStatus(memberId);
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                ChallengeGroupSuccessCode.GET_MY_CHALLENGE_GROUP_STATUS,
-                new GetMyChallengeGroupStatusResponse(myChallengeGroupStatus)
-            )
-        );
-    }
-
-    @DeleteMapping("/leave")
-    public ResponseEntity<ApiResponse<Void>> leaveChallengeGroup(
-            @Authenticated final Long memberId
-    ) {
-        challengeGroupService.leaveChallengeGroup(memberId);
-        return ResponseEntity.ok(ApiResponse.success(
-                LEAVE_CHALLENGE_GROUP
-        ));
     }
 }

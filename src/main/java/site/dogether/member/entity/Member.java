@@ -1,12 +1,26 @@
 package site.dogether.member.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.common.audit.entity.BaseEntity;
+import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.exception.InvalidMemberException;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.notification.entity.NotificationTokenJpaEntity;
 
 @ToString
 @Getter
@@ -28,8 +42,45 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image_url", length = 500, nullable = false)
     private String profileImageUrl;
 
-    public static Member create(final String providerId, final String name, final String profileImageUrl) {
-        return new Member(null, providerId, name, profileImageUrl);
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<NotificationTokenJpaEntity> notificationTokens;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<ChallengeGroupMember> challengeGroupMembers;
+
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE)
+    private List<DailyTodoCertification> dailyTodoCertifications;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<DailyTodo> dailyTodos;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private DailyTodoStats dailyTodoStats;
+
+    public static Member create(final String providerId, final String name) {
+        return new Member(null, providerId, name, saveRandomProfileImageUrl());
+    }
+
+    private static String saveRandomProfileImageUrl() {
+        List<String> profileImageUrls = List.of(
+                "s3://dogether-bucket-dev/member_profile_image/blue_1",
+                "s3://dogether-bucket-dev/member_profile_image/blue_2",
+                "s3://dogether-bucket-dev/member_profile_image/blue_3",
+                "s3://dogether-bucket-dev/member_profile_image/blue_4",
+                "s3://dogether-bucket-dev/member_profile_image/blue_5",
+                "s3://dogether-bucket-dev/member_profile_image/red_1",
+                "s3://dogether-bucket-dev/member_profile_image/red_2",
+                "s3://dogether-bucket-dev/member_profile_image/red_3",
+                "s3://dogether-bucket-dev/member_profile_image/red_4",
+                "s3://dogether-bucket-dev/member_profile_image/red_5",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_1",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_2",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_3",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_4",
+                "s3://dogether-bucket-dev/member_profile_image/yellow_5"
+        );
+
+        return profileImageUrls.get((int) (Math.random() * profileImageUrls.size()));
     }
 
     public Member(final Long id, final String providerId, final String name, final String profileImageUrl) {
