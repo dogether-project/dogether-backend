@@ -33,6 +33,8 @@ public interface ChallengeGroupMemberRepository extends JpaRepository<ChallengeG
             """)
     List<ChallengeGroupMember> findNotFinishedGroupByMember(Member member);
 
+    List<ChallengeGroupMember> findAllByMember(Member member);
+
     Optional<ChallengeGroupMember> findByMember(Member member);
 
     Optional<ChallengeGroupMember> findByChallengeGroup_StatusAndMember(ChallengeGroupStatus challengeGroupStatus, Member member);

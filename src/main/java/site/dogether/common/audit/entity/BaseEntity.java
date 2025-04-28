@@ -1,9 +1,11 @@
 package site.dogether.common.audit.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
+import lombok.Getter;
 
 @Getter
 @MappedSuperclass
@@ -27,5 +29,9 @@ public class BaseEntity {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
     }
 }
