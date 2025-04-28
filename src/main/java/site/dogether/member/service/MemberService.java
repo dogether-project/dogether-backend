@@ -1,5 +1,6 @@
 package site.dogether.member.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,27 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Member save(final Member member) {
-        return memberRepository.findByProviderId(member.getProviderId())
-            .orElseGet(() -> memberRepository.save(member));
+    public Member save(final String providerId, final String name) {
+        Optional<Member> found = memberRepository.findByProviderId(providerId);
+
+        if (found.isPresent()) {
+            Member member = found.get();
+            if (!member.isDeleted()) {
+                return member;
+            }
+            hardDelete(member);
+            return createMember(providerId, name);
+        }
+        return createMember(providerId, name);
     }
 
-    @Transactional
-    public void delete(final Long memberId) {
-        final Member member = getMember(memberId);
+    private void hardDelete(Member member) {
         memberRepository.delete(member);
+    }
+
+    private Member createMember(String providerId, String name) {
+        Member newMember = Member.create(providerId, name);
+        return memberRepository.save(newMember);
     }
 
     public Member getMember(final Long memberId) {
