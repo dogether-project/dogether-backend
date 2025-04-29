@@ -1,24 +1,23 @@
 package site.dogether.dailytodo.entity;
 
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfo;
+import site.dogether.challengegroup.service.dto.RankDto;
+
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class GroupTodoSummary {
 
-    private final List<MyTodoSummary> myTodoSummaries;
+    private final List<ChallengeGroupMemberRankInfo> membersTodoSummary;
 
-    public GroupTodoSummary(final List<MyTodoSummary> myTodoSummaries) {
-        this.myTodoSummaries = myTodoSummaries;
+    public GroupTodoSummary(final List<ChallengeGroupMemberRankInfo> membersTodoSummary) {
+        this.membersTodoSummary = membersTodoSummary;
     }
 
-    public List<Rank> getRanks() {
-        final List<Rank> allRanking = myTodoSummaries.stream()
-                .map(myTodoSummary -> new Rank(
-                        0,
-                        myTodoSummary.getMemberName(),
-                        myTodoSummary.calculateCertificationRate()
-                ))
-                .sorted((o1, o2) -> (o2.getCertificationRate() - o1.getCertificationRate()))
+    public List<RankDto> getRanks() {
+        final List<RankDto> allRanking = membersTodoSummary.stream()
+                .map(RankDto::from)
+                .sorted((o1, o2) -> (o2.getAchievementRate() - o1.getAchievementRate()))
                 .toList();
 
         IntStream.range(0, allRanking.size())
@@ -26,5 +25,4 @@ public class GroupTodoSummary {
 
         return allRanking;
     }
-
 }
