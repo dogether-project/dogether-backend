@@ -30,7 +30,7 @@ public record JoiningChallengeGroupDto(
             joiningGroup.getStatus().name(),
             joiningGroup.getStartAt().format(formatter),
             joiningGroup.getEndAt().format(formatter),
-            joiningGroup.getCurrentDay(),
+            joiningGroup.getProgressDay(),
             joiningGroup.getProgressRate()
         );
     }
