@@ -238,6 +238,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
 
         final List<ChallengeGroupMemberRankResponse> groupMemberRanks = List.of(
                 ChallengeGroupMemberRankResponse.builder()
+                        .memberId(1L)
                         .rank(1)
                         .profileImageUrl("성욱이의 셀카.png")
                         .name("성욱")
@@ -245,6 +246,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .build(),
 
                 ChallengeGroupMemberRankResponse.builder()
+                        .memberId(2L)
                         .rank(2)
                         .profileImageUrl("고양이.png")
                         .name("영재")
@@ -252,6 +254,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .build(),
 
                 ChallengeGroupMemberRankResponse.builder()
+                        .memberId(3L)
                         .rank(3)
                         .profileImageUrl("그로밋.png")
                         .name("서은")
@@ -282,6 +285,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.ranking")
                         .description("그룹 내 활동 순위")
                         .type(JsonFieldType.ARRAY),
+                    fieldWithPath("data.ranking[].memberId")
+                        .description("그룹원 ID")
+                        .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.ranking[].rank")
                         .description("순위")
                         .type(JsonFieldType.NUMBER),
@@ -296,6 +302,4 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.NUMBER))
             ));
     }
-
-
 }
