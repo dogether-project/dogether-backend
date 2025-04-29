@@ -8,7 +8,13 @@ import site.dogether.challengegroup.controller.request.CreateChallengeGroupReque
 import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.exception.*;
+import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
+import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
+import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
+import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
+import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
+import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfo;
@@ -169,14 +175,22 @@ public class ChallengeGroupService {
                 .map(ChallengeGroupMember::getMember)
                 .toList();
 
+        final List<Long> memberIds = getChallengeGroupMemberId(members);
         final List<RankDto> memberRanks = calculateChallengeGroupMembersRank(groupMembers, challengeGroup);
-        final List<String> profileImageUrls = collectChallengeGroupMemberProfileImages(members);
+        final List<String> profileImageUrls = getChallengeGroupMemberProfileImages(members);
 
         return IntStream.range(0, memberRanks.size())
                 .mapToObj(i -> ChallengeGroupMemberRankResponse.from(
+                        memberIds.get(i),
                         memberRanks.get(i),
                         profileImageUrls.get(i)
                 ))
+                .toList();
+    }
+
+    private List<Long> getChallengeGroupMemberId(final List<Member> groupMembers) {
+        return groupMembers.stream()
+                .map(Member::getId)
                 .toList();
     }
 
@@ -187,7 +201,7 @@ public class ChallengeGroupService {
         return groupTodoSummary.getRanks();
     }
 
-    private List<String> collectChallengeGroupMemberProfileImages(final List<Member> groupMembers) {
+    private List<String> getChallengeGroupMemberProfileImages(final List<Member> groupMembers) {
         return groupMembers.stream()
                 .map(Member::getProfileImageUrl)
                 .toList();

@@ -8,13 +8,15 @@ import site.dogether.challengegroup.service.dto.RankDto;
 @Builder
 public class ChallengeGroupMemberRankResponse {
 
+    private Long memberId;
     private int rank;
     private String profileImageUrl;
     private String name;
     private int achievementRate;
 
-    public static ChallengeGroupMemberRankResponse from(RankDto rankDto, String profileImageUrl) {
+    public static ChallengeGroupMemberRankResponse from(Long memberId, RankDto rankDto, String profileImageUrl) {
         return ChallengeGroupMemberRankResponse.builder()
+                .memberId(memberId)
                 .rank(rankDto.getRank())
                 .profileImageUrl(profileImageUrl)
                 .name(rankDto.getName())
