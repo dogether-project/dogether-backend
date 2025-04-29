@@ -1,8 +1,10 @@
 package site.dogether.docs.util;
 
-import lombok.*;
-
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -12,6 +14,7 @@ public class EnumDocs {
 
     Map<String, String> challengeGroupStartAtOption;
     Map<String, String> challengeGroupDurationOption;
+    Map<String, String> challengeGroupStatus;
     Map<String, String> dailyTodoCertificationReviewResult;
     Map<String, String> s3UploadFileType;
     Map<String, String> dailyTodoStatus;

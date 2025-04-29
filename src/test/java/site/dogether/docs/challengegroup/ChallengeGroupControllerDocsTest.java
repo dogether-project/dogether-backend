@@ -1,5 +1,23 @@
 package site.dogether.docs.challengegroup;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_STATUS;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -11,22 +29,7 @@ import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRank
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
-
 import site.dogether.docs.util.RestDocsSupport;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
@@ -96,7 +99,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
         given(challengeGroupService.joinChallengeGroup(any(), any()))
             .willReturn(new JoinChallengeGroupDto(
                     "성욱이와 친구들",
-                    3,
                     8,
                     "25.03.02",
                     "25.03.05"
@@ -109,8 +111,14 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     .content(convertToJson(request)))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                requestFields(
+                    fieldWithPath("joinCode")
+                    .description("참여 코드")
+                    .type(JsonFieldType.STRING)
+                    .attributes(constraints("서버에서 발급한 숫자,영문 포함 8자리 코드"))),
                 responseFields(
-                    fieldWithPath("code").description("응답 코드")
+                    fieldWithPath("code")
+                        .description("응답 코드")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("message")
                         .description("응답 메시지")
@@ -118,9 +126,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.groupName")
                         .description("그룹명")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.duration")
-                        .description("챌린지 기간")
-                        .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.maximumMemberCount")
                         .description("총 인원수")
                         .type(JsonFieldType.NUMBER),
@@ -143,6 +148,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     10,
                     "G3hIj4kLm",
                     "RUNNING",
+                    "25.03.02",
                     "25.03.05",
                     5,
                     0.3),
@@ -152,8 +158,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     1,
                     10,
                     "A1Bc4dEf",
-                    "RUNNING",
+                    "D_DAY",
                     "25.03.02",
+                    "25.03.05",
                     2,
                     0.5)
         );
@@ -194,7 +201,11 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("그룹 참여 코드")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.joiningChallengeGroups[].status")
-                        .description("챌린지 그룹 상태")
+                        .description(generateLink(CHALLENGE_GROUP_STATUS))
+                        .type(JsonFieldType.STRING)
+                        .attributes(constraints("정해진 값만 입력 허용")),
+                    fieldWithPath("data.joiningChallengeGroups[].startAt")
+                        .description("챌린지 시작일")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.joiningChallengeGroups[].endAt")
                         .description("챌린지 종료일")
@@ -221,7 +232,8 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                 .andDo(createDocument(
                     pathParameters(
                         parameterWithName("groupId")
-                            .description("탈퇴할 챌린지 그룹의 ID")),
+                            .description("탈퇴할 챌린지 그룹의 ID")
+                                .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"), pathVariableExample(groupId))),
                     responseFields(
                         fieldWithPath("code")
                             .description("응답 코드")
