@@ -58,6 +58,7 @@ public class ChallengeGroup extends BaseEntity {
         final LocalDate startAt,
         final LocalDate endAt
     ) {
+        validateEndAtIsAfterStartAt(startAt, endAt);
         return new ChallengeGroup(
             null,
             validateGroupNameLength(name),
@@ -67,6 +68,14 @@ public class ChallengeGroup extends BaseEntity {
             generateJoinCode(),
             setStatus(startAt)
         );
+    }
+
+    private static void validateEndAtIsAfterStartAt(LocalDate startAt, LocalDate endAt) {
+        if (startAt.isAfter(endAt)) {
+            throw new InvalidChallengeGroupException(
+                    String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
+            );
+        }
     }
 
     private static int validateMaximumMemberCount(int maximumMemberCount) {
@@ -118,9 +127,6 @@ public class ChallengeGroup extends BaseEntity {
         this.joinCode = joinCode;
         this.status = status;
     }
-
-    // TODO : startAT이 endAt보다 늦은 날짜가 아닌지 검증
-
 
     public boolean isFinished() {
         return this.status == ChallengeGroupStatus.FINISHED;
