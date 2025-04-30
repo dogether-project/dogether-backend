@@ -10,8 +10,7 @@ import site.dogether.memberactivity.controller.MemberActivityController;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class MemberActivityControllerDocsTest extends RestDocsSupport {
@@ -91,16 +90,24 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.NUMBER))));
     }
 
-    @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API")
+    @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
     @Test
-    void getMemberAllStats() throws Exception {
+    void getMemberAllStatsSortedByTodoCompletedAt() throws Exception {
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/activity")
+                                .param("sort", "todo-completed-at")
+                                .param("status", "approve")
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andDo(createDocument(
+                        queryParameters(
+                                parameterWithName("sort")
+                                        .description("정렬 방식 {옵션 : todo-completed-at, group-created-at}"),
+                                parameterWithName("status")
+                                        .optional()
+                                        .description("데일리 투두 상태 {옵션: approve, reject, review_pending}")),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
@@ -124,6 +131,13 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.dailyTodoCertifications[].id")
                                         .description("데일리 투두 id")
                                         .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoCertifications[].groupName")
+                                        .description("챌린지 그룹명")
+                                        .optional()
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].createdAt")
+                                        .description("데일리 투두 인증 날짜")
+                                        .type(JsonFieldType.STRING),
                                 fieldWithPath("data.dailyTodoCertifications[].content")
                                         .description("데일리 투두 내용")
                                         .type(JsonFieldType.STRING),
@@ -139,7 +153,72 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.dailyTodoCertifications[]rejectReason")
                                         .description("데일리 투두 인증 노인정 사유")
                                         .optional()
-                                        .type(JsonFieldType.STRING)
-                        )));
+                                        .type(JsonFieldType.STRING))));
+    }
+
+    @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
+    @Test
+    void getMemberAllStatsSortedByGroupCreatedAt() throws Exception {
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/my/activity")
+                                .param("sort", "group-created-at")
+                                .param("status", "reject")
+                                .header("Authorization", "Bearer access_token")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                        queryParameters(
+                                parameterWithName("sort")
+                                        .description("정렬 방식 {옵션 : todo-completed-at, group-created-at}"),
+                                parameterWithName("status")
+                                        .optional()
+                                        .description("데일리 투두 상태 {옵션: approve, reject, review_pending}")),
+                        responseFields(
+                                fieldWithPath("code")
+                                        .description("응답 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("message")
+                                        .description("응답 메시지")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoStats.totalCertificatedCount")
+                                        .description("사용자의 인증 목록 개수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoStats.totalApprovedCount")
+                                        .description("사용자의 인정받은 투두 개수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoStats.totalRejectedCount")
+                                        .description("사용자의 노인정 받은 투두 개수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoCertifications")
+                                        .description("개인 인증 목록 전체 조회")
+                                        .optional()
+                                        .type(JsonFieldType.ARRAY),
+                                fieldWithPath("data.dailyTodoCertifications[].id")
+                                        .description("데일리 투두 id")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.dailyTodoCertifications[].groupName")
+                                        .description("챌린지 그룹명")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].createdAt")
+                                        .description("데일리 투두 인증 날짜")
+                                        .optional()
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].content")
+                                        .description("데일리 투두 내용")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].status")
+                                        .description("데일리 투두 상태")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].certificationContent")
+                                        .description("데일리 투두 인증글 내용")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[].certificationMediaUrl")
+                                        .description("데일리 투두 인증글 이미지 URL")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.dailyTodoCertifications[]rejectReason")
+                                        .description("데일리 투두 인증 노인정 사유")
+                                        .optional()
+                                        .type(JsonFieldType.STRING))));
     }
 }

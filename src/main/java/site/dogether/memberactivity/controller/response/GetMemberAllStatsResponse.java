@@ -18,6 +18,10 @@ public record GetMemberAllStatsResponse(
 
     public record DailyTodoCertifications(
             Long id,
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            String groupName,
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            String createdAt,
             String content,
             String status,
             String certificationContent,

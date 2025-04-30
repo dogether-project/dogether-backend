@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
@@ -48,7 +49,9 @@ public class MemberActivityController {
 
     @GetMapping("/activity")
     public ResponseEntity<ApiResponse<GetMemberAllStatsResponse>> getMemberAllStats(
-            @Authenticated final Long memberId
+            @Authenticated final Long memberId,
+            @RequestParam(name = "sort", defaultValue = "todo-completed-at") final String sort,
+            @RequestParam final String status
     ) {
         GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
                 5,
@@ -56,32 +59,110 @@ public class MemberActivityController {
                 2
         );
 
-        List<GetMemberAllStatsResponse.DailyTodoCertifications> certifications = List.of(
-                new GetMemberAllStatsResponse.DailyTodoCertifications(
-                        1L,
-                        "운동 하기",
-                        "REVIEW_PENDING",
-                        "운동 개조짐 ㅋㅋㅋㅋ",
-                        "운동 조지는 짤.png",
-                        null
-                ),
-                new GetMemberAllStatsResponse.DailyTodoCertifications(
-                        2L,
-                        "인강 듣기",
-                        "APPROVE",
-                        "인강 진짜 열심히 들었습니다. ㅎ",
-                        "인강 달리는 짤.png",
-                        null
-                ),
-                new GetMemberAllStatsResponse.DailyTodoCertifications(
-                        3L,
-                        "DND API 구현",
-                        "REJECT",
-                        "API 좀 잘 만든듯 ㅋ",
-                        "API 명세짤.png",
-                        "아 별론데?"
-                )
-        );
+        List<GetMemberAllStatsResponse.DailyTodoCertifications> certifications;
+
+        if(sort.equals("todo-completed-at")) {
+            certifications = List.of(
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            1L,
+                            null,
+                            "2025.04.30",
+                            "운동 하기",
+                            "APPROVE",
+                            "운동 개조짐 ㅋㅋㅋㅋ",
+                            "운동 조지는 짤.png",
+                            null
+                    ),
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            2L,
+                            null,
+                            "2025.04.31",
+                            "인강 듣기",
+                            "APPROVE",
+                            "인강 진짜 열심히 들었습니다. ㅎ",
+                            "인강 달리는 짤.png",
+                            null
+                    ),
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            3L,
+                            null,
+                            "2025.04.31",
+                            "두게더 API 구현",
+                            "APPROVE",
+                            "API 좀 잘 만든듯 ㅋ",
+                            "API 명세짤.png",
+                            null
+                    )
+            );
+        }
+        else if(sort.equals("group-created-at")) {
+            certifications = List.of(
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            1L,
+                            "스쿼트 챌린지",
+                            null,
+                            "운동 하기",
+                            "REJECT",
+                            "운동 개조짐 ㅋㅋㅋㅋ",
+                            "운동 조지는 짤.png",
+                            "에이 이건 운동 아니지"
+                    ),
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            2L,
+                            "TIL 챌린지",
+                            null,
+                            "인강 듣기",
+                            "REJECT",
+                            "인강 진짜 열심히 들었습니다. ㅎ",
+                            "인강 달리는 짤.png",
+                            "우리 오늘 인강 듣는날 아닌데?"
+                    ),
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            3L,
+                            "두게더 개발단",
+                            null,
+                            "두게더 API 구현",
+                            "REJECT",
+                            "API 좀 잘 만든듯 ㅋ",
+                            "API 명세짤.png",
+                            "아 별론데?"
+                    )
+            );
+        }
+        else {
+            certifications = List.of(
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            1L,
+                            null,
+                            null,
+                            "운동 하기",
+                            "REVIEW_PENDING",
+                            "운동 개조짐 ㅋㅋㅋㅋ",
+                            "운동 조지는 짤.png",
+                            null
+                    ),
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            2L,
+                            null,
+                            null,
+                            "인강 듣기",
+                            "REVIEW_PENDING",
+                            "인강 진짜 열심히 들었습니다. ㅎ",
+                            "인강 달리는 짤.png",
+                            null
+                    ),
+                    new GetMemberAllStatsResponse.DailyTodoCertifications(
+                            3L,
+                            null,
+                            null,
+                            "두게더 API 구현",
+                            "REVIEW_PENDING",
+                            "API 좀 잘 만든듯 ㅋ",
+                            "API 명세짤.png",
+                            null
+                    )
+            );
+        }
 
         GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certifications);
 
