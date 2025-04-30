@@ -6,13 +6,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.exception.InvalidMemberException;
+
+import java.util.List;
+import java.util.Objects;
 
 @ToString
 @Getter
@@ -60,7 +62,12 @@ public class Member extends BaseEntity {
         return profileImageUrls.get((int) (Math.random() * profileImageUrls.size()));
     }
 
-    public Member(final Long id, final String providerId, final String name, final String profileImageUrl) {
+    public Member(
+        final Long id,
+        final String providerId,
+        final String name,
+        final String profileImageUrl
+    ) {
         validateProviderId(providerId);
         validateName(name);
 
@@ -80,5 +87,17 @@ public class Member extends BaseEntity {
         if (name == null || name.isBlank()) {
             throw new InvalidMemberException(String.format("회원 이름은 null 혹은 공백을 입력할 수 없습니다. (input : %s)", name));
         }
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        final Member member = (Member) object;
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

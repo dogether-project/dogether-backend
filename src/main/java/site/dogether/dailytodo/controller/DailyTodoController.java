@@ -31,7 +31,7 @@ public class DailyTodoController {
         @PathVariable final Long groupId,
         @RequestBody final CreateDailyTodosRequest request
     ) {
-        dailyTodoService.saveDailyTodo(memberId, request.todos());
+        dailyTodoService.saveDailyTodos(memberId, groupId, request.todos());
         return ResponseEntity.ok(ApiResponse.success(CREATE_DAILY_TODOS));
     }
 

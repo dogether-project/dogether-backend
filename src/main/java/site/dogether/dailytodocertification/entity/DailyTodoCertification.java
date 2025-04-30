@@ -79,7 +79,7 @@ public class DailyTodoCertification extends BaseEntity {
     }
 
     public String getDoerName() {
-        return dailyTodo.getMember().getName();
+        return dailyTodo.getMemberName();
     }
 
     public String getDailyTodoContent() {

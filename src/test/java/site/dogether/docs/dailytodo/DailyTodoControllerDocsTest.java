@@ -123,7 +123,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             new DailyTodo(1L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null),
             new DailyTodo(2L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null),
             new DailyTodo(3L, challengeGroup, doer, "인강 듣기", DailyTodoStatus.APPROVE, null),
-            new DailyTodo(4L, challengeGroup, doer, "DND API 구현", DailyTodoStatus.REJECT, null)
+            new DailyTodo(4L, challengeGroup, doer, "DND API 구현", DailyTodoStatus.REJECT, "코드 개판이네 ㅎ")
         );
         final List<DailyTodoCertification> dailyTodoCertifications = List.of(
             new DailyTodoCertification(1L, dailyTodos.get(1), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),

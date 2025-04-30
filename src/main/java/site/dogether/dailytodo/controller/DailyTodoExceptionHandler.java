@@ -24,13 +24,6 @@ public class DailyTodoExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleUnreviewedDailyTodoExistsException(final UnreviewedDailyTodoExistsException e) {
-        log.info("handle UnreviewedDailyTodoExistsException", e);
-        return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(UNREVIEWED_DAILY_TODO_EXIST, e.getMessage()));
-    }
-
-    @ExceptionHandler
     public ResponseEntity<ApiResponse<Void>> handleDailyTodoCreatedDateException(final DailyTodoCreatedDateException e) {
         log.info("handle DailyTodoCreatedDateException", e);
         return ResponseEntity.badRequest()
@@ -52,7 +45,7 @@ public class DailyTodoExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleNotDailyTodoOwnerException(final NotDailyTodoOwnerException e) {
+    public ResponseEntity<ApiResponse<Void>> handleNotDailyTodoOwnerException(final NotDailyTodoWriterException e) {
         log.info("handle NotDailyTodoOwnerException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(NOT_DAILY_TODO_OWNER, e.getMessage()));

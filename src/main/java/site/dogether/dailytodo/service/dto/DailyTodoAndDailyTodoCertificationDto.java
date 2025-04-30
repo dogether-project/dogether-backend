@@ -56,6 +56,6 @@ public class DailyTodoAndDailyTodoCertificationDto {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(dailyTodo.getRejectReason());
+        return dailyTodo.getRejectReason();
     }
 }
