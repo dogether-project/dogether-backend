@@ -25,6 +25,8 @@ public class MemberActivityController {
     public ResponseEntity<ApiResponse<GetGroupActivityStatResponse>> getGroupActivityStat(
             @Authenticated final Long memberId, @PathVariable final Long groupId
     ) {
+        GetGroupActivityStatResponse.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatResponse.ChallengeGroupInfoResponse("그로밋과 함께하는 챌린지", 10, 6, "123456", "25.02.22");
+
         List<GetGroupActivityStatResponse.CertificationPeriodResponse> certificationPeriods = List.of(
                 new GetGroupActivityStatResponse.CertificationPeriodResponse(1, 8, 2, 25),
                 new GetGroupActivityStatResponse.CertificationPeriodResponse(2, 6, 3, 50),
@@ -35,8 +37,7 @@ public class MemberActivityController {
         GetGroupActivityStatResponse.MemberStatsResponse stats = new GetGroupActivityStatResponse.MemberStatsResponse(123, 123, 123);
 
         GetGroupActivityStatResponse response = new GetGroupActivityStatResponse(
-                "성욱이와 친구들",
-                "25.02.25",
+                groupInfo,
                 certificationPeriods,
                 ranking,
                 stats

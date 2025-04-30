@@ -43,10 +43,19 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("message")
                                         .description("응답 메시지")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.name")
+                                fieldWithPath("data.groupInfo.name")
                                         .description("그룹 이름")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.endAt")
+                                fieldWithPath("data.groupInfo.maximumMemberCount")
+                                        .description("그룹 참여 가능 인원수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.groupInfo.currentMemberCount")
+                                        .description("현재 그룹 인원수")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("data.groupInfo.joinCode")
+                                        .description("초대 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.groupInfo.endAt")
                                         .description("종료일")
                                         .type(JsonFieldType.STRING),
                                 fieldWithPath("data.certificationPeriods")
