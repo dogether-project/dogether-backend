@@ -31,7 +31,8 @@ public class MemberActivityController {
         List<GetGroupActivityStatResponse.CertificationPeriodResponse> certificationPeriods = List.of(
                 new GetGroupActivityStatResponse.CertificationPeriodResponse(1, 8, 2, 25),
                 new GetGroupActivityStatResponse.CertificationPeriodResponse(2, 6, 3, 50),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(3, 3, 3, 100)
+                new GetGroupActivityStatResponse.CertificationPeriodResponse(3, 6, 3, 50),
+                new GetGroupActivityStatResponse.CertificationPeriodResponse(4, 3, 3, 100)
         );
 
         GetGroupActivityStatResponse.RankingResponse ranking = new GetGroupActivityStatResponse.RankingResponse(10, 3);
@@ -59,112 +60,70 @@ public class MemberActivityController {
                 2
         );
 
-        List<GetMemberAllStatsResponse.DailyTodoCertifications> certifications;
+        List<Object> dailyTodoCertifications = null;
 
         if(sort.equals("todo-completed-at")) {
-            certifications = List.of(
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            1L,
-                            null,
-                            "2025.04.30",
-                            "운동 하기",
-                            "APPROVE",
-                            "운동 개조짐 ㅋㅋㅋㅋ",
-                            "운동 조지는 짤.png",
-                            null
+            dailyTodoCertifications = List.of(
+                    new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                            "2025.05.01",
+                            List.of(
+                                    new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                            1L,
+                                            "운동 하기",
+                                            "REJECT",
+                                            "운동 개조짐 ㅋㅋㅋㅋ",
+                                            "운동 조지는 짤.png",
+                                            "에이 이건 운동 아니지"
+                                    )
+                            )
                     ),
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            2L,
-                            null,
-                            "2025.04.31",
-                            "인강 듣기",
-                            "APPROVE",
-                            "인강 진짜 열심히 들었습니다. ㅎ",
-                            "인강 달리는 짤.png",
-                            null
-                    ),
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            3L,
-                            null,
-                            "2025.04.31",
-                            "두게더 API 구현",
-                            "APPROVE",
-                            "API 좀 잘 만든듯 ㅋ",
-                            "API 명세짤.png",
-                            null
+                    new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                            "2025.05.02",
+                            List.of(
+                                    new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                            2L,
+                                            "인강 듣기",
+                                            "REJECT",
+                                            "인강 진짜 열심히 들었습니다. ㅎ",
+                                            "인강 달리는 짤.png",
+                                            "우리 오늘 인강 듣는날 아닌데?"
+                                    )
+                            )
                     )
             );
         }
-        else if(sort.equals("group-created-at")) {
-            certifications = List.of(
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            1L,
+        else if (sort.equals("group-created-at")) {
+            dailyTodoCertifications = List.of(
+                    new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
                             "스쿼트 챌린지",
-                            null,
-                            "운동 하기",
-                            "REJECT",
-                            "운동 개조짐 ㅋㅋㅋㅋ",
-                            "운동 조지는 짤.png",
-                            "에이 이건 운동 아니지"
+                            List.of(
+                                    new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                            1L,
+                                            "운동 하기",
+                                            "REJECT",
+                                            "운동 개조짐 ㅋㅋㅋㅋ",
+                                            "운동 조지는 짤.png",
+                                            "에이 이건 운동 아니지"
+                                    )
+                            )
                     ),
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            2L,
+                    new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
                             "TIL 챌린지",
-                            null,
-                            "인강 듣기",
-                            "REJECT",
-                            "인강 진짜 열심히 들었습니다. ㅎ",
-                            "인강 달리는 짤.png",
-                            "우리 오늘 인강 듣는날 아닌데?"
-                    ),
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            3L,
-                            "두게더 개발단",
-                            null,
-                            "두게더 API 구현",
-                            "REJECT",
-                            "API 좀 잘 만든듯 ㅋ",
-                            "API 명세짤.png",
-                            "아 별론데?"
-                    )
-            );
-        }
-        else {
-            certifications = List.of(
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            1L,
-                            null,
-                            null,
-                            "운동 하기",
-                            "REVIEW_PENDING",
-                            "운동 개조짐 ㅋㅋㅋㅋ",
-                            "운동 조지는 짤.png",
-                            null
-                    ),
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            2L,
-                            null,
-                            null,
-                            "인강 듣기",
-                            "REVIEW_PENDING",
-                            "인강 진짜 열심히 들었습니다. ㅎ",
-                            "인강 달리는 짤.png",
-                            null
-                    ),
-                    new GetMemberAllStatsResponse.DailyTodoCertifications(
-                            3L,
-                            null,
-                            null,
-                            "두게더 API 구현",
-                            "REVIEW_PENDING",
-                            "API 좀 잘 만든듯 ㅋ",
-                            "API 명세짤.png",
-                            null
+                            List.of(
+                                    new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                            2L,
+                                            "인강 듣기",
+                                            "REJECT",
+                                            "인강 진짜 열심히 들었습니다. ㅎ",
+                                            "인강 달리는 짤.png",
+                                            "우리 오늘 인강 듣는날 아닌데?"
+                                    )
+                            )
                     )
             );
         }
 
-        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certifications);
+        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
 
         return ResponseEntity.ok(ApiResponse.successWithData(GET_MEMBER_ALL_STATS, response));
     }
