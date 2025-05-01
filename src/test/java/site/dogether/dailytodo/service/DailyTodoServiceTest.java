@@ -99,13 +99,9 @@ class DailyTodoServiceTest {
     @Test
     void saveDailyTodos() {
         // Given
-        final Member member = createMember();
-        final ChallengeGroup challengeGroup = createChallengeGroup();
-        memberRepository.save(member);
-        challengeGroupRepository.save(challengeGroup);
-
-        final ChallengeGroupMember challengeGroupMember = createChallengeGroupMember(challengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
+        final Member member = memberRepository.save(createMember());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
         final Long challengeGroupId = challengeGroup.getId();
@@ -127,13 +123,9 @@ class DailyTodoServiceTest {
     @Test
     void throwExceptionWhenSaveDailyTodosWithNotFoundMemberId() {
         // Given
-        final Member member = createMember();
-        final ChallengeGroup challengeGroup = createChallengeGroup();
-        memberRepository.save(member);
-        challengeGroupRepository.save(challengeGroup);
-
-        final ChallengeGroupMember challengeGroupMember = createChallengeGroupMember(challengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
+        final Member member = memberRepository.save(createMember());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = 11324L;
         final Long challengeGroupId = challengeGroup.getId();
@@ -156,13 +148,9 @@ class DailyTodoServiceTest {
     @Test
     void throwExceptionWhenSaveDailyTodosWithNotFoundChallengeGroupId() {
         // Given
-        final Member member = createMember();
-        final ChallengeGroup challengeGroup = createChallengeGroup();
-        memberRepository.save(member);
-        challengeGroupRepository.save(challengeGroup);
-
-        final ChallengeGroupMember challengeGroupMember = createChallengeGroupMember(challengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
+        final Member member = memberRepository.save(createMember());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
         final Long challengeGroupId = 11324L;
@@ -186,13 +174,9 @@ class DailyTodoServiceTest {
     @ParameterizedTest
     void throwExceptionWhenSaveDailyTodosWithNotRunningChallengeGroup(final ChallengeGroupStatus status) {
         // Given
-        final Member member = createMember();
-        final ChallengeGroup challengeGroup = createChallengeGroup(status);
-        memberRepository.save(member);
-        challengeGroupRepository.save(challengeGroup);
-
-        final ChallengeGroupMember challengeGroupMember = createChallengeGroupMember(challengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
+        final Member member = memberRepository.save(createMember());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup(status));
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
         final Long challengeGroupId = challengeGroup.getId();
@@ -215,13 +199,9 @@ class DailyTodoServiceTest {
     @Test
     void throwExceptionWhenSaveDailyTodosWhoNotInChallengeGroupMember() {
         // Given
-        final Member member = createMember();
-        final ChallengeGroup challengeGroup = createChallengeGroup();
-        memberRepository.save(member);
-        challengeGroupRepository.save(challengeGroup);
-
-        final ChallengeGroupMember challengeGroupMember = createChallengeGroupMember(challengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
+        final Member member = memberRepository.save(createMember());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Member otherMember = new Member(
             null,
@@ -251,14 +231,9 @@ class DailyTodoServiceTest {
     @Test
     void throwExceptionAlreadyHasTodayTodos() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
-        final Member member = createMember();
-        challengeGroupRepository.save(challengeGroup);
-        memberRepository.save(member);
-
-        final ChallengeGroupMember challengeGroupMember = createChallengeGroupMember(challengeGroup, member);
-        challengeGroupMemberRepository.save(challengeGroupMember);
-
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final Member member = memberRepository.save(createMember());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
         dailyTodoService.saveDailyTodos(
             member.getId(),
             challengeGroup.getId(),
