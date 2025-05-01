@@ -12,14 +12,16 @@ public class ChallengeGroupMemberRankResponse {
     private int rank;
     private String profileImageUrl;
     private String name;
+    private String historyReadStatus;
     private int achievementRate;
 
-    public static ChallengeGroupMemberRankResponse from(Long memberId, RankDto rankDto, String profileImageUrl) {
+    public static ChallengeGroupMemberRankResponse from(Long memberId, RankDto rankDto, String profileImageUrl, String historyReadStatus) {
         return ChallengeGroupMemberRankResponse.builder()
                 .memberId(memberId)
                 .rank(rankDto.getRank())
                 .profileImageUrl(profileImageUrl)
                 .name(rankDto.getName())
+                .historyReadStatus(historyReadStatus)
                 .achievementRate(rankDto.getAchievementRate())
                 .build();
     }
