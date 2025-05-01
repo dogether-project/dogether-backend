@@ -66,27 +66,6 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/http-response.adoc[]
 include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-groups/response-fields.adoc[]
 
-[[get-joining-challenge-group-my-activity-summary]]
-=== 참여중인 그룹의 내 누적 활동 통계 조회
-
-==== 개발 상태
-|===
-| 환경 | 구현 여부
-
-| 개발
-| O
-
-| 운영
-| X
-|===
-
-==== HTTP Request
-include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-my-activity-summary/http-request.adoc[]
-
-==== HTTP Response
-include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-my-activity-summary/http-response.adoc[]
-include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-group-my-activity-summary/response-fields.adoc[]
-
 [[get-joining-challenge-group-team-activity-summary]]
 === 참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회
 
