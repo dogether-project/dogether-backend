@@ -162,6 +162,7 @@ public class ChallengeGroupService {
         }
     }
 
+    // TODO: historyReadStatus 필드 추가 예정 (history 테이블 생성 후 작업 예정)
     public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long groupId) {
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
@@ -182,7 +183,8 @@ public class ChallengeGroupService {
                 .mapToObj(i -> ChallengeGroupMemberRankResponse.from(
                         memberIds.get(i),
                         memberRanks.get(i),
-                        profileImageUrls.get(i)
+                        profileImageUrls.get(i),
+                        "READYET"
                 ))
                 .toList();
     }

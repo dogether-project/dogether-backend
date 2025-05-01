@@ -254,6 +254,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .rank(1)
                         .profileImageUrl("성욱이의 셀카.png")
                         .name("성욱")
+                        .historyReadStatus("NULL")
                         .achievementRate(100)
                         .build(),
 
@@ -262,6 +263,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .rank(2)
                         .profileImageUrl("고양이.png")
                         .name("영재")
+                        .historyReadStatus("READALL")
                         .achievementRate(80)
                         .build(),
 
@@ -270,6 +272,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .rank(3)
                         .profileImageUrl("그로밋.png")
                         .name("서은")
+                        .historyReadStatus("READYET")
                         .achievementRate(60)
                         .build()
         );
@@ -308,6 +311,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                             .type(JsonFieldType.STRING),
                     fieldWithPath("data.ranking[].name")
                         .description("그룹원 이름")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.ranking[].historyReadStatus")
+                        .description("히스토리 읽음 상태 {옵션: NULL, READYET, READALL}")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.ranking[].achievementRate")
                         .description("데일리 투두 인증률")
