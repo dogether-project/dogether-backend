@@ -9,14 +9,12 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.exception.InvalidMemberException;
 
 import java.util.List;
 import java.util.Objects;
 
-@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
@@ -99,5 +97,15 @@ public class Member extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", createdAt=" + createdAt +
+            ", isDeleted=" + isDeleted +
+            '}';
     }
 }

@@ -1,12 +1,12 @@
 package site.dogether.dailytodo.service;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
@@ -15,16 +15,22 @@ import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
+import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
+import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 @Transactional
 @SpringBootTest
@@ -33,6 +39,7 @@ class DailyTodoServiceTest {
     @Autowired private ChallengeGroupRepository challengeGroupRepository;
     @Autowired private MemberRepository memberRepository;
     @Autowired private ChallengeGroupMemberRepository challengeGroupMemberRepository;
+    @Autowired private DailyTodoRepository dailyTodoRepository;
     @Autowired private DailyTodoService dailyTodoService;
 
     private static Member createMember() {
@@ -68,6 +75,24 @@ class DailyTodoServiceTest {
 
     private static ChallengeGroupMember createChallengeGroupMember(final ChallengeGroup challengeGroup, final Member member) {
         return new ChallengeGroupMember(null, challengeGroup, member);
+    }
+
+    private static DailyTodo createDailyTodo(
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final DailyTodoStatus status,
+        final String rejectReason,
+        final LocalDateTime writtenAt
+    ) {
+        return new DailyTodo(
+            null,
+            challengeGroup,
+            member,
+            "치킨 먹기",
+            status,
+            rejectReason,
+            writtenAt
+        );
     }
 
     @DisplayName("유효한 값을 입력하면 데일리 투두를 생성 후 저장한다.")
@@ -247,5 +272,55 @@ class DailyTodoServiceTest {
         assertThatThrownBy(() -> dailyTodoService.saveDailyTodos(memberId, challengeGroupId, dailyTodoContents))
             .isInstanceOf(DailyTodoAlreadyCreatedException.class)
             .hasMessage("사용자가 해당 챌린지 그룹에 오늘 작성한 투두가 이미 존재합니다. (%s) (%s)", challengeGroup, member);
+    }
+
+    @DisplayName("유효한 값을 입력하면 데일리 투두 인증을 생성 후 저장한다.")
+    @Test
+    void certifyDailyTodoSuccess() {
+        // Given
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final Member writer = memberRepository.save(createMember());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, writer));
+        final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(
+            challengeGroup,
+            writer,
+            CERTIFY_PENDING,
+            null,
+            LocalDateTime.now()
+        ));
+
+        final Long writerId = writer.getId();
+        final Long dailyTodoId = dailyTodo.getId();
+        final String certifyContent = "치킨 냠냠 인증!";
+        final String certifyMediaUrl = "https://냠냠.png";
+
+        // When && Then
+        assertThatCode(() ->  dailyTodoService.certifyDailyTodo(
+            writerId,
+            dailyTodoId,
+            certifyContent,
+            certifyMediaUrl))
+        .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 데일리 투두에 인증을 하려고 하면 예외가 발생한다.")
+    void throwExceptionWhenCertifyNotExistDailyTodo() {
+        // Given
+        final Member writer = memberRepository.save(createMember());
+
+        final Long writerId = writer.getId();
+        final Long dailyTodoId = 12323L;
+        final String certifyContent = "치킨 냠냠 인증!";
+        final String certifyMediaUrl = "https://냠냠.png";
+
+        // When & Then
+        assertThatThrownBy(() ->  dailyTodoService.certifyDailyTodo(
+            writerId,
+            dailyTodoId,
+            certifyContent,
+            certifyMediaUrl))
+            .isInstanceOf(DailyTodoNotFoundException.class)
+            .hasMessage(String.format("존재하지 않는 데일리 투두 id입니다. (%d)", dailyTodoId));
     }
 }

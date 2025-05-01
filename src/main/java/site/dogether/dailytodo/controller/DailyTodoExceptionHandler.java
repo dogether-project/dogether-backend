@@ -24,7 +24,7 @@ public class DailyTodoExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleDailyTodoCreatedDateException(final DailyTodoCreatedDateException e) {
+    public ResponseEntity<ApiResponse<Void>> handleDailyTodoCreatedDateException(final NotCreatedTodayDailyTodoException e) {
         log.info("handle DailyTodoCreatedDateException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(DAILY_TODO_CREATED_DATE, e.getMessage()));
@@ -38,7 +38,7 @@ public class DailyTodoExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleDailyTodoStatusException(final DailyTodoStatusException e) {
+    public ResponseEntity<ApiResponse<Void>> handleDailyTodoStatusException(final NotCertifyPendingDailyTodoException e) {
         log.info("handle DailyTodoStatusException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(DAILY_TODO_STATUS, e.getMessage()));

@@ -10,6 +10,7 @@ import site.dogether.dailytodo.exception.InvalidDailyTodoException;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -47,10 +48,11 @@ class DailyTodosTest {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
+        final LocalDateTime writtenAt = LocalDateTime.now();
         final List<DailyTodo> input = List.of(
-            new DailyTodo(1L, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, null),
-            new DailyTodo(2L, challengeGroup, member, "코딩 하기", CERTIFY_PENDING, null),
-            new DailyTodo(3L, challengeGroup, member, "운동 하기", CERTIFY_PENDING, null)
+            new DailyTodo(1L, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, null, writtenAt),
+            new DailyTodo(2L, challengeGroup, member, "코딩 하기", CERTIFY_PENDING, null, writtenAt),
+            new DailyTodo(3L, challengeGroup, member, "운동 하기", CERTIFY_PENDING, null, writtenAt)
         );
 
         // When & Then
@@ -74,13 +76,14 @@ class DailyTodosTest {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
+        final LocalDateTime writtenAt = LocalDateTime.now();
         final List<DailyTodo> input = IntStream.rangeClosed(1, 11)
-            .mapToObj(i -> new DailyTodo((long) i, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, null))
+            .mapToObj(i -> new DailyTodo((long) i, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, null, writtenAt))
             .collect(Collectors.toList());
 
         // When & Then
         assertThatThrownBy(() -> new DailyTodos(input))
             .isInstanceOf(InvalidDailyTodoException.class)
-            .hasMessage(String.format("데일리 투두는 %d개 이하만 입력할 수 있습니다. (%d)", MAXIMUM_ALLOWED_VALUE_COUNT, input.size()));
+            .hasMessage(String.format("데일리 투두는 %d개 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_VALUE_COUNT, input.size(), input));
     }
 }

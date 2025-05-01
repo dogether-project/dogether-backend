@@ -3,17 +3,26 @@ package site.dogether.dailytodo.entity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
+import site.dogether.dailytodo.exception.NotCertifyPendingDailyTodoException;
+import site.dogether.dailytodo.exception.NotCreatedTodayDailyTodoException;
+import site.dogether.dailytodo.exception.NotDailyTodoWriterException;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static site.dogether.dailytodo.entity.DailyTodo.*;
+import static site.dogether.dailytodo.entity.DailyTodo.MAXIMUM_ALLOWED_CONTENT_LENGTH;
+import static site.dogether.dailytodo.entity.DailyTodo.MAXIMUM_ALLOWED_REJECT_REASON_LENGTH;
 import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
 
 class DailyTodoTest {
@@ -38,15 +47,43 @@ class DailyTodoTest {
         );
     }
 
+    private static Member createMember(final Long id, final String name) {
+        return new Member(
+            id,
+            "provider_id",
+            name,
+            "profile_image_url"
+        );
+    }
+
+    private static DailyTodo createDailyTodo(
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final DailyTodoStatus status,
+        final String rejectReason,
+        final LocalDateTime writtenAt
+        ) {
+        return new DailyTodo(
+            1L,
+            challengeGroup,
+            member,
+            "치킨 먹기",
+            status,
+            rejectReason,
+            writtenAt
+        );
+    }
+
     @DisplayName("생성자에 유효한 입력값(id, 챌린지 그룹, 멤버, 투두 내용, 투두 상태, 노인정 사유)을 입력하면 DailyTodo 인스턴스가 생성된다.")
     @Test
-    void createDailyTodo() {
+    void createDailyTodoSuccess() {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
         final String content = "치킨 먹기";
         final DailyTodoStatus status = REJECT;
         final String rejectReason = "그딴게 치킨?";
+        final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When && Then
         assertThatCode(() -> new DailyTodo(
@@ -55,7 +92,8 @@ class DailyTodoTest {
             member,
             content,
             status,
-            rejectReason))
+            rejectReason,
+            writtenAt))
             .doesNotThrowAnyException();
     }
 
@@ -78,8 +116,8 @@ class DailyTodoTest {
         });
     }
 
-    @Test
     @DisplayName("생성자에 챌린지 그룹으로 null을 입력하면 예외가 발생한다.")
+    @Test
     void throwExceptionWhenInputChallengeGroupNull() {
         // Given
         final Member member = createMember();
@@ -91,8 +129,8 @@ class DailyTodoTest {
             .hasMessage("데일리 투두 챌린지 그룹으로 null을 입력할 수 없습니다.");
     }
 
-    @Test
     @DisplayName("생성자에 작성자로 null을 입력하면 예외가 발생한다.")
+    @Test
     void throwExceptionWhenInputMemberNull() {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
@@ -129,7 +167,7 @@ class DailyTodoTest {
         // When & Then
         assertThatThrownBy(() -> new DailyTodo(challengeGroup, member, content))
             .isInstanceOf(InvalidDailyTodoException.class)
-            .hasMessage(String.format("데일리 투두 내용은 %d자 이하만 입력할 수 있습니다. (%d)", MAXIMUM_ALLOWED_CONTENT_LENGTH, content.length()));
+            .hasMessage(String.format("데일리 투두 내용은 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_CONTENT_LENGTH, content.length(), content));
     }
 
     @DisplayName("생성자에 데일리 투두 상태로 null을 입력하면 예외가 발생한다.")
@@ -140,9 +178,10 @@ class DailyTodoTest {
         final Member member = createMember();
         final String content = "치킨 먹기";
         final String rejectReason = "그딴게 치킨?";
+        final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, null, rejectReason))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, null, rejectReason, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
             .hasMessage("데일리 투두 상태로 null을 입력할 수 없습니다.");
     }
@@ -156,9 +195,10 @@ class DailyTodoTest {
         final String content = "치킨 먹기";
         final DailyTodoStatus status = APPROVE;
         final String rejectReason = "이딴게 치킨?";
+        final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, status, rejectReason))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, status, rejectReason, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
             .hasMessage(String.format("데일리 투두가 노인정 상태가 아니면 노인정 사유를 입력할 수 없습니다. (%s)", rejectReason));
     }
@@ -171,9 +211,10 @@ class DailyTodoTest {
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
         final String content = "치킨 먹기";
+        final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, rejectReason))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, rejectReason, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
             .hasMessage(String.format("노인정 사유로 null 혹은 공백을 입력할 수 없습니다. (%s)", rejectReason));
     }
@@ -186,10 +227,174 @@ class DailyTodoTest {
         final Member member = createMember();
         final String content = "치킨 먹기";
         final String rejectReason = "A".repeat(MAXIMUM_ALLOWED_REJECT_REASON_LENGTH + 1);
+        final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, rejectReason))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, rejectReason, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
-            .hasMessage(String.format("노인정 사유는 %d자 이하만 입력할 수 있습니다. (%d)", MAXIMUM_ALLOWED_REJECT_REASON_LENGTH, rejectReason.length()));
+            .hasMessage(String.format("노인정 사유는 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REJECT_REASON_LENGTH, rejectReason.length(), rejectReason));
+    }
+
+    @DisplayName("생성자에 데일리 투두 작성일로 null을 입력하면 예외가 발생한다.")
+    @Test()
+    void throwExceptionWhenInputWrittenAtNull() {
+        // Given
+        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final Member member = createMember();
+        final String content = "치킨 먹기";
+        final DailyTodoStatus status = CERTIFY_PENDING;
+
+        // When & Then
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, status, null, null))
+            .isInstanceOf(InvalidDailyTodoException.class)
+            .hasMessage("데일리 투두 작성일로 null을 입력할 수 없습니다.");
+    }
+
+    @DisplayName("데일리 투두 상태가 인증 대기중이면 true를 반환한다.")
+    @Test
+    void returnTrueWhenStatusIsCertifyPending() {
+        // Given
+        final DailyTodo dailyTodo = createDailyTodo(
+            createChallengeGroup(),
+            createMember(),
+            CERTIFY_PENDING,
+            null,
+            LocalDateTime.now()
+        );
+
+        // When
+        final boolean isCertifyPending = dailyTodo.isCertifyPending();
+
+        // Then
+        assertThat(isCertifyPending).isTrue();
+    }
+
+    @DisplayName("데일리 투두 상태가 인증 대기중이 아니면 false를 반환한다.")
+    @MethodSource("dailyTodoStatusAndRejectReasonIgnoreCertifyPendingStatus")
+    @ParameterizedTest
+    void returnFalseWhenStatusIsNotCertifyPending(final DailyTodoStatus status, final String rejectReason) {
+        // Given
+        final DailyTodo dailyTodo = createDailyTodo(
+            createChallengeGroup(),
+            createMember(),
+            status,
+            rejectReason,
+            LocalDateTime.now()
+        );
+
+        // When
+        final boolean isCertifyPending = dailyTodo.isCertifyPending();
+
+        // Then
+        assertThat(isCertifyPending).isFalse();
+    }
+
+    private static Stream<Arguments> dailyTodoStatusAndRejectReasonIgnoreCertifyPendingStatus() {
+        return Stream.of(
+            Arguments.of(REVIEW_PENDING, null),
+            Arguments.of(APPROVE, null),
+            Arguments.of(REJECT, "노인정!")
+        );
+    }
+
+    @DisplayName("유효한 입력값(투두 작성자, 인증 검사자, 인증 본문, 인증 미디어 url)을 넘기면 데일리 투두 인증을 생성한다.")
+    @Test
+    void certifySuccess() {
+        // Given
+        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final Member writer = createMember(1L, "투두 작성자");
+        final DailyTodo dailyTodo = createDailyTodo(
+            challengeGroup,
+            writer,
+            CERTIFY_PENDING,
+            null,
+            LocalDateTime.now()
+        );
+
+        final Member reviewer = createMember(2L, "투두 인증 검사자");
+        final String certifyContent = "치킨 야무지게 먹은거 인증!";
+        final String certifyMediaUrl = "https://치킨_냠냠.png";
+
+        // When
+        final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl);
+
+        // Then
+        assertThat(dailyTodoCertification).isNotNull();
+        assertThat(dailyTodo.getStatus()).isEqualTo(REVIEW_PENDING);
+    }
+
+    @DisplayName("투두 작성자가 아닌 회원이 데일리투두 인증을 생성하려고 하면 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenCertifyNotWriter() {
+        // Given
+        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final Member writer = createMember(1L, "투두 작성자");
+        final DailyTodo dailyTodo = createDailyTodo(
+            challengeGroup,
+            writer,
+            CERTIFY_PENDING,
+            null,
+            LocalDateTime.now()
+        );
+
+        final Member reviewer = createMember(2L, "투두 인증 검사자");
+        final String certifyContent = "치킨 야무지게 먹은거 인증!";
+        final String certifyMediaUrl = "https://치킨_냠냠.png";
+
+        final Member otherMember = createMember(3L, "이상한 사람");
+
+        // When & Then
+        assertThatThrownBy(() -> dailyTodo.certify(otherMember, reviewer, certifyContent, certifyMediaUrl))
+            .isInstanceOf(NotDailyTodoWriterException.class)
+            .hasMessage(String.format("데일리 투두 작성자 외에는 투두 인증을 생성할 수 없습니다. (%s) (%s)", dailyTodo, otherMember));
+    }
+
+    @DisplayName("인증 대기 상태가 아닌 투두를 인증 하려고 하면 예외가 발생한다.")
+    @MethodSource("dailyTodoStatusAndRejectReasonIgnoreCertifyPendingStatus")
+    @ParameterizedTest
+    void throwExceptionWhenCertifyNotCertifyPendingStatus(final DailyTodoStatus status, final String rejectReason) {
+        // Given
+        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final Member writer = createMember(1L, "투두 작성자");
+        final DailyTodo dailyTodo = createDailyTodo(
+            challengeGroup,
+            writer,
+            status,
+            rejectReason,
+            LocalDateTime.now()
+        );
+
+        final Member reviewer = createMember(2L, "투두 인증 검사자");
+        final String certifyContent = "치킨 야무지게 먹은거 인증!";
+        final String certifyMediaUrl = "https://치킨_냠냠.png";
+
+        // When & Then
+        assertThatThrownBy(() -> dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl))
+            .isInstanceOf(NotCertifyPendingDailyTodoException.class)
+            .hasMessage(String.format("인증 대기 상태가 아닌 데일리 투두는 인증을 생성할 수 없습니다. (%s)", dailyTodo));
+    }
+
+    @DisplayName("오늘 작성되지 않은 데일리 투두에 인증을 생성하려고 하면 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenNotCreatedToday() {
+        // Given
+        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final Member writer = createMember(1L, "투두 작성자");
+        final DailyTodo dailyTodo = createDailyTodo(
+            challengeGroup,
+            writer,
+            CERTIFY_PENDING,
+            null,
+            LocalDateTime.now().minusDays(1)
+        );
+
+        final Member reviewer = createMember(2L, "투두 인증 검사자");
+        final String certifyContent = "치킨 야무지게 먹은거 인증!";
+        final String certifyMediaUrl = "https://치킨_냠냠.png";
+
+        // When & Then
+        assertThatThrownBy(() -> dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl))
+            .isInstanceOf(NotCreatedTodayDailyTodoException.class)
+            .hasMessage(String.format("데일리 투두가 작성된 당일에만 투두 인증을 생성할 수 있습니다. (%s)", dailyTodo));
     }
 }

@@ -23,7 +23,7 @@ public class DailyTodos {
         }
 
         if (values.size() > MAXIMUM_ALLOWED_VALUE_COUNT) {
-            throw new InvalidDailyTodoException(String.format("데일리 투두는 %d개 이하만 입력할 수 있습니다. (%d)", MAXIMUM_ALLOWED_VALUE_COUNT, values.size()));
+            throw new InvalidDailyTodoException(String.format("데일리 투두는 %d개 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_VALUE_COUNT, values.size(), values));
         }
     }
 }
