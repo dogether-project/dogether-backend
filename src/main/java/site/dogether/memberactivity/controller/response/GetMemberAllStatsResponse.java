@@ -6,7 +6,7 @@ import java.util.List;
 
 public record GetMemberAllStatsResponse(
         DailyTodoStats dailyTodoStats,
-        List<DailyTodoCertifications> dailyTodoCertifications
+        List<Object> dailyTodoCertifications
 ) {
 
     public record DailyTodoStats(
@@ -16,12 +16,20 @@ public record GetMemberAllStatsResponse(
     ) {
     }
 
-    public record DailyTodoCertifications(
-            Long id,
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            String groupName,
-            @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record CertificationsSortByTodoCompletedAt(
             String createdAt,
+            List<DailyTodoCertificationInfo> certificationInfo
+    ){
+    }
+
+    public record CertificationsSortByGroupCreatedAt(
+            String groupName,
+            List<DailyTodoCertificationInfo> certificationInfo
+    ){
+    }
+
+    public record DailyTodoCertificationInfo(
+            Long id,
             String content,
             String status,
             String certificationContent,
