@@ -104,6 +104,7 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 
 ==== HTTP Request
 include::{snippets}/challenge-group-controller-docs-test/leave-challenge-group/http-request.adoc[]
+include::{snippets}/challenge-group-controller-docs-test/leave-challenge-group/path-parameters.adoc[]
 
 ==== HTTP Response
 include::{snippets}/challenge-group-controller-docs-test/leave-challenge-group/http-response.adoc[]
