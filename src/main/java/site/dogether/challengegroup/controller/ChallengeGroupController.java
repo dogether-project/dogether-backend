@@ -71,6 +71,7 @@ public class ChallengeGroupController {
         ));
     }
 
+    // TODO: memberId 별로 랭킹 조회하도록 수정 예정
     @GetMapping("/{groupId}/ranking")
     public ResponseEntity<ApiResponse<GetChallengeGroupMembersRank>> getJoiningChallengeGroupTeamRanking(
             @PathVariable Long groupId
