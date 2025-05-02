@@ -59,7 +59,7 @@ public class S3ControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("uploadFileTypes")
                         .description("업로드 파일 타입")
                         .type(JsonFieldType.ARRAY)
-                        .attributes(constraints("요청 리스트 순서에 맞춰 presigned url이 배열로 응답되니 순서 유지를 신경쓸 것, 시스템에서 제공하는 값만 입력 가능, [ 이미지 : IMAGE"))),
+                        .attributes(constraints("요청 리스트 순서에 맞춰 presigned url이 배열로 응답되니 순서 유지를 신경쓸 것, 시스템에서 제공하는 값만 입력 가능, [ IMAGE(이미지) ]"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")

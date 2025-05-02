@@ -215,7 +215,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("데일리 투두 날짜"),
                     parameterWithName("status")
                         .description("데일리 투두 상태")
-                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ 검사 대기 : REVIEW_PENDING, 인정 : APPROVE, 노인정 : REJECT ]"))),
+                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")

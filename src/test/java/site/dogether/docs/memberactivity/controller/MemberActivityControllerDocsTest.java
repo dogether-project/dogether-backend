@@ -96,18 +96,20 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/activity")
-                                .param("sort", "todo-completed-at")
-                                .param("status", "approve")
+                                .param("sort", "TODO_COMPLETED_AT")
+                                .param("status", "APPROVE")
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andDo(createDocument(
                         queryParameters(
                                 parameterWithName("sort")
-                                        .description("정렬 방식 {옵션 : todo-completed-at, group-created-at}"),
+                                    .description("정렬 방식")
+                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ TODO_COMPLETED_AT(투두 완료일 순), GROUP_CREATED_AT(그룹 생성일 순) ]")),
                                 parameterWithName("status")
-                                        .optional()
-                                        .description("데일리 투두 상태 {옵션: approve, reject, review_pending}")),
+                                    .optional()
+                                    .description("데일리 투두 상태")
+                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
@@ -161,18 +163,20 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/activity")
-                                .param("sort", "group-created-at")
-                                .param("status", "reject")
+                                .param("sort", "GROUP_CREATED_AT")
+                                .param("status", "REJECT")
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andDo(createDocument(
                         queryParameters(
                                 parameterWithName("sort")
-                                        .description("정렬 방식 {옵션 : todo-completed-at, group-created-at}"),
+                                    .description("정렬 방식")
+                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ TODO_COMPLETED_AT(투두 완료일 순), GROUP_CREATED_AT(그룹 생성일 순) ]")),
                                 parameterWithName("status")
-                                        .optional()
-                                        .description("데일리 투두 상태 {옵션: approve, reject, review_pending}")),
+                                    .optional()
+                                    .description("데일리 투두 상태")
+                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
