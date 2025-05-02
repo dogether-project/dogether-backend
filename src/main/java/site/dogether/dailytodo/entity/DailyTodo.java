@@ -17,10 +17,13 @@ import lombok.ToString;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
+import site.dogether.dailytodo.exception.InvalidReviewResultException;
 import site.dogether.dailytodo.exception.NotCertifyPendingDailyTodoException;
 import site.dogether.dailytodo.exception.NotCreatedTodayDailyTodoException;
 import site.dogether.dailytodo.exception.NotDailyTodoWriterException;
+import site.dogether.dailytodo.exception.NotReviewPendingDailyTodoException;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
+import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDate;
@@ -195,11 +198,37 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
-    public void review(final DailyTodoStatus result, final String rejectReason) {
-        validateRejectReason(result, rejectReason);
+    public void review(
+        final Member reviewer,
+        final DailyTodoCertification dailyTodoCertification,
+        final DailyTodoStatus reviewResult,
+        final String rejectReason
+    ) {
+        validateReviewer(reviewer, dailyTodoCertification);
+        validateStatusIsReviewPending();
+        validateReviewResult(reviewResult);
+        validateRejectReason(reviewResult, rejectReason);
 
-        this.status = result;
+        this.status = reviewResult;
         this.rejectReason = rejectReason;
+    }
+
+    private void validateReviewer(final Member reviewer, final DailyTodoCertification dailyTodoCertification) {
+        if (!dailyTodoCertification.isReviewer(reviewer)) {
+            throw new NotDailyTodoCertificationReviewerException(String.format("해당 투두 인증 검사자 외 멤버는 검사를 수행할 수 없습니다. (%s) (%s)", reviewer, dailyTodoCertification));
+        }
+    }
+
+    private void validateStatusIsReviewPending() {
+        if (this.status != REVIEW_PENDING) {
+            throw new NotReviewPendingDailyTodoException(String.format("검사 대기가 아닌 투두는 검사를 수행할 수 없습니다. (%s)", this));
+        }
+    }
+
+    private void validateReviewResult(final DailyTodoStatus reviewResult) {
+        if (!reviewResult.isReviewResultStatus()) {
+            throw new InvalidReviewResultException(String.format("검사 결과는 인정 혹은 노인정만 입력할 수 있습니다. (%s) (%s)", reviewResult, this));
+        }
     }
 
     public boolean isApproved() {
@@ -238,7 +267,7 @@ public class DailyTodo extends BaseEntity {
         return member;
     }
 
-    public Long getMemberId() {
+    public Long getWriterId() {
         return member.getId();
     }
 

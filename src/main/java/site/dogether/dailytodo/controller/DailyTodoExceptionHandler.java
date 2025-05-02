@@ -50,4 +50,25 @@ public class DailyTodoExceptionHandler {
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(NOT_DAILY_TODO_OWNER, e.getMessage()));
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleInvalidDailyTodoStatusException(final InvalidDailyTodoStatusException e) {
+        log.info("handle InvalidDailyTodoStatusException", e);
+        return ResponseEntity.badRequest()
+            .body(ApiResponse.fail(INVALID_DAILY_TODO_STATUS, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleInvalidReviewResultException(final InvalidReviewResultException e) {
+        log.info("handle InvalidReviewResultException", e);
+        return ResponseEntity.badRequest()
+            .body(ApiResponse.fail(INVALID_REVIEW_RESULT, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleNotReviewPendingDailyTodoException(final NotReviewPendingDailyTodoException e) {
+        log.info("handle NotReviewPendingDailyTodoException", e);
+        return ResponseEntity.badRequest()
+            .body(ApiResponse.fail(NOT_REVIEW_PENDING_DAILY_TODO, e.getMessage()));
+    }
 }

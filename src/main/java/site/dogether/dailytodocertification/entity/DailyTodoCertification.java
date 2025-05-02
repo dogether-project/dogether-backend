@@ -103,8 +103,8 @@ public class DailyTodoCertification extends BaseEntity {
         }
     }
 
-    public boolean checkReviewer(final Member target) {
-        return reviewer.getId().equals(target.getId());
+    public boolean isReviewer(final Member target) {
+        return reviewer.equals(target);
     }
 
     public ChallengeGroup getChallengeGroup() {
