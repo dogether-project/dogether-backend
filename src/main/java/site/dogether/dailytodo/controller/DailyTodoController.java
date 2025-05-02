@@ -52,7 +52,7 @@ public class DailyTodoController {
         @RequestParam final LocalDate date,
         @RequestParam(required = false) final String status
     ) {
-        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = FindMyDailyTodosConditionDto.of(memberId, date, status);
+        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = FindMyDailyTodosConditionDto.of(memberId, groupId, date, status);
         final List<DailyTodoAndDailyTodoCertificationDto> myDailyTodos = dailyTodoService.findMyDailyTodo(findMyDailyTodosConditionDto);
 
         return ResponseEntity.ok(ApiResponse.successWithData(

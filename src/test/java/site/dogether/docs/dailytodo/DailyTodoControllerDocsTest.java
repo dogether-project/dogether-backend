@@ -88,7 +88,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             "승용님 괴롭히기"
         );
 
-        given(dailyTodoService.findYesterdayDailyTodos(any()))
+        given(dailyTodoService.findYesterdayDailyTodos(any(), any()))
             .willReturn(yesterdayTodos);
 
         mockMvc.perform(

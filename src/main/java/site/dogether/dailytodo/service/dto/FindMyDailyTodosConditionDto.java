@@ -11,16 +11,20 @@ public class FindMyDailyTodosConditionDto {
     @Getter
     private final Long memberId;
     @Getter
+    private final Long groupId;
+    @Getter
     private final LocalDate createdAt;
     private final DailyTodoStatus status;
 
     public static FindMyDailyTodosConditionDto of(
         final Long memberId,
+        final Long groupId,
         final LocalDate createdAt,
         final String status
     ) {
         return new FindMyDailyTodosConditionDto(
             memberId,
+            groupId,
             createdAt,
             convertDailyTodoStatus(status)
         );
@@ -35,10 +39,12 @@ public class FindMyDailyTodosConditionDto {
 
     public FindMyDailyTodosConditionDto(
         final Long memberId,
+        final Long groupId,
         final LocalDate createdAt,
         final DailyTodoStatus status
     ) {
         this.memberId = memberId;
+        this.groupId = groupId;
         this.createdAt = createdAt;
         this.status = status;
     }

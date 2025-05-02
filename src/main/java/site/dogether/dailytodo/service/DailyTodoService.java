@@ -23,7 +23,6 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
@@ -46,7 +45,6 @@ public class DailyTodoService {
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final NotificationService notificationService;
-    private final MemberService memberService;
     private final ReviewerPicker reviewerPicker;
 
     @Transactional
@@ -180,14 +178,17 @@ public class DailyTodoService {
     }
 
     public List<DailyTodoAndDailyTodoCertificationDto> findMyDailyTodo(final FindMyDailyTodosConditionDto condition) {
-        final Member member = memberService.getMember(condition.getMemberId());
+        final ChallengeGroup challengeGroup = getChallengeGroup(condition.getGroupId());
+        final Member member = getMember(condition.getMemberId());
         final List<DailyTodo> dailyTodos = condition.getDailyTodoStatus()
-            .map(status -> dailyTodoRepository.findAllByMemberAndCreatedAtBetweenAndStatus(
+            .map(status -> dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetweenAndStatus(
+                challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX),
                 status))
             .orElse(getSortingDailyTodos(
+                challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX)));
@@ -197,8 +198,13 @@ public class DailyTodoService {
             .toList();
     }
 
-    private List<DailyTodo> getSortingDailyTodos(final Member member, final LocalDateTime start, final LocalDateTime end) {
-        return dailyTodoRepository.findAllByMemberAndCreatedAtBetween(member, start, end).stream()
+    private List<DailyTodo> getSortingDailyTodos(
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final LocalDateTime start,
+        final LocalDateTime end
+    ) {
+        return dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetween(challengeGroup, member, start, end).stream()
             .sorted(Comparator.comparing((DailyTodo todo) -> todo.getStatus() != CERTIFY_PENDING)
                 .thenComparing(DailyTodo::getId))
             .toList();
