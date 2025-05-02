@@ -8,6 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,6 +62,7 @@ public class ChallengeGroup extends BaseEntity {
         final LocalDate startAt,
         final LocalDate endAt
     ) {
+        validateEndAtIsAfterStartAt(startAt, endAt);
         return new ChallengeGroup(
             null,
             validateGroupNameLength(name),
@@ -68,6 +72,14 @@ public class ChallengeGroup extends BaseEntity {
             generateJoinCode(),
             setStatus(startAt)
         );
+    }
+
+    private static void validateEndAtIsAfterStartAt(LocalDate startAt, LocalDate endAt) {
+        if (startAt.isAfter(endAt)) {
+            throw new InvalidChallengeGroupException(
+                    String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
+            );
+        }
     }
 
     private static int validateMaximumMemberCount(int maximumMemberCount) {
@@ -120,26 +132,33 @@ public class ChallengeGroup extends BaseEntity {
         this.status = status;
     }
 
-    // TODO : startAT이 endAt보다 늦은 날짜가 아닌지 검증
-
     public boolean isFinished() {
         return this.status == ChallengeGroupStatus.FINISHED;
-    }
-
-    public int getDurationDays() {
-        return endAt.getDayOfYear() - startAt.getDayOfYear();
     }
 
     public boolean isRunning() {
         return status == ChallengeGroupStatus.RUNNING;
     }
 
-    public int getCurrentDay() {
-        return LocalDate.now().getDayOfYear() - startAt.getDayOfYear();
+    public int getProgressDay() {
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(startAt)) {
+            return 0;
+        }
+        return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
     }
 
     public double getProgressRate() {
-        return (double) getCurrentDay() / getDurationDays();
+        int progressDay = getProgressDay();
+        int duration = getDuration();
+        if (progressDay > duration) {
+            return 1;
+        }
+        return (double) progressDay / duration;
+    }
+
+    private int getDuration() {
+        return (int) ChronoUnit.DAYS.between(startAt, endAt);
     }
 
     @Override

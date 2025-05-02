@@ -3,12 +3,14 @@ package site.dogether.memberactivity.controller.response;
 import java.util.List;
 
 public record GetGroupActivityStatResponse(
-        String name,
-        String endAt,
+        ChallengeGroupInfoResponse groupInfo,
         List<CertificationPeriodResponse> certificationPeriods,
         RankingResponse ranking,
         MemberStatsResponse stats
         ) {
+
+        public record ChallengeGroupInfoResponse(String name, int maximumMemberCount, int currentMemberCount, String joinCode, String endAt) {
+        }
 
         public record CertificationPeriodResponse(int day, int createdCount, int certificatedCount, int certificationRate) {
         }

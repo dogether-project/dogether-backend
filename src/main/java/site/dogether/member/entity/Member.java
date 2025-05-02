@@ -1,16 +1,24 @@
 package site.dogether.member.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.common.audit.entity.BaseEntity;
+import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.exception.InvalidMemberException;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.notification.entity.NotificationTokenJpaEntity;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +41,21 @@ public class Member extends BaseEntity {
 
     @Column(name = "profile_image_url", length = 500, nullable = false)
     private String profileImageUrl;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<NotificationTokenJpaEntity> notificationTokens;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<ChallengeGroupMember> challengeGroupMembers;
+
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE)
+    private List<DailyTodoCertification> dailyTodoCertifications;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<DailyTodo> dailyTodos;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private DailyTodoStats dailyTodoStats;
 
     public static Member create(final String providerId, final String name) {
         return new Member(null, providerId, name, saveRandomProfileImageUrl());
