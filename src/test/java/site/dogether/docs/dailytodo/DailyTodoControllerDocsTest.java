@@ -66,9 +66,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("데일리 투두 리스트")
                         .type(JsonFieldType.ARRAY)
                         .attributes(constraints(
-                            "그룹장 외 참여한 사람이 없다면 투두 작성 불가, " +
-                                "투두 개수는 2 ~ 그룹에서 정한 하루 최대 제한 개수 이하, " +
-                                "투두 항목은 2 ~ 20 길이 문자열"))),
+                            "그룹에 작성자 본인만 참여 하고 있어도 투두 작성 가능, " +
+                                "투두는 1 ~ 10개만 작성 가능, " +
+                                "투두 내용은 1 ~ 20길이 문자열만 입력 가능"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
