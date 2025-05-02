@@ -13,7 +13,6 @@ import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodos;
 import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
 import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
@@ -30,8 +29,12 @@ import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -188,7 +191,7 @@ public class DailyTodoService {
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX),
                 status))
-            .orElse(dailyTodoRepository.findAllByMemberAndCreatedAtBetween(
+            .orElse(getSortingDailyTodos(
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX)));
@@ -198,8 +201,15 @@ public class DailyTodoService {
             .toList();
     }
 
+    private List<DailyTodo> getSortingDailyTodos(final Member member, final LocalDateTime start, final LocalDateTime end) {
+        return dailyTodoRepository.findAllByMemberAndCreatedAtBetween(member, start, end).stream()
+            .sorted(Comparator.comparing((DailyTodo todo) -> todo.getStatus() != CERTIFY_PENDING)
+                .thenComparing(DailyTodo::getId))
+            .toList();
+    }
+
     private DailyTodoAndDailyTodoCertificationDto convertToDto(final DailyTodo dailyTodo) {
-        if (dailyTodo.getStatus() == DailyTodoStatus.CERTIFY_PENDING) {
+        if (dailyTodo.getStatus() == CERTIFY_PENDING) {
             return DailyTodoAndDailyTodoCertificationDto.of(dailyTodo);
         }
 
