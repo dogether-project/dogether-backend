@@ -4,9 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.controller.DailyTodoCertificationController;
+import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
@@ -23,8 +23,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.DAILY_TODO_CERTIFICATION_REVIEW_RESULT;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
 public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
@@ -97,9 +95,9 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                         .attributes(constraints("등록된 데일리 투두 인증 id만 입력 가능"), pathVariableExample(todoCertificationId))),
                 requestFields(
                     fieldWithPath("result")
-                        .description(generateLink(DAILY_TODO_CERTIFICATION_REVIEW_RESULT))
+                        .description("검사 결과")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("정해진 값만 입력 허용")),
+                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ 인정 : APPROVE, 노인정 : REJECT ]")),
                     fieldWithPath("rejectReason")
                         .description("노인정 사유")
                         .type(JsonFieldType.STRING)

@@ -28,8 +28,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.DAILY_TODO_STATUS;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("데일리 투두 API 문서화 테스트")
 public class DailyTodoControllerDocsTest extends RestDocsSupport {
@@ -216,7 +214,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                     parameterWithName("date")
                         .description("데일리 투두 날짜"),
                     parameterWithName("status")
-                        .description(generateLink(DAILY_TODO_STATUS))),
+                        .description("데일리 투두 상태")
+                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ 검사 대기 : REVIEW_PENDING, 인정 : APPROVE, 노인정 : REJECT ]"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
