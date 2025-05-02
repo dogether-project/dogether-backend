@@ -210,7 +210,7 @@ public class DailyTodoService {
 
     private DailyTodoAndDailyTodoCertificationDto convertToDto(final DailyTodo dailyTodo) {
         if (dailyTodo.getStatus() == CERTIFY_PENDING) {
-            return DailyTodoAndDailyTodoCertificationDto.of(dailyTodo);
+            return DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodo);
         }
 
         final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)
