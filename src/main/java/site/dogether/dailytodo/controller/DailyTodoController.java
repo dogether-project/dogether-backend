@@ -40,7 +40,7 @@ public class DailyTodoController {
         @Authenticated final Long memberId,
         @PathVariable final Long groupId
     ) {
-        final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId);
+        final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId, groupId);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
     }
@@ -52,7 +52,7 @@ public class DailyTodoController {
         @RequestParam final LocalDate date,
         @RequestParam(required = false) final String status
     ) {
-        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = FindMyDailyTodosConditionDto.of(memberId, date, status);
+        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = FindMyDailyTodosConditionDto.of(memberId, groupId, date, status);
         final List<DailyTodoAndDailyTodoCertificationDto> myDailyTodos = dailyTodoService.findMyDailyTodo(findMyDailyTodosConditionDto);
 
         return ResponseEntity.ok(ApiResponse.successWithData(
@@ -61,6 +61,7 @@ public class DailyTodoController {
         ));
     }
 
+    // TODO : 미구현 API
     @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history")
     public ResponseEntity<ApiResponse<GetChallengeMemberTodayTodoHistoryResponse>> getChallengeGroupMemberTodayTodoHistory(
         @Authenticated final Long memberId,
@@ -83,6 +84,7 @@ public class DailyTodoController {
         ));
     }
 
+    // TODO : 미구현 API
     @PostMapping("/api/todo-history/{todoHistoryId}")
     public ResponseEntity<ApiResponse<Void>> markTodoHistoryAsRead(
         @Authenticated final Long memberId,

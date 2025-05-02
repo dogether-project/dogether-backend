@@ -11,7 +11,7 @@ public class DailyTodoAndDailyTodoCertificationDto {
     private final DailyTodo dailyTodo;
     private final DailyTodoCertification dailyTodoCertification;
 
-    public static DailyTodoAndDailyTodoCertificationDto of(final DailyTodo dailyTodo) {
+    public static DailyTodoAndDailyTodoCertificationDto withoutDailyTodoCertification(final DailyTodo dailyTodo) {
         return new DailyTodoAndDailyTodoCertificationDto(dailyTodo, null);
     }
 

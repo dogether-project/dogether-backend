@@ -1,12 +1,13 @@
 package site.dogether.dailytodo.repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.member.entity.Member;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface DailyTodoRepository extends JpaRepository<DailyTodo, Long> {
 
@@ -22,13 +23,15 @@ public interface DailyTodoRepository extends JpaRepository<DailyTodo, Long> {
         Member member
     );
 
-    List<DailyTodo> findAllByMemberAndCreatedAtBetween(
+    List<DailyTodo> findAllByChallengeGroupAndMemberAndCreatedAtBetween(
+        ChallengeGroup challengeGroup,
         Member member,
         LocalDateTime startDateTime,
         LocalDateTime endDateTime
     );
 
-    List<DailyTodo> findAllByMemberAndCreatedAtBetweenAndStatus(
+    List<DailyTodo> findAllByChallengeGroupAndMemberAndCreatedAtBetweenAndStatus(
+        ChallengeGroup challengeGroup,
         Member member,
         LocalDateTime startDateTime,
         LocalDateTime endDateTime,

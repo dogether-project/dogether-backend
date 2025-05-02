@@ -12,7 +12,11 @@ import site.dogether.common.util.random.RandomGenerator;
 @Component
 public class FakeRandomGenerator implements RandomGenerator {
 
-    public int result;
+    private int result;
+
+    public void setResult(int result) {
+        this.result = result;
+    }
 
     @Override
     public int generateNumberInRange(final int start, final int end) {

@@ -6,7 +6,6 @@ public record DailyTodoCertificationDto(
     Long id,
     String content,
     String mediaUrl,
-    String reviewer,
     String todoContent,
     String doer
 ) {
@@ -15,7 +14,6 @@ public record DailyTodoCertificationDto(
             dailyTodoCertification.getId(),
             dailyTodoCertification.getContent(),
             dailyTodoCertification.getMediaUrl(),
-            dailyTodoCertification.getReviewerName(),
             dailyTodoCertification.getDailyTodoContent(),
             dailyTodoCertification.getDoerName()
         );

@@ -28,8 +28,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.DAILY_TODO_STATUS;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("데일리 투두 API 문서화 테스트")
 public class DailyTodoControllerDocsTest extends RestDocsSupport {
@@ -66,9 +64,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("데일리 투두 리스트")
                         .type(JsonFieldType.ARRAY)
                         .attributes(constraints(
-                            "그룹장 외 참여한 사람이 없다면 투두 작성 불가, " +
-                                "투두 개수는 2 ~ 그룹에서 정한 하루 최대 제한 개수 이하, " +
-                                "투두 항목은 2 ~ 20 길이 문자열"))),
+                            "그룹에 작성자 본인만 참여 하고 있어도 투두 작성 가능, " +
+                                "투두는 1 ~ 10개만 작성 가능, " +
+                                "투두 내용은 1 ~ 20길이 문자열만 입력 가능"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
@@ -88,7 +86,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             "승용님 괴롭히기"
         );
 
-        given(dailyTodoService.findYesterdayDailyTodos(any()))
+        given(dailyTodoService.findYesterdayDailyTodos(any(), any()))
             .willReturn(yesterdayTodos);
 
         mockMvc.perform(
@@ -121,20 +119,20 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final List<DailyTodo> dailyTodos = List.of(
-            new DailyTodo(1L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(2L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(3L, challengeGroup, doer, "인강 듣기", DailyTodoStatus.APPROVE, null, LocalDateTime.now()),
+            new DailyTodo(1L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null, LocalDateTime.now()),
+            new DailyTodo(2L, challengeGroup, doer, "인강 듣기", DailyTodoStatus.APPROVE, null, LocalDateTime.now()),
+            new DailyTodo(3L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null, LocalDateTime.now()),
             new DailyTodo(4L, challengeGroup, doer, "DND API 구현", DailyTodoStatus.REJECT, "코드 개판이네 ㅎ", LocalDateTime.now())
         );
         final List<DailyTodoCertification> dailyTodoCertifications = List.of(
-            new DailyTodoCertification(1L, dailyTodos.get(1), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),
-            new DailyTodoCertification(2L, dailyTodos.get(2), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url"),
+            new DailyTodoCertification(1L, dailyTodos.get(0), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),
+            new DailyTodoCertification(2L, dailyTodos.get(1), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url"),
             new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", "https://image.url")
         );
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(
-            DailyTodoAndDailyTodoCertificationDto.of(dailyTodos.get(0)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(0)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(2), dailyTodoCertifications.get(1)),
+            DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodos.get(2)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(0), dailyTodoCertifications.get(0)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(1)),
             new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(3), dailyTodoCertifications.get(2)));
 
         given(dailyTodoService.findMyDailyTodo(any()))
@@ -216,7 +214,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                     parameterWithName("date")
                         .description("데일리 투두 날짜"),
                     parameterWithName("status")
-                        .description(generateLink(DAILY_TODO_STATUS))),
+                        .description("데일리 투두 상태")
+                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")

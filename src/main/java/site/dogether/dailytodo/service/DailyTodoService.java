@@ -5,15 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodos;
 import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
 import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
@@ -26,12 +23,15 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,7 +45,6 @@ public class DailyTodoService {
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final NotificationService notificationService;
-    private final MemberService memberService;
     private final ReviewerPicker reviewerPicker;
 
     @Transactional
@@ -155,18 +154,16 @@ public class DailyTodoService {
         );
     }
 
-    public List<String> findYesterdayDailyTodos(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
-        final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, member)
-            .orElseThrow(() -> new MemberNotInChallengeGroupException("현재 진행중인 챌린지 그룹에 참여하고 있지 않습니다."));
+    public List<String> findYesterdayDailyTodos(final Long memberId, final Long groupId) {
+        final ChallengeGroup challengeGroup = getChallengeGroup(groupId);
+        final Member member = getMember(memberId);
 
-        final LocalDate yesterday = LocalDate.now().minusDays(1);
+        final LocalDate yesterdayDate = LocalDate.now().minusDays(1);
         return dailyTodoRepository.findAllByCreatedAtBetweenAndChallengeGroupAndMember(
-            yesterday.atStartOfDay(),
-            yesterday.atTime(LocalTime.MAX),
-            challengeGroupMember.getChallengeGroup(),
-            challengeGroupMember.getMember())
-            .stream()
+                yesterdayDate.atStartOfDay(),
+                yesterdayDate.atTime(LocalTime.MAX),
+                challengeGroup,
+                member).stream()
             .map(DailyTodo::getContent)
             .toList();
     }
@@ -181,14 +178,17 @@ public class DailyTodoService {
     }
 
     public List<DailyTodoAndDailyTodoCertificationDto> findMyDailyTodo(final FindMyDailyTodosConditionDto condition) {
-        final Member member = memberService.getMember(condition.getMemberId());
+        final ChallengeGroup challengeGroup = getChallengeGroup(condition.getGroupId());
+        final Member member = getMember(condition.getMemberId());
         final List<DailyTodo> dailyTodos = condition.getDailyTodoStatus()
-            .map(status -> dailyTodoRepository.findAllByMemberAndCreatedAtBetweenAndStatus(
+            .map(status -> dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetweenAndStatus(
+                challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX),
                 status))
-            .orElse(dailyTodoRepository.findAllByMemberAndCreatedAtBetween(
+            .orElse(getSortingDailyTodos(
+                challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX)));
@@ -198,9 +198,21 @@ public class DailyTodoService {
             .toList();
     }
 
+    private List<DailyTodo> getSortingDailyTodos(
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final LocalDateTime start,
+        final LocalDateTime end
+    ) {
+        return dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetween(challengeGroup, member, start, end).stream()
+            .sorted(Comparator.comparing((DailyTodo todo) -> todo.getStatus() != CERTIFY_PENDING)
+                .thenComparing(DailyTodo::getId))
+            .toList();
+    }
+
     private DailyTodoAndDailyTodoCertificationDto convertToDto(final DailyTodo dailyTodo) {
-        if (dailyTodo.getStatus() == DailyTodoStatus.CERTIFY_PENDING) {
-            return DailyTodoAndDailyTodoCertificationDto.of(dailyTodo);
+        if (dailyTodo.getStatus() == CERTIFY_PENDING) {
+            return DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodo);
         }
 
         final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)

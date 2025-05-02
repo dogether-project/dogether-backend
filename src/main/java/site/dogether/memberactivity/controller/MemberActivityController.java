@@ -51,7 +51,7 @@ public class MemberActivityController {
     @GetMapping("/activity")
     public ResponseEntity<ApiResponse<GetMemberAllStatsResponse>> getMemberAllStats(
             @Authenticated final Long memberId,
-            @RequestParam(name = "sort", defaultValue = "todo-completed-at") final String sort,
+            @RequestParam(name = "sort", defaultValue = "TODO_COMPLETED_AT") final String sort,
             @RequestParam final String status
     ) {
         GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
