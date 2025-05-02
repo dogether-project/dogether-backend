@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
-import site.dogether.notification.entity.NotificationTokenJpaEntity;
+import site.dogether.notification.entity.NotificationToken;
 import site.dogether.notification.firebase.sender.SimpleFcmNotificationRequest;
-import site.dogether.notification.repository.NotificationTokenJpaRepository;
+import site.dogether.notification.repository.NotificationTokenRepository;
 import site.dogether.notification.sender.NotificationSender;
 import site.dogether.notification.exception.InvalidNotificationTokenException;
 
@@ -18,7 +18,7 @@ import site.dogether.notification.exception.InvalidNotificationTokenException;
 @Service
 public class NotificationService {
 
-    private final NotificationTokenJpaRepository notificationTokenJpaRepository;
+    private final NotificationTokenRepository notificationTokenRepository;
     private final NotificationSender notificationSender;
     private final MemberService memberService;
 
@@ -29,16 +29,16 @@ public class NotificationService {
         final String body,
         final String type
     ) {
-        notificationTokenJpaRepository.findAllByMember_Id(recipientId).forEach(
+        notificationTokenRepository.findAllByMember_Id(recipientId).forEach(
             notificationToken -> sndNotification(notificationToken, title, body, type));
     }
 
-    private void sndNotification(final NotificationTokenJpaEntity notificationToken, String title, String body, String type) {
+    private void sndNotification(final NotificationToken notificationToken, String title, String body, String type) {
         try {
             final SimpleFcmNotificationRequest simpleFcmNotificationRequest = new SimpleFcmNotificationRequest(notificationToken.getValue(), title, body, type);
             notificationSender.send(simpleFcmNotificationRequest);
         } catch (final InvalidNotificationTokenException e) {
-            notificationTokenJpaRepository.deleteAllByValue(notificationToken.getValue());
+            notificationTokenRepository.deleteAllByValue(notificationToken.getValue());
             log.info("유효하지 않은 토큰 제거 - {}", notificationToken.getValue());
         }
     }
@@ -48,12 +48,12 @@ public class NotificationService {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
         final Member member = memberService.getMember(memberId);
-        if (notificationTokenJpaRepository.existsByMemberAndValue(member, notificationToken)) {
+        if (notificationTokenRepository.existsByMemberAndValue(member, notificationToken)) {
             return;
         }
 
-        final NotificationTokenJpaEntity notificationTokenJpaEntity = new NotificationTokenJpaEntity(member, notificationToken);
-        notificationTokenJpaRepository.save(notificationTokenJpaEntity);
+        final NotificationToken notificationTokenJpaEntity = new NotificationToken(member, notificationToken);
+        notificationTokenRepository.save(notificationTokenJpaEntity);
         log.info("푸시 알림 토큰 저장 - {}", notificationToken);
     }
 
@@ -69,9 +69,9 @@ public class NotificationService {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
         final Member member = memberService.getMember(memberId);
-        notificationTokenJpaRepository.findByMemberAndValue(member, notificationToken)
+        notificationTokenRepository.findByMemberAndValue(member, notificationToken)
                 .ifPresent(notificationTokenJpaEntity -> {
-                    notificationTokenJpaRepository.delete(notificationTokenJpaEntity);
+                    notificationTokenRepository.delete(notificationTokenJpaEntity);
                     log.info("푸시 알림 토큰 제거 - {}", notificationToken);});
     }
 }

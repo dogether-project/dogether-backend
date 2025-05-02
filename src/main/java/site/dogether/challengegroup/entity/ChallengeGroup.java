@@ -18,6 +18,10 @@ import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.common.audit.entity.BaseEntity;
 
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
+
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -155,5 +159,17 @@ public class ChallengeGroup extends BaseEntity {
 
     private int getDuration() {
         return (int) ChronoUnit.DAYS.between(startAt, endAt);
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        final ChallengeGroup that = (ChallengeGroup) object;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

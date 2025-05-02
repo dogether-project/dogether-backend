@@ -35,5 +35,12 @@ public interface DailyTodoRepository extends JpaRepository<DailyTodo, Long> {
         DailyTodoStatus status
     );
 
+    boolean existsByChallengeGroupAndMemberAndCreatedAtBetween(
+        ChallengeGroup challengeGroup,
+        Member member,
+        LocalDateTime startOfDay,
+        LocalDateTime endOfDay
+    );
+  
     List<DailyTodo> findAllByMember(Member member);
 }

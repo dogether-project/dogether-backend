@@ -32,6 +32,9 @@ import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

@@ -1,17 +1,5 @@
 package site.dogether.challengegroup.controller;
 
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.CHALLENGE_GROUP_NOT_FOUND;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.FINISHED_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.FULL_MEMBER_IN_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.INVALID_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.INVALID_CHALLENGE_GROUP_DURATION;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.INVALID_CHALLENGE_GROUP_START_AT;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.JOINING_CHALLENGE_GROUP_MAX_COUNT;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.MEMBER_ALREADY_IN_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.MEMBER_NOT_IN_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.NOT_ENOUGH_CHALLENGE_GROUP_MEMBERS;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.NOT_RUNNING_CHALLENGE_GROUP;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -27,9 +15,10 @@ import site.dogether.challengegroup.exception.InvalidChallengeGroupStartAtExcept
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
 import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
-import site.dogether.challengegroup.exception.NotEnoughChallengeGroupMembersException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.common.controller.response.ApiResponse;
+
+import static site.dogether.challengegroup.controller.response.ChallengeGroupErrorCode.*;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -48,13 +37,6 @@ public class ChallengeGroupExceptionHandler {
         log.info("handle MemberNotInChallengeGroupException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(MEMBER_NOT_IN_CHALLENGE_GROUP, e.getMessage()));
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleNotEnoughChallengeGroupMembersException(final NotEnoughChallengeGroupMembersException e) {
-        log.info("handle NotEnoughChallengeGroupMembersException", e);
-        return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(NOT_ENOUGH_CHALLENGE_GROUP_MEMBERS, e.getMessage()));
     }
 
     @ExceptionHandler

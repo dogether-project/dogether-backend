@@ -9,20 +9,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
-import site.dogether.notification.entity.NotificationTokenJpaEntity;
+import site.dogether.notification.entity.NotificationToken;
 
-@ToString
+import java.util.List;
+import java.util.Objects;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
@@ -43,7 +43,7 @@ public class Member extends BaseEntity {
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<NotificationTokenJpaEntity> notificationTokens;
+    private List<NotificationToken> notificationTokens;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<ChallengeGroupMember> challengeGroupMembers;
@@ -83,7 +83,12 @@ public class Member extends BaseEntity {
         return profileImageUrls.get((int) (Math.random() * profileImageUrls.size()));
     }
 
-    public Member(final Long id, final String providerId, final String name, final String profileImageUrl) {
+    public Member(
+        final Long id,
+        final String providerId,
+        final String name,
+        final String profileImageUrl
+    ) {
         validateProviderId(providerId);
         validateName(name);
 
@@ -103,5 +108,27 @@ public class Member extends BaseEntity {
         if (name == null || name.isBlank()) {
             throw new InvalidMemberException(String.format("회원 이름은 null 혹은 공백을 입력할 수 없습니다. (input : %s)", name));
         }
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        final Member member = (Member) object;
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", createdAt=" + createdAt +
+            ", isDeleted=" + isDeleted +
+            '}';
     }
 }

@@ -10,7 +10,7 @@ import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
-import site.dogether.notification.repository.NotificationTokenJpaRepository;
+import site.dogether.notification.repository.NotificationTokenRepository;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ import site.dogether.notification.repository.NotificationTokenJpaRepository;
 public class MemberWithdrawService {
 
     private final MemberService memberService;
-    private final NotificationTokenJpaRepository notificationTokenJpaRepository;
+    private final NotificationTokenRepository notificationTokenRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
@@ -35,7 +35,7 @@ public class MemberWithdrawService {
                 .forEach(BaseEntity::softDelete);
         log.info("회원의 챌린지 그룹 멤버 컬럼 soft delete");
 
-        notificationTokenJpaRepository.findAllByMember(member)
+        notificationTokenRepository.findAllByMember(member)
                 .forEach(BaseEntity::softDelete);
         log.info("회원의 알림 토큰 컬럼 soft delete");
 
