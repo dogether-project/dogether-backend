@@ -61,6 +61,7 @@ public class DailyTodoController {
         ));
     }
 
+    // TODO : 미구현 API
     @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history")
     public ResponseEntity<ApiResponse<GetChallengeMemberTodayTodoHistoryResponse>> getChallengeGroupMemberTodayTodoHistory(
         @Authenticated final Long memberId,
@@ -83,6 +84,7 @@ public class DailyTodoController {
         ));
     }
 
+    // TODO : 미구현 API
     @PostMapping("/api/todo-history/{todoHistoryId}")
     public ResponseEntity<ApiResponse<Void>> markTodoHistoryAsRead(
         @Authenticated final Long memberId,
