@@ -61,7 +61,7 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("content")
                         .description("데일리 투두 인증 본문")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("2 ~ 50 길이 문자열")),
+                        .attributes(constraints("투두 수행 인증 본문은 1 ~ 40 길이의 문자열만 입력 가능")),
                     fieldWithPath("mediaUrl")
                         .description("데일리 투두 인증 미디어 리소스")
                         .type(JsonFieldType.STRING)
