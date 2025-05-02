@@ -11,7 +11,7 @@ import site.dogether.member.entity.Member;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "notification_token")
 @Entity
-public class NotificationTokenJpaEntity extends BaseEntity {
+public class NotificationToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,14 +21,14 @@ public class NotificationTokenJpaEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Column(name = "value", length = 500, nullable = false, unique = true)
+    @Column(name = "token_value", length = 500, nullable = false, unique = true)
     private String value;
 
-    public NotificationTokenJpaEntity(final Member member, final String value) {
+    public NotificationToken(final Member member, final String value) {
         this(null, member, value);
     }
 
-    public NotificationTokenJpaEntity(
+    public NotificationToken(
         final Long id,
         final Member member,
         final String value

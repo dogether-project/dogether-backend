@@ -18,7 +18,7 @@ import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
-import site.dogether.notification.entity.NotificationTokenJpaEntity;
+import site.dogether.notification.entity.NotificationToken;
 
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +43,7 @@ public class Member extends BaseEntity {
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<NotificationTokenJpaEntity> notificationTokens;
+    private List<NotificationToken> notificationTokens;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<ChallengeGroupMember> challengeGroupMembers;
