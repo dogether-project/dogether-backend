@@ -122,7 +122,6 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                 1L,
                 "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
                 "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png",
-                "진채영",
                 "유산소 & 무산소 1시간 조지기",
                 "승용차"
             ),
@@ -130,7 +129,6 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                 2L,
                 "공부까지 갓벽...",
                 "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/s1.png",
-                "문지원",
                 "공부 3시간 조지기",
                 "박지은"
             )
@@ -165,8 +163,6 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.dailyTodoCertifications[].mediaUrl")
                         .description("인증에 포함된 미디어 리소스")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.dailyTodoCertifications[].reviewer")
-                        .description("투두 수행 검사자 이름"),
                     fieldWithPath("data.dailyTodoCertifications[].todoContent")
                         .description("수행 인증한 투두 내용")
                         .type(JsonFieldType.STRING),
