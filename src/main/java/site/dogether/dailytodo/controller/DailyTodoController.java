@@ -40,7 +40,7 @@ public class DailyTodoController {
         @Authenticated final Long memberId,
         @PathVariable final Long groupId
     ) {
-        final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId);
+        final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId, groupId);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
     }

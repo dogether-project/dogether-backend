@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
@@ -158,18 +156,16 @@ public class DailyTodoService {
         );
     }
 
-    public List<String> findYesterdayDailyTodos(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
-        final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByChallengeGroup_StatusAndMember(ChallengeGroupStatus.RUNNING, member)
-            .orElseThrow(() -> new MemberNotInChallengeGroupException("현재 진행중인 챌린지 그룹에 참여하고 있지 않습니다."));
+    public List<String> findYesterdayDailyTodos(final Long memberId, final Long groupId) {
+        final ChallengeGroup challengeGroup = getChallengeGroup(groupId);
+        final Member member = getMember(memberId);
 
-        final LocalDate yesterday = LocalDate.now().minusDays(1);
+        final LocalDate yesterdayDate = LocalDate.now().minusDays(1);
         return dailyTodoRepository.findAllByCreatedAtBetweenAndChallengeGroupAndMember(
-            yesterday.atStartOfDay(),
-            yesterday.atTime(LocalTime.MAX),
-            challengeGroupMember.getChallengeGroup(),
-            challengeGroupMember.getMember())
-            .stream()
+                yesterdayDate.atStartOfDay(),
+                yesterdayDate.atTime(LocalTime.MAX),
+                challengeGroup,
+                member).stream()
             .map(DailyTodo::getContent)
             .toList();
     }
