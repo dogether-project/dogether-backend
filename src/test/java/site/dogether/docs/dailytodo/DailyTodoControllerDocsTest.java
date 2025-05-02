@@ -121,20 +121,20 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png");
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final List<DailyTodo> dailyTodos = List.of(
-            new DailyTodo(1L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(2L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(3L, challengeGroup, doer, "인강 듣기", DailyTodoStatus.APPROVE, null, LocalDateTime.now()),
+            new DailyTodo(1L, challengeGroup, doer, "운동 하기", DailyTodoStatus.REVIEW_PENDING, null, LocalDateTime.now()),
+            new DailyTodo(2L, challengeGroup, doer, "인강 듣기", DailyTodoStatus.APPROVE, null, LocalDateTime.now()),
+            new DailyTodo(3L, challengeGroup, doer, "치킨 먹기", DailyTodoStatus.CERTIFY_PENDING, null, LocalDateTime.now()),
             new DailyTodo(4L, challengeGroup, doer, "DND API 구현", DailyTodoStatus.REJECT, "코드 개판이네 ㅎ", LocalDateTime.now())
         );
         final List<DailyTodoCertification> dailyTodoCertifications = List.of(
-            new DailyTodoCertification(1L, dailyTodos.get(1), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),
-            new DailyTodoCertification(2L, dailyTodos.get(2), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url"),
+            new DailyTodoCertification(1L, dailyTodos.get(0), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),
+            new DailyTodoCertification(2L, dailyTodos.get(1), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url"),
             new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", "https://image.url")
         );
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(
-            DailyTodoAndDailyTodoCertificationDto.of(dailyTodos.get(0)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(0)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(2), dailyTodoCertifications.get(1)),
+            DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodos.get(2)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(0), dailyTodoCertifications.get(0)),
+            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(1)),
             new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(3), dailyTodoCertifications.get(2)));
 
         given(dailyTodoService.findMyDailyTodo(any()))
