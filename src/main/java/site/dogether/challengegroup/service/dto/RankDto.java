@@ -11,13 +11,11 @@ public class RankDto {
 
     @Setter
     private int rank;
-    private final String name;
     private final int achievementRate;
 
-    public static RankDto from(final ChallengeGroupMemberRankInfo rankInfo) {
+    public static RankDto from(final ChallengeGroupMemberRankInfoDto rankInfo) {
         return RankDto.builder()
                 .rank(0)
-                .name(rankInfo.getMemberName())
                 .achievementRate(RankingCalculator.calculateAchievementRate(
                         rankInfo.getMyTodoSummary(),
                         rankInfo.getJoinedAt(),

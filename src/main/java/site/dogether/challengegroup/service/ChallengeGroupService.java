@@ -1,8 +1,5 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,8 @@ import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupExcep
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
-import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfo;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfoDto;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankProfileDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.RankDto;
@@ -34,6 +32,7 @@ import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -165,7 +164,7 @@ public class ChallengeGroupService {
         }
     }
 
-    // TODO: historyReadStatus 필드 추가 예정 (history 테이블 생성 후 작업 예정)
+    // TODO: historyReadStatus 필드 추가 예정 (history 테이블 생성 후 작업 예정) - memberId 별로 랭킹 조회하도록 수정 필요
     public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long groupId) {
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
@@ -178,53 +177,48 @@ public class ChallengeGroupService {
                 .map(ChallengeGroupMember::getMember)
                 .toList();
 
-        final List<Long> memberIds = getChallengeGroupMemberId(members);
+        final List<ChallengeGroupMemberRankProfileDto> memberRankProfiles = getChallengeGroupMemberProfiles(members);
         final List<RankDto> memberRanks = calculateChallengeGroupMembersRank(groupMembers, challengeGroup);
-        final List<String> profileImageUrls = getChallengeGroupMemberProfileImages(members);
 
         return IntStream.range(0, memberRanks.size())
                 .mapToObj(i -> ChallengeGroupMemberRankResponse.from(
-                        memberIds.get(i),
+                        memberRankProfiles.get(i),
                         memberRanks.get(i),
-                        profileImageUrls.get(i),
                         "READYET"
                 ))
                 .toList();
     }
 
-    private List<Long> getChallengeGroupMemberId(final List<Member> groupMembers) {
-        return groupMembers.stream()
-                .map(Member::getId)
+    private List<ChallengeGroupMemberRankProfileDto> getChallengeGroupMemberProfiles(final List<Member> members) {
+        return members.stream()
+                .map(member -> new ChallengeGroupMemberRankProfileDto(
+                        member.getId(),
+                        member.getName(),
+                        member.getProfileImageUrl()
+                ))
                 .toList();
     }
 
     private List<RankDto> calculateChallengeGroupMembersRank(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
-        final List<ChallengeGroupMemberRankInfo> membersTodoSummary = getChallengeGroupMembersInfo(groupMembers, challengeGroup);
+        final List<ChallengeGroupMemberRankInfoDto> membersTodoSummary = getChallengeGroupMembersInfo(groupMembers, challengeGroup);
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(membersTodoSummary);
 
         return groupTodoSummary.getRanks();
     }
 
-    private List<String> getChallengeGroupMemberProfileImages(final List<Member> groupMembers) {
-        return groupMembers.stream()
-                .map(Member::getProfileImageUrl)
-                .toList();
-    }
-
-    public List<ChallengeGroupMemberRankInfo> getChallengeGroupMembersInfo(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+    public List<ChallengeGroupMemberRankInfoDto> getChallengeGroupMembersInfo(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
         return groupMembers.stream()
                 .map(member -> getChallengeGroupMemberInfo(member, challengeGroup))
                 .toList();
     }
 
-    public ChallengeGroupMemberRankInfo getChallengeGroupMemberInfo(final ChallengeGroupMember groupMember, final ChallengeGroup challengeGroup) {
+    public ChallengeGroupMemberRankInfoDto getChallengeGroupMemberInfo(final ChallengeGroupMember groupMember, final ChallengeGroup challengeGroup) {
         final Member member = groupMember.getMember();
         final List<DailyTodo> dailyTodos = dailyTodoService.getMemberTodos(challengeGroup, member);
 
         final MyTodoSummary myTodoSummary = new MyTodoSummary(dailyTodos);
 
-        return new ChallengeGroupMemberRankInfo(
-                member.getName(),
+        return new ChallengeGroupMemberRankInfoDto(
                 myTodoSummary,
                 groupMember.getCreatedAt(),
                 challengeGroup.getStartAt(),
