@@ -11,6 +11,7 @@ import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
+import site.dogether.dailytodohistory.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
@@ -26,6 +27,7 @@ public class DailyTodoCertificationService {
 
     private final MemberRepository memberRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    private final DailyTodoHistoryService dailyTodoHistoryService;
     private final NotificationService notificationService;
 
     @Transactional
@@ -41,6 +43,7 @@ public class DailyTodoCertificationService {
 
         dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), rejectReason);
 
+        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo);
         sendReviewResultNotificationToDailyTodoWriter(dailyTodo);
     }
 

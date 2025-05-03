@@ -20,6 +20,7 @@ import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
+import site.dogether.dailytodohistory.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
@@ -44,8 +45,9 @@ public class DailyTodoService {
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
-    private final NotificationService notificationService;
     private final ReviewerPicker reviewerPicker;
+    private final DailyTodoHistoryService dailyTodoHistoryService;
+    private final NotificationService notificationService;
 
     @Transactional
     public void saveDailyTodos(
@@ -61,7 +63,9 @@ public class DailyTodoService {
         validateMemberHasCreatedDailyTodoToday(challengeGroup, member);
 
         final DailyTodos dailyTodos = createDailyTodos(challengeGroup, member, dailyTodoContents);
-        dailyTodoRepository.saveAll(dailyTodos.getValues());
+        final List<DailyTodo> savedDailyTodos = dailyTodoRepository.saveAll(dailyTodos.getValues());
+
+        dailyTodoHistoryService.saveDailyTodoWriteHistory(savedDailyTodos);
     }
 
     private Member getMember(final Long memberId) {
@@ -129,6 +133,7 @@ public class DailyTodoService {
         final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl);
         dailyTodoCertificationRepository.save(dailyTodoCertification);
 
+        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo);
         sendNotificationToReviewer(reviewer, writer, dailyTodo);
     }
 

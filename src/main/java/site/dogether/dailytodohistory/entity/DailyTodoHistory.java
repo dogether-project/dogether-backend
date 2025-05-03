@@ -47,4 +47,34 @@ public class DailyTodoHistory extends BaseEntity {
 
     @Column(name = "event_at", nullable = false, updatable = false)
     private LocalDateTime event_at;
+
+    public DailyTodoHistory(
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final DailyTodo dailyTodo,
+        final DailyTodoHistoryType historyType
+    ) {
+        this.id = null;
+        this.challengeGroup = challengeGroup;
+        this.member = member;
+        this.dailyTodo = dailyTodo;
+        this.historyType = historyType;
+        this.event_at = LocalDateTime.now();
+    }
+
+    public DailyTodoHistory(
+        final Long id,
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final DailyTodo dailyTodo,
+        final DailyTodoHistoryType historyType,
+        final LocalDateTime event_at
+    ) {
+        this.id = id;
+        this.challengeGroup = challengeGroup;
+        this.member = member;
+        this.dailyTodo = dailyTodo;
+        this.historyType = historyType;
+        this.event_at = event_at;
+    }
 }
