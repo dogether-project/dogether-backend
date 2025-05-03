@@ -43,7 +43,7 @@ public class DailyTodoCertificationService {
 
         dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), rejectReason);
 
-        dailyTodoHistoryService.saveDailyTodoHistoryWithCertification(dailyTodo, dailyTodoCertification);
+        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo, dailyTodoCertification);
         sendReviewResultNotificationToDailyTodoWriter(dailyTodo);
     }
 

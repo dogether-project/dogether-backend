@@ -65,7 +65,7 @@ public class DailyTodoService {
         final DailyTodos dailyTodos = createDailyTodos(challengeGroup, member, dailyTodoContents);
         final List<DailyTodo> savedDailyTodos = dailyTodoRepository.saveAll(dailyTodos.getValues());
 
-        dailyTodoHistoryService.saveDailyTodoWriteHistory(savedDailyTodos);
+        dailyTodoHistoryService.saveDailyTodoHistories(savedDailyTodos);
     }
 
     private Member getMember(final Long memberId) {
@@ -133,7 +133,7 @@ public class DailyTodoService {
         final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl);
         dailyTodoCertificationRepository.save(dailyTodoCertification);
 
-        dailyTodoHistoryService.saveDailyTodoHistoryWithCertification(dailyTodo, dailyTodoCertification);
+        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo, dailyTodoCertification);
         sendNotificationToReviewer(reviewer, writer, dailyTodo);
     }
 
