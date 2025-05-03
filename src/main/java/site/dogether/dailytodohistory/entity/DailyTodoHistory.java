@@ -12,14 +12,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.common.audit.entity.BaseEntity;
-import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDateTime;
 
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "daily_todo_history")
 @Entity
@@ -37,44 +39,59 @@ public class DailyTodoHistory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @JoinColumn(name = "daily_todo_id", nullable = false, updatable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private DailyTodo dailyTodo;
+    @Column(name = "todo_content", length = 30, nullable = false, updatable = false)
+    private String todoContent;
 
-    @Column(name = "history_type", length = 15, nullable = false, updatable = false)
+    @Column(name = "todo_status", length = 20, nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    private DailyTodoHistoryType historyType;
+    private DailyTodoStatus todoStatus;
+
+    @Column(name = "todo_certification_content", length = 200, updatable = false)
+    private String todoCertificationContent;
+
+    @Column(name = "todo_certification_media_url", length = 500, updatable = false)
+    private String todoCertificationMediaUrl;
 
     @Column(name = "event_at", nullable = false, updatable = false)
-    private LocalDateTime event_at;
+    private LocalDateTime eventAt;
 
     public DailyTodoHistory(
         final ChallengeGroup challengeGroup,
         final Member member,
-        final DailyTodo dailyTodo,
-        final DailyTodoHistoryType historyType
+        final String todoContent,
+        final DailyTodoStatus todoStatus,
+        final String todoCertificationContent,
+        final String todoCertificationMediaUrl
     ) {
-        this.id = null;
-        this.challengeGroup = challengeGroup;
-        this.member = member;
-        this.dailyTodo = dailyTodo;
-        this.historyType = historyType;
-        this.event_at = LocalDateTime.now();
+        this(
+            null,
+            challengeGroup,
+            member,
+            todoContent,
+            todoStatus,
+            todoCertificationContent,
+            todoCertificationMediaUrl,
+            LocalDateTime.now()
+        );
     }
 
     public DailyTodoHistory(
         final Long id,
         final ChallengeGroup challengeGroup,
         final Member member,
-        final DailyTodo dailyTodo,
-        final DailyTodoHistoryType historyType,
-        final LocalDateTime event_at
+        final String todoContent,
+        final DailyTodoStatus todoStatus,
+        final String todoCertificationContent,
+        final String todoCertificationMediaUrl,
+        final LocalDateTime eventAt
     ) {
         this.id = id;
         this.challengeGroup = challengeGroup;
         this.member = member;
-        this.dailyTodo = dailyTodo;
-        this.historyType = historyType;
-        this.event_at = event_at;
+        this.todoContent = todoContent;
+        this.todoStatus = todoStatus;
+        this.todoCertificationContent = todoCertificationContent;
+        this.todoCertificationMediaUrl = todoCertificationMediaUrl;
+        this.eventAt = eventAt;
     }
 }
