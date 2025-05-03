@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
-import site.dogether.dailytodohistory.DailyTodoHistoryService;
+import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
@@ -43,7 +43,7 @@ public class DailyTodoCertificationService {
 
         dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), rejectReason);
 
-        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo);
+        dailyTodoHistoryService.saveDailyTodoHistoryWithCertification(dailyTodo, dailyTodoCertification);
         sendReviewResultNotificationToDailyTodoWriter(dailyTodo);
     }
 

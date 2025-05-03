@@ -20,7 +20,7 @@ import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
-import site.dogether.dailytodohistory.DailyTodoHistoryService;
+import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
@@ -133,7 +133,7 @@ public class DailyTodoService {
         final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl);
         dailyTodoCertificationRepository.save(dailyTodoCertification);
 
-        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo);
+        dailyTodoHistoryService.saveDailyTodoHistoryWithCertification(dailyTodo, dailyTodoCertification);
         sendNotificationToReviewer(reviewer, writer, dailyTodo);
     }
 
