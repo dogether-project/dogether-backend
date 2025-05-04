@@ -83,9 +83,10 @@ public class ChallengeGroupController {
 
     @GetMapping("/{groupId}/ranking")
     public ResponseEntity<ApiResponse<GetChallengeGroupMembersRank>> getJoiningChallengeGroupTeamRanking(
+            @Authenticated final Long memberId,
             @PathVariable final Long groupId
     ) {
-        List<ChallengeGroupMemberRankResponse> groupMemberRanks = challengeGroupService.getChallengeGroupRanking(groupId);
+        List<ChallengeGroupMemberRankResponse> groupMemberRanks = challengeGroupService.getChallengeGroupRanking(memberId, groupId);
 
         GetChallengeGroupMembersRank response = new GetChallengeGroupMembersRank(groupMemberRanks);
 

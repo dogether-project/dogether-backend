@@ -27,6 +27,8 @@ import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.GroupTodoSummary;
 import site.dogether.dailytodo.entity.MyTodoSummary;
 import site.dogether.dailytodo.service.DailyTodoService;
+import site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus;
+import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
@@ -46,6 +48,7 @@ public class ChallengeGroupService {
     private final NotificationService notificationService;
     private final MemberService memberService;
     private final DailyTodoService dailyTodoService;
+    private final DailyTodoHistoryService dailyTodoHistoryService;
 
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupRequest request, final Long memberId) {
@@ -165,12 +168,13 @@ public class ChallengeGroupService {
         }
     }
 
-    // TODO: historyReadStatus 필드 추가 예정 (history 테이블 생성 후 작업 예정) - memberId 별로 랭킹 조회하도록 수정 필요
-    public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long groupId) {
+    public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long memberId, final Long groupId) {
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
 
         isFinishedGroup(challengeGroup);
+
+        final Member viewer = memberService.getMember(memberId);
 
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
 
@@ -182,11 +186,16 @@ public class ChallengeGroupService {
         final List<RankDto> memberRanks = calculateChallengeGroupMembersRank(groupMembers, challengeGroup);
 
         return IntStream.range(0, memberRanks.size())
-                .mapToObj(i -> ChallengeGroupMemberRankResponse.from(
-                        memberRankProfiles.get(i),
-                        memberRanks.get(i),
-                        "READYET"
-                ))
+                .mapToObj(i -> {
+                    final  Member targetMember = members.get(i);
+                    final DailyTodoHistoryReadStatus historyReadStatus = dailyTodoHistoryService.getTodayDailyTodoHistoryReadStatus(viewer, challengeGroup, targetMember);
+
+                    return ChallengeGroupMemberRankResponse.from(
+                            memberRankProfiles.get(i),
+                            memberRanks.get(i),
+                            historyReadStatus.name()
+                    );
+                })
                 .toList();
     }
 
