@@ -1,23 +1,5 @@
 package site.dogether.docs.challengegroup;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_STATUS;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
-
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -30,6 +12,19 @@ import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.docs.util.RestDocsSupport;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.*;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
@@ -246,8 +241,6 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회 API")
     @Test
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
-        final long groupId = 1L;
-
         final List<ChallengeGroupMemberRankResponse> groupMemberRanks = List.of(
                 ChallengeGroupMemberRankResponse.builder()
                         .memberId(1L)
@@ -263,7 +256,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .rank(2)
                         .profileImageUrl("고양이.png")
                         .name("영재")
-                        .historyReadStatus("READALL")
+                        .historyReadStatus("READ_ALL")
                         .achievementRate(80)
                         .build(),
 
@@ -272,16 +265,16 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .rank(3)
                         .profileImageUrl("그로밋.png")
                         .name("서은")
-                        .historyReadStatus("READYET")
+                        .historyReadStatus("READ_YET")
                         .achievementRate(60)
                         .build()
         );
 
-        given(challengeGroupService.getChallengeGroupRanking(groupId))
+        given(challengeGroupService.getChallengeGroupRanking(any(), any()))
                 .willReturn(groupMemberRanks);
 
         mockMvc.perform(
-                get("/api/groups/{groupId}/ranking", groupId)
+                get("/api/groups/{groupId}/ranking", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -289,7 +282,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                 pathParameters(
                     parameterWithName("groupId")
                         .description("챌린지 그룹 id")
-                            .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"), pathVariableExample(groupId))),
+                            .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
