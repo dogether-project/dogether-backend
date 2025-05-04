@@ -13,6 +13,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@DisplayName("사용자 활동 API 문서화 테스트")
 class MemberActivityControllerDocsTest extends RestDocsSupport {
 
     @Override
