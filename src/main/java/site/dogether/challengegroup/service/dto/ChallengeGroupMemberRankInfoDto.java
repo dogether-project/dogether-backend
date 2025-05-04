@@ -7,22 +7,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-public class ChallengeGroupMemberRankInfo {
+public class ChallengeGroupMemberRankInfoDto {
 
-    private final String memberName;
     private final MyTodoSummary myTodoSummary;
     private final LocalDateTime joinedAt;
     private final LocalDate groupStartAt;
     private final LocalDate groupEndAt;
 
-    public ChallengeGroupMemberRankInfo(
-            final String memberName,
+    public ChallengeGroupMemberRankInfoDto(
             final MyTodoSummary myTodoSummary,
             final LocalDateTime joinedAt,
             final LocalDate groupStartAt,
             final LocalDate groupEndAt
     ) {
-        this.memberName = memberName;
         this.myTodoSummary = myTodoSummary;
         this.joinedAt = joinedAt;
         this.groupStartAt = groupStartAt;

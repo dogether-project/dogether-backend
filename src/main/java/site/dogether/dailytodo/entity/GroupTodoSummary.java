@@ -1,6 +1,6 @@
 package site.dogether.dailytodo.entity;
 
-import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfo;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfoDto;
 import site.dogether.challengegroup.service.dto.RankDto;
 
 import java.util.List;
@@ -8,9 +8,9 @@ import java.util.stream.IntStream;
 
 public class GroupTodoSummary {
 
-    private final List<ChallengeGroupMemberRankInfo> membersTodoSummary;
+    private final List<ChallengeGroupMemberRankInfoDto> membersTodoSummary;
 
-    public GroupTodoSummary(final List<ChallengeGroupMemberRankInfo> membersTodoSummary) {
+    public GroupTodoSummary(final List<ChallengeGroupMemberRankInfoDto> membersTodoSummary) {
         this.membersTodoSummary = membersTodoSummary;
     }
 

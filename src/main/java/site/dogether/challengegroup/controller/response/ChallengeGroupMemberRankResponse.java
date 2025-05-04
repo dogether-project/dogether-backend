@@ -2,6 +2,7 @@ package site.dogether.challengegroup.controller.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankProfileDto;
 import site.dogether.challengegroup.service.dto.RankDto;
 
 @Getter
@@ -15,12 +16,12 @@ public class ChallengeGroupMemberRankResponse {
     private String historyReadStatus;
     private int achievementRate;
 
-    public static ChallengeGroupMemberRankResponse from(Long memberId, RankDto rankDto, String profileImageUrl, String historyReadStatus) {
+    public static ChallengeGroupMemberRankResponse from(ChallengeGroupMemberRankProfileDto challengeGroupMemberRankProfileDto, RankDto rankDto, String historyReadStatus) {
         return ChallengeGroupMemberRankResponse.builder()
-                .memberId(memberId)
+                .memberId(challengeGroupMemberRankProfileDto.getMemberId())
                 .rank(rankDto.getRank())
-                .profileImageUrl(profileImageUrl)
-                .name(rankDto.getName())
+                .profileImageUrl(challengeGroupMemberRankProfileDto.getProfileImageUrl())
+                .name(challengeGroupMemberRankProfileDto.getName())
                 .historyReadStatus(historyReadStatus)
                 .achievementRate(rankDto.getAchievementRate())
                 .build();

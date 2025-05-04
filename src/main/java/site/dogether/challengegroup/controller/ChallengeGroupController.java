@@ -1,12 +1,5 @@
 package site.dogether.challengegroup.controller;
 
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.CREATE_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUPS;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.LEAVE_CHALLENGE_GROUP;
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
-
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +21,11 @@ import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.common.controller.response.ApiResponse;
+
+import java.util.List;
+
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.*;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
@@ -83,10 +81,9 @@ public class ChallengeGroupController {
         ));
     }
 
-    // TODO: memberId 별로 랭킹 조회하도록 수정 예정
     @GetMapping("/{groupId}/ranking")
     public ResponseEntity<ApiResponse<GetChallengeGroupMembersRank>> getJoiningChallengeGroupTeamRanking(
-            @PathVariable Long groupId
+            @PathVariable final Long groupId
     ) {
         List<ChallengeGroupMemberRankResponse> groupMemberRanks = challengeGroupService.getChallengeGroupRanking(groupId);
 
