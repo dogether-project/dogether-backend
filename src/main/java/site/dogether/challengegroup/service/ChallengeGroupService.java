@@ -228,7 +228,7 @@ public class ChallengeGroupService {
                 .toList();
     }
 
-    public List<ChallengeGroupMemberRankInfo> getChallengeGroupMembersInfo(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+    public List<ChallengeGroupMemberRankInfoDto> getChallengeGroupMembersInfo(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
         return groupMembers.stream()
                 .map(member -> getChallengeGroupMemberInfo(member, challengeGroup))
                 .toList();
