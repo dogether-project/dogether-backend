@@ -70,12 +70,9 @@ public class DailyTodoHistoryService {
         final ChallengeGroup challengeGroup = getChallengeGroup(challengeGroupId);
         final Member viewer = getMember(viewerId);
         final Member targetMember = getMember(targetMemberId);
-        final LocalDate todayDate = LocalDate.now();
-        final List<DailyTodoHistory> dailyTodoHistories = dailyTodoHistoryRepository.findAllByChallengeGroupAndMemberAndEventAtBetween(
+        final List<DailyTodoHistory> dailyTodoHistories = findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(
             challengeGroup,
-            targetMember,
-            todayDate.atStartOfDay(),
-            todayDate.atTime(LocalTime.MAX)
+            targetMember
         );
         final List<TodoHistoryDto> todoHistoryDtos = dailyTodoHistories.stream()
             .map(history -> convertDtoFromHistory(history, viewer))
@@ -95,9 +92,23 @@ public class DailyTodoHistoryService {
             .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
+    private List<DailyTodoHistory> findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(final ChallengeGroup challengeGroup, final Member targetMember) {
+        final LocalDate todayDate = LocalDate.now();
+        return dailyTodoHistoryRepository.findAllByChallengeGroupAndMemberAndEventAtBetween(
+            challengeGroup,
+            targetMember,
+            todayDate.atStartOfDay(),
+            todayDate.atTime(LocalTime.MAX)
+        );
+    }
+
     private TodoHistoryDto convertDtoFromHistory(final DailyTodoHistory history, final Member viewer) {
-        final boolean isHistoryRead = dailyTodoHistoryReadRepository.existsByMemberAndDailyTodoHistory(viewer, history);
+        final boolean isHistoryRead = checkMemberReadDailyTodoHistory(viewer, history);
         return TodoHistoryDto.fromTodoHistory(history, isHistoryRead);
+    }
+
+    private boolean checkMemberReadDailyTodoHistory(final Member member, final DailyTodoHistory dailyTodoHistory) {
+        return dailyTodoHistoryReadRepository.existsByMemberAndDailyTodoHistory(member, dailyTodoHistory);
     }
 
     private int calculateCurrentTodoHistoryToReadIndex(final List<TodoHistoryDto> todoHistoryDtos) {
@@ -130,5 +141,19 @@ public class DailyTodoHistoryService {
         if (isHistoryRead) {
             throw new DailyTodoHistoryAlreadyReadException(String.format("이미 읽음 처리한 투두 히스토리 입니다. (%s) (%s)", member, dailyTodoHistory));
         }
+    }
+
+    /**
+     * viewer -> 랭킹 페이지를 조회한 요청자
+     * viewer 입장에서 특정 챌린지 그룹에 속한 특정 사용자의 오늘 투두 히스토리 중 읽지 않은 히스토리가 존재하면 true 반환, 없으면(다 읽었으면) false
+     */
+    public boolean hasNotReadTodayDailyTodoHistory(
+        final Member viewer,
+        final ChallengeGroup challengeGroup,
+        final Member targetMember
+    ) {
+        final List<DailyTodoHistory> dailyTodoHistories = findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(challengeGroup, targetMember);
+        return dailyTodoHistories.stream()
+            .anyMatch(dailyTodoHistory -> !checkMemberReadDailyTodoHistory(viewer, dailyTodoHistory));
     }
 }
