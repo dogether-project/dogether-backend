@@ -7,26 +7,56 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.memberactivity.controller.MemberActivityController;
+import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
+import site.dogether.memberactivity.service.MemberActivityService;
 
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@DisplayName("사용자 활동 API 문서화 테스트")
 class MemberActivityControllerDocsTest extends RestDocsSupport {
+
+    private final MemberActivityService memberActivityService = mock(MemberActivityService.class);
 
     @Override
     protected Object initController() {
-        return new MemberActivityController();
+        return new MemberActivityController(memberActivityService);
     }
 
     @DisplayName("참여중인 특정 챌린지 그룹 활동 통계 조회 API")
     @Test
     void getGroupActivityStat() throws Exception {
-        final long groupId = 1L;
+        GetGroupActivityStatResponse.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatResponse.ChallengeGroupInfoResponse("그로밋과 함께하는 챌린지", 10, 6, "123456", "25.02.22");
+
+        List<GetGroupActivityStatResponse.CertificationPeriodResponse> certificationPeriods = List.of(
+                new GetGroupActivityStatResponse.CertificationPeriodResponse(1, 8, 2, 25),
+                new GetGroupActivityStatResponse.CertificationPeriodResponse(2, 6, 3, 50),
+                new GetGroupActivityStatResponse.CertificationPeriodResponse(3, 6, 3, 50),
+                new GetGroupActivityStatResponse.CertificationPeriodResponse(4, 3, 3, 100)
+        );
+
+        GetGroupActivityStatResponse.RankingResponse ranking = new GetGroupActivityStatResponse.RankingResponse(10, 3);
+        GetGroupActivityStatResponse.MemberStatsResponse stats = new GetGroupActivityStatResponse.MemberStatsResponse(123, 123, 123);
+
+        GetGroupActivityStatResponse response = new GetGroupActivityStatResponse(
+                groupInfo,
+                certificationPeriods,
+                ranking,
+                stats
+        );
+
+        given(memberActivityService.getGroupActivityStat(any(), any()))
+                .willReturn(response);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my//groups/{groupId}/activity", groupId)
+                        MockMvcRequestBuilders.get("/api/my//groups/{groupId}/activity", 1)
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -34,7 +64,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                         pathParameters(
                                 parameterWithName("groupId")
                                         .description("챌린지 그룹 id")
-                                        .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"), pathVariableExample(groupId))),
+                                        .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"), pathVariableExample(1))),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
