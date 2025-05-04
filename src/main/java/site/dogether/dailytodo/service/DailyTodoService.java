@@ -173,11 +173,6 @@ public class DailyTodoService {
             .toList();
     }
 
-/*    public MyTodoSummary getMyTodoSummary(final Member member, final ChallengeGroup joiningGroup) {
-        final List<DailyTodo> dailyTodos = dailyTodoRepository.findAllByChallengeGroupAndMember(joiningGroup, member);
-        return new MyTodoSummary(dailyTodos, member.getName());
-    }*/
-
     public List<DailyTodo> getMemberTodos(final ChallengeGroup challengeGroup, final Member member) {
         return dailyTodoRepository.findAllByChallengeGroupAndMember(challengeGroup, member);
     }
