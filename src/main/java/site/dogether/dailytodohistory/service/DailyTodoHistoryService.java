@@ -10,6 +10,7 @@ import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodohistory.entity.DailyTodoHistory;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
+import site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus;
 import site.dogether.dailytodohistory.exception.DailyTodoHistoryAlreadyReadException;
 import site.dogether.dailytodohistory.exception.DailyTodoHistoryNotFoundException;
 import site.dogether.dailytodohistory.repository.DailyTodoHistoryReadRepository;
@@ -143,17 +144,23 @@ public class DailyTodoHistoryService {
         }
     }
 
-    /**
-     * viewer -> 랭킹 페이지를 조회한 요청자
-     * viewer 입장에서 특정 챌린지 그룹에 속한 특정 사용자의 오늘 투두 히스토리 중 읽지 않은 히스토리가 존재하면 true 반환, 없으면(다 읽었으면) false
-     */
-    public boolean hasNotReadTodayDailyTodoHistory(
+    public DailyTodoHistoryReadStatus getTodayDailyTodoHistoryReadStatus(
         final Member viewer,
         final ChallengeGroup challengeGroup,
         final Member targetMember
     ) {
         final List<DailyTodoHistory> dailyTodoHistories = findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(challengeGroup, targetMember);
-        return dailyTodoHistories.stream()
-            .anyMatch(dailyTodoHistory -> !checkMemberReadDailyTodoHistory(viewer, dailyTodoHistory));
+
+        if (dailyTodoHistories.isEmpty()) {
+            return DailyTodoHistoryReadStatus.NULL;
+        }
+
+        for (DailyTodoHistory dailyTodoHistory : dailyTodoHistories) {
+            if (!checkMemberReadDailyTodoHistory(viewer, dailyTodoHistory)) {
+                return DailyTodoHistoryReadStatus.READ_YET;
+            }
+        }
+
+        return DailyTodoHistoryReadStatus.READ_ALL;
     }
 }
