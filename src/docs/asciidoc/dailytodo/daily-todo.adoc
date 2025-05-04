@@ -100,7 +100,7 @@ include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-cert
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
@@ -122,7 +122,7 @@ include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-t
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X

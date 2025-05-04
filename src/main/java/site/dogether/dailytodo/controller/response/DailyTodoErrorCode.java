@@ -16,6 +16,8 @@ public enum DailyTodoErrorCode implements ErrorCode {
     INVALID_DAILY_TODO_STATUS("DTF-0006"),
     INVALID_REVIEW_RESULT("DTF-0007"),
     NOT_REVIEW_PENDING_DAILY_TODO("DTF-0008"),
+    DAILY_TODO_HISTORY_ALREADY_READ("DTF-0009"),
+    DAILY_TODO_HISTORY_NOT_FOUND("DTF-0010")
     ;
 
     private final String value;
