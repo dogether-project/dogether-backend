@@ -28,4 +28,23 @@ public class DailyTodoHistoryRead {
     @JoinColumn(name = "daily_todo_history_id", nullable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private DailyTodoHistory dailyTodoHistory;
+
+    public DailyTodoHistoryRead(
+        final Member member,
+        final DailyTodoHistory dailyTodoHistory
+    ) {
+        this.id = null;
+        this.member = member;
+        this.dailyTodoHistory = dailyTodoHistory;
+    }
+
+    public DailyTodoHistoryRead(
+        final Long id,
+        final Member member,
+        final DailyTodoHistory dailyTodoHistory
+    ) {
+        this.id = id;
+        this.member = member;
+        this.dailyTodoHistory = dailyTodoHistory;
+    }
 }

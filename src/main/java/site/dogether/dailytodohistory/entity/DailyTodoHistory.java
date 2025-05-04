@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
@@ -21,6 +22,7 @@ import site.dogether.member.entity.Member;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "daily_todo_history")
