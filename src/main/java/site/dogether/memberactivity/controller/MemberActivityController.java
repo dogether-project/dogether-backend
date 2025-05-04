@@ -48,7 +48,7 @@ public class MemberActivityController {
 
         List<Object> dailyTodoCertifications = null;
 
-        if(sort.equals("todo-completed-at")) {
+        if(sort.equals("TODO_COMPLETED_AT")) {
             dailyTodoCertifications = List.of(
                     new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
                             "2025.05.01",
@@ -78,7 +78,7 @@ public class MemberActivityController {
                     )
             );
         }
-        else if (sort.equals("group-created-at")) {
+        else if (sort.equals("GROUP_CREATED_AT")) {
             dailyTodoCertifications = List.of(
                     new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
                             "스쿼트 챌린지",
