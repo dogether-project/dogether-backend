@@ -11,6 +11,7 @@ import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.service.MemberActivityService;
 
 import java.util.List;
 
@@ -22,30 +23,15 @@ import static site.dogether.memberactivity.controller.response.MemberActivitySuc
 @RestController
 public class MemberActivityController {
 
+    private final MemberActivityService memberActivityService;
+
     @GetMapping("/groups/{groupId}/activity")
     public ResponseEntity<ApiResponse<GetGroupActivityStatResponse>> getGroupActivityStat(
             @Authenticated final Long memberId, @PathVariable final Long groupId
     ) {
-        GetGroupActivityStatResponse.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatResponse.ChallengeGroupInfoResponse("그로밋과 함께하는 챌린지", 10, 6, "123456", "25.02.22");
+        final GetGroupActivityStatResponse groupActivityStat = memberActivityService.getGroupActivityStat(memberId, groupId);
 
-        List<GetGroupActivityStatResponse.CertificationPeriodResponse> certificationPeriods = List.of(
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(1, 8, 2, 25),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(2, 6, 3, 50),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(3, 6, 3, 50),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(4, 3, 3, 100)
-        );
-
-        GetGroupActivityStatResponse.RankingResponse ranking = new GetGroupActivityStatResponse.RankingResponse(10, 3);
-        GetGroupActivityStatResponse.MemberStatsResponse stats = new GetGroupActivityStatResponse.MemberStatsResponse(123, 123, 123);
-
-        GetGroupActivityStatResponse response = new GetGroupActivityStatResponse(
-                groupInfo,
-                certificationPeriods,
-                ranking,
-                stats
-        );
-
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, groupActivityStat));
     }
 
     @GetMapping("/activity")

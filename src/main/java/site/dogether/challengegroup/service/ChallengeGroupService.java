@@ -1,8 +1,5 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +15,7 @@ import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
 import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
+import site.dogether.challengegroup.exception.MemberRankNotFoundException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfo;
@@ -34,6 +32,7 @@ import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -198,11 +197,26 @@ public class ChallengeGroupService {
                 .toList();
     }
 
-    private List<RankDto> calculateChallengeGroupMembersRank(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+    public List<RankDto> calculateChallengeGroupMembersRank(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
         final List<ChallengeGroupMemberRankInfo> membersTodoSummary = getChallengeGroupMembersInfo(groupMembers, challengeGroup);
         final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(membersTodoSummary);
 
         return groupTodoSummary.getRanks();
+    }
+
+    public int getMyRank(final Long memberId, final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+        final List<RankDto> memberRanks = calculateChallengeGroupMembersRank(groupMembers, challengeGroup);
+
+        for (int i = 0; i < groupMembers.size(); i++) {
+            final ChallengeGroupMember groupMember = groupMembers.get(i);
+            final Long currentMemberId = groupMember.getMember().getId();
+
+            if (currentMemberId.equals(memberId)) {
+                return memberRanks.get(i).getRank();
+            }
+        }
+
+        throw new MemberRankNotFoundException("해당 memberId에 대한 랭킹 정보를 찾을 수 없습니다.");
     }
 
     private List<String> getChallengeGroupMemberProfileImages(final List<Member> groupMembers) {
