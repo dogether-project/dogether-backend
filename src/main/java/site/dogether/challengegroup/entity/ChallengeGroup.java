@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,10 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.common.audit.entity.BaseEntity;
-
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.UUID;
 
 @ToString
 @Getter
@@ -31,7 +28,7 @@ public class ChallengeGroup extends BaseEntity {
 
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 10;
     private static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
-    public static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
+    private static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,21 +62,26 @@ public class ChallengeGroup extends BaseEntity {
         validateEndAtIsAfterStartAt(startAt, endAt);
         return new ChallengeGroup(
             null,
-            validateGroupNameLength(name),
+            validateGroupName(name),
             validateMaximumMemberCount(maximumMemberCount),
             startAt,
             endAt,
             generateJoinCode(),
-            setStatus(startAt)
+            initStatus(startAt)
         );
     }
 
-    private static void validateEndAtIsAfterStartAt(LocalDate startAt, LocalDate endAt) {
-        if (startAt.isAfter(endAt)) {
+    private static String validateGroupName(String name) {
+        if (name == null || name.isBlank()) {
             throw new InvalidChallengeGroupException(
-                    String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
-            );
+                    String.format("챌린지 그룹 이름으로 null 혹은 공백을 입력할 수 없습니다. (name : %s)", name));
         }
+
+        if (name.length() > MAXIMUM_GROUP_NAME_LENGTH) {
+            throw new InvalidChallengeGroupException(String.format(
+                    "챌린지 그룹 이름은 1자 이상, %d자 이하만 가능합니다. (name : %s)", MAXIMUM_GROUP_NAME_LENGTH, name));
+        }
+        return name;
     }
 
     private static int validateMaximumMemberCount(int maximumMemberCount) {
@@ -91,23 +93,19 @@ public class ChallengeGroup extends BaseEntity {
         return maximumMemberCount;
     }
 
-    private static String validateGroupNameLength(String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidChallengeGroupException(String.format("챌린지 그룹 이름으로 null 혹은 공백을 입력할 수 없습니다. (input : %s)", name));
+    private static void validateEndAtIsAfterStartAt(LocalDate startAt, LocalDate endAt) {
+        if (startAt.isAfter(endAt)) {
+            throw new InvalidChallengeGroupException(
+                    String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
+            );
         }
-
-        if (name.length() > MAXIMUM_GROUP_NAME_LENGTH) {
-            throw new InvalidChallengeGroupException(String.format(
-                    "챌린지 그룹 이름은 1자 이상, %d자 이하만 가능합니다. (input : %s)", MAXIMUM_GROUP_NAME_LENGTH, name));
-        }
-        return name;
     }
 
     private static String generateJoinCode() {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private static ChallengeGroupStatus setStatus(final LocalDate startAt) {
+    private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
         if (startAt.equals(LocalDate.now())) {
             return ChallengeGroupStatus.RUNNING;
         }
@@ -132,18 +130,28 @@ public class ChallengeGroup extends BaseEntity {
         this.status = status;
     }
 
-    public boolean isFinished() {
-        return this.status == ChallengeGroupStatus.FINISHED;
+    private boolean isReady() {
+        return status == ChallengeGroupStatus.READY;
     }
 
     public boolean isRunning() {
-        return status == ChallengeGroupStatus.RUNNING;
+        return status == ChallengeGroupStatus.RUNNING || status == ChallengeGroupStatus.D_DAY;
+    }
+
+    public boolean isFinished() {
+        return status == ChallengeGroupStatus.FINISHED;
     }
 
     public int getProgressDay() {
         LocalDate today = LocalDate.now();
-        if (today.isBefore(startAt)) {
+        if (isReady()) {
             return 0;
+        }
+        if (isRunning()) {
+            return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
+        }
+        if (isFinished()) {
+            return (int) ChronoUnit.DAYS.between(startAt, endAt);
         }
         return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
     }
