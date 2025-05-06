@@ -263,6 +263,7 @@ public class ChallengeGroupService {
 
         for (ChallengeGroup notFinishedGroup : notFinishedGroups) {
             notFinishedGroup.updateStatus();
+            log.info("챌린지 그룹 상태 업데이트: groupId={}, status={}", notFinishedGroup.getId(), notFinishedGroup.getStatus());
         }
 
         challengeGroupRepository.saveAll(notFinishedGroups);
