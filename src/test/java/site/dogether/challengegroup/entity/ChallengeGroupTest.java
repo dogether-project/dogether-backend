@@ -137,20 +137,19 @@ class ChallengeGroupTest {
     @ValueSource(ints = {7, 8, 9})
     void 챌린지_그룹의_진행일을_계산한다__FINISHED(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
-        final int duration = 7;
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
                 10,
                 startAt,
-                startAt.plusDays(duration),
+                startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.FINISHED
         );
 
         final int progressDay = challengeGroup.getProgressDay();
 
-        assertThat(progressDay).isEqualTo(duration);
+        assertThat(progressDay).isEqualTo(7);
     }
 
     @Test

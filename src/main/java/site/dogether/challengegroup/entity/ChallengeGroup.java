@@ -67,7 +67,7 @@ public class ChallengeGroup extends BaseEntity {
             startAt,
             endAt,
             generateJoinCode(),
-            setStatus(startAt)
+            initStatus(startAt)
         );
     }
 
@@ -105,7 +105,7 @@ public class ChallengeGroup extends BaseEntity {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private static ChallengeGroupStatus setStatus(final LocalDate startAt) {
+    private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
         if (startAt.equals(LocalDate.now())) {
             return ChallengeGroupStatus.RUNNING;
         }
