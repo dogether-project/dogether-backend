@@ -1,5 +1,8 @@
 package site.dogether.challengegroup.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,7 @@ import site.dogether.challengegroup.controller.request.CreateChallengeGroupReque
 import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
+import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
 import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
@@ -32,10 +36,6 @@ import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -255,5 +255,17 @@ public class ChallengeGroupService {
                 challengeGroup.getStartAt(),
                 challengeGroup.getEndAt()
         );
+    }
+
+    @Transactional
+    public void updateChallengeGroupStatus() {
+        List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
+
+        for (ChallengeGroup notFinishedGroup : notFinishedGroups) {
+            notFinishedGroup.updateStatus();
+            log.info("챌린지 그룹 상태 업데이트: groupId={}, status={}", notFinishedGroup.getId(), notFinishedGroup.getStatus());
+        }
+
+        challengeGroupRepository.saveAll(notFinishedGroups);
     }
 }

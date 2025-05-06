@@ -1,5 +1,10 @@
 package site.dogether.challengegroup.entity;
 
+import static site.dogether.challengegroup.entity.ChallengeGroupStatus.D_DAY;
+import static site.dogether.challengegroup.entity.ChallengeGroupStatus.FINISHED;
+import static site.dogether.challengegroup.entity.ChallengeGroupStatus.READY;
+import static site.dogether.challengegroup.entity.ChallengeGroupStatus.RUNNING;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -107,9 +112,9 @@ public class ChallengeGroup extends BaseEntity {
 
     private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
         if (startAt.equals(LocalDate.now())) {
-            return ChallengeGroupStatus.RUNNING;
+            return RUNNING;
         }
-        return ChallengeGroupStatus.READY;
+        return READY;
     }
 
     public ChallengeGroup(
@@ -131,15 +136,15 @@ public class ChallengeGroup extends BaseEntity {
     }
 
     private boolean isReady() {
-        return status == ChallengeGroupStatus.READY;
+        return status == READY;
     }
 
     public boolean isRunning() {
-        return status == ChallengeGroupStatus.RUNNING || status == ChallengeGroupStatus.D_DAY;
+        return status == RUNNING || status == D_DAY;
     }
 
     public boolean isFinished() {
-        return status == ChallengeGroupStatus.FINISHED;
+        return status == FINISHED;
     }
 
     public int getProgressDay() {
@@ -167,6 +172,29 @@ public class ChallengeGroup extends BaseEntity {
 
     private int getDuration() {
         return (int) ChronoUnit.DAYS.between(startAt, endAt);
+    }
+
+    public void updateStatus() {
+        LocalDate now = LocalDate.now();
+        if (status == READY && isStart(now)) {
+            status = RUNNING;
+            return;
+        }
+        if (status == RUNNING && isEnd(now)) {
+            status = D_DAY;
+            return;
+        }
+        if (status == D_DAY && now.isAfter(endAt)) {
+            status = FINISHED;
+        }
+    }
+
+    private boolean isStart(LocalDate now) {
+        return startAt.isEqual(now);
+    }
+
+    private boolean isEnd(LocalDate now) {
+        return endAt.isEqual(now);
     }
 
     @Override
