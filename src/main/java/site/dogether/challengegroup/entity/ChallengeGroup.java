@@ -174,7 +174,8 @@ public class ChallengeGroup extends BaseEntity {
         return (int) ChronoUnit.DAYS.between(startAt, endAt);
     }
 
-    public void updateStatus(LocalDate now) {
+    public void updateStatus() {
+        LocalDate now = LocalDate.now();
         if (status == READY && isStart(now)) {
             status = RUNNING;
             return;
@@ -195,7 +196,6 @@ public class ChallengeGroup extends BaseEntity {
     private boolean isEnd(LocalDate now) {
         return endAt.isEqual(now);
     }
-
 
     @Override
     public boolean equals(final Object object) {

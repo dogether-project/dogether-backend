@@ -261,10 +261,8 @@ public class ChallengeGroupService {
     public void updateChallengeGroupStatus() {
         List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
 
-        LocalDate now = LocalDate.now();
-
-        for (ChallengeGroup group : notFinishedGroups) {
-            group.updateStatus(now);
+        for (ChallengeGroup notFinishedGroup : notFinishedGroups) {
+            notFinishedGroup.updateStatus();
         }
 
         challengeGroupRepository.saveAll(notFinishedGroups);

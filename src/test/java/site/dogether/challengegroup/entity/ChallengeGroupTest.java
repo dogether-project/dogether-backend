@@ -30,8 +30,8 @@ class ChallengeGroupTest {
             assertThat(created.getMaximumMemberCount()).isEqualTo(maximumMemberCount);
             assertThat(created.getStartAt()).isEqualTo(startAt);
             assertThat(created.getEndAt()).isEqualTo(endAt);
-            //TODO joincode
-            //TODO stauts
+            assertThat(created.getJoinCode()).isNotNull();
+            assertThat(created.getStatus()).isEqualTo(ChallengeGroupStatus.RUNNING);
         });
     }
 
@@ -201,13 +201,12 @@ class ChallengeGroupTest {
     @ValueSource(ints = {7, 8, 9})
     void 챌린지_그룹의_진행률을_계산한다__FINISHED이면_1이다(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
-        final int duration = 7;
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
                 10,
                 startAt,
-                startAt.plusDays(duration),
+                startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.FINISHED
         );
@@ -215,5 +214,59 @@ class ChallengeGroupTest {
         final double progressRate = challengeGroup.getProgressRate();
 
         assertThat(progressRate).isEqualTo(1);
+    }
+
+    @Test
+    void 챌린지_그룹의_상태를_갱신한다__READY에서_RUNNING으로() {
+        final LocalDate startAt = LocalDate.now();
+        final ChallengeGroup challengeGroup = new ChallengeGroup(
+                1L,
+                "매일 러닝 모임",
+                10,
+                startAt,
+                startAt.plusDays(7),
+                "join_code",
+                ChallengeGroupStatus.READY
+        );
+
+        challengeGroup.updateStatus();
+
+        assertThat(challengeGroup.getStatus()).isEqualTo(ChallengeGroupStatus.RUNNING);
+    }
+
+    @Test
+    void 챌린지_그룹의_상태를_갱신한다__RUNNING에서_D_DAY로() {
+        final LocalDate endAt = LocalDate.now();
+        final ChallengeGroup challengeGroup = new ChallengeGroup(
+                1L,
+                "매일 러닝 모임",
+                10,
+                endAt.minusDays(7),
+                endAt,
+                "join_code",
+                ChallengeGroupStatus.RUNNING
+        );
+
+        challengeGroup.updateStatus();
+
+        assertThat(challengeGroup.getStatus()).isEqualTo(ChallengeGroupStatus.D_DAY);
+    }
+
+    @Test
+    void 챌린지_그룹의_상태를_갱신한다__D_DAY에서_FINISHED으로() {
+        final LocalDate endAt = LocalDate.now().minusDays(1);
+        final ChallengeGroup challengeGroup = new ChallengeGroup(
+                1L,
+                "매일 러닝 모임",
+                10,
+                endAt.minusDays(7),
+                endAt,
+                "join_code",
+                ChallengeGroupStatus.D_DAY
+        );
+
+        challengeGroup.updateStatus();
+
+        assertThat(challengeGroup.getStatus()).isEqualTo(ChallengeGroupStatus.FINISHED);
     }
 }

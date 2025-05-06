@@ -1,4 +1,4 @@
-package site.dogether.challengegroup.service;
+package site.dogether.challengegroup.service.scheduler;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

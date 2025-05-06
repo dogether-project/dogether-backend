@@ -1,8 +1,9 @@
-package site.dogether.challengegroup.service;
+package site.dogether.challengegroup.service.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import site.dogether.challengegroup.service.ChallengeGroupService;
 
 @RequiredArgsConstructor
 @Component
