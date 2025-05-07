@@ -6,7 +6,7 @@ import java.util.List;
 
 public record GetMemberAllStatsResponse(
         DailyTodoStats dailyTodoStats,
-        List<Object> dailyTodoCertifications
+        Object dailyTodoCertifications
 ) {
 
     public record DailyTodoStats(

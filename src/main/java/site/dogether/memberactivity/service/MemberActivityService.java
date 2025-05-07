@@ -16,9 +16,14 @@ import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.MyTodoSummary;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodo.service.DailyTodoService;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
+import site.dogether.memberactivity.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
+import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +32,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,6 +46,8 @@ public class MemberActivityService {
     private final ChallengeGroupRepository challengeGroupRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
+    private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final ChallengeGroupService challengeGroupService;
     private final DailyTodoService dailyTodoService;
 
@@ -147,6 +157,80 @@ public class MemberActivityService {
                 myTodoSummary.calculateTotalCertificatedCount(),
                 myTodoSummary.calculateTotalApprovedCount(),
                 myTodoSummary.calculateTotalRejectedCount()
+        );
+    }
+
+    public GetMemberAllStatsResponse getMemberAllStats(Long memberId, String sort, String status) {
+        final Member member = memberService.getMember(memberId);
+
+        GetMemberAllStatsResponse.DailyTodoStats stats = getStats(member);
+        List<DailyTodoCertification> certifications = getCertificationsByStatus(member, status);
+
+        Object dailyTodoCertifications = switch (sort) {
+            case "TODO_COMPLETED_AT" -> getCertificationsSortedByTodoCompletedAt(member, certifications, status);
+            case "GROUP_CREATED_AT" -> getCertificationsSortedByGroupCreatedAt(member, certifications, status);
+            default -> throw new InvalidParameterException("유효하지 않은 sort 파라미터입니다.");
+        };
+
+        return new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
+    }
+
+    private GetMemberAllStatsResponse.DailyTodoStats getStats(Member member) {
+        return dailyTodoStatsRepository.findByMember(member)
+                .map(stats -> new GetMemberAllStatsResponse.DailyTodoStats(
+                        stats.getCertificatedCount(),
+                        stats.getApprovedCount(),
+                        stats.getRejectedCount()
+                ))
+                .orElseGet(() -> new GetMemberAllStatsResponse.DailyTodoStats(0, 0, 0));
+    }
+
+    private List<DailyTodoCertification> getCertificationsByStatus(Member member, String status) {
+        return Optional.ofNullable(status)
+                .filter(s -> !s.isBlank())
+                .map(DailyTodoStatus::convertFromValue)
+                .map(s -> dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_Status(member, s))
+                .orElseGet(() -> dailyTodoCertificationRepository.findAllByDailyTodo_Member(member));
+    }
+
+    private List<GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(Member member, List<DailyTodoCertification> certifications, String status) {
+        return certifications.stream()
+                .collect(Collectors.groupingBy(certification -> certification.getCreatedAt().toLocalDate().toString()))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                        entry.getKey(),
+                        entry.getValue().stream()
+                                .map(this::certificationInfo)
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(Member member, List<DailyTodoCertification> certifications, String status) {
+        return certifications.stream()
+                .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup().getName()))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
+                        entry.getKey(),
+                        entry.getValue().stream()
+                                .map(this::certificationInfo)
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private GetMemberAllStatsResponse.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
+        DailyTodo todo = certification.getDailyTodo();
+
+        return new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                todo.getId(),
+                todo.getContent(),
+                todo.getStatus().name(),
+                certification.getContent(),
+                certification.getMediaUrl(),
+                todo.getRejectReason().orElse(null)
         );
     }
 }
