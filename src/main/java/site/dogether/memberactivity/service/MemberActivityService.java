@@ -21,7 +21,7 @@ import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
-import site.dogether.memberactivity.InvalidParameterException;
+import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
