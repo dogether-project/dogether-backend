@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.memberactivity.controller.MemberActivityController;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
+import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
 
 import java.util.List;
@@ -33,7 +34,13 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹 활동 통계 조회 API")
     @Test
     void getGroupActivityStat() throws Exception {
-        GetGroupActivityStatResponse.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatResponse.ChallengeGroupInfoResponse("그로밋과 함께하는 챌린지", 10, 6, "123456", "25.02.22");
+        GetGroupActivityStatResponse.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatResponse.ChallengeGroupInfoResponse(
+                "그로밋과 함께하는 챌린지",
+                10,
+                6,
+                "123456",
+                "25.02.22"
+        );
 
         List<GetGroupActivityStatResponse.CertificationPeriodResponse> certificationPeriods = List.of(
                 new GetGroupActivityStatResponse.CertificationPeriodResponse(1, 8, 2, 25),
@@ -124,6 +131,47 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @Test
     void getMemberAllStatsSortedByTodoCompletedAt() throws Exception {
 
+        GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
+                5,
+                3,
+                2
+        );
+
+        Object dailyTodoCertifications = List.of(
+                new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                        "2025.05.01",
+                        List.of(
+                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                        1L,
+                                        "운동 하기",
+                                        "APPROVE",
+                                        "운동 개조짐 ㅋㅋㅋㅋ",
+                                        "운동 조지는 짤.png",
+                                        null
+                                )
+                        )
+                ),
+                new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                        "2025.05.02",
+                        List.of(
+                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                        2L,
+                                        "인강 듣기",
+                                        "APPROVE",
+                                        "인강 진짜 열심히 들었습니다. ㅎ",
+                                        "인강 달리는 짤.png",
+                                        null
+                                )
+                        )
+                )
+        );
+
+
+        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
+
+        given(memberActivityService.getMemberAllStats(any(), any(), any()))
+                .willReturn(response);
+
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/activity")
                                 .param("sort", "TODO_COMPLETED_AT")
@@ -190,6 +238,46 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
     @Test
     void getMemberAllStatsSortedByGroupCreatedAt() throws Exception {
+
+        GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
+                5,
+                3,
+                2
+        );
+
+        Object dailyTodoCertifications = List.of(
+                new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
+                        "스쿼트 챌린지",
+                        List.of(
+                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                        1L,
+                                        "운동 하기",
+                                        "REJECT",
+                                        "운동 개조짐 ㅋㅋㅋㅋ",
+                                        "운동 조지는 짤.png",
+                                        "에이 이건 운동 아니지"
+                                )
+                        )
+                ),
+                new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
+                        "TIL 챌린지",
+                        List.of(
+                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                        2L,
+                                        "인강 듣기",
+                                        "REJECT",
+                                        "인강 진짜 열심히 들었습니다. ㅎ",
+                                        "인강 달리는 짤.png",
+                                        "우리 오늘 인강 듣는날 아닌데?"
+                                )
+                        )
+                )
+        );
+
+        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
+
+        given(memberActivityService.getMemberAllStats(any(), any(), any()))
+                .willReturn(response);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/my/activity")
