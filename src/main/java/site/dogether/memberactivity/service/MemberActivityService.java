@@ -32,6 +32,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,6 +51,8 @@ public class MemberActivityService {
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final ChallengeGroupService challengeGroupService;
     private final DailyTodoService dailyTodoService;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
     public GetGroupActivityStatResponse getGroupActivityStat(final Long memberId, final Long groupId) {
         final Member member = memberService.getMember(memberId);
@@ -206,12 +209,13 @@ public class MemberActivityService {
 
     private List<GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(Member member, List<DailyTodoCertification> certifications, String status) {
         return certifications.stream()
-                .collect(Collectors.groupingBy(certification -> certification.getCreatedAt().toLocalDate().toString()))
+                .collect(Collectors.groupingBy(cert -> cert.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
                 .entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
+                .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
                 .map(entry -> new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
                         entry.getKey(),
                         entry.getValue().stream()
+                                .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
                                 .map(this::certificationInfo)
                                 .collect(Collectors.toList())
                 ))
@@ -220,12 +224,13 @@ public class MemberActivityService {
 
     private List<GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(Member member, List<DailyTodoCertification> certifications, String status) {
         return certifications.stream()
-                .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup().getName()))
+                .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
                 .entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
+                .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
                 .map(entry -> new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
-                        entry.getKey(),
+                        entry.getKey().getName(),
                         entry.getValue().stream()
+                                .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
                                 .map(this::certificationInfo)
                                 .collect(Collectors.toList())
                 ))
