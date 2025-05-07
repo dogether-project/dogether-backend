@@ -14,6 +14,7 @@ import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.entity.MyTodoSummary;
+import site.dogether.dailytodo.exception.InvalidDailyTodoStatusException;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
@@ -33,7 +34,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -186,11 +186,22 @@ public class MemberActivityService {
     }
 
     private List<DailyTodoCertification> getCertificationsByStatus(Member member, String status) {
-        return Optional.ofNullable(status)
-                .filter(s -> !s.isBlank())
-                .map(DailyTodoStatus::convertFromValue)
-                .map(s -> dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_Status(member, s))
-                .orElseGet(() -> dailyTodoCertificationRepository.findAllByDailyTodo_Member(member));
+        if (status != null && !status.isBlank()) {
+            DailyTodoStatus statusEnum = DailyTodoStatus.convertFromValue(status);
+            validateCertificationListStatus(statusEnum);
+
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_Status(member, statusEnum);
+        }
+
+        return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member);
+    }
+
+    private void validateCertificationListStatus(DailyTodoStatus status) {
+        if (!status.isCertificationListStatus()) {
+            throw new InvalidDailyTodoStatusException(
+                    String.format("APPROVE, REJECT, REVIEW_PENDING만 유효한 상태입니다. (%s)", status.name())
+            );
+        }
     }
 
     private List<GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(Member member, List<DailyTodoCertification> certifications, String status) {
