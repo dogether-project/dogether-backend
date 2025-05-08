@@ -13,10 +13,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +34,7 @@ public class ChallengeGroup extends BaseEntity {
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 10;
     private static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
     private static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
+    private static final int JOIN_CODE_LENGTH = 8;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,7 +108,15 @@ public class ChallengeGroup extends BaseEntity {
     }
 
     private static String generateJoinCode() {
-        return UUID.randomUUID().toString().substring(0, 6);
+        String charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder codeBuilder = new StringBuilder(JOIN_CODE_LENGTH);
+
+        for (int i = 0; i < JOIN_CODE_LENGTH; i++) {
+            int index = random.nextInt(charSet.length());
+            codeBuilder.append(charSet.charAt(index));
+        }
+        return codeBuilder.toString();
     }
 
     private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
