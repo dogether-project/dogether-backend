@@ -6,7 +6,10 @@ import java.util.List;
 
 public record GetMemberAllStatsResponse(
         DailyTodoStats dailyTodoStats,
-        Object dailyTodoCertifications
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        List<CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        List<CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt
 ) {
 
     public record DailyTodoStats(
@@ -16,13 +19,13 @@ public record GetMemberAllStatsResponse(
     ) {
     }
 
-    public record CertificationsSortByTodoCompletedAt(
+    public record CertificationsGroupedByTodoCompletedAt(
             String createdAt,
             List<DailyTodoCertificationInfo> certificationInfo
     ){
     }
 
-    public record CertificationsSortByGroupCreatedAt(
+    public record CertificationsGroupedByGroupCreatedAt(
             String groupName,
             List<DailyTodoCertificationInfo> certificationInfo
     ){
