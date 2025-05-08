@@ -137,8 +137,8 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 2
         );
 
-        Object dailyTodoCertifications = List.of(
-                new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+        List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt = List.of(
+                new GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt(
                         "2025.05.01",
                         List.of(
                                 new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
@@ -151,7 +151,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                new GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt(
                         "2025.05.02",
                         List.of(
                                 new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
@@ -167,7 +167,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
         );
 
 
-        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
+        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certificationsGroupedByTodoCompletedAt, null);
 
         given(memberActivityService.getMemberAllStats(any(), any(), any()))
                 .willReturn(response);
@@ -204,32 +204,32 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.dailyTodoStats.totalRejectedCount")
                                         .description("사용자의 노인정 받은 투두 개수")
                                         .type(JsonFieldType.NUMBER),
-                                fieldWithPath("data.dailyTodoCertifications")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt")
                                         .description("인증한 투두 목록")
                                         .optional()
                                         .type(JsonFieldType.ARRAY),
-                                fieldWithPath("data.dailyTodoCertifications[].createdAt")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].createdAt")
                                         .description("투두 완료일")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo")
                                         .description("투두 인증 정보")
                                         .type(JsonFieldType.ARRAY),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].id")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].id")
                                         .description("데일리 투두 id")
                                         .type(JsonFieldType.NUMBER),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].content")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].content")
                                         .description("데일리 투두 내용")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].status")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].status")
                                         .description("데일리 투두 상태")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].certificationContent")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].certificationContent")
                                         .description("데일리 투두 인증글 내용")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].certificationMediaUrl")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].certificationMediaUrl")
                                         .description("데일리 투두 인증글 이미지 URL")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].rejectReason")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].rejectReason")
                                         .description("데일리 투두 인증 노인정 사유")
                                         .optional()
                                         .type(JsonFieldType.STRING))));
@@ -245,8 +245,8 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 2
         );
 
-        Object dailyTodoCertifications = List.of(
-                new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
+        List<GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt = List.of(
+                new GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt(
                         "스쿼트 챌린지",
                         List.of(
                                 new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
@@ -259,7 +259,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
+                new GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt(
                         "TIL 챌린지",
                         List.of(
                                 new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
@@ -274,7 +274,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 )
         );
 
-        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
+        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, null, certificationsGroupedByGroupCreatedAt);
 
         given(memberActivityService.getMemberAllStats(any(), any(), any()))
                 .willReturn(response);
@@ -311,32 +311,32 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.dailyTodoStats.totalRejectedCount")
                                         .description("사용자의 노인정 받은 투두 개수")
                                         .type(JsonFieldType.NUMBER),
-                                fieldWithPath("data.dailyTodoCertifications")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt")
                                         .description("인증한 투두 목록")
                                         .optional()
                                         .type(JsonFieldType.ARRAY),
-                                fieldWithPath("data.dailyTodoCertifications[].groupName")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].groupName")
                                         .description("챌린지 그룹명")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo")
                                         .description("투두 인증 정보")
                                         .type(JsonFieldType.ARRAY),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].id")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].id")
                                         .description("데일리 투두 id")
                                         .type(JsonFieldType.NUMBER),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].content")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].content")
                                         .description("데일리 투두 내용")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].status")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].status")
                                         .description("데일리 투두 상태")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].certificationContent")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].certificationContent")
                                         .description("데일리 투두 인증글 내용")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].certificationMediaUrl")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].certificationMediaUrl")
                                         .description("데일리 투두 인증글 이미지 URL")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.dailyTodoCertifications[].certificationInfo[].rejectReason")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].rejectReason")
                                         .description("데일리 투두 인증 노인정 사유")
                                         .optional()
                                         .type(JsonFieldType.STRING))));

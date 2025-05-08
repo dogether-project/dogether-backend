@@ -74,7 +74,7 @@ public class MemberActivityService {
                 getChallengeGroupInfo(challengeGroup),
                 getCertificationPeriods(member, challengeGroup),
                 getMyRank(memberId, groupMembers, challengeGroup),
-                getMemberStats(member, challengeGroup)
+                getMemberGroupStats(member, challengeGroup)
         );
     }
 
@@ -152,7 +152,7 @@ public class MemberActivityService {
         return new GetGroupActivityStatResponse.RankingResponse(totalMemberCount, myRank);
     }
 
-    public GetGroupActivityStatResponse.MemberStatsResponse getMemberStats(final Member member, final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatResponse.MemberStatsResponse getMemberGroupStats(final Member member, final ChallengeGroup challengeGroup) {
         final List<DailyTodo> myTodos = dailyTodoService.getMemberTodos(challengeGroup, member);
         final MyTodoSummary myTodoSummary = new MyTodoSummary(myTodos);
 
@@ -169,13 +169,19 @@ public class MemberActivityService {
         GetMemberAllStatsResponse.DailyTodoStats stats = getStats(member);
         List<DailyTodoCertification> certifications = getCertificationsByStatus(member, status);
 
-        Object dailyTodoCertifications = switch (sort) {
-            case "TODO_COMPLETED_AT" -> getCertificationsSortedByTodoCompletedAt(member, certifications, status);
-            case "GROUP_CREATED_AT" -> getCertificationsSortedByGroupCreatedAt(member, certifications, status);
-            default -> throw new InvalidParameterException("유효하지 않은 sort 파라미터입니다.");
-        };
+        if ("TODO_COMPLETED_AT".equals(sort)) {
+            List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> groupedCertifications =
+                    getCertificationsSortedByTodoCompletedAt(certifications);
+            return new GetMemberAllStatsResponse(stats, groupedCertifications, null);
+        }
 
-        return new GetMemberAllStatsResponse(stats, dailyTodoCertifications);
+        if ("GROUP_CREATED_AT".equals(sort)) {
+            List<GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt> groupedCertifications =
+                    getCertificationsSortedByGroupCreatedAt(certifications);
+            return new GetMemberAllStatsResponse(stats, null, groupedCertifications);
+        }
+
+        throw new InvalidParameterException("유효하지 않은 sort 파라미터입니다.");
     }
 
     private GetMemberAllStatsResponse.DailyTodoStats getStats(Member member) {
@@ -207,12 +213,12 @@ public class MemberActivityService {
         }
     }
 
-    private List<GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(Member member, List<DailyTodoCertification> certifications, String status) {
+    private List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(cert -> cert.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsResponse.CertificationsSortByTodoCompletedAt(
+                .map(entry -> new GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt(
                         entry.getKey(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -222,12 +228,12 @@ public class MemberActivityService {
                 .collect(Collectors.toList());
     }
 
-    private List<GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(Member member, List<DailyTodoCertification> certifications, String status) {
+    private List<GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
                 .entrySet().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsResponse.CertificationsSortByGroupCreatedAt(
+                .map(entry -> new GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt(
                         entry.getKey().getName(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
