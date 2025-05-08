@@ -152,26 +152,24 @@ public class ChallengeGroup extends BaseEntity {
         if (isReady()) {
             return 0;
         }
-        if (isRunning()) {
-            return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
-        }
         if (isFinished()) {
-            return (int) ChronoUnit.DAYS.between(startAt, endAt);
+            return (int) ChronoUnit.DAYS.between(startAt, endAt) + 1;
         }
         return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
     }
 
     public double getProgressRate() {
         int progressDay = getProgressDay();
-        int duration = getDuration();
+        int duration = getDurationWithDDay();
         if (progressDay > duration) {
             return 1;
         }
-        return (double) progressDay / duration;
+        double rawRate = (double) progressDay / duration;
+        return Math.round(rawRate * 100) / 100.0;
     }
 
-    private int getDuration() {
-        return (int) ChronoUnit.DAYS.between(startAt, endAt);
+    private int getDurationWithDDay() {
+        return (int) ChronoUnit.DAYS.between(startAt, endAt) + 1;
     }
 
     public void updateStatus() {
