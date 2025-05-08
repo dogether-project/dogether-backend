@@ -115,7 +115,7 @@ class ChallengeGroupTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6})
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7})
     void 챌린지_그룹의_진행일을_계산한다__RUNNING이면_하루씩_증가한다(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
         final ChallengeGroup challengeGroup = new ChallengeGroup(
@@ -134,22 +134,23 @@ class ChallengeGroupTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {7, 8, 9})
+    @ValueSource(ints = {8, 9})
     void 챌린지_그룹의_진행일을_계산한다__FINISHED(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
+        int duration = 7;
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
                 10,
                 startAt,
-                startAt.plusDays(7),
+                startAt.plusDays(duration),
                 "join_code",
                 ChallengeGroupStatus.FINISHED
         );
 
         final int progressDay = challengeGroup.getProgressDay();
 
-        assertThat(progressDay).isEqualTo(7);
+        assertThat(progressDay).isEqualTo(duration + 1);
     }
 
     @Test
@@ -172,15 +173,16 @@ class ChallengeGroupTest {
 
     @ParameterizedTest
     @CsvSource({
-            "0, 0.14285714285714285",
-            "1, 0.2857142857142857",
-            "2, 0.42857142857142855",
-            "3, 0.5714285714285714",
-            "4, 0.7142857142857143",
-            "5, 0.8571428571428571",
-            "6, 1.0"
+            "0, 0.13",
+            "1, 0.25",
+            "2, 0.38",
+            "3, 0.5",
+            "4, 0.63",
+            "5, 0.75",
+            "6, 0.88",
+            "7, 1.0"
     })
-    void 챌린지_그룹의_진행률을_계산한다__RUNNING이면_진행일_나누기_기간(final int daysSinceStart, final double expected) {
+    void 챌린지_그룹의_진행률을_계산한다__RUNNING이면_진행일_나누기_종료일_포함한_기간(final int daysSinceStart, final double expected) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
@@ -198,7 +200,7 @@ class ChallengeGroupTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {7, 8, 9})
+    @ValueSource(ints = {8, 9})
     void 챌린지_그룹의_진행률을_계산한다__FINISHED이면_1이다(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
         final ChallengeGroup challengeGroup = new ChallengeGroup(
