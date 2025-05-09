@@ -5,6 +5,7 @@ import site.dogether.challengegroup.entity.ChallengeGroup;
 
 public record JoinChallengeGroupDto(
         String groupName,
+        int duration,
         int maximumMemberCount,
         String startAt,
         String endAt
@@ -16,6 +17,7 @@ public record JoinChallengeGroupDto(
 
         return new JoinChallengeGroupDto(
                 challengeGroup.getName(),
+                challengeGroup.getDuration(),
                 challengeGroup.getMaximumMemberCount(),
                 startAtFormatted,
                 endAtFormatted
