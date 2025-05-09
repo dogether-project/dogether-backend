@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
+import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
@@ -166,6 +167,16 @@ public class ChallengeGroupService {
             throw new FinishedChallengeGroupException(
                     String.format("이미 종료된 그룹입니다. (groupId: %d)", joiningGroup.getId()));
         }
+    }
+
+    public IsParticipatingChallengeGroupResponse isParticipatingChallengeGroup(Long memberId) {
+        final Member member = memberService.getMember(memberId);
+        final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
+
+        if (challengeGroupMembers.isEmpty()) {
+            return new IsParticipatingChallengeGroupResponse(false);
+        }
+        return new IsParticipatingChallengeGroupResponse(true);
     }
 
     public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long memberId, final Long groupId) {

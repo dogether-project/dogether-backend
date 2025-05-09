@@ -181,6 +181,10 @@ public class ChallengeGroup extends BaseEntity {
         return (int) ChronoUnit.DAYS.between(startAt, endAt) + 1;
     }
 
+    public int getDuration() {
+        return (int) ChronoUnit.DAYS.between(startAt, endAt);
+    }
+
     public void updateStatus() {
         LocalDate now = LocalDate.now();
         if (status == READY && isStart(now)) {

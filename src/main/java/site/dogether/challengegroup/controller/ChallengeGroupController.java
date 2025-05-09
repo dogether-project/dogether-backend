@@ -1,5 +1,13 @@
 package site.dogether.challengegroup.controller;
 
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.CREATE_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.GET_JOINING_CHALLENGE_GROUPS;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.IS_PARTICIPATING_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.JOIN_CHALLENGE_GROUP;
+import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.LEAVE_CHALLENGE_GROUP;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
+
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,16 +24,12 @@ import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRank
 import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRank;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupsResponse;
+import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.JoinChallengeGroupResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.common.controller.response.ApiResponse;
-
-import java.util.List;
-
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.*;
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
@@ -78,6 +82,18 @@ public class ChallengeGroupController {
         challengeGroupService.leaveChallengeGroup(memberId, groupId);
         return ResponseEntity.ok(ApiResponse.success(
                 LEAVE_CHALLENGE_GROUP
+        ));
+    }
+
+    @GetMapping("/participating")
+    public ResponseEntity<ApiResponse<IsParticipatingChallengeGroupResponse>> isParticipatingChallengeGroup(
+            @Authenticated final Long memberId
+    ) {
+        IsParticipatingChallengeGroupResponse response
+                = challengeGroupService.isParticipatingChallengeGroup(memberId);
+        return ResponseEntity.ok(ApiResponse.successWithData(
+                IS_PARTICIPATING_CHALLENGE_GROUP,
+                response
         ));
     }
 
