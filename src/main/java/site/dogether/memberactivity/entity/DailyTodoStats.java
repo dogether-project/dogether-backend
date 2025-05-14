@@ -57,8 +57,6 @@ public class DailyTodoStats extends BaseEntity {
     }
 
     public void moveCertificatedToResult(final DailyTodoStatus result) {
-        this.certificatedCount -= 1;
-
         if(result.equals(DailyTodoStatus.APPROVE)) {
             this.approvedCount += 1;
             return;
