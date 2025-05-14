@@ -21,6 +21,7 @@ import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
+import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
@@ -53,6 +54,11 @@ public class MemberActivityService {
     private final DailyTodoService dailyTodoService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+    public void initDailyTodoStats(Member member) {
+        DailyTodoStats stats = new DailyTodoStats(member);
+        dailyTodoStatsRepository.save(stats);
+    }
 
     public GetGroupActivityStatResponse getGroupActivityStat(final Long memberId, final Long groupId) {
         final Member member = memberService.getMember(memberId);
