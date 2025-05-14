@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.member.entity.Member;
+import site.dogether.member.exception.MemberNotFoundException;
+import site.dogether.member.repository.MemberRepository;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.entity.NotificationToken;
 import site.dogether.notification.firebase.sender.SimpleFcmNotificationRequest;
@@ -20,7 +22,7 @@ public class NotificationService {
 
     private final NotificationTokenRepository notificationTokenRepository;
     private final NotificationSender notificationSender;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void sendNotification(
@@ -47,7 +49,7 @@ public class NotificationService {
     public void saveNotificationToken(final Long memberId, final String notificationToken) {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
         if (notificationTokenRepository.existsByMemberAndValue(member, notificationToken)) {
             return;
         }
@@ -64,11 +66,16 @@ public class NotificationService {
         }
     }
 
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
+    }
+
     @Transactional
     public void deleteNotificationToken(final Long memberId, final String notificationToken) {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
         notificationTokenRepository.findByMemberAndValue(member, notificationToken)
                 .ifPresent(notificationTokenJpaEntity -> {
                     notificationTokenRepository.delete(notificationTokenJpaEntity);

@@ -20,6 +20,8 @@ import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
+import site.dogether.member.exception.MemberNotFoundException;
+import site.dogether.member.repository.MemberRepository;
 import site.dogether.member.service.MemberService;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
@@ -44,12 +46,12 @@ import java.util.stream.Collectors;
 @Service
 public class MemberActivityService {
 
-    private final MemberService memberService;
     private final ChallengeGroupRepository challengeGroupRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
+    private final MemberRepository memberRepository;
     private final ChallengeGroupService challengeGroupService;
     private final DailyTodoService dailyTodoService;
 
@@ -61,7 +63,7 @@ public class MemberActivityService {
     }
 
     public GetGroupActivityStatResponse getGroupActivityStat(final Long memberId, final Long groupId) {
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
 
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다"));
@@ -82,6 +84,11 @@ public class MemberActivityService {
                 getMyRank(memberId, groupMembers, challengeGroup),
                 getMemberGroupStats(member, challengeGroup)
         );
+    }
+
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
     public GetGroupActivityStatResponse.ChallengeGroupInfoResponse getChallengeGroupInfo(final ChallengeGroup challengeGroup) {
@@ -170,7 +177,7 @@ public class MemberActivityService {
     }
 
     public GetMemberAllStatsResponse getMemberAllStats(Long memberId, String sort, String status) {
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
 
         GetMemberAllStatsResponse.DailyTodoStats stats = getStats(member);
         List<DailyTodoCertification> certifications = getCertificationsByStatus(member, status);
