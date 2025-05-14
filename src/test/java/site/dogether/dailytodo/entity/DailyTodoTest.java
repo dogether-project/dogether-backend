@@ -338,13 +338,14 @@ class DailyTodoTest {
             null,
             LocalDateTime.now()
         );
+        final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final Member reviewer = createMember(2L, "투두 인증 검사자");
         final String certifyContent = "치킨 야무지게 먹은거 인증!";
         final String certifyMediaUrl = "https://치킨_냠냠.png";
 
         // When
-        final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl);
+        final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl, dailyTodoStats);
 
         // Then
         assertThat(dailyTodoCertification).isNotNull();
@@ -364,6 +365,7 @@ class DailyTodoTest {
             null,
             LocalDateTime.now()
         );
+        final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final Member reviewer = createMember(2L, "투두 인증 검사자");
         final String certifyContent = "치킨 야무지게 먹은거 인증!";
@@ -372,7 +374,7 @@ class DailyTodoTest {
         final Member otherMember = createMember(3L, "이상한 사람");
 
         // When & Then
-        assertThatThrownBy(() -> dailyTodo.certify(otherMember, reviewer, certifyContent, certifyMediaUrl))
+        assertThatThrownBy(() -> dailyTodo.certify(otherMember, reviewer, certifyContent, certifyMediaUrl, dailyTodoStats))
             .isInstanceOf(NotDailyTodoWriterException.class)
             .hasMessage(String.format("데일리 투두 작성자 외에는 투두 인증을 생성할 수 없습니다. (%s) (%s)", dailyTodo, otherMember));
     }
@@ -391,13 +393,14 @@ class DailyTodoTest {
             rejectReason,
             LocalDateTime.now()
         );
+        final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final Member reviewer = createMember(2L, "투두 인증 검사자");
         final String certifyContent = "치킨 야무지게 먹은거 인증!";
         final String certifyMediaUrl = "https://치킨_냠냠.png";
 
         // When & Then
-        assertThatThrownBy(() -> dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl))
+        assertThatThrownBy(() -> dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl, dailyTodoStats))
             .isInstanceOf(NotCertifyPendingDailyTodoException.class)
             .hasMessage(String.format("인증 대기 상태가 아닌 데일리 투두는 인증을 생성할 수 없습니다. (%s)", dailyTodo));
     }
@@ -415,13 +418,14 @@ class DailyTodoTest {
             null,
             LocalDateTime.now().minusDays(1)
         );
+        final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final Member reviewer = createMember(2L, "투두 인증 검사자");
         final String certifyContent = "치킨 야무지게 먹은거 인증!";
         final String certifyMediaUrl = "https://치킨_냠냠.png";
 
         // When & Then
-        assertThatThrownBy(() -> dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl))
+        assertThatThrownBy(() -> dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl, dailyTodoStats))
             .isInstanceOf(NotCreatedTodayDailyTodoException.class)
             .hasMessage(String.format("데일리 투두가 작성된 당일에만 투두 인증을 생성할 수 있습니다. (%s)", dailyTodo));
     }

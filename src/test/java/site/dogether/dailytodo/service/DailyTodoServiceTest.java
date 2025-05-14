@@ -25,6 +25,8 @@ import site.dogether.fake.FakeRandomGenerator;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,7 +44,7 @@ class DailyTodoServiceTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private ChallengeGroupMemberRepository challengeGroupMemberRepository;
     @Autowired private DailyTodoRepository dailyTodoRepository;
-    @Autowired private DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    @Autowired private DailyTodoStatsRepository dailyTodoStatsRepository;
     @Autowired private DailyTodoService dailyTodoService;
     @Autowired private FakeRandomGenerator randomGenerator;
 
@@ -105,6 +107,16 @@ class DailyTodoServiceTest {
             status,
             rejectReason,
             writtenAt
+        );
+    }
+
+    private static DailyTodoStats createDailyTodoStats(Member member) {
+        return new DailyTodoStats(
+                null,
+                member,
+                1,
+                2,
+                3
         );
     }
 
@@ -276,6 +288,7 @@ class DailyTodoServiceTest {
             null,
             LocalDateTime.now()
         ));
+        dailyTodoStatsRepository.save(createDailyTodoStats(writer));
 
         final Long writerId = writer.getId();
         final Long dailyTodoId = dailyTodo.getId();
@@ -313,6 +326,7 @@ class DailyTodoServiceTest {
             null,
             LocalDateTime.now()
         ));
+        dailyTodoStatsRepository.save(createDailyTodoStats(writer));
 
         randomGenerator.setResult(2); // 검사자로 썬이 선정되도록 조작
 
