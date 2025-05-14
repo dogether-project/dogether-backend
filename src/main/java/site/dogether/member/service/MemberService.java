@@ -1,6 +1,5 @@
 package site.dogether.member.service;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -8,6 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.memberactivity.service.MemberActivityService;
+
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ import site.dogether.member.repository.MemberRepository;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberActivityService memberActivityService;
 
     @Transactional
     public Member save(final String providerId, final String name) {
@@ -28,10 +31,14 @@ public class MemberService {
                 return member;
             }
             hardDelete(member);
-            return createMember(providerId, name);
+            final Member createdMember = createMember(providerId, name);
+            memberActivityService.initDailyTodoStats(createdMember);
+            return createdMember;
         }
         log.info("신규 가입 회원을 저장합니다. providerId: {}", providerId);
-        return createMember(providerId, name);
+        final Member createdMember = createMember(providerId, name);
+        memberActivityService.initDailyTodoStats(createdMember);
+        return createdMember;
     }
 
     private void hardDelete(Member member) {

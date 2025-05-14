@@ -34,6 +34,10 @@ public class DailyTodoStats extends BaseEntity {
     @Column(name = "rejected_count", nullable = false, columnDefinition = "INT DEFAULT 0")
     private int rejectedCount = 0;
 
+    public DailyTodoStats(final Member member) {
+        this.member = member;
+    }
+
     public DailyTodoStats(
             final Long id,
             final Member member,

@@ -35,6 +35,8 @@ import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
+import site.dogether.member.exception.MemberNotFoundException;
+import site.dogether.member.repository.MemberRepository;
 import site.dogether.member.service.MemberService;
 import site.dogether.notification.service.NotificationService;
 
@@ -47,13 +49,13 @@ public class ChallengeGroupService {
     private final ChallengeGroupRepository challengeGroupRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final NotificationService notificationService;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final DailyTodoService dailyTodoService;
     private final DailyTodoHistoryService dailyTodoHistoryService;
 
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupRequest request, final Long memberId) {
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
         validateJoiningGroupMaxCount(member);
 
         final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
@@ -71,6 +73,11 @@ public class ChallengeGroupService {
         return challengeGroup.getJoinCode();
     }
 
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
+    }
+
     private void validateJoiningGroupMaxCount(final Member member) {
         final int joiningGroupCount = challengeGroupMemberRepository.countNotFinishedGroupByMemberId(member.getId());
         if (joiningGroupCount >= 5) {
@@ -82,7 +89,7 @@ public class ChallengeGroupService {
 
     @Transactional
     public JoinChallengeGroupDto joinChallengeGroup(final String joinCode, final Long memberId) {
-        final Member joinMember = memberService.getMember(memberId);
+        final Member joinMember = getMember(memberId);
         validateJoiningGroupMaxCount(joinMember);
 
         final ChallengeGroup challengeGroup = challengeGroupRepository.findByJoinCode(joinCode)
@@ -134,7 +141,7 @@ public class ChallengeGroupService {
     }
 
     public List<JoiningChallengeGroupDto> getJoiningChallengeGroups(final Long memberId) {
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
 
         final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
         final List<ChallengeGroup> joiningGroups = challengeGroupMembers.stream()
@@ -150,7 +157,7 @@ public class ChallengeGroupService {
 
     @Transactional
     public void leaveChallengeGroup(final Long memberId, final Long groupId) {
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
                 .orElseThrow(() -> new ChallengeGroupNotFoundException(
                         String.format("존재하지 않는 그룹입니다. (groupId : %s)", groupId)));
@@ -170,7 +177,7 @@ public class ChallengeGroupService {
     }
 
     public IsParticipatingChallengeGroupResponse isParticipatingChallengeGroup(Long memberId) {
-        final Member member = memberService.getMember(memberId);
+        final Member member = getMember(memberId);
         final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
 
         if (challengeGroupMembers.isEmpty()) {
@@ -185,7 +192,7 @@ public class ChallengeGroupService {
 
         isFinishedGroup(challengeGroup);
 
-        final Member viewer = memberService.getMember(memberId);
+        final Member viewer = getMember(memberId);
 
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
 
