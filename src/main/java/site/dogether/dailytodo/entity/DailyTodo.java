@@ -25,6 +25,7 @@ import site.dogether.dailytodo.exception.NotReviewPendingDailyTodoException;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
 import site.dogether.member.entity.Member;
+import site.dogether.memberactivity.entity.DailyTodoStats;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -163,6 +164,7 @@ public class DailyTodo extends BaseEntity {
         return member.equals(target);
     }
 
+    // TODO: 투두 인증 시 certificated_count 값 증가 추가
     public DailyTodoCertification certify(
         final Member writer,
         final Member reviewer,
@@ -198,12 +200,14 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
+    // TODO: 투두 리뷰 시 certificated_count 값 감소, approved_count or rejected_count 증가 추가
     public void review(
-        final Member reviewer,
-        final DailyTodoCertification dailyTodoCertification,
-        final DailyTodoStatus reviewResult,
-        final String rejectReason
-    ) {
+            final Member reviewer,
+            final DailyTodoCertification dailyTodoCertification,
+            final DailyTodoStatus reviewResult,
+            final String rejectReason,
+            final DailyTodoStats dailyTodoStats
+            ) {
         validateReviewer(reviewer, dailyTodoCertification);
         validateStatusIsReviewPending();
         validateReviewResult(reviewResult);
@@ -211,6 +215,8 @@ public class DailyTodo extends BaseEntity {
 
         this.status = reviewResult;
         this.rejectReason = rejectReason;
+
+        dailyTodoStats.moveCertificatedToResult(reviewResult);
     }
 
     private void validateReviewer(final Member reviewer, final DailyTodoCertification dailyTodoCertification) {

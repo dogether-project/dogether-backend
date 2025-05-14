@@ -115,6 +115,7 @@ public class DailyTodoService {
         return new DailyTodos(dailyTodos);
     }
 
+    // TODO: DailyTodoStats 도메인의 increaseCertificatedCount 추가
     @Transactional
     public void certifyDailyTodo(
         final Long memberId,
