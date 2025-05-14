@@ -10,12 +10,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.entity.Member;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "daily_todo_history_read")
 @Entity
-public class DailyTodoHistoryRead {
+public class DailyTodoHistoryRead extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
