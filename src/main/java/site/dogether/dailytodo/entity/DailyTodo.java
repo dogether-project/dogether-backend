@@ -164,12 +164,12 @@ public class DailyTodo extends BaseEntity {
         return member.equals(target);
     }
 
-    // TODO: 투두 인증 시 certificated_count 값 증가 추가
     public DailyTodoCertification certify(
         final Member writer,
         final Member reviewer,
         final String certifyContent,
-        final String certifyMediaUrl
+        final String certifyMediaUrl,
+        final DailyTodoStats dailyTodoStats
     ) {
         validateWriter(writer);
         validateStatusIsCertifyPending();
@@ -177,6 +177,8 @@ public class DailyTodo extends BaseEntity {
 
         final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(this, reviewer, certifyContent, certifyMediaUrl);
         status = REVIEW_PENDING;
+
+        dailyTodoStats.increaseCertificatedCount();
 
         return dailyTodoCertification;
     }
@@ -200,7 +202,6 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
-    // TODO: 투두 리뷰 시 certificated_count 값 감소, approved_count or rejected_count 증가 추가
     public void review(
             final Member reviewer,
             final DailyTodoCertification dailyTodoCertification,

@@ -48,7 +48,7 @@ public class DailyTodoStats extends BaseEntity {
         this.rejectedCount = rejectedCount;
     }
 
-    private void increaseCertificatedCount() {
+    public void increaseCertificatedCount() {
         this.certificatedCount += 1;
     }
 
