@@ -63,21 +63,21 @@ public class Member extends BaseEntity {
 
     private static String saveRandomProfileImageUrl() {
         List<String> profileImageUrls = List.of(
-                "s3://dogether-bucket-dev/member_profile_image/blue_1",
-                "s3://dogether-bucket-dev/member_profile_image/blue_2",
-                "s3://dogether-bucket-dev/member_profile_image/blue_3",
-                "s3://dogether-bucket-dev/member_profile_image/blue_4",
-                "s3://dogether-bucket-dev/member_profile_image/blue_5",
-                "s3://dogether-bucket-dev/member_profile_image/red_1",
-                "s3://dogether-bucket-dev/member_profile_image/red_2",
-                "s3://dogether-bucket-dev/member_profile_image/red_3",
-                "s3://dogether-bucket-dev/member_profile_image/red_4",
-                "s3://dogether-bucket-dev/member_profile_image/red_5",
-                "s3://dogether-bucket-dev/member_profile_image/yellow_1",
-                "s3://dogether-bucket-dev/member_profile_image/yellow_2",
-                "s3://dogether-bucket-dev/member_profile_image/yellow_3",
-                "s3://dogether-bucket-dev/member_profile_image/yellow_4",
-                "s3://dogether-bucket-dev/member_profile_image/yellow_5"
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/blue_1.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/blue_2.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/blue_3.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/blue_4.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/blue_5.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/red_1.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/red_2.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/red_3.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/red_4.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/red_5.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/yellow_1.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/yellow_2.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/yellow_3.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/yellow_4.png",
+                "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/member_profile_image/yellow_5.png"
         );
 
         return profileImageUrls.get((int) (Math.random() * profileImageUrls.size()));
