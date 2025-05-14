@@ -24,6 +24,9 @@ import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.memberactivity.exception.DailyTodoStatsNotFoundException;
+import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
@@ -45,6 +48,7 @@ public class DailyTodoService {
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final ReviewerPicker reviewerPicker;
     private final DailyTodoHistoryService dailyTodoHistoryService;
     private final NotificationService notificationService;
@@ -115,6 +119,7 @@ public class DailyTodoService {
         return new DailyTodos(dailyTodos);
     }
 
+    // TODO: DailyTodoStats 도메인의 increaseCertificatedCount 추가
     @Transactional
     public void certifyDailyTodo(
         final Long memberId,
@@ -129,8 +134,11 @@ public class DailyTodoService {
         validateMemberIsInChallengeGroup(challengeGroup, writer);
         validateChallengeGroupIsRunning(challengeGroup);
 
+        final DailyTodoStats dailyTodoStats = dailyTodoStatsRepository.findByMember(writer)
+                .orElseThrow(() -> new DailyTodoStatsNotFoundException(String.format("존재하지 않는 데일리 투두 통계입니다. (%s)", dailyTodo.getMember())));
+
         final Member reviewer = reviewerPicker.pickReviewerInChallengeGroup(challengeGroup, writer).orElse(null);
-        final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl);
+        final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl, dailyTodoStats);
         dailyTodoCertificationRepository.save(dailyTodoCertification);
 
         dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo, dailyTodoCertification);

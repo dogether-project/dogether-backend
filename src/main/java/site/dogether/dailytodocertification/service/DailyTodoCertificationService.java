@@ -15,6 +15,9 @@ import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.memberactivity.exception.DailyTodoStatsNotFoundException;
+import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.notification.service.NotificationService;
 
 import java.util.List;
@@ -29,6 +32,7 @@ public class DailyTodoCertificationService {
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final DailyTodoHistoryService dailyTodoHistoryService;
     private final NotificationService notificationService;
+    private final DailyTodoStatsRepository dailyTodoStatsRepository;
 
     @Transactional
     public void reviewDailyTodoCertification(
@@ -41,7 +45,10 @@ public class DailyTodoCertificationService {
         final DailyTodoCertification dailyTodoCertification = getDailyTodoCertification(dailyTodoCertificationId);
         final DailyTodo dailyTodo = dailyTodoCertification.getDailyTodo();
 
-        dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), rejectReason);
+        final DailyTodoStats dailyTodoStats = dailyTodoStatsRepository.findByMember(dailyTodo.getMember())
+                .orElseThrow(() -> new DailyTodoStatsNotFoundException(String.format("존재하지 않는 데일리 투두 통계입니다. (%s)", dailyTodo.getMember())));
+
+        dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), rejectReason, dailyTodoStats);
 
         dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo, dailyTodoCertification);
         sendReviewResultNotificationToDailyTodoWriter(dailyTodo);

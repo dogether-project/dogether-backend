@@ -17,6 +17,8 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +35,7 @@ class DailyTodoCertificationServiceTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private DailyTodoRepository dailyTodoRepository;
     @Autowired private DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    @Autowired private DailyTodoStatsRepository dailyTodoStatsRepository;
     @Autowired private DailyTodoCertificationService dailyTodoCertificationService;
 
     private static ChallengeGroup createChallengeGroup() {
@@ -85,6 +88,16 @@ class DailyTodoCertificationServiceTest {
             "https://인증.png"
         );
     }
+
+    private static DailyTodoStats createDailyTodoStats(Member member) {
+        return new DailyTodoStats(
+                null,
+                member,
+                1,
+                2,
+                3
+        );
+    }
     
     @DisplayName("인정에 대해 유효한 검사 값(검사자 id, 투두 인증 id, 검사 결과, 노인정 사유)을 넘기면 투두 인증 검사를 수행하고 변경된 부분을 DB에 반영 요청 한다.")
     @Test
@@ -95,6 +108,7 @@ class DailyTodoCertificationServiceTest {
         final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(challengeGroup, writer, REVIEW_PENDING, null, LocalDateTime.now()));
         final Member reviewer = memberRepository.save(createMember("인증 검사자"));
         final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.save(createDailyTodoCertification(dailyTodo, reviewer));
+        dailyTodoStatsRepository.save(createDailyTodoStats(writer));
 
         final Long reviewerId = reviewer.getId();
         final Long dailyTodoCertificationId = dailyTodoCertification.getId();
@@ -119,6 +133,7 @@ class DailyTodoCertificationServiceTest {
         final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(challengeGroup, writer, REVIEW_PENDING, null, LocalDateTime.now()));
         final Member reviewer = memberRepository.save(createMember("인증 검사자"));
         final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.save(createDailyTodoCertification(dailyTodo, reviewer));
+        dailyTodoStatsRepository.save(createDailyTodoStats(writer));
 
         final Long reviewerId = reviewer.getId();
         final Long dailyTodoCertificationId = dailyTodoCertification.getId();

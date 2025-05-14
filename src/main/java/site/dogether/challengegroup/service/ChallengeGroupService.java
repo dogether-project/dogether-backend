@@ -242,12 +242,6 @@ public class ChallengeGroupService {
         throw new MemberRankNotFoundException("해당 memberId에 대한 랭킹 정보를 찾을 수 없습니다.");
     }
 
-    private List<String> getChallengeGroupMemberProfileImages(final List<Member> groupMembers) {
-        return groupMembers.stream()
-                .map(Member::getProfileImageUrl)
-                .toList();
-    }
-
     public List<ChallengeGroupMemberRankInfoDto> getChallengeGroupMembersInfo(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
         return groupMembers.stream()
                 .map(member -> getChallengeGroupMemberInfo(member, challengeGroup))
