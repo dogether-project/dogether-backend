@@ -61,7 +61,6 @@ class ChallengeGroupServiceTest {
                 7
         );
         Member member = memberRepository.save(Member.create("providerId", "폰트"));
-
         for (int i = 0; i < 5; i++) {
             challengeGroupService.createChallengeGroup(request, member.getId());
         }
