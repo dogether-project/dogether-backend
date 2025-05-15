@@ -22,12 +22,12 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.member.service.MemberService;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
+import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -266,6 +266,15 @@ public class MemberActivityService {
                 certification.getContent(),
                 certification.getMediaUrl(),
                 todo.getRejectReason().orElse(null)
+        );
+    }
+
+    public FindMyProfileDto getMyProfile(final Long memberId) {
+        final Member member = getMember(memberId);
+
+        return new FindMyProfileDto(
+                member.getName(),
+                member.getProfileImageUrl()
         );
     }
 }

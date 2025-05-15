@@ -11,10 +11,11 @@ import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.controller.response.GetMyProfileResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
+import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_MEMBER_ALL_STATS;
+import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/my")
@@ -42,5 +43,15 @@ public class MemberActivityController {
         final GetMemberAllStatsResponse memberAllStats = memberActivityService.getMemberAllStats(memberId, sort, status);
 
         return ResponseEntity.ok(ApiResponse.successWithData(GET_MEMBER_ALL_STATS, memberAllStats));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<GetMyProfileResponse>> getMyProfile(
+            @Authenticated final Long memberId
+    ) {
+        final FindMyProfileDto myProfile = memberActivityService.getMyProfile(memberId);
+        final GetMyProfileResponse response = GetMyProfileResponse.from(myProfile);
+
+        return ResponseEntity.ok(ApiResponse.successWithData(GET_MEMBER_PROFILE,response));
     }
 }
