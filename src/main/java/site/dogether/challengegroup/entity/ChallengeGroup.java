@@ -169,16 +169,12 @@ public class ChallengeGroup extends BaseEntity {
 
     public double getProgressRate() {
         int progressDay = getProgressDay();
-        int duration = getDurationWithDDay();
+        int duration = getDuration();
         if (progressDay > duration) {
             return 1;
         }
         double rawRate = (double) progressDay / duration;
         return Math.round(rawRate * 100) / 100.0;
-    }
-
-    private int getDurationWithDDay() {
-        return (int) ChronoUnit.DAYS.between(startAt, endAt) + 1;
     }
 
     public int getDuration() {
