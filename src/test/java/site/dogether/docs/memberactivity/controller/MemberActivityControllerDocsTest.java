@@ -10,6 +10,7 @@ import site.dogether.memberactivity.controller.MemberActivityController;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
+import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
 import java.util.List;
 
@@ -339,6 +340,39 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].rejectReason")
                                         .description("데일리 투두 인증 노인정 사유")
                                         .optional()
+                                        .type(JsonFieldType.STRING))));
+    }
+
+    @DisplayName("사용자 프로필 조회 API")
+    @Test
+    void getMyProfile() throws Exception {
+
+        FindMyProfileDto myProfileDto = new FindMyProfileDto(
+                "그로밋",
+                "그로밋의 셀카.png"
+        );
+
+        given(memberActivityService.getMyProfile(any()))
+                .willReturn(myProfileDto);
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/my/profile")
+                                .header("Authorization", "Bearer access_token")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(createDocument(
+                        responseFields(
+                                fieldWithPath("code")
+                                        .description("응답 코드")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("message")
+                                        .description("응답 메시지")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.name")
+                                        .description("이름")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("data.profileImageUrl")
+                                        .description("프로필 이미지")
                                         .type(JsonFieldType.STRING))));
     }
 }
