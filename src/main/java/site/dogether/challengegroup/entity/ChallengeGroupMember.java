@@ -1,6 +1,14 @@
 package site.dogether.challengegroup.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +19,8 @@ import site.dogether.member.entity.Member;
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "challenge_group_member")
+@Table(name = "challenge_group_member",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"challenge_group_id", "member_id"}))
 @Entity
 public class ChallengeGroupMember extends BaseEntity {
 
