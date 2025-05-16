@@ -18,6 +18,8 @@ import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
+import site.dogether.dailytodohistory.entity.DailyTodoHistory;
+import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.notification.entity.NotificationToken;
@@ -52,6 +54,12 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodo> dailyTodos;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<DailyTodoHistory> dailyTodoHistory;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<DailyTodoHistoryRead> dailyTodoHistoryRead;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
     private DailyTodoStats dailyTodoStats;
