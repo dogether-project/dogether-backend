@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +21,6 @@ import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.notification.entity.NotificationToken;
-
-import java.util.List;
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,7 +35,7 @@ public class Member extends BaseEntity {
     @Column(name = "provider_id", length = 100, nullable = false, unique = true)
     private String providerId;
 
-    @Column(name = "name", length = 20, nullable = false, unique = true)
+    @Column(name = "name", length = 20, nullable = false)
     private String name;
 
     @Column(name = "profile_image_url", length = 500, nullable = false)
