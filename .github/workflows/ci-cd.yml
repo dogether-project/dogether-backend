@@ -16,19 +16,24 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+
       - name: Set up jdk
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'corretto'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew\
+
       - name: Setup Firebase service key
         run: |
           mkdir -p src/main/resources/firebase
           echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key-dev.json
+
       - name: Execute test
         # test 패키지 하위 application.yml 민감 정보 추가
         env:
@@ -62,6 +67,7 @@ jobs:
           if [[ ${{ github.base_ref }} == "main" ]]; then
             echo "environment=prod" >> $GITHUB_OUTPUT
           fi
+
       - name: Check env
         run: echo "Current environment -> ${{ steps.set-environment.outputs.environment }}"
 
@@ -78,30 +84,38 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+
       - name: Set up jdk
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'corretto'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew\
+
       - name: Setup Firebase service key
         run: |
           mkdir -p src/main/resources/firebase
           echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key-${{ matrix.environment }}.json
+
       - name: Build with gradle
         run: ./gradlew bootJar -Pspring.profiles.active=${{ matrix.environment }} --info
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
         with:
           mask-password: 'true'
+
       - name: Docker build & push
         run: |
           docker build --build-arg SPRINGBOOT_APP_PROFILE=${{ matrix.environment }} --platform linux/arm64 -f docker/Dockerfile --tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
@@ -117,6 +131,7 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+
       - name: Deploy new Spring Boot Application
         id: deploy-status
         uses: appleboy/ssh-action@v1.2.0
