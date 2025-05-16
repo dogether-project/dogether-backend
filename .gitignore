@@ -180,7 +180,7 @@ gradle-app.setting
 local.env
 
 # docker data
-/docker/data
+/docker/data/mysql/mysql
 
 # custom sh
 /sh
