@@ -173,13 +173,13 @@ class ChallengeGroupTest {
 
     @ParameterizedTest
     @CsvSource({
-            "0, 0.13",
-            "1, 0.25",
-            "2, 0.38",
-            "3, 0.5",
-            "4, 0.63",
-            "5, 0.75",
-            "6, 0.88",
+            "0, 0.14",
+            "1, 0.29",
+            "2, 0.43",
+            "3, 0.57",
+            "4, 0.71",
+            "5, 0.86",
+            "6, 1.0",
             "7, 1.0"
     })
     void 챌린지_그룹의_진행률을_계산한다__RUNNING이면_진행일_나누기_종료일_포함한_기간(final int daysSinceStart, final double expected) {

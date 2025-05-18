@@ -87,17 +87,21 @@ public class ChallengeGroupService {
         final Member joinMember = getMember(memberId);
         validateJoiningGroupMaxCount(joinMember);
 
-        final ChallengeGroup challengeGroup = challengeGroupRepository.findByJoinCode(joinCode)
-            .orElseThrow(() -> new ChallengeGroupNotFoundException(
-                String.format("존재하지 않는 그룹입니다. (joinCode : %s", joinCode)));
-        validateChallengeGroupNotFinished(challengeGroup);
+        final ChallengeGroup challengeGroup = getChallengeGroup(joinCode);
 
-        if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
-            throw new MemberAlreadyInChallengeGroupException(
-                String.format("이미 참여 중인 그룹입니다. (memberId: %d), groupId : %d)",
-                    memberId, challengeGroup.getId()));
-        }
+        isFinishedGroup(challengeGroup);
+        memberAlreadyInSameGroup(challengeGroup, joinMember);
+        isMaxMemberInChallengeGroup(challengeGroup);
 
+        final ChallengeGroupMember challengeGroupMember = new ChallengeGroupMember(challengeGroup, joinMember);
+        challengeGroupMemberRepository.save(challengeGroupMember);
+
+        sendJoinNotification(challengeGroup, joinMember);
+
+        return JoinChallengeGroupDto.from(challengeGroup);
+    }
+
+    private void isMaxMemberInChallengeGroup(ChallengeGroup challengeGroup) {
         final int maximumMemberCount = challengeGroup.getMaximumMemberCount();
         final int currentMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
         if (currentMemberCount >= maximumMemberCount) {
@@ -105,12 +109,20 @@ public class ChallengeGroupService {
                 String.format("그룹 정원 초과입니다. (currentMemberCount : %d, maximumMemberCount : %d)",
                     currentMemberCount, maximumMemberCount));
         }
+    }
 
-        final ChallengeGroupMember challengeGroupMember = new ChallengeGroupMember(challengeGroup, joinMember);
-        challengeGroupMemberRepository.save(challengeGroupMember);
-        sendJoinNotification(challengeGroup, joinMember);
+    private void memberAlreadyInSameGroup(ChallengeGroup challengeGroup, Member joinMember) {
+        if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
+            throw new MemberAlreadyInChallengeGroupException(
+                    String.format("이미 참여 중인 그룹입니다. (memberId: %d), groupId : %d)",
+                            joinMember.getId(), challengeGroup.getId()));
+        }
+    }
 
-        return JoinChallengeGroupDto.from(challengeGroup);
+    private ChallengeGroup getChallengeGroup(String joinCode) {
+        return challengeGroupRepository.findByJoinCode(joinCode)
+                .orElseThrow(() -> new ChallengeGroupNotFoundException(
+                        String.format("존재하지 않는 그룹입니다. (joinCode : %s", joinCode)));
     }
 
     private void sendJoinNotification(final ChallengeGroup challengeGroup, final Member joinMember) {

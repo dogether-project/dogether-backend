@@ -27,6 +27,7 @@ import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
+import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -265,6 +266,15 @@ public class MemberActivityService {
                 certification.getContent(),
                 certification.getMediaUrl(),
                 todo.getRejectReason().orElse(null)
+        );
+    }
+
+    public FindMyProfileDto getMyProfile(final Long memberId) {
+        final Member member = getMember(memberId);
+
+        return new FindMyProfileDto(
+                member.getName(),
+                member.getProfileImageUrl()
         );
     }
 }

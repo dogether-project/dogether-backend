@@ -31,7 +31,7 @@ include::{snippets}/member-activity-controller-docs-test/get-group-activity-stat
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
@@ -53,7 +53,7 @@ include::{snippets}/member-activity-controller-docs-test/get-member-all-stats-so
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
@@ -66,3 +66,24 @@ include::{snippets}/member-activity-controller-docs-test/get-member-all-stats-so
 ==== HTTP Response
 include::{snippets}/member-activity-controller-docs-test/get-member-all-stats-sorted-by-group-created-at/http-response.adoc[]
 include::{snippets}/member-activity-controller-docs-test/get-member-all-stats-sorted-by-group-created-at/response-fields.adoc[]
+
+[[get-my-profile]]
+=== 사용자 프로필 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/member-activity-controller-docs-test/get-my-profile/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-activity-controller-docs-test/get-my-profile/http-response.adoc[]
+include::{snippets}/member-activity-controller-docs-test/get-my-profile/response-fields.adoc[]
