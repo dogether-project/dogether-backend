@@ -13,17 +13,10 @@ public class MyTodoSummary {
         this.myTodos = myTodos;
     }
 
-    public int calculateTotalTodoCount() {
-        return myTodos.size();
-    }
-
     public int calculateTotalCertificatedCount() {
-        int totalTodoCount = calculateTotalTodoCount();
-        int certifyPendingCount = (int) myTodos.stream()
-            .filter(DailyTodo::isCertifyPending)
+        return (int) myTodos.stream()
+            .filter(DailyTodo::isCertified)
             .count();
-
-        return totalTodoCount - certifyPendingCount;
     }
 
     public int calculateTotalApprovedCount() {

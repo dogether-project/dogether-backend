@@ -138,7 +138,7 @@ public class MemberActivityService {
         final int createdCount = todos.size();
 
         final int certificatedCount = (int) todos.stream()
-                .filter(todo -> todo.getStatus() == DailyTodoStatus.APPROVE)
+                .filter(DailyTodo::isCertified)
                 .count();
 
         final int certificationRate = calculateCertificationRate(createdCount, certificatedCount);
