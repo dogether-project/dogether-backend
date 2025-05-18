@@ -89,7 +89,7 @@ public class ChallengeGroupService {
 
         final ChallengeGroup challengeGroup = getChallengeGroup(joinCode);
 
-        isFinishedGroup(challengeGroup);
+        validateChallengeGroupNotFinished(challengeGroup);
         memberAlreadyInSameGroup(challengeGroup, joinMember);
         isMaxMemberInChallengeGroup(challengeGroup);
 
@@ -99,6 +99,13 @@ public class ChallengeGroupService {
         sendJoinNotification(challengeGroup, joinMember);
 
         return JoinChallengeGroupDto.from(challengeGroup);
+    }
+
+    private void validateChallengeGroupNotFinished(final ChallengeGroup joiningGroup) {
+        if (joiningGroup.isFinished()) {
+            throw new FinishedChallengeGroupException(
+                String.format("이미 종료된 그룹입니다. (groupId: %d)", joiningGroup.getId()));
+        }
     }
 
     private void isMaxMemberInChallengeGroup(ChallengeGroup challengeGroup) {
@@ -174,13 +181,6 @@ public class ChallengeGroupService {
                 String.format("해당 그룹에 속해있지 않습니다. (memberId : %d, groupId : %d)", memberId, groupId)));
 
         challengeGroupMemberRepository.delete(challengeGroupMember);
-    }
-
-    private void validateChallengeGroupNotFinished(final ChallengeGroup joiningGroup) {
-        if (joiningGroup.isFinished()) {
-            throw new FinishedChallengeGroupException(
-                String.format("이미 종료된 그룹입니다. (groupId: %d)", joiningGroup.getId()));
-        }
     }
 
     public IsParticipatingChallengeGroupResponse isParticipatingChallengeGroup(Long memberId) {
