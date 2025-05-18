@@ -22,7 +22,6 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.member.service.MemberService;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
@@ -81,7 +80,7 @@ public class MemberActivityService {
         return new GetGroupActivityStatResponse(
                 getChallengeGroupInfo(challengeGroup),
                 getCertificationPeriods(member, challengeGroup),
-                getMyRank(memberId, groupMembers, challengeGroup),
+                getMyRank(member, groupMembers, challengeGroup),
                 getMemberGroupStats(member, challengeGroup)
         );
     }
@@ -158,9 +157,9 @@ public class MemberActivityService {
         return (int) ((double) (certificatedCount / createdCount) * 100);
     }
 
-    public GetGroupActivityStatResponse.RankingResponse getMyRank(final Long memberId, final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatResponse.RankingResponse getMyRank(final Member target, final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
         final int totalMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
-        final int myRank = challengeGroupService.getMyRank(memberId, groupMembers, challengeGroup);
+        final int myRank = challengeGroupService.getMyRank(target, groupMembers);
 
         return new GetGroupActivityStatResponse.RankingResponse(totalMemberCount, myRank);
     }
@@ -219,7 +218,7 @@ public class MemberActivityService {
     }
 
     private void validateCertificationListStatus(DailyTodoStatus status) {
-        if (!status.isCertificationListStatus()) {
+        if (!status.isCertificatedStatus()) {
             throw new InvalidDailyTodoStatusException(
                     String.format("APPROVE, REJECT, REVIEW_PENDING만 유효한 상태입니다. (%s)", status.name())
             );
