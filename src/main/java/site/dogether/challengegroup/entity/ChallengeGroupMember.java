@@ -8,6 +8,8 @@ import lombok.ToString;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.entity.Member;
 
+import java.util.Objects;
+
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,5 +41,18 @@ public class ChallengeGroupMember extends BaseEntity {
         this.id = id;
         this.challengeGroup = challengeGroup;
         this.member = member;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ChallengeGroupMember that = (ChallengeGroupMember) o;
+        return Objects.equals(id, that.id) && Objects.equals(challengeGroup, that.challengeGroup) && Objects.equals(member, that.member);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, challengeGroup, member);
     }
 }
