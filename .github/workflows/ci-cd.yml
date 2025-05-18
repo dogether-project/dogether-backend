@@ -52,13 +52,51 @@ jobs:
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
         run: ./gradlew test --info
 
-  set-environment:
+  check-deploy-decision:
     if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check-deploy-decision.outputs.should_deploy }}
+      assignees: ${{ steps.check-deploy-decision.outputs.assignees }}
+    steps:
+      - name: Check deploy decision
+        id: check-deploy-decision
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            const hasDeployLabel = pr.data.labels.map(label => label.name).includes("deploy");
+            let assignees = pr.data.assignees.map(user => user.login);
+            if (assignees.length > 0) {
+              assignees = assignees.join(', ');
+            } else {
+              assignees = context.payload.pull_request.user.login;
+            }
+
+            core.setOutput("should_deploy", hasDeployLabel ? "true" : "false");
+            core.setOutput("assignees", assignees);
+
+      - name: Explain deploy decision
+        run: |
+          if [[ "${{ steps.check-deploy-decision.outputs.should_deploy }}" == "true" ]]; then
+            echo "🚚 deploy label이 존재하므로 배포 작업을 진행합니다."
+          else
+            echo "✋ deploy label이 없으므로 배포 작업을 수행하지 않고 종료합니다."
+          fi
+
+  set-environment:
+    needs: [ check-deploy-decision ]
+    if: needs.check-deploy-decision.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.set-environment.outputs.environment }}
     steps:
-      - name: Set env
+      - name: Set environment
         id: set-environment
         run: |
           echo "Target Branch -> ${{ github.base_ref }}"
@@ -68,12 +106,12 @@ jobs:
             echo "environment=prod" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check env
+      - name: Explain current environment
         run: echo "Current environment -> ${{ steps.set-environment.outputs.environment }}"
 
   image-build:
+    needs: [ check-deploy-decision, set-environment ]
     runs-on: ubuntu-latest
-    needs: [ set-environment ]
     permissions:
       id-token: write
       contents: read
@@ -122,8 +160,8 @@ jobs:
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: [ set-environment, image-build ]
+    needs: [ check-deploy-decision, set-environment, image-build ]
+    runs-on: dogether-be-dev-ec2-runner
     strategy:
       matrix:
         environment: [ "${{ needs.set-environment.outputs.environment }}" ]
@@ -132,63 +170,97 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Deploy new Spring Boot Application
-        id: deploy-status
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            cd ~/project
-            
-            # create .env file
-            cat <<EOF > .env
-            # springboot-app environment
-            SPRINGBOOT_APP_IMAGE_REPOSITORY=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
-            SPRINGBOOT_APP_IMAGE_TAG=${{ github.sha }}
-            
-            # mysql environment
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_URL=${{ secrets.DB_URL }}
-            
-            # jwt environment
-            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-            JWT_EXPIRE_TIME=${{ secrets.JWT_EXPIRE_TIME }}
-            
-            # apple oauth environment
-            APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
-            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
-            APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
-            APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
-            
-            # AWS
-            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
-            AWS_REGION=${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
-            EOF
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-            # deploy with docker
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username ${{ secrets.AWS_REPOSITORY_ID }} --password-stdin ${{ secrets.ECR_REGISTRY }}
-            sudo docker-compose stop springboot-app
-            sudo docker-compose rm -f springboot-app
-            sudo docker images --filter=reference="*/springboot-app-${{ matrix.environment }}:*" -q | xargs -r sudo docker rmi -f
-            sudo docker-compose up -d springboot-app
-            
-            sudo rm -rf .env
+      - name: Create .env file
+        run: |
+          cd ~/project
+          cat <<EOF > .env
+          # springboot-app environment
+          SPRINGBOOT_APP_IMAGE_REPOSITORY=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
+          SPRINGBOOT_APP_IMAGE_TAG=${{ github.sha }}
+          
+          # mysql environment
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_URL=${{ secrets.DB_URL }}
+          
+          # jwt environment
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRE_TIME=${{ secrets.JWT_EXPIRE_TIME }}
+          
+          # apple oauth environment
+          APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
+          APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+          APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
+          
+          # AWS
+          AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_REGION=${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+          EOF
 
-      - name: notify
-        if: always()
+      - name: Execute new application
+        run: |
+          cd ~/project
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+          sudo docker-compose stop springboot-app
+          sudo docker-compose rm -f springboot-app
+          sudo docker images --filter=reference="*/springboot-app-${{ matrix.environment }}:*" -q | xargs -r sudo docker rmi -f
+          sudo docker-compose up -d springboot-app
+          sudo rm -rf .env
+
+      - name: Check deploy result
+        id: check-deploy-result
+        run: |
+          echo "🔍 서버 애플리케이션 정상 실행 확인중..."
+          for i in {1..30}; do
+            response=$(curl -sf http://localhost:8080/api/health-check || true)
+            if [[ "$response" == *"OK"* ]]; then
+              echo "🍺 서버 애플리케이션 정상 실행 확인!"
+              echo "deploy_result=success" >> $GITHUB_OUTPUT
+              exit 0
+            else
+              echo "⏳ 서버 애플리케이션 실행 대기... ($i/30)"
+              sleep 1
+            fi
+          done
+          echo "❌ 서버 애플리케이션이 정상 실행되지 않음..."
+          echo "deploy_result=fail" >> $GITHUB_OUTPUT
+          exit 1
+
+      - name: Send deploy success notification
+        if: steps.check-deploy-result.outputs.deploy_result == 'success'
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          embed-title: "Backend 배포 결과 알림 🔥"
+          embed-color: 3066993
+          embed-title: "🎉 BE 배포 성공 알림! (${{ matrix.environment }})"
           embed-description: |
-            오늘은 퇴근할 수 있을까...
-            Environment : backend-${{ matrix.environment }}
-            Result : ${{ steps.deploy-status.outcome == 'success' && '✅ 성공!' || '❌ 실패!' }}
-          embed-color: ${{ steps.deploy-status.outcome == 'success' && '3066993' || '15158332' }}
+            오늘은 생맥 ㅎ 🍺
+
+            - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
+            - PR : ${{ github.event.pull_request.html_url }}
+            - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Send deploy fail notification
+        if: failure() || steps.check-deploy-result.outputs.deploy_result == 'fail'
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-color: 15158332
+          embed-title: "❌ BE 배포 실패 알림ㅜ (${{ matrix.environment }})"
+          embed-description: |
+            집에 보내줘... 🌛
+
+            - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
+            - PR : ${{ github.event.pull_request.html_url }}
+            - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
