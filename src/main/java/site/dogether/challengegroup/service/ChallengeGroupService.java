@@ -240,7 +240,7 @@ public class ChallengeGroupService {
     private List<ChallengeGroupMemberOverviewDto> buildChallengeGroupOverview(final Member viewer, final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates) {
         return challengeGroupMemberWithAchievementRates.stream()
             .map(dto -> new ChallengeGroupMemberOverviewDto(
-                dto.challengeGroupMember().getId(),
+                dto.challengeGroupMember().getMember().getId(),
                 challengeGroupMemberWithAchievementRates.indexOf(dto) + 1,
                 dto.challengeGroupMember().getMember().getProfileImageUrl(),
                 dto.challengeGroupMember().getMember().getName(),
