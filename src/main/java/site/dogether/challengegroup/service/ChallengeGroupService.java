@@ -1,43 +1,39 @@
 package site.dogether.challengegroup.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
-import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
+import site.dogether.challengegroup.entity.AchievementRateCalculator;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
 import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
-import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
 import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
-import site.dogether.challengegroup.exception.MemberRankNotFoundException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
-import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankInfoDto;
-import site.dogether.challengegroup.service.dto.ChallengeGroupMemberRankProfileDto;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberWithAchievementRateDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.RankDto;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodo.entity.GroupTodoSummary;
-import site.dogether.dailytodo.entity.MyTodoSummary;
+import site.dogether.dailytodo.entity.DailyTodos;
 import site.dogether.dailytodo.service.DailyTodoService;
-import site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
 import site.dogether.notification.service.NotificationService;
+
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -74,15 +70,15 @@ public class ChallengeGroupService {
 
     private Member getMember(final Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
+            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
     private void validateJoiningGroupMaxCount(final Member member) {
         final int joiningGroupCount = challengeGroupMemberRepository.countNotFinishedGroupByMemberId(member.getId());
         if (joiningGroupCount >= 5) {
             throw new JoiningChallengeGroupMaxCountException(
-                    String.format("참여할 수 있는 그룹은 최대 5개입니다. (memberId: %d), (joiningGroupCount %d): "
-                            , member.getId(), joiningGroupCount));
+                String.format("참여할 수 있는 그룹은 최대 5개입니다. (memberId: %d), (joiningGroupCount %d): "
+                    , member.getId(), joiningGroupCount));
         }
     }
 
@@ -93,7 +89,7 @@ public class ChallengeGroupService {
 
         final ChallengeGroup challengeGroup = getChallengeGroup(joinCode);
 
-        isFinishedGroup(challengeGroup);
+        validateChallengeGroupNotFinished(challengeGroup);
         memberAlreadyInSameGroup(challengeGroup, joinMember);
         isMaxMemberInChallengeGroup(challengeGroup);
 
@@ -105,13 +101,20 @@ public class ChallengeGroupService {
         return JoinChallengeGroupDto.from(challengeGroup);
     }
 
+    private void validateChallengeGroupNotFinished(final ChallengeGroup joiningGroup) {
+        if (joiningGroup.isFinished()) {
+            throw new FinishedChallengeGroupException(
+                String.format("이미 종료된 그룹입니다. (groupId: %d)", joiningGroup.getId()));
+        }
+    }
+
     private void isMaxMemberInChallengeGroup(ChallengeGroup challengeGroup) {
         final int maximumMemberCount = challengeGroup.getMaximumMemberCount();
         final int currentMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
         if (currentMemberCount >= maximumMemberCount) {
             throw new FullMemberInChallengeGroupException(
                 String.format("그룹 정원 초과입니다. (currentMemberCount : %d, maximumMemberCount : %d)",
-                        currentMemberCount, maximumMemberCount));
+                    currentMemberCount, maximumMemberCount));
         }
     }
 
@@ -135,7 +138,7 @@ public class ChallengeGroupService {
             final Long groupMemberId = groupMember.getMember().getId();
             if (groupMemberId.equals(joinMember.getId())) {
                 notificationService.sendNotification(
-                        joinMember.getId(),
+                    joinMember.getId(),
                     "새로운 그룹에 참여했습니다.",
                     challengeGroup.getName() + " 그룹에 참여했습니다.",
                     "JOIN"
@@ -156,35 +159,28 @@ public class ChallengeGroupService {
 
         final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
         final List<ChallengeGroup> joiningGroups = challengeGroupMembers.stream()
-                .map(ChallengeGroupMember::getChallengeGroup)
-                .toList();
+            .map(ChallengeGroupMember::getChallengeGroup)
+            .toList();
 
         return joiningGroups.stream()
-                .map(joiningGroup -> JoiningChallengeGroupDto.from(
-                        joiningGroup,
-                        challengeGroupMemberRepository.countByChallengeGroup(joiningGroup)))
-                .toList();
+            .map(joiningGroup -> JoiningChallengeGroupDto.from(
+                joiningGroup,
+                challengeGroupMemberRepository.countByChallengeGroup(joiningGroup)))
+            .toList();
     }
 
     @Transactional
     public void leaveChallengeGroup(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
-                .orElseThrow(() -> new ChallengeGroupNotFoundException(
-                        String.format("존재하지 않는 그룹입니다. (groupId : %s)", groupId)));
+            .orElseThrow(() -> new ChallengeGroupNotFoundException(
+                String.format("존재하지 않는 그룹입니다. (groupId : %s)", groupId)));
 
         final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByMemberAndChallengeGroup(member, challengeGroup)
-                .orElseThrow(() -> new MemberNotInChallengeGroupException(
-                        String.format("해당 그룹에 속해있지 않습니다. (memberId : %d, groupId : %d)", memberId, groupId)));
+            .orElseThrow(() -> new MemberNotInChallengeGroupException(
+                String.format("해당 그룹에 속해있지 않습니다. (memberId : %d, groupId : %d)", memberId, groupId)));
 
         challengeGroupMemberRepository.delete(challengeGroupMember);
-    }
-
-    private void isFinishedGroup(final ChallengeGroup joiningGroup) {
-        if (joiningGroup.isFinished()) {
-            throw new FinishedChallengeGroupException(
-                    String.format("이미 종료된 그룹입니다. (groupId: %d)", joiningGroup.getId()));
-        }
     }
 
     public IsParticipatingChallengeGroupResponse isParticipatingChallengeGroup(Long memberId) {
@@ -197,87 +193,75 @@ public class ChallengeGroupService {
         return new IsParticipatingChallengeGroupResponse(true);
     }
 
-    public List<ChallengeGroupMemberRankResponse> getChallengeGroupRanking(final Long memberId, final Long groupId) {
-        final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
-                .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다."));
-
-        isFinishedGroup(challengeGroup);
-
+    public List<ChallengeGroupMemberOverviewDto> getChallengeGroupMemberOverview(final Long memberId, final Long groupId) {
         final Member viewer = getMember(memberId);
+        final ChallengeGroup challengeGroup = getChallengeGroup(groupId);
+        validateChallengeGroupNotFinished(challengeGroup);
 
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
+        final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates = calculateChallengeGroupMemberAchievementRateSortedDesc(groupMembers);
 
-        final List<Member> members = groupMembers.stream()
-                .map(ChallengeGroupMember::getMember)
-                .toList();
-
-        final List<ChallengeGroupMemberRankProfileDto> memberRankProfiles = getChallengeGroupMemberProfiles(members);
-        final List<RankDto> memberRanks = calculateChallengeGroupMembersRank(groupMembers, challengeGroup);
-
-        return IntStream.range(0, memberRanks.size())
-                .mapToObj(i -> {
-                    final  Member targetMember = members.get(i);
-                    final DailyTodoHistoryReadStatus historyReadStatus = dailyTodoHistoryService.getTodayDailyTodoHistoryReadStatus(viewer, challengeGroup, targetMember);
-
-                    return ChallengeGroupMemberRankResponse.from(
-                            memberRankProfiles.get(i),
-                            memberRanks.get(i),
-                            historyReadStatus.name()
-                    );
-                })
-                .toList();
+        return buildChallengeGroupOverview(viewer, challengeGroupMemberWithAchievementRates);
     }
 
-    private List<ChallengeGroupMemberRankProfileDto> getChallengeGroupMemberProfiles(final List<Member> members) {
-        return members.stream()
-                .map(member -> new ChallengeGroupMemberRankProfileDto(
-                        member.getId(),
-                        member.getName(),
-                        member.getProfileImageUrl()
-                ))
-                .toList();
+    private ChallengeGroup getChallengeGroup(final Long challengeGroupId) {
+        return challengeGroupRepository.findById(challengeGroupId)
+            .orElseThrow(() -> new ChallengeGroupNotFoundException(String.format("존재하지 않는 챌린지 그룹 id입니다. (%d)", challengeGroupId)));
     }
 
-    private List<RankDto> calculateChallengeGroupMembersRank(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
-        final List<ChallengeGroupMemberRankInfoDto> membersTodoSummary = getChallengeGroupMembersInfo(groupMembers, challengeGroup);
-        final GroupTodoSummary groupTodoSummary = new GroupTodoSummary(membersTodoSummary);
-
-        return groupTodoSummary.getRanks();
+    private List<ChallengeGroupMemberWithAchievementRateDto> calculateChallengeGroupMemberAchievementRateSortedDesc(final List<ChallengeGroupMember> groupMembers) {
+        final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates = calculateChallengeGroupMembersAchievementRate(groupMembers);
+        return sortByAchievementRateDesc(challengeGroupMemberWithAchievementRates);
     }
 
-    public int getMyRank(final Long memberId, final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
-        final List<RankDto> memberRanks = calculateChallengeGroupMembersRank(groupMembers, challengeGroup);
-
-        for (int i = 0; i < groupMembers.size(); i++) {
-            final ChallengeGroupMember groupMember = groupMembers.get(i);
-            final Long currentMemberId = groupMember.getMember().getId();
-
-            if (currentMemberId.equals(memberId)) {
-                return memberRanks.get(i).getRank();
-            }
-        }
-
-        throw new MemberRankNotFoundException("해당 memberId에 대한 랭킹 정보를 찾을 수 없습니다.");
-    }
-
-    public List<ChallengeGroupMemberRankInfoDto> getChallengeGroupMembersInfo(final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+    private List<ChallengeGroupMemberWithAchievementRateDto> calculateChallengeGroupMembersAchievementRate(final List<ChallengeGroupMember> groupMembers) {
         return groupMembers.stream()
-                .map(member -> getChallengeGroupMemberInfo(member, challengeGroup))
-                .toList();
+            .map(groupMember -> {
+                final ChallengeGroup challengeGroup = groupMember.getChallengeGroup();
+                final List<DailyTodo> todos = dailyTodoService.getMemberTodos(challengeGroup, groupMember.getMember());
+                final int achievementRate = AchievementRateCalculator.calculate(
+                    new DailyTodos(todos),
+                    groupMember.getCreatedAt(),
+                    challengeGroup.getStartAt(),
+                    challengeGroup.getEndAt()
+                );
+
+                return new ChallengeGroupMemberWithAchievementRateDto(groupMember, achievementRate);
+            })
+            .toList();
     }
 
-    public ChallengeGroupMemberRankInfoDto getChallengeGroupMemberInfo(final ChallengeGroupMember groupMember, final ChallengeGroup challengeGroup) {
-        final Member member = groupMember.getMember();
-        final List<DailyTodo> dailyTodos = dailyTodoService.getMemberTodos(challengeGroup, member);
+    private List<ChallengeGroupMemberWithAchievementRateDto> sortByAchievementRateDesc(final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates) {
+        return challengeGroupMemberWithAchievementRates.stream()
+            .sorted(Comparator.comparingInt(ChallengeGroupMemberWithAchievementRateDto::achievementRate).reversed())
+            .toList();
+    }
 
-        final MyTodoSummary myTodoSummary = new MyTodoSummary(dailyTodos);
+    private List<ChallengeGroupMemberOverviewDto> buildChallengeGroupOverview(final Member viewer, final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates) {
+        return challengeGroupMemberWithAchievementRates.stream()
+            .map(dto -> new ChallengeGroupMemberOverviewDto(
+                dto.challengeGroupMember().getId(),
+                challengeGroupMemberWithAchievementRates.indexOf(dto) + 1,
+                dto.challengeGroupMember().getMember().getProfileImageUrl(),
+                dto.challengeGroupMember().getMember().getName(),
+                dailyTodoHistoryService.getTodayDailyTodoHistoryReadStatus(
+                    viewer,
+                    dto.challengeGroupMember().getChallengeGroup(),
+                    dto.challengeGroupMember().getMember()
+                ),
+                dto.achievementRate()
+            ))
+            .toList();
+    }
 
-        return new ChallengeGroupMemberRankInfoDto(
-                myTodoSummary,
-                groupMember.getCreatedAt(),
-                challengeGroup.getStartAt(),
-                challengeGroup.getEndAt()
-        );
+    public int getMyRank(final Member target, final List<ChallengeGroupMember> groupMembers) {
+        final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRate = calculateChallengeGroupMemberAchievementRateSortedDesc(groupMembers);
+        final ChallengeGroupMemberWithAchievementRateDto myAchievementRate = challengeGroupMemberWithAchievementRate.stream()
+            .filter(data -> data.challengeGroupMember().getMember().equals(target))
+            .findFirst()
+            .orElseThrow(() -> new MemberNotInChallengeGroupException(String.format("ChallengeGroup에서 해당하는 멤버를 찾을 수 없습니다. member={}, challengeGroup={}", target, groupMembers.get(0).getChallengeGroup())));
+
+        return challengeGroupMemberWithAchievementRate.indexOf(myAchievementRate) + 1;
     }
 
     @Transactional

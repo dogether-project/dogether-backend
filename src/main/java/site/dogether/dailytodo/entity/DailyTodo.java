@@ -246,6 +246,10 @@ public class DailyTodo extends BaseEntity {
         return status == REJECT;
     }
 
+    public boolean isCertified() {
+        return status.isCertificatedStatus();
+    }
+
     public Long getId() {
         return id;
     }

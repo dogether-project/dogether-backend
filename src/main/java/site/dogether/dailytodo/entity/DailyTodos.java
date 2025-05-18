@@ -26,4 +26,24 @@ public class DailyTodos {
             throw new InvalidDailyTodoException(String.format("데일리 투두는 %d개 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_VALUE_COUNT, values.size(), values));
         }
     }
+
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
+
+    public int totalCount() {
+        return values.size();
+    }
+
+    public int certificatedCount() {
+        return (int) values.stream()
+            .filter(DailyTodo::isCertified)
+            .count();
+    }
+
+    public int approvedCount() {
+        return (int) values.stream()
+            .filter(DailyTodo::isApproved)
+            .count();
+    }
 }
