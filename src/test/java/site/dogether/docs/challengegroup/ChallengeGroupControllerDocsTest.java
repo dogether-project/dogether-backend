@@ -1,23 +1,5 @@
 package site.dogether.docs.challengegroup;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_DURATION_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_START_AT_OPTION;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.CHALLENGE_GROUP_STATUS;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
-
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -25,12 +7,26 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.challengegroup.controller.ChallengeGroupController;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
-import site.dogether.challengegroup.controller.response.ChallengeGroupMemberRankResponse;
 import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.docs.util.RestDocsSupport;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus.*;
+import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.*;
+import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
@@ -275,36 +271,34 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회 API")
     @Test
     void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
-        final List<ChallengeGroupMemberRankResponse> groupMemberRanks = List.of(
-                ChallengeGroupMemberRankResponse.builder()
-                        .memberId(1L)
-                        .rank(1)
-                        .profileImageUrl("성욱이의 셀카.png")
-                        .name("성욱")
-                        .historyReadStatus("NULL")
-                        .achievementRate(100)
-                        .build(),
-
-                ChallengeGroupMemberRankResponse.builder()
-                        .memberId(2L)
-                        .rank(2)
-                        .profileImageUrl("고양이.png")
-                        .name("영재")
-                        .historyReadStatus("READ_ALL")
-                        .achievementRate(80)
-                        .build(),
-
-                ChallengeGroupMemberRankResponse.builder()
-                        .memberId(3L)
-                        .rank(3)
-                        .profileImageUrl("그로밋.png")
-                        .name("서은")
-                        .historyReadStatus("READ_YET")
-                        .achievementRate(60)
-                        .build()
+        final List<ChallengeGroupMemberOverviewDto> groupMemberRanks = List.of(
+            new ChallengeGroupMemberOverviewDto(
+                1L,
+                1,
+                "성욱이의 셀카.png",
+                "성욱",
+                NULL,
+                100
+            ),
+            new ChallengeGroupMemberOverviewDto(
+                2L,
+                2,
+                "고양이.png",
+                "영재",
+                READ_ALL,
+                80
+            ),
+            new ChallengeGroupMemberOverviewDto(
+                3L,
+                3,
+                "그로밋.png",
+                "서은",
+                READ_YET,
+                60
+            )
         );
 
-        given(challengeGroupService.getChallengeGroupRanking(any(), any()))
+        given(challengeGroupService.getChallengeGroupMemberOverview(any(), any()))
                 .willReturn(groupMemberRanks);
 
         mockMvc.perform(
