@@ -2,7 +2,7 @@ name: Backend CI/CD
 
 on:
   pull_request:
-    types: [ opened, synchronize, closed ]
+    types: [ opened, synchronize ]
     branches: [ dev, main ]
     paths:
       - 'src/**'
@@ -53,7 +53,7 @@ jobs:
         run: ./gradlew test --info
 
   check-deploy-decision:
-    if: github.event.pull_request.merged == true
+    needs: [ test ]
     runs-on: ubuntu-latest
     outputs:
       should_deploy: ${{ steps.check-deploy-decision.outputs.should_deploy }}
