@@ -30,20 +30,4 @@ public class DailyTodos {
     public boolean isEmpty() {
         return values.isEmpty();
     }
-
-    public int totalCount() {
-        return values.size();
-    }
-
-    public int certificatedCount() {
-        return (int) values.stream()
-            .filter(DailyTodo::isCertified)
-            .count();
-    }
-
-    public int approvedCount() {
-        return (int) values.stream()
-            .filter(DailyTodo::isApproved)
-            .count();
-    }
 }
