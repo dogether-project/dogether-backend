@@ -220,7 +220,7 @@ public class ChallengeGroupService {
                 final ChallengeGroup challengeGroup = groupMember.getChallengeGroup();
                 final List<DailyTodo> todos = dailyTodoService.getMemberTodos(challengeGroup, groupMember.getMember());
                 final int achievementRate = AchievementRateCalculator.calculate(
-                    new DailyTodos(todos),
+                    todos,
                     groupMember.getCreatedAt(),
                     challengeGroup.getStartAt(),
                     challengeGroup.getEndAt()

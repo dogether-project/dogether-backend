@@ -1,26 +1,31 @@
 package site.dogether.challengegroup.entity;
 
-import site.dogether.dailytodo.entity.DailyTodos;
+import site.dogether.dailytodo.entity.DailyTodo;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class AchievementRateCalculator {
 
     public static int calculate(
-        final DailyTodos todos,
+        List<DailyTodo> dailyTodos,
         final LocalDateTime challengeGroupJoinedAt,
         final LocalDate challengeGroupStartAt,
         final LocalDate challengeGroupEndAt
     ) {
-        if (todos.isEmpty()) {
+        if (dailyTodos.isEmpty()) {
             return 0;
         }
-
-        final int totalTodoCount = todos.totalCount();
-        final int certificatedTodoCount = todos.certificatedCount();
-        final int approvedTodoCount = todos.approvedCount();
+        // TODO: 추후 해당 로직 리팩토링 필요
+        final int totalTodoCount = dailyTodos.size();
+        final int certificatedTodoCount = (int) dailyTodos.stream()
+            .filter(DailyTodo::isCertified)
+            .count();
+        final int approvedTodoCount = (int) dailyTodos.stream()
+            .filter(DailyTodo::isApproved)
+            .count();
 
         final double certificationRate = (double) certificatedTodoCount / totalTodoCount;
         final double approvalRate = (double) approvedTodoCount / certificatedTodoCount;
