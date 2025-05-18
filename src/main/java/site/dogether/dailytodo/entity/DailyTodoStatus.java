@@ -29,7 +29,7 @@ public enum DailyTodoStatus {
         return this == APPROVE || this == REJECT;
     }
 
-    public boolean isCertificationListStatus() {
+    public boolean isCertificatedStatus() {
         return this == APPROVE || this == REJECT || this == REVIEW_PENDING;
     }
 }
