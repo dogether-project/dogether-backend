@@ -114,14 +114,13 @@ jobs:
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          embed-title: "🙏 BE 배포 시작 알림 (${{ matrix.environment }})"
+          embed-title: "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})"
           embed-description: |
             집에 가자... 집에 가자... 제발... 😣
 
             - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
             - PR : ${{ github.event.pull_request.html_url }}
             - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
 
   image-build:
     needs: [ check-deploy-decision, set-environment ]
