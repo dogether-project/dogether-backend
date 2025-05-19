@@ -155,7 +155,7 @@ public class MemberActivityService {
         if (createdCount == 0) {
             return 0;
         }
-        return (int) ((double) (certificatedCount / createdCount) * 100);
+        return (int) (((double) certificatedCount / createdCount) * 100);
     }
 
     public GetGroupActivityStatResponse.RankingResponse getMyRank(final Member target, final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
