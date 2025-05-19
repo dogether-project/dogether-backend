@@ -109,6 +109,19 @@ jobs:
       - name: Explain current environment
         run: echo "Current environment -> ${{ steps.set-environment.outputs.environment }}"
 
+      - name: Send deploy start notification
+        if: needs.check-deploy-decision.outputs.should_deploy == 'true'
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})"
+          embed-description: |
+            집에 가자... 집에 가자... 제발... 😣
+
+            - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
+            - PR : ${{ github.event.pull_request.html_url }}
+            - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
   image-build:
     needs: [ check-deploy-decision, set-environment ]
     runs-on: ubuntu-latest
@@ -208,7 +221,8 @@ jobs:
           AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
           EOF
 
-      - name: Execute new application
+      - name: Start new server application
+        id: start-new-server-application
         run: |
           cd ~/project
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
@@ -217,10 +231,7 @@ jobs:
           sudo docker images --filter=reference="*/springboot-app-${{ matrix.environment }}:*" -q | xargs -r sudo docker rmi -f
           sudo docker-compose up -d springboot-app
           sudo rm -rf .env
-
-      - name: Check deploy result
-        id: check-deploy-result
-        run: |
+          
           echo "🔍 서버 애플리케이션 정상 실행 확인중..."
           for i in {1..30}; do
             response=$(curl -sf http://localhost:8080/api/health-check || true)
@@ -238,7 +249,7 @@ jobs:
           exit 1
 
       - name: Send deploy success notification
-        if: steps.check-deploy-result.outputs.deploy_result == 'success'
+        if: steps.start-new-server-application.outputs.deploy_result == 'success'
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -252,14 +263,14 @@ jobs:
             - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Send deploy fail notification
-        if: failure() || steps.check-deploy-result.outputs.deploy_result == 'fail'
+        if: failure() || steps.start-new-server-application.outputs.deploy_result == 'fail'
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           embed-color: 15158332
           embed-title: "❌ BE 배포 실패 알림ㅜ (${{ matrix.environment }})"
           embed-description: |
-            집에 보내줘... 🌛
+            뭐해요? 야근해야죠... 🌝
 
             - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
             - PR : ${{ github.event.pull_request.html_url }}
