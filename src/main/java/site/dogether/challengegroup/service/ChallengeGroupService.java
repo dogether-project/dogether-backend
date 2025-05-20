@@ -22,8 +22,8 @@ import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberWithAchievementRateDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodo.entity.DailyTodos;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
@@ -154,7 +154,7 @@ public class ChallengeGroupService {
         }
     }
 
-    public List<JoiningChallengeGroupDto> getJoiningChallengeGroups(final Long memberId) {
+    public JoiningChallengeGroupsWithLastSelectedGroupIndexDto getJoiningChallengeGroups(final Long memberId) {
         final Member member = getMember(memberId);
 
         final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
@@ -162,11 +162,13 @@ public class ChallengeGroupService {
             .map(ChallengeGroupMember::getChallengeGroup)
             .toList();
 
-        return joiningGroups.stream()
+        final List<JoiningChallengeGroupDto> joiningChallengeGroupDtos = joiningGroups.stream()
             .map(joiningGroup -> JoiningChallengeGroupDto.from(
                 joiningGroup,
                 challengeGroupMemberRepository.countByChallengeGroup(joiningGroup)))
             .toList();
+
+        return new JoiningChallengeGroupsWithLastSelectedGroupIndexDto(1, joiningChallengeGroupDtos);
     }
 
     @Transactional
