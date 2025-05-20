@@ -9,8 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.List;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +21,10 @@ import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.notification.entity.NotificationToken;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,6 +44,9 @@ public class Member extends BaseEntity {
 
     @Column(name = "profile_image_url", length = 500, nullable = false)
     private String profileImageUrl;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<NotificationToken> notificationTokens;
@@ -65,7 +70,7 @@ public class Member extends BaseEntity {
     private DailyTodoStats dailyTodoStats;
 
     public static Member create(final String providerId, final String name) {
-        return new Member(null, providerId, name, saveRandomProfileImageUrl());
+        return new Member(null, providerId, name, saveRandomProfileImageUrl(), LocalDateTime.now());
     }
 
     private static String saveRandomProfileImageUrl() {
@@ -94,7 +99,8 @@ public class Member extends BaseEntity {
         final Long id,
         final String providerId,
         final String name,
-        final String profileImageUrl
+        final String profileImageUrl,
+        final LocalDateTime createdAt
     ) {
         validateProviderId(providerId);
         validateName(name);
@@ -103,6 +109,7 @@ public class Member extends BaseEntity {
         this.providerId = providerId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;
+        this.createdAt = createdAt;
     }
 
     private void validateProviderId(final String providerId) {

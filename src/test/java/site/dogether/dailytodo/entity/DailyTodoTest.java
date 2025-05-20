@@ -40,7 +40,9 @@ class DailyTodoTest {
             LocalDate.now(),
             LocalDate.now().plusDays(7),
             "join_code",
-            ChallengeGroupStatus.RUNNING);
+            ChallengeGroupStatus.RUNNING,
+            LocalDateTime.now().plusHours(1)
+        );
     }
 
     private static Member createMember() {
@@ -48,7 +50,8 @@ class DailyTodoTest {
             1L,
             "provider_id",
             "성욱쨩",
-            "profile_image_url"
+            "profile_image_url",
+            LocalDateTime.now()
         );
     }
 
@@ -57,7 +60,8 @@ class DailyTodoTest {
             id,
             "provider_id",
             name,
-            "profile_image_url"
+            "profile_image_url",
+            LocalDateTime.now()
         );
     }
 
@@ -88,7 +92,8 @@ class DailyTodoTest {
             dailyTodo,
             reviewer,
             "인증함!",
-            "https://인증.png"
+            "https://인증.png",
+            LocalDateTime.now().plusHours(2)
         );
     }
 

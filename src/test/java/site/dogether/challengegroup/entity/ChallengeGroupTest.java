@@ -1,17 +1,17 @@
 package site.dogether.challengegroup.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
-import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class ChallengeGroupTest {
 
@@ -52,7 +52,8 @@ class ChallengeGroupTest {
                 startAt,
                 endAt,
                 joinCode,
-                status
+                status,
+            LocalDateTime.now()
         )).doesNotThrowAnyException();
     }
 
@@ -106,7 +107,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(7),
                 "join_code",
-                ChallengeGroupStatus.READY
+                ChallengeGroupStatus.READY,
+            LocalDateTime.now()
         );
 
         final int progressDay = challengeGroup.getProgressDay();
@@ -125,7 +127,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(7),
                 "join_code",
-                ChallengeGroupStatus.RUNNING
+                ChallengeGroupStatus.RUNNING,
+            LocalDateTime.now()
         );
 
         final int progressDay = challengeGroup.getProgressDay();
@@ -145,7 +148,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(duration),
                 "join_code",
-                ChallengeGroupStatus.FINISHED
+                ChallengeGroupStatus.FINISHED,
+            LocalDateTime.now()
         );
 
         final int progressDay = challengeGroup.getProgressDay();
@@ -163,7 +167,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(7),
                 "join_code",
-                ChallengeGroupStatus.READY
+                ChallengeGroupStatus.READY,
+            LocalDateTime.now()
         );
 
         final double progressRate = challengeGroup.getProgressRate();
@@ -191,7 +196,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(7),
                 "join_code",
-                ChallengeGroupStatus.RUNNING
+                ChallengeGroupStatus.RUNNING,
+            LocalDateTime.now()
         );
 
         final double progressRate = challengeGroup.getProgressRate();
@@ -210,7 +216,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(7),
                 "join_code",
-                ChallengeGroupStatus.FINISHED
+                ChallengeGroupStatus.FINISHED,
+            LocalDateTime.now()
         );
 
         final double progressRate = challengeGroup.getProgressRate();
@@ -228,7 +235,8 @@ class ChallengeGroupTest {
                 startAt,
                 startAt.plusDays(7),
                 "join_code",
-                ChallengeGroupStatus.READY
+                ChallengeGroupStatus.READY,
+            LocalDateTime.now()
         );
 
         challengeGroup.updateStatus();
@@ -246,7 +254,8 @@ class ChallengeGroupTest {
                 endAt.minusDays(7),
                 endAt,
                 "join_code",
-                ChallengeGroupStatus.RUNNING
+                ChallengeGroupStatus.RUNNING,
+            LocalDateTime.now()
         );
 
         challengeGroup.updateStatus();
@@ -264,7 +273,8 @@ class ChallengeGroupTest {
                 endAt.minusDays(7),
                 endAt,
                 "join_code",
-                ChallengeGroupStatus.D_DAY
+                ChallengeGroupStatus.D_DAY,
+            LocalDateTime.now()
         );
 
         challengeGroup.updateStatus();

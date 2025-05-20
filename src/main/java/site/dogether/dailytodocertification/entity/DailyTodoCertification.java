@@ -20,6 +20,8 @@ import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificationException;
 import site.dogether.member.entity.Member;
 
+import java.time.LocalDateTime;
+
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -47,13 +49,16 @@ public class DailyTodoCertification extends BaseEntity {
     @Column(name = "media_url", length = 500, nullable = false)
     private String mediaUrl;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     public DailyTodoCertification(
         final DailyTodo dailyTodo,
         final Member reviewer,
         final String content,
         final String mediaUrl
     ) {
-        this(null, dailyTodo, reviewer, content, mediaUrl);
+        this(null, dailyTodo, reviewer, content, mediaUrl, LocalDateTime.now());
     }
 
     public DailyTodoCertification(
@@ -61,7 +66,8 @@ public class DailyTodoCertification extends BaseEntity {
         final DailyTodo dailyTodo,
         final Member reviewer,
         final String content,
-        final String mediaUrl
+        final String mediaUrl,
+        final LocalDateTime createdAt
     ) {
         validateDailyTodo(dailyTodo);
         validateReviewer(reviewer, dailyTodo);
@@ -73,6 +79,7 @@ public class DailyTodoCertification extends BaseEntity {
         this.reviewer = reviewer;
         this.content = content;
         this.mediaUrl = mediaUrl;
+        this.createdAt = createdAt;
     }
 
     private void validateDailyTodo(final DailyTodo dailyTodo) {

@@ -95,7 +95,7 @@ public class DailyTodoService {
     }
 
     private void validateMemberHasCreatedDailyTodoToday(final ChallengeGroup challengeGroup, final Member member) {
-        final boolean createdDailyTodoToday = dailyTodoRepository.existsByChallengeGroupAndMemberAndCreatedAtBetween(
+        final boolean createdDailyTodoToday = dailyTodoRepository.existsByChallengeGroupAndMemberAndWrittenAtBetween(
             challengeGroup,
             member,
             LocalDate.now().atStartOfDay(),
@@ -171,7 +171,7 @@ public class DailyTodoService {
         final Member member = getMember(memberId);
 
         final LocalDate yesterdayDate = LocalDate.now().minusDays(1);
-        return dailyTodoRepository.findAllByCreatedAtBetweenAndChallengeGroupAndMember(
+        return dailyTodoRepository.findAllByWrittenAtBetweenAndChallengeGroupAndMember(
                 yesterdayDate.atStartOfDay(),
                 yesterdayDate.atTime(LocalTime.MAX),
                 challengeGroup,
@@ -188,7 +188,7 @@ public class DailyTodoService {
         final ChallengeGroup challengeGroup = getChallengeGroup(condition.getGroupId());
         final Member member = getMember(condition.getMemberId());
         final List<DailyTodo> dailyTodos = condition.getDailyTodoStatus()
-            .map(status -> dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetweenAndStatus(
+            .map(status -> dailyTodoRepository.findAllByChallengeGroupAndMemberAndWrittenAtBetweenAndStatus(
                 challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
@@ -211,7 +211,7 @@ public class DailyTodoService {
         final LocalDateTime start,
         final LocalDateTime end
     ) {
-        return dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetween(challengeGroup, member, start, end).stream()
+        return dailyTodoRepository.findAllByChallengeGroupAndMemberAndWrittenAtBetween(challengeGroup, member, start, end).stream()
             .sorted(Comparator.comparing((DailyTodo todo) -> todo.getStatus() != CERTIFY_PENDING)
                 .thenComparing(DailyTodo::getId))
             .toList();

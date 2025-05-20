@@ -128,7 +128,7 @@ public class MemberActivityService {
         final LocalDateTime startOfDay = date.atStartOfDay();
         final LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        final List<DailyTodo> todos = dailyTodoRepository.findAllByChallengeGroupAndMemberAndCreatedAtBetween(
+        final List<DailyTodo> todos = dailyTodoRepository.findAllByChallengeGroupAndMemberAndWrittenAtBetween(
                 challengeGroup,
                 member,
                 startOfDay,
