@@ -214,23 +214,6 @@ class DailyTodoTest {
             .hasMessage("데일리 투두 상태로 null을 입력할 수 없습니다.");
     }
 
-    @DisplayName("데일리 투두가 노인정 상태가 아닐 때 노인정 사유가 입력되면 예외가 발생한다.")
-    @Test()
-    void throwExceptionWhenStatusNotRejectAndInputRejectReason() {
-        // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
-        final Member member = createMember();
-        final String content = "치킨 먹기";
-        final DailyTodoStatus status = APPROVE;
-        final String rejectReason = "이딴게 치킨?";
-        final LocalDateTime writtenAt = LocalDateTime.now();
-
-        // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, status, rejectReason, writtenAt))
-            .isInstanceOf(InvalidDailyTodoException.class)
-            .hasMessage(String.format("데일리 투두가 노인정 상태가 아니면 노인정 사유를 입력할 수 없습니다. (%s)", rejectReason));
-    }
-
     @DisplayName("데일리 투두가 노인정 상태일 때 노인정 사유로 null 혹은 공백이 입력되면 예외가 발생한다.")
     @NullAndEmptySource
     @ParameterizedTest()

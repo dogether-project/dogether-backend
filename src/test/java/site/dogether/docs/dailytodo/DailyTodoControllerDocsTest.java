@@ -124,7 +124,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
         final List<DailyTodo> dailyTodos = List.of(
             new DailyTodo(1L, challengeGroup, doer, "운동 하기", REVIEW_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(2L, challengeGroup, doer, "인강 듣기", APPROVE, null, LocalDateTime.now()),
+            new DailyTodo(2L, challengeGroup, doer, "인강 듣기", APPROVE, "와.. 오늘 이걸 다 들었어요...?", LocalDateTime.now()),
             new DailyTodo(3L, challengeGroup, doer, "치킨 먹기", CERTIFY_PENDING, null, LocalDateTime.now()),
             new DailyTodo(4L, challengeGroup, doer, "DND API 구현", REJECT, "코드 개판이네 ㅎ", LocalDateTime.now())
         );
@@ -183,8 +183,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("데일리 투두 인증글 이미지 URL")
                         .optional()
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.todos[].rejectReason")
-                        .description("데일리 투두 인증 노인정 사유")
+                    fieldWithPath("data.todos[].reviewFeedback")
+                        .description("데일리 투두 인증 검사 피드백")
                         .optional()
                         .type(JsonFieldType.STRING))));
     }

@@ -38,7 +38,7 @@ public record GetMemberAllStatsResponse(
             String certificationContent,
             String certificationMediaUrl,
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            String rejectReason
+            String reviewFeedback
     ) {
     }
 }
