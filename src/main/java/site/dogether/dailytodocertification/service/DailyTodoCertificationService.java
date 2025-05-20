@@ -39,7 +39,7 @@ public class DailyTodoCertificationService {
         final Long reviewerId,
         final Long dailyTodoCertificationId,
         final String reviewResult,
-        final String rejectReason
+        final String reviewFeedback
     ) {
         final Member reviewer = getMember(reviewerId);
         final DailyTodoCertification dailyTodoCertification = getDailyTodoCertification(dailyTodoCertificationId);
@@ -48,7 +48,7 @@ public class DailyTodoCertificationService {
         final DailyTodoStats dailyTodoStats = dailyTodoStatsRepository.findByMember(dailyTodo.getMember())
                 .orElseThrow(() -> new DailyTodoStatsNotFoundException(String.format("존재하지 않는 데일리 투두 통계입니다. (%s)", dailyTodo.getMember())));
 
-        dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), rejectReason, dailyTodoStats);
+        dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), reviewFeedback, dailyTodoStats);
 
         dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo, dailyTodoCertification);
         sendReviewResultNotificationToDailyTodoWriter(dailyTodo);

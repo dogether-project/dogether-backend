@@ -52,7 +52,7 @@ public class DailyTodoAndDailyTodoCertificationDto {
     }
 
     public Optional<String> findRejectReason() {
-        if (dailyTodoCertification == null || dailyTodo.getStatus() != DailyTodoStatus.REJECT) {
+        if (dailyTodoCertification == null || !dailyTodo.getStatus().isReviewResultStatus()) {
             return Optional.empty();
         }
 

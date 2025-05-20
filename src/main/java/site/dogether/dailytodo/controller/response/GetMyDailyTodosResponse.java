@@ -27,7 +27,7 @@ record Data(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String certificationMediaUrl,
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    String rejectReason
+    String reviewFeedback
 ) {
     public static Data from(final DailyTodoAndDailyTodoCertificationDto dailyTodo) {
         return new Data(

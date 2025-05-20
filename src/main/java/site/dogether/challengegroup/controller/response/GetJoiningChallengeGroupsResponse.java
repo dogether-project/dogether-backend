@@ -1,7 +1,12 @@
 package site.dogether.challengegroup.controller.response;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 
-public record GetJoiningChallengeGroupsResponse(List<JoiningChallengeGroupDto> joiningChallengeGroups) {
-}
+import java.util.List;
+
+public record GetJoiningChallengeGroupsResponse(
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    int lastSelectedGroupIndex,
+    List<JoiningChallengeGroupDto> joiningChallengeGroups
+) {}

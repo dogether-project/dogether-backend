@@ -137,10 +137,6 @@ public class DailyTodo extends BaseEntity {
     }
 
     private void validateRejectReason(final DailyTodoStatus status, final String rejectReason) {
-        if (status != REJECT && rejectReason != null) {
-            throw new InvalidDailyTodoException(String.format("데일리 투두가 노인정 상태가 아니면 노인정 사유를 입력할 수 없습니다. (%s)", rejectReason));
-        }
-
         if (status == REJECT && (rejectReason == null || rejectReason.isBlank())) {
             throw new InvalidDailyTodoException(String.format("노인정 사유로 null 혹은 공백을 입력할 수 없습니다. (%s)", rejectReason));
         }

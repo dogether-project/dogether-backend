@@ -7,11 +7,13 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.challengegroup.controller.ChallengeGroupController;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
+import site.dogether.challengegroup.controller.request.SaveLastSelectedChallengeGroupInfoRequest;
 import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
 import site.dogether.docs.util.RestDocsSupport;
 
 import java.util.List;
@@ -165,9 +167,10 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     2,
                     0.5)
         );
+        final JoiningChallengeGroupsWithLastSelectedGroupIndexDto joiningChallengeGroupsWithLastSelectedGroupIndexDto = new JoiningChallengeGroupsWithLastSelectedGroupIndexDto(1, joiningChallengeGroups);
 
         given(challengeGroupService.getJoiningChallengeGroups(any()))
-            .willReturn(joiningChallengeGroups);
+            .willReturn(joiningChallengeGroupsWithLastSelectedGroupIndexDto);
 
         mockMvc.perform(
                 get("/api/groups/my")
@@ -182,6 +185,10 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("message")
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING),
+                    fieldWithPath("data.lastSelectedGroupIndex")
+                        .description("가장 마지막에 선택한 챌린지 그룹 인덱스")
+                        .type(JsonFieldType.NUMBER)
+                        .optional(),
                     fieldWithPath("data.joiningChallengeGroups")
                         .description("참여중인 챌린지 그룹")
                         .type(JsonFieldType.ARRAY)
@@ -218,6 +225,32 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("활동 진행률")
                         .type(JsonFieldType.NUMBER)
                 )));
+    }
+
+    @DisplayName("사용자가 가장 마지막에 선택한 챌린지 그룹 id 저장 API")
+    @Test
+    void saveLastSelectedChallengeGroupInfo() throws Exception {
+        final SaveLastSelectedChallengeGroupInfoRequest request = new SaveLastSelectedChallengeGroupInfoRequest(1L);
+
+        mockMvc.perform(
+                post("/api/groups/last-selected")
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(convertToJson(request)))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                requestFields(
+                    fieldWithPath("groupId")
+                        .description("사용자가 마지막에 선택한 챌린지 그룹 id")
+                        .type(JsonFieldType.NUMBER)
+                        .attributes(constraints("현재 진행중이면서 사용자가 참여중인 챌린지 그룹 id만 입력 허용"))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING))));
     }
 
     @DisplayName("챌린지 그룹 탈퇴 API")

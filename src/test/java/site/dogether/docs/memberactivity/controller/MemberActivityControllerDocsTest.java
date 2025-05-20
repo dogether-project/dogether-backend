@@ -148,7 +148,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                         "APPROVE",
                                         "운동 개조짐 ㅋㅋㅋㅋ",
                                         "운동 조지는 짤.png",
-                                        null
+                                        "저도 같이 해요..."
                                 )
                         )
                 ),
@@ -161,7 +161,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                         "APPROVE",
                                         "인강 진짜 열심히 들었습니다. ㅎ",
                                         "인강 달리는 짤.png",
-                                        null
+                                        "얼마나 더 똑똑해지려고 ㄷㄷ"
                                 )
                         )
                 )
@@ -230,8 +230,8 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].certificationMediaUrl")
                                         .description("데일리 투두 인증글 이미지 URL")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].rejectReason")
-                                        .description("데일리 투두 인증 노인정 사유")
+                                fieldWithPath("data.certificationsGroupedByTodoCompletedAt[].certificationInfo[].reviewFeedback")
+                                        .description("데일리 투두 인증 검사 피드백")
                                         .optional()
                                         .type(JsonFieldType.STRING))));
     }
@@ -337,8 +337,8 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].certificationMediaUrl")
                                         .description("데일리 투두 인증글 이미지 URL")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].rejectReason")
-                                        .description("데일리 투두 인증 노인정 사유")
+                                fieldWithPath("data.certificationsGroupedByGroupCreatedAt[].certificationInfo[].reviewFeedback")
+                                        .description("데일리 투두 인증 검사 피드백")
                                         .optional()
                                         .type(JsonFieldType.STRING))));
     }

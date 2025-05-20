@@ -51,7 +51,7 @@ public class DailyTodoCertificationController {
             memberId,
             todoCertificationId,
             request.result(),
-            request.rejectReason()
+            request.reviewFeedback()
         );
         return ResponseEntity.ok(ApiResponse.success(REVIEW_DAILY_TODO_CERTIFICATION));
     }

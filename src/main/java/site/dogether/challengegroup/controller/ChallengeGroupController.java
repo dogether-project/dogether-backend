@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
+import site.dogether.challengegroup.controller.request.SaveLastSelectedChallengeGroupInfoRequest;
 import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
 import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRankResponse;
 import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupsResponse;
@@ -20,7 +21,7 @@ import site.dogether.challengegroup.controller.response.JoinChallengeGroupRespon
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
 import site.dogether.common.controller.response.ApiResponse;
 
 import java.util.List;
@@ -63,12 +64,20 @@ public class ChallengeGroupController {
     public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsResponse>> getJoiningChallengeGroups(
             @Authenticated final Long memberId
     ) {
-        final List<JoiningChallengeGroupDto> joiningChallengeGroups = challengeGroupService.getJoiningChallengeGroups(memberId);
+        final JoiningChallengeGroupsWithLastSelectedGroupIndexDto joiningChallengeGroups = challengeGroupService.getJoiningChallengeGroups(memberId);
         return ResponseEntity.ok(
             ApiResponse.successWithData(
                 GET_JOINING_CHALLENGE_GROUPS,
-                new GetJoiningChallengeGroupsResponse(joiningChallengeGroups))
+                new GetJoiningChallengeGroupsResponse(joiningChallengeGroups.lastSelectedGroupIndex(), joiningChallengeGroups.joiningChallengeGroups()))
         );
+    }
+
+    @PostMapping("/last-selected")
+    public ResponseEntity<ApiResponse<Void>> saveLastSelectedChallengeGroupInfo(
+        @Authenticated final Long memberId,
+        @RequestBody final SaveLastSelectedChallengeGroupInfoRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(SAVE_LAST_SELECTED_CHALLENGE_GROUP_ID));
     }
 
     @DeleteMapping("/{groupId}/leave")
