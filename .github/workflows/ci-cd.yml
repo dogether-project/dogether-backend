@@ -2,7 +2,7 @@ name: Backend CI/CD
 
 on:
   pull_request:
-    types: [ opened, synchronize ]
+    types: [ opened, synchronize, closed ]
     branches: [ dev, main ]
     paths:
       - 'src/**'
