@@ -52,15 +52,14 @@ jobs:
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
         run: ./gradlew test --info
 
-  check-deploy-decision:
-    needs: [ test ]
+  check-deploy-condition:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.check-deploy-decision.outputs.should_deploy }}
-      assignees: ${{ steps.check-deploy-decision.outputs.assignees }}
+      should_deploy: ${{ steps.check-deploy-label.outputs.should_deploy }}
     steps:
-      - name: Check deploy decision
-        id: check-deploy-decision
+      - name: Check deploy label
+        id: check-deploy-label
         uses: actions/github-script@v7
         with:
           script: |
@@ -71,46 +70,55 @@ jobs:
             });
 
             const hasDeployLabel = pr.data.labels.map(label => label.name).includes("deploy");
+            core.setOutput("should_deploy", hasDeployLabel ? "true" : "false");
+
+      - name: Explain deploy decision
+        run: |
+          if [[ "${{ steps.check-deploy-condition.outputs.should_deploy }}" == "true" ]]; then
+            echo "🚚 deploy label이 존재하므로 배포 작업을 진행합니다."
+          else
+            echo "✋ deploy label이 없으므로 배포 작업을 수행하지 않고 종료합니다."
+          fi
+
+  setup-deploy:
+    needs: [ check-deploy-condition ]
+    if: needs.check-deploy-condition.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-environment.outputs.environment }}
+      assignees: ${{ steps.set-assignees.outputs.assignees }}
+    steps:
+      - name: Set environment
+        id: set-environment
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          echo "Target Branch -> $GITHUB_BASE_REF"
+          echo "environment=dev" >> $GITHUB_OUTPUT
+          if [[ "$GITHUB_BASE_REF" == "main" ]]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set assignees
+        id: set-assignees
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
             let assignees = pr.data.assignees.map(user => user.login);
             if (assignees.length > 0) {
               assignees = assignees.join(', ');
             } else {
               assignees = context.payload.pull_request.user.login;
             }
-
-            core.setOutput("should_deploy", hasDeployLabel ? "true" : "false");
-            core.setOutput("assignees", assignees);
-
-      - name: Explain deploy decision
-        run: |
-          if [[ "${{ steps.check-deploy-decision.outputs.should_deploy }}" == "true" ]]; then
-            echo "🚚 deploy label이 존재하므로 배포 작업을 진행합니다."
-          else
-            echo "✋ deploy label이 없으므로 배포 작업을 수행하지 않고 종료합니다."
-          fi
-
-  set-environment:
-    needs: [ check-deploy-decision ]
-    if: needs.check-deploy-decision.outputs.should_deploy == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.set-environment.outputs.environment }}
-    steps:
-      - name: Set environment
-        id: set-environment
-        run: |
-          echo "Target Branch -> ${{ github.base_ref }}"
-          echo "environment=dev" >> $GITHUB_OUTPUT
-
-          if [[ ${{ github.base_ref }} == "main" ]]; then
-            echo "environment=prod" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Explain current environment
-        run: echo "Current environment -> ${{ steps.set-environment.outputs.environment }}"
+            core.setOutput("assignees", assignees);        
 
       - name: Send deploy start notification
-        if: needs.check-deploy-decision.outputs.should_deploy == 'true'
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -118,20 +126,23 @@ jobs:
           embed-description: |
             집에 가자... 집에 가자... 제발... 😣
 
-            - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
+            - 작업자 : ${{ steps.set-assignees.outputs.assignees }}
             - PR : ${{ github.event.pull_request.html_url }}
             - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
   image-build:
-    needs: [ check-deploy-decision, set-environment ]
+    needs: [ setup-deploy ]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
     strategy:
       matrix:
-        environment: [ "${{ needs.set-environment.outputs.environment }}" ]
+        environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
     environment: ${{ matrix.environment }}
+    outputs:
+      image_build_result: ${{ steps.image-build-result.outputs.image_build_result }}
+    continue-on-error: true
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -168,17 +179,31 @@ jobs:
           mask-password: 'true'
 
       - name: Docker build & push
+        id: docker-build-and-push
         run: |
           docker build --build-arg SPRINGBOOT_APP_PROFILE=${{ matrix.environment }} --platform linux/arm64 -f docker/Dockerfile --tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
+      - name: Set image build result
+        if: always()
+        id: image-build-result
+        run: |
+          echo "image_build_result=fail" >> $GITHUB_OUTPUT
+          if [[ ${{ steps.docker-build-and-push.outcome }} == "success" ]]; then
+          echo "image_build_result=success" >> $GITHUB_OUTPUT
+          fi
+
   deploy:
-    needs: [ check-deploy-decision, set-environment, image-build ]
+    needs: [ setup-deploy, image-build ]
+    if: needs.image-build.outputs.image_build_result == 'success'
     runs-on: dogether-be-dev-ec2-runner
     strategy:
       matrix:
-        environment: [ "${{ needs.set-environment.outputs.environment }}" ]
+        environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
     environment: ${{ matrix.environment }}
+    outputs:
+      deploy_result: ${{ steps.deploy-result.outputs.deploy_result }}
+    continue-on-error: true
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -237,7 +262,6 @@ jobs:
             response=$(curl -sf http://localhost:8080/api/health-check || true)
             if [[ "$response" == *"OK"* ]]; then
               echo "🍺 서버 애플리케이션 정상 실행 확인!"
-              echo "deploy_result=success" >> $GITHUB_OUTPUT
               exit 0
             else
               echo "⏳ 서버 애플리케이션 실행 대기... ($i/30)"
@@ -245,33 +269,46 @@ jobs:
             fi
           done
           echo "❌ 서버 애플리케이션이 정상 실행되지 않음..."
-          echo "deploy_result=fail" >> $GITHUB_OUTPUT
           exit 1
 
+      - name: Set deploy result
+        if: always()
+        id: deploy-result
+        run: |
+          echo "deploy_result=fail" >> $GITHUB_OUTPUT
+          if [[ ${{ steps.start-new-server-application.outcome }} == "success" ]]; then
+          echo "deploy_result=success" >> $GITHUB_OUTPUT
+          fi
+
+  notify:
+    needs: [ check-deploy-condition, setup-deploy, image-build, deploy ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
       - name: Send deploy success notification
-        if: steps.start-new-server-application.outputs.deploy_result == 'success'
+        if: needs.check-deploy-condition.outputs.should_deploy == 'true' && needs.image-build.outputs.image_build_result == 'success' && needs.deploy.outputs.deploy_result == 'success'
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           embed-color: 3066993
-          embed-title: "🎉 BE 배포 성공 알림! (${{ matrix.environment }})"
+          embed-title: "🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})"
           embed-description: |
             오늘은 생맥 ㅎ 🍺
 
-            - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
+            - 작업자 : ${{ needs.setup-deploy.outputs.assignees }}
             - PR : ${{ github.event.pull_request.html_url }}
             - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Send deploy fail notification
-        if: failure() || steps.start-new-server-application.outputs.deploy_result == 'fail'
+        if: needs.check-deploy-condition.outputs.should_deploy == 'true' && (needs.image-build.outputs.image_build_result != 'success' || needs.deploy.outputs.deploy_result != 'success')
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           embed-color: 15158332
-          embed-title: "❌ BE 배포 실패 알림ㅜ (${{ matrix.environment }})"
+          embed-title: "❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})"
           embed-description: |
             뭐해요? 야근해야죠... 🌝
 
-            - 작업자 : ${{ needs.check-deploy-decision.outputs.assignees }}
+            - 작업자 : ${{ needs.setup-deploy.outputs.assignees }}
             - PR : ${{ github.event.pull_request.html_url }}
             - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
