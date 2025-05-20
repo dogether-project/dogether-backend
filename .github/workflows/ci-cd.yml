@@ -74,7 +74,7 @@ jobs:
 
       - name: Explain deploy decision
         run: |
-          if [[ "${{ steps.check-deploy-condition.outputs.should_deploy }}" == "true" ]]; then
+          if [[ "${{ steps.check-deploy-label.outputs.should_deploy }}" == "true" ]]; then
             echo "🚚 deploy label이 존재하므로 배포 작업을 진행합니다."
           else
             echo "✋ deploy label이 없으므로 배포 작업을 수행하지 않고 종료합니다."
