@@ -1,8 +1,5 @@
 package site.dogether.member.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,12 +10,15 @@ import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.member.entity.Member;
 
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class MemberServiceTest {
 
     @Autowired private MemberService memberService;
-    @Autowired private MemberWithdrawService memberWithdrawService;
     @Autowired private ChallengeGroupRepository challengeGroupRepository;
     @Autowired private ChallengeGroupMemberRepository challengeGroupMemberRepository;
 
@@ -61,7 +61,7 @@ class MemberServiceTest {
         ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.save(
                 new ChallengeGroupMember(challengeGroup, member));
 
-        memberWithdrawService.delete(member.getId());
+        memberService.delete(member.getId());
 
         // when
         Member found = memberService.save(providerId, name);

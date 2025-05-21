@@ -142,7 +142,6 @@ public class Member extends BaseEntity {
             "id=" + id +
             ", name='" + name + '\'' +
             ", createdAt=" + createdAt +
-            ", isDeleted=" + isDeleted +
             '}';
     }
 }
