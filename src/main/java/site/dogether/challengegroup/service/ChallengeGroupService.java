@@ -10,6 +10,7 @@ import site.dogether.challengegroup.entity.AchievementRateCalculator;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.LastSelectedChallengeGroupRecord;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
 import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
@@ -18,6 +19,7 @@ import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupExcep
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.challengegroup.repository.LastSelectedChallengeGroupRecordRepository;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberWithAchievementRateDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -41,12 +43,13 @@ import java.util.List;
 @Service
 public class ChallengeGroupService {
 
+    private final MemberRepository memberRepository;
     private final ChallengeGroupRepository challengeGroupRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
-    private final NotificationService notificationService;
-    private final MemberRepository memberRepository;
+    private final LastSelectedChallengeGroupRecordRepository lastSelectedChallengeGroupRecordRepository;
     private final DailyTodoService dailyTodoService;
     private final DailyTodoHistoryService dailyTodoHistoryService;
+    private final NotificationService notificationService;
 
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupRequest request, final Long memberId) {
@@ -169,6 +172,17 @@ public class ChallengeGroupService {
             .toList();
 
         return new JoiningChallengeGroupsWithLastSelectedGroupIndexDto(1, joiningChallengeGroupDtos);
+    }
+
+    @Transactional
+    public void saveLastSelectedChallengeGroupRecord(final Long memberId, final Long groupId) {
+        final Member member = getMember(memberId);
+        final ChallengeGroup challengeGroup = getChallengeGroup(groupId);
+
+        lastSelectedChallengeGroupRecordRepository.findByMember(member)
+            .ifPresentOrElse(
+                lastSelectedChallengeGroupRecord -> lastSelectedChallengeGroupRecord.updateChallengeGroup(challengeGroup),
+                () -> lastSelectedChallengeGroupRecordRepository.save(new LastSelectedChallengeGroupRecord(member, challengeGroup)));
     }
 
     @Transactional
