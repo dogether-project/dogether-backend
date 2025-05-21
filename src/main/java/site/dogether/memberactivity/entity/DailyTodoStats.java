@@ -59,7 +59,7 @@ public class DailyTodoStats extends BaseEntity {
 
     private void validateMember(final Member member) {
         if(member == null) {
-            throw new InvalidDailyTodoStatsException("데일리 투두 통계 회원으로 null을 입력할 수 없습니다.");
+            throw new InvalidDailyTodoStatsException("데일리 투두 통계 멤버로 null을 입력할 수 없습니다.");
         }
     }
 
