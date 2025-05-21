@@ -7,6 +7,6 @@ import java.util.List;
 
 public record GetJoiningChallengeGroupsResponse(
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    int lastSelectedGroupIndex,
+    Integer lastSelectedGroupIndex,
     List<JoiningChallengeGroupDto> joiningChallengeGroups
 ) {}

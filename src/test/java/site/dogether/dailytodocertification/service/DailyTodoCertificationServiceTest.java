@@ -65,7 +65,7 @@ class DailyTodoCertificationServiceTest {
         final ChallengeGroup challengeGroup,
         final Member member,
         final DailyTodoStatus status,
-        final String rejectReason,
+        final String reviewFeedback,
         final LocalDateTime writtenAt
     ) {
         return new DailyTodo(
@@ -74,7 +74,7 @@ class DailyTodoCertificationServiceTest {
             member,
             "치킨 먹기",
             status,
-            rejectReason,
+            reviewFeedback,
             writtenAt
         );
     }
@@ -103,7 +103,7 @@ class DailyTodoCertificationServiceTest {
         );
     }
     
-    @DisplayName("인정에 대해 유효한 검사 값(검사자 id, 투두 인증 id, 검사 결과, 노인정 사유)을 넘기면 투두 인증 검사를 수행하고 변경된 부분을 DB에 반영 요청 한다.")
+    @DisplayName("인정에 대해 유효한 검사 값(검사자 id, 투두 인증 id, 검사 결과, 피드백)을 넘기면 투두 인증 검사를 수행하고 변경된 부분을 DB에 반영 요청 한다.")
     @Test
     void reviewDailyTodoCertificationSuccessInputApprove() {
         // Given
@@ -117,14 +117,14 @@ class DailyTodoCertificationServiceTest {
         final Long reviewerId = reviewer.getId();
         final Long dailyTodoCertificationId = dailyTodoCertification.getId();
         final String reviewResult = "approve";
-        final String rejectReason = null;
+        final String reviewFeedback = "우왕!";
 
         // When & Then
         assertThatCode(() -> dailyTodoCertificationService.reviewDailyTodoCertification(
             reviewerId,
             dailyTodoCertificationId,
             reviewResult,
-            rejectReason))
+            reviewFeedback))
             .doesNotThrowAnyException();
     }
 
@@ -142,14 +142,14 @@ class DailyTodoCertificationServiceTest {
         final Long reviewerId = reviewer.getId();
         final Long dailyTodoCertificationId = dailyTodoCertification.getId();
         final String reviewResult = "reject";
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         // When & Then
         assertThatCode(() -> dailyTodoCertificationService.reviewDailyTodoCertification(
             reviewerId,
             dailyTodoCertificationId,
             reviewResult,
-            rejectReason))
+            reviewFeedback))
             .doesNotThrowAnyException();
     }
 
@@ -166,14 +166,14 @@ class DailyTodoCertificationServiceTest {
         final Long reviewerId = 1232L;
         final Long dailyTodoCertificationId = dailyTodoCertification.getId();
         final String reviewResult = "reject";
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         // When & Then
         assertThatThrownBy(() -> dailyTodoCertificationService.reviewDailyTodoCertification(
             reviewerId,
             dailyTodoCertificationId,
             reviewResult,
-            rejectReason
+            reviewFeedback
         ))
             .isInstanceOf(MemberNotFoundException.class)
             .hasMessage(String.format("존재하지 않는 회원 id입니다. (%d)", reviewerId));
@@ -192,14 +192,14 @@ class DailyTodoCertificationServiceTest {
         final Long reviewerId = reviewer.getId();
         final Long dailyTodoCertificationId = 1231231L;
         final String reviewResult = "reject";
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         // When & Then
         assertThatThrownBy(() -> dailyTodoCertificationService.reviewDailyTodoCertification(
             reviewerId,
             dailyTodoCertificationId,
             reviewResult,
-            rejectReason
+            reviewFeedback
         ))
             .isInstanceOf(DailyTodoCertificationNotFoundException.class)
             .hasMessage(String.format("존재하지 않는 데일리 투두 인증 id입니다. (%d)", dailyTodoCertificationId));

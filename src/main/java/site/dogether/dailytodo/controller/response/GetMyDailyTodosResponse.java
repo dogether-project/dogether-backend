@@ -36,7 +36,7 @@ record Data(
             dailyTodo.getDailyTodoStatus(),
             dailyTodo.findDailyTodoCertificationContent().orElse(null),
             dailyTodo.findDailyTodoCertificationMediaUrl().orElse(null),
-            dailyTodo.findRejectReason().orElse(null)
+            dailyTodo.findReviewFeedback().orElse(null)
         );
     }
 }

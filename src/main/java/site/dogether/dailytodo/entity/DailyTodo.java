@@ -40,7 +40,7 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
 public class DailyTodo extends BaseEntity {
 
     public static final int MAXIMUM_ALLOWED_CONTENT_LENGTH = 20;
-    public static final int MAXIMUM_ALLOWED_REJECT_REASON_LENGTH = 60;
+    public static final int MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH = 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,8 +61,8 @@ public class DailyTodo extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DailyTodoStatus status;
 
-    @Column(name = "reject_reason", length = 500)
-    private String rejectReason;
+    @Column(name = "review_feedback", length = 500)
+    private String reviewFeedback;
 
     @Column(name = "written_at", nullable = false, updatable = false)
     private LocalDateTime writtenAt;
@@ -89,14 +89,14 @@ public class DailyTodo extends BaseEntity {
         final Member member,
         final String content,
         final DailyTodoStatus status,
-        final String rejectReason,
+        final String reviewFeedback,
         final LocalDateTime writtenAt
     ) {
         validateChallengeGroup(challengeGroup);
         validateMember(member);
         validateContent(content);
         validateStatus(status);
-        validateRejectReason(status, rejectReason);
+        validateReviewFeedback(status, reviewFeedback);
         validateWrittenAt(writtenAt);
 
         this.id = id;
@@ -104,7 +104,7 @@ public class DailyTodo extends BaseEntity {
         this.member = member;
         this.content = content;
         this.status = status;
-        this.rejectReason = rejectReason;
+        this.reviewFeedback = reviewFeedback;
         this.writtenAt = writtenAt;
     }
 
@@ -136,13 +136,13 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
-    private void validateRejectReason(final DailyTodoStatus status, final String rejectReason) {
-        if (status == REJECT && (rejectReason == null || rejectReason.isBlank())) {
-            throw new InvalidDailyTodoException(String.format("노인정 사유로 null 혹은 공백을 입력할 수 없습니다. (%s)", rejectReason));
+    private void validateReviewFeedback(final DailyTodoStatus status, final String reviewFeedback) {
+        if (status.isReviewResultStatus() && (reviewFeedback == null || reviewFeedback.isBlank())) {
+            throw new InvalidDailyTodoException(String.format("검사 피드백으로 null 혹은 공백을 입력할 수 없습니다. (%s)", reviewFeedback));
         }
 
-        if (status == REJECT && rejectReason.length() > MAXIMUM_ALLOWED_REJECT_REASON_LENGTH) {
-            throw new InvalidDailyTodoException(String.format("노인정 사유는 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REJECT_REASON_LENGTH, rejectReason.length(), rejectReason));
+        if (status.isReviewResultStatus() && reviewFeedback.length() > MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH) {
+            throw new InvalidDailyTodoException(String.format("검사 피드백은 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH, reviewFeedback.length(), reviewFeedback));
         }
     }
 
@@ -202,16 +202,16 @@ public class DailyTodo extends BaseEntity {
             final Member reviewer,
             final DailyTodoCertification dailyTodoCertification,
             final DailyTodoStatus reviewResult,
-            final String rejectReason,
+            final String reviewFeedback,
             final DailyTodoStats dailyTodoStats
             ) {
         validateReviewer(reviewer, dailyTodoCertification);
         validateStatusIsReviewPending();
         validateReviewResult(reviewResult);
-        validateRejectReason(reviewResult, rejectReason);
+        validateReviewFeedback(reviewResult, reviewFeedback);
 
         this.status = reviewResult;
-        this.rejectReason = rejectReason;
+        this.reviewFeedback = reviewFeedback;
 
         dailyTodoStats.moveCertificatedToResult(reviewResult);
     }
@@ -262,8 +262,8 @@ public class DailyTodo extends BaseEntity {
         return status;
     }
 
-    public Optional<String> getRejectReason() {
-        return Optional.ofNullable(rejectReason);
+    public Optional<String> getReviewFeedback() {
+        return Optional.ofNullable(reviewFeedback);
     }
 
     public String getStatusDescription() {
