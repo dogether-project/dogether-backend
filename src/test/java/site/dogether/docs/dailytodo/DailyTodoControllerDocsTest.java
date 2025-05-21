@@ -119,9 +119,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
     @Test
     void getMyDailyTodosWithCertificationInputDate() throws Exception {
-        final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png");
-        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png");
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
+        final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
+        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png", LocalDateTime.now());
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
         final List<DailyTodo> dailyTodos = List.of(
             new DailyTodo(1L, challengeGroup, doer, "운동 하기", REVIEW_PENDING, null, LocalDateTime.now()),
             new DailyTodo(2L, challengeGroup, doer, "인강 듣기", APPROVE, "와.. 오늘 이걸 다 들었어요...?", LocalDateTime.now()),
@@ -129,9 +129,9 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             new DailyTodo(4L, challengeGroup, doer, "DND API 구현", REJECT, "코드 개판이네 ㅎ", LocalDateTime.now())
         );
         final List<DailyTodoCertification> dailyTodoCertifications = List.of(
-            new DailyTodoCertification(1L, dailyTodos.get(0), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url"),
-            new DailyTodoCertification(2L, dailyTodos.get(1), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url"),
-            new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", "https://image.url")
+            new DailyTodoCertification(1L, dailyTodos.get(0), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", LocalDateTime.now().plusHours(1)),
+            new DailyTodoCertification(2L, dailyTodos.get(1), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url", LocalDateTime.now().plusHours(3)),
+            new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", "https://image.url", LocalDateTime.now().plusHours(2))
         );
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(
             DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodos.get(2)),
@@ -192,11 +192,11 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
     @Test
     void getMyDailyTodosWithCertificationInputDateAndTodoStatus() throws Exception {
-        final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png");
-        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png");
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING);
-        final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", REVIEW_PENDING, null, LocalDateTime.now());
-        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url");
+        final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
+        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png", LocalDateTime.now());
+        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
+        final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", REVIEW_PENDING, null, LocalDateTime.now().plusHours(2));
+        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", LocalDateTime.now().plusHours(3));
         final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification));
 
         given(dailyTodoService.findMyDailyTodo(any()))

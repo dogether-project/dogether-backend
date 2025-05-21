@@ -11,7 +11,6 @@ import site.dogether.auth.oauth.AppleOAuthProvider;
 import site.dogether.auth.oauth.JwtHandler;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
-import site.dogether.member.service.MemberWithdrawService;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
 @Slf4j
@@ -23,7 +22,6 @@ public class AuthService {
     private final JwtHandler jwtHandler;
     private final AppleOAuthProvider appleOAuthProvider;
     private final MemberService memberService;
-    private final MemberWithdrawService memberWithdrawService;
 
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
@@ -44,7 +42,7 @@ public class AuthService {
     public void withdraw(final Long memberId, final WithdrawRequest request) {
         final boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
         if (isRevoked) {
-            memberWithdrawService.delete(memberId);
+            memberService.delete(memberId);
             log.info("회원 탈퇴 처리 완료. memberId: {}", memberId);
         }
     }

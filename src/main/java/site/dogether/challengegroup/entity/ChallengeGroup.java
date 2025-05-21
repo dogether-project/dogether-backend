@@ -1,10 +1,5 @@
 package site.dogether.challengegroup.entity;
 
-import static site.dogether.challengegroup.entity.ChallengeGroupStatus.D_DAY;
-import static site.dogether.challengegroup.entity.ChallengeGroupStatus.FINISHED;
-import static site.dogether.challengegroup.entity.ChallengeGroupStatus.READY;
-import static site.dogether.challengegroup.entity.ChallengeGroupStatus.RUNNING;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,16 +8,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.common.audit.entity.BaseEntity;
+
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+
+import static site.dogether.challengegroup.entity.ChallengeGroupStatus.*;
 
 @ToString
 @Getter
@@ -59,6 +58,9 @@ public class ChallengeGroup extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ChallengeGroupStatus status;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     public static ChallengeGroup create(
         final String name,
         final int maximumMemberCount,
@@ -73,7 +75,8 @@ public class ChallengeGroup extends BaseEntity {
             startAt,
             endAt,
             generateJoinCode(),
-            initStatus(startAt)
+            initStatus(startAt),
+            LocalDateTime.now()
         );
     }
 
@@ -133,7 +136,8 @@ public class ChallengeGroup extends BaseEntity {
         final LocalDate startAt,
         final LocalDate endAt,
         final String joinCode,
-        final ChallengeGroupStatus status
+        final ChallengeGroupStatus status,
+        final LocalDateTime createdAt
     ) {
         this.id = id;
         this.name = name;
@@ -142,6 +146,7 @@ public class ChallengeGroup extends BaseEntity {
         this.endAt = endAt;
         this.joinCode = joinCode;
         this.status = status;
+        this.createdAt = createdAt;
     }
 
     private boolean isReady() {

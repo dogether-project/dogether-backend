@@ -27,7 +27,9 @@ class DailyTodoCertificationTest {
             LocalDate.now(),
             LocalDate.now().plusDays(7),
             "join_code",
-            ChallengeGroupStatus.RUNNING);
+            ChallengeGroupStatus.RUNNING,
+            LocalDateTime.now().plusHours(1)
+        );
     }
 
     private static Member createMember(final Long id, final String name) {
@@ -35,7 +37,8 @@ class DailyTodoCertificationTest {
             id,
             "provider_id",
             name,
-            "profile_image_url"
+            "profile_image_url",
+            LocalDateTime.now().plusHours(0)
         );
     }
 
@@ -66,7 +69,8 @@ class DailyTodoCertificationTest {
             dailyTodo,
             reviewer,
             "인증함!",
-            "https://인증.png"
+            "https://인증.png",
+            LocalDateTime.now().plusHours(2)
         );
     }
 
@@ -91,7 +95,8 @@ class DailyTodoCertificationTest {
             dailyTodo,
             reviewer,
             certifyContent,
-            certifyMediaUrl
+            certifyMediaUrl,
+            LocalDateTime.now().plusHours(2)
         ))
         .doesNotThrowAnyException();
     }
@@ -110,7 +115,8 @@ class DailyTodoCertificationTest {
             null,
             reviewer,
             certifyContent,
-            certifyMediaUrl
+            certifyMediaUrl,
+            LocalDateTime.now().plusHours(2)
         ))
             .isInstanceOf(InvalidDailyTodoCertificationException.class)
             .hasMessage("데일리 투두 인증 생성에 데일리 투두로 null을 입력할 수 없습니다.");
@@ -139,7 +145,8 @@ class DailyTodoCertificationTest {
             dailyTodo,
             writerMyself,
             certifyContent,
-            certifyMediaUrl
+            certifyMediaUrl,
+            LocalDateTime.now().plusHours(2)
         ))
             .isInstanceOf(InvalidDailyTodoCertificationException.class)
             .hasMessage(String.format("데일리 투두 인증 검사자로 본인을 지정할 수 없습니다. (%s)", writerMyself));
@@ -166,7 +173,8 @@ class DailyTodoCertificationTest {
             dailyTodo,
             writer,
             certifyContent,
-            certifyMediaUrl
+            certifyMediaUrl,
+            LocalDateTime.now().plusHours(2)
         ))
             .isInstanceOf(InvalidDailyTodoCertificationException.class)
             .hasMessage("데일리 투두 인증 내용으로 null 혹은 공백을 입력할 수 없습니다. (%s)", certifyContent);
@@ -193,7 +201,8 @@ class DailyTodoCertificationTest {
             dailyTodo,
             writer,
             certifyContent,
-            certifyMediaUrl
+            certifyMediaUrl,
+            LocalDateTime.now().plusHours(2)
         ))
             .isInstanceOf(InvalidDailyTodoCertificationException.class)
             .hasMessage(String.format("데일리 투두 인증 내용은 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_CONTENT_LENGTH, certifyContent.length(), certifyContent));
@@ -220,7 +229,8 @@ class DailyTodoCertificationTest {
             dailyTodo,
             writer,
             certifyContent,
-            certifyMediaUrl
+            certifyMediaUrl,
+            LocalDateTime.now().plusHours(2)
         ))
             .isInstanceOf(InvalidDailyTodoCertificationException.class)
             .hasMessage(String.format("데일리 투두 인증 미디어 url로 null 혹은 공백을 입력할 수 없습니다. (%s)", certifyMediaUrl));

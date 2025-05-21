@@ -20,7 +20,6 @@ import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
 import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
-import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.fake.FakeRandomGenerator;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
@@ -53,7 +52,8 @@ class DailyTodoServiceTest {
             null,
             "provider_id",
             "성욱쨩",
-            "profile_image_url"
+            "profile_image_url",
+            LocalDateTime.now()
         );
     }
 
@@ -62,7 +62,8 @@ class DailyTodoServiceTest {
             null,
             "provider_id " + name,
             name,
-            "profile_image_url " + name
+            "profile_image_url " + name,
+            LocalDateTime.now()
         );
     }
 
@@ -74,7 +75,9 @@ class DailyTodoServiceTest {
             LocalDate.now(),
             LocalDate.now().plusDays(7),
             "join_code",
-            ChallengeGroupStatus.RUNNING);
+            ChallengeGroupStatus.RUNNING,
+            LocalDateTime.now().plusHours(1)
+        );
     }
 
     private static ChallengeGroup createChallengeGroup(final ChallengeGroupStatus status) {
@@ -85,11 +88,13 @@ class DailyTodoServiceTest {
             LocalDate.now(),
             LocalDate.now().plusDays(7),
             "join_code",
-            status);
+            status,
+            LocalDateTime.now().plusHours(1)
+        );
     }
 
     private static ChallengeGroupMember createChallengeGroupMember(final ChallengeGroup challengeGroup, final Member member) {
-        return new ChallengeGroupMember(null, challengeGroup, member);
+        return new ChallengeGroupMember(null, challengeGroup, member, LocalDateTime.now().plusDays(1));
     }
 
     private static DailyTodo createDailyTodo(
@@ -232,7 +237,9 @@ class DailyTodoServiceTest {
             null,
             "other_provider_id",
             "이상한 사람",
-            "other_profile_image_url");
+            "other_profile_image_url",
+            LocalDateTime.now()
+        );
         memberRepository.save(otherMember);
 
         final Long memberId = otherMember.getId();

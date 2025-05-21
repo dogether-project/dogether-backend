@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface DailyTodoRepository extends JpaRepository<DailyTodo, Long> {
 
-    List<DailyTodo> findAllByCreatedAtBetweenAndChallengeGroupAndMember(
+    List<DailyTodo> findAllByWrittenAtBetweenAndChallengeGroupAndMember(
         LocalDateTime startDateTime,
         LocalDateTime endDateTime,
         ChallengeGroup challengeGroup,
@@ -23,14 +23,14 @@ public interface DailyTodoRepository extends JpaRepository<DailyTodo, Long> {
         Member member
     );
 
-    List<DailyTodo> findAllByChallengeGroupAndMemberAndCreatedAtBetween(
+    List<DailyTodo> findAllByChallengeGroupAndMemberAndWrittenAtBetween(
         ChallengeGroup challengeGroup,
         Member member,
         LocalDateTime startDateTime,
         LocalDateTime endDateTime
     );
 
-    List<DailyTodo> findAllByChallengeGroupAndMemberAndCreatedAtBetweenAndStatus(
+    List<DailyTodo> findAllByChallengeGroupAndMemberAndWrittenAtBetweenAndStatus(
         ChallengeGroup challengeGroup,
         Member member,
         LocalDateTime startDateTime,
@@ -38,7 +38,7 @@ public interface DailyTodoRepository extends JpaRepository<DailyTodo, Long> {
         DailyTodoStatus status
     );
 
-    boolean existsByChallengeGroupAndMemberAndCreatedAtBetween(
+    boolean existsByChallengeGroupAndMemberAndWrittenAtBetween(
         ChallengeGroup challengeGroup,
         Member member,
         LocalDateTime startOfDay,

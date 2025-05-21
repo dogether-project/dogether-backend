@@ -1,5 +1,6 @@
 package site.dogether.challengegroup.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import lombok.ToString;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.member.entity.Member;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @ToString
@@ -38,18 +40,23 @@ public class ChallengeGroupMember extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     public ChallengeGroupMember(final ChallengeGroup challengeGroup, final Member member) {
-        this(null, challengeGroup, member);
+        this(null, challengeGroup, member, LocalDateTime.now());
     }
 
     public ChallengeGroupMember(
         final Long id,
         final ChallengeGroup challengeGroup,
-        final Member member
+        final Member member,
+        final LocalDateTime createdAt
     ) {
         this.id = id;
         this.challengeGroup = challengeGroup;
         this.member = member;
+        this.createdAt = createdAt;
     }
 
     @Override
