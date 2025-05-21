@@ -101,7 +101,7 @@ class DailyTodoServiceTest {
         final ChallengeGroup challengeGroup,
         final Member member,
         final DailyTodoStatus status,
-        final String rejectReason,
+        final String reviewFeedback,
         final LocalDateTime writtenAt
     ) {
         return new DailyTodo(
@@ -110,7 +110,7 @@ class DailyTodoServiceTest {
             member,
             "치킨 먹기",
             status,
-            rejectReason,
+            reviewFeedback,
             writtenAt
         );
     }
