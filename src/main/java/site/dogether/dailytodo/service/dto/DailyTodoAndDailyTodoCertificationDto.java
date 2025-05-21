@@ -51,11 +51,11 @@ public class DailyTodoAndDailyTodoCertificationDto {
         return Optional.of(dailyTodoCertification.getMediaUrl());
     }
 
-    public Optional<String> findRejectReason() {
+    public Optional<String> findReviewFeedback() {
         if (dailyTodoCertification == null || !dailyTodo.getStatus().isReviewResultStatus()) {
             return Optional.empty();
         }
 
-        return dailyTodo.getRejectReason();
+        return dailyTodo.getReviewFeedback();
     }
 }

@@ -265,7 +265,7 @@ public class MemberActivityService {
                 todo.getStatus().name(),
                 certification.getContent(),
                 certification.getMediaUrl(),
-                todo.getRejectReason().orElse(null)
+                todo.getReviewFeedback().orElse(null)
         );
     }
 

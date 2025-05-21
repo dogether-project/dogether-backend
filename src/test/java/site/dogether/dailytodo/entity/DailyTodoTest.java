@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static site.dogether.dailytodo.entity.DailyTodo.MAXIMUM_ALLOWED_CONTENT_LENGTH;
-import static site.dogether.dailytodo.entity.DailyTodo.MAXIMUM_ALLOWED_REJECT_REASON_LENGTH;
+import static site.dogether.dailytodo.entity.DailyTodo.MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH;
 import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
 
 class DailyTodoTest {
@@ -69,7 +69,7 @@ class DailyTodoTest {
         final ChallengeGroup challengeGroup,
         final Member member,
         final DailyTodoStatus status,
-        final String rejectReason,
+        final String reviewFeedback,
         final LocalDateTime writtenAt
         ) {
         return new DailyTodo(
@@ -78,7 +78,7 @@ class DailyTodoTest {
             member,
             "치킨 먹기",
             status,
-            rejectReason,
+            reviewFeedback,
             writtenAt
         );
     }
@@ -115,7 +115,7 @@ class DailyTodoTest {
         final Member member = createMember();
         final String content = "치킨 먹기";
         final DailyTodoStatus status = REJECT;
-        final String rejectReason = "그딴게 치킨?";
+        final String reviewFeedback = "그딴게 치킨?";
         final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When && Then
@@ -125,7 +125,7 @@ class DailyTodoTest {
             member,
             content,
             status,
-            rejectReason,
+            reviewFeedback,
             writtenAt))
             .doesNotThrowAnyException();
     }
@@ -145,7 +145,7 @@ class DailyTodoTest {
         assertSoftly(softly -> {
             assertThat(created.getId()).isNull();
             assertThat(created.getStatus()).isEqualTo(CERTIFY_PENDING);
-            assertThat(created.getRejectReason()).isEmpty();
+            assertThat(created.getReviewFeedback()).isEmpty();
         });
     }
 
@@ -210,11 +210,11 @@ class DailyTodoTest {
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
         final String content = "치킨 먹기";
-        final String rejectReason = "그딴게 치킨?";
+        final String reviewFeedback = "그딴게 치킨?";
         final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, null, rejectReason, writtenAt))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, null, reviewFeedback, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
             .hasMessage("데일리 투두 상태로 null을 입력할 수 없습니다.");
     }
@@ -222,7 +222,7 @@ class DailyTodoTest {
     @DisplayName("데일리 투두가 노인정 상태일 때 노인정 사유로 null 혹은 공백이 입력되면 예외가 발생한다.")
     @NullAndEmptySource
     @ParameterizedTest()
-    void throwExceptionWhenStatusRejectAndInputRejectReasonNullOrEmpty(final String rejectReason) {
+    void throwExceptionWhenStatusRejectAndInputReviewFeedbackNullOrEmpty(final String reviewFeedback) {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
@@ -230,25 +230,25 @@ class DailyTodoTest {
         final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, rejectReason, writtenAt))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, reviewFeedback, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
-            .hasMessage(String.format("노인정 사유로 null 혹은 공백을 입력할 수 없습니다. (%s)", rejectReason));
+            .hasMessage(String.format("검사 피드백으로 null 혹은 공백을 입력할 수 없습니다. (%s)", reviewFeedback));
     }
 
     @DisplayName("데일리 투두가 노인정 상태일 때 유효하지 않은 길이의 노인정 사유가 입력되면 예외가 발생한다.")
     @Test()
-    void throwExceptionWhenStatusRejectAndInputInvalidLengthRejectReason() {
+    void throwExceptionWhenStatusRejectAndInputInvalidLengthReviewFeedback() {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member member = createMember();
         final String content = "치킨 먹기";
-        final String rejectReason = "A".repeat(MAXIMUM_ALLOWED_REJECT_REASON_LENGTH + 1);
+        final String reviewFeedback = "A".repeat(MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH + 1);
         final LocalDateTime writtenAt = LocalDateTime.now();
 
         // When & Then
-        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, rejectReason, writtenAt))
+        assertThatThrownBy(() -> new DailyTodo(1L, challengeGroup, member, content, REJECT, reviewFeedback, writtenAt))
             .isInstanceOf(InvalidDailyTodoException.class)
-            .hasMessage(String.format("노인정 사유는 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REJECT_REASON_LENGTH, rejectReason.length(), rejectReason));
+            .hasMessage(String.format("검사 피드백은 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH, reviewFeedback.length(), reviewFeedback));
     }
 
     @DisplayName("생성자에 데일리 투두 작성일로 null을 입력하면 예외가 발생한다.")
@@ -286,15 +286,15 @@ class DailyTodoTest {
     }
 
     @DisplayName("데일리 투두 상태가 인증 대기중이 아니면 false를 반환한다.")
-    @MethodSource("dailyTodoStatusAndRejectReasonIgnoreCertifyPendingStatus")
+    @MethodSource("dailyTodoStatusAndReviewFeedbackIgnoreCertifyPendingStatus")
     @ParameterizedTest
-    void returnFalseWhenStatusIsNotCertifyPending(final DailyTodoStatus status, final String rejectReason) {
+    void returnFalseWhenStatusIsNotCertifyPending(final DailyTodoStatus status, final String reviewFeedback) {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
             createChallengeGroup(),
             createMember(),
             status,
-            rejectReason,
+            reviewFeedback,
             LocalDateTime.now()
         );
 
@@ -305,10 +305,10 @@ class DailyTodoTest {
         assertThat(isCertifyPending).isFalse();
     }
 
-    private static Stream<Arguments> dailyTodoStatusAndRejectReasonIgnoreCertifyPendingStatus() {
+    private static Stream<Arguments> dailyTodoStatusAndReviewFeedbackIgnoreCertifyPendingStatus() {
         return Stream.of(
             Arguments.of(REVIEW_PENDING, null),
-            Arguments.of(APPROVE, null),
+            Arguments.of(APPROVE, "우왕!"),
             Arguments.of(REJECT, "노인정!")
         );
     }
@@ -368,9 +368,9 @@ class DailyTodoTest {
     }
 
     @DisplayName("인증 대기 상태가 아닌 투두를 인증 하려고 하면 예외가 발생한다.")
-    @MethodSource("dailyTodoStatusAndRejectReasonIgnoreCertifyPendingStatus")
+    @MethodSource("dailyTodoStatusAndReviewFeedbackIgnoreCertifyPendingStatus")
     @ParameterizedTest
-    void throwExceptionWhenCertifyNotCertifyPendingStatus(final DailyTodoStatus status, final String rejectReason) {
+    void throwExceptionWhenCertifyNotCertifyPendingStatus(final DailyTodoStatus status, final String reviewFeedback) {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member writer = createMember(1L, "투두 작성자");
@@ -378,7 +378,7 @@ class DailyTodoTest {
             challengeGroup,
             writer,
             status,
-            rejectReason,
+            reviewFeedback,
             LocalDateTime.now()
         );
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
@@ -418,7 +418,7 @@ class DailyTodoTest {
             .hasMessage(String.format("데일리 투두가 작성된 당일에만 투두 인증을 생성할 수 있습니다. (%s)", dailyTodo));
     }
 
-    @DisplayName("인정에 대해 유효한 검사 값(검사자, 투두 인증, 검사 결과, 노인정 사유)을 입력하면 투두 상태를 인정으로 변경하고 노인정 사유는 조회시 Optional.empty()를 반환한다.")
+    @DisplayName("인정에 대해 유효한 검사 값(검사자, 투두 인증, 검사 결과, 피드백)을 입력하면 투두 상태를 인정으로 변경하고 노인정 사유는 조회시 Optional.empty()를 반환한다.")
     @Test
     void reviewSuccessInputApprove() {
         // Given
@@ -430,15 +430,15 @@ class DailyTodoTest {
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final DailyTodoStatus reviewResult = APPROVE;
-        final String rejectReason = null;
+        final String reviewFeedback = "우왕 쩐당";
 
         // When
-        dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, rejectReason, dailyTodoStats);
+        dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, reviewFeedback, dailyTodoStats);
 
         // Then
         assertSoftly(softly -> {
             softly.assertThat(dailyTodo.getStatus()).isEqualTo(APPROVE);
-            softly.assertThat(dailyTodo.getRejectReason()).isEmpty();
+            softly.assertThat(dailyTodo.getReviewFeedback().get()).isEqualTo(reviewFeedback);
         });
     }
 
@@ -454,16 +454,16 @@ class DailyTodoTest {
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final DailyTodoStatus reviewResult = REJECT;
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         // When
-        dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, rejectReason, dailyTodoStats);
+        dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, reviewFeedback, dailyTodoStats);
 
         // Then
         assertSoftly(softly -> {
             softly.assertThat(dailyTodo.getStatus()).isEqualTo(REJECT);
-            softly.assertThat(dailyTodo.getRejectReason()).isNotEmpty();
-            softly.assertThat(dailyTodo.getRejectReason().get()).isEqualTo(rejectReason);
+            softly.assertThat(dailyTodo.getReviewFeedback()).isNotEmpty();
+            softly.assertThat(dailyTodo.getReviewFeedback().get()).isEqualTo(reviewFeedback);
         });
     }
 
@@ -479,12 +479,12 @@ class DailyTodoTest {
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final DailyTodoStatus reviewResult = REJECT;
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         final Member otherMember = createMember(3L, "이상한 사람");
 
         // When & Then
-        assertThatThrownBy(() -> dailyTodo.review(otherMember, dailyTodoCertification, reviewResult, rejectReason, dailyTodoStats))
+        assertThatThrownBy(() -> dailyTodo.review(otherMember, dailyTodoCertification, reviewResult, reviewFeedback, dailyTodoStats))
             .isInstanceOf(NotDailyTodoCertificationReviewerException.class)
             .hasMessage(String.format("해당 투두 인증 검사자 외 멤버는 검사를 수행할 수 없습니다. (%s) (%s)", otherMember, dailyTodoCertification));
     }
@@ -495,16 +495,16 @@ class DailyTodoTest {
         // Given
         final ChallengeGroup challengeGroup = createChallengeGroup();
         final Member writer = createMember(1L, "투두 작성자");
-        final DailyTodo dailyTodo = createDailyTodo(challengeGroup, writer, APPROVE, null, LocalDateTime.now().minusHours(2));
+        final DailyTodo dailyTodo = createDailyTodo(challengeGroup, writer, APPROVE, "우왕 쩐당", LocalDateTime.now().minusHours(2));
         final Member reviewer = createMember(2L, "인증 검사자");
         final DailyTodoCertification dailyTodoCertification = createDailyTodoCertification(dailyTodo, reviewer);
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
         final DailyTodoStatus reviewResult = REJECT;
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         // When & Then
-        assertThatThrownBy(() -> dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, rejectReason, dailyTodoStats))
+        assertThatThrownBy(() -> dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, reviewFeedback, dailyTodoStats))
             .isInstanceOf(NotReviewPendingDailyTodoException.class)
             .hasMessage(String.format("검사 대기가 아닌 투두는 검사를 수행할 수 없습니다. (%s)", dailyTodo));
     }
@@ -521,10 +521,10 @@ class DailyTodoTest {
         final DailyTodoCertification dailyTodoCertification = createDailyTodoCertification(dailyTodo, reviewer);
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(writer);
 
-        final String rejectReason = "이게 최선이야?";
+        final String reviewFeedback = "이게 최선이야?";
 
         // When & Then
-        assertThatThrownBy(() -> dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, rejectReason, dailyTodoStats))
+        assertThatThrownBy(() -> dailyTodo.review(reviewer, dailyTodoCertification, reviewResult, reviewFeedback, dailyTodoStats))
             .isInstanceOf(InvalidReviewResultException.class)
             .hasMessage(String.format("검사 결과는 인정 혹은 노인정만 입력할 수 있습니다. (%s) (%s)", reviewResult, dailyTodo));
     }
