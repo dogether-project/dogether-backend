@@ -148,7 +148,6 @@ class DailyTodoCertificationServiceTest {
         dailyTodoStatsRepository.save(createDailyTodoStats(writer));
         dailyTodoHistoryRepository.save(createDailyTodoHistory(dailyTodo));
 
-
         final Long reviewerId = reviewer.getId();
         final Long dailyTodoCertificationId = dailyTodoCertification.getId();
         final String reviewResult = "reject";
