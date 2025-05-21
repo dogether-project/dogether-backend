@@ -261,7 +261,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                 new TodoHistoryDto(6L, "치킨 먹기", REJECT, "개꿀맛 치킨 냠냠", "https://치킨.png", false)
             )
         );
-        given(dailyTodoHistoryService.findTargetMemberTodayTodoHistories(any(), any(), any()))
+        given(dailyTodoHistoryService.findAllTodayTodoHistories(any(), any(), any()))
             .willReturn(serviceMockResponse);
 
         mockMvc.perform(

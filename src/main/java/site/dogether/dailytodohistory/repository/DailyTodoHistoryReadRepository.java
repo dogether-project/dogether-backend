@@ -8,4 +8,6 @@ import site.dogether.member.entity.Member;
 public interface DailyTodoHistoryReadRepository extends JpaRepository<DailyTodoHistoryRead, Long> {
 
     boolean existsByMemberAndDailyTodoHistory(Member member, DailyTodoHistory dailyTodoHistory);
+
+    void deleteAllByDailyTodoHistory(DailyTodoHistory dailyTodoHistory);
 }
