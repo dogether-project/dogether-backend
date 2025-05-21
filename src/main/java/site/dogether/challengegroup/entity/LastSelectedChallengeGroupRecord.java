@@ -49,4 +49,8 @@ public class LastSelectedChallengeGroupRecord extends BaseEntity {
     public void updateChallengeGroup(final ChallengeGroup challengeGroup) {
         this.challengeGroup = challengeGroup;
     }
+
+    public Long getChallengeGroupId() {
+        return challengeGroup.getId();
+    }
 }
