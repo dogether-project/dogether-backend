@@ -1,5 +1,6 @@
 package site.dogether.dailytodo.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ import site.dogether.dailytodo.exception.NotDailyTodoWriterException;
 import site.dogether.dailytodo.exception.NotReviewPendingDailyTodoException;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
+import site.dogether.dailytodohistory.entity.DailyTodoHistory;
 import site.dogether.member.entity.Member;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 
@@ -66,6 +69,14 @@ public class DailyTodo extends BaseEntity {
 
     @Column(name = "written_at", nullable = false, updatable = false)
     private LocalDateTime writtenAt;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "dailyTodo", cascade = CascadeType.REMOVE)
+    private DailyTodoHistory dailyTodoHistory;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "dailyTodo", cascade = CascadeType.REMOVE)
+    private DailyTodoCertification dailyTodoCertification;
 
     public DailyTodo(
         final ChallengeGroup challengeGroup,
