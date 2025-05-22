@@ -1,10 +1,11 @@
 package site.dogether.notification.repository;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.notification.entity.NotificationToken;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface NotificationTokenRepository extends JpaRepository<NotificationToken, Long> {
 
@@ -12,9 +13,9 @@ public interface NotificationTokenRepository extends JpaRepository<NotificationT
 
     void deleteAllByValue(String value);
 
-    boolean existsByMemberAndValue(Member member, String value);
-
     Optional<NotificationToken> findByMemberAndValue(Member member, String value);
 
-    List<NotificationToken> findAllByMember(Member member);
+    boolean existsByMember(Member member);
+
+    void deleteAllByMember(Member member);
 }
