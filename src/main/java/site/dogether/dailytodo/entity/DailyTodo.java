@@ -281,4 +281,8 @@ public class DailyTodo extends BaseEntity {
     public String getMemberName() {
         return member.getName();
     }
+
+    public LocalDateTime getWrittenAt() {
+        return writtenAt;
+    }
 }

@@ -16,7 +16,6 @@ import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodohistory.entity.DailyTodoHistory;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
@@ -60,8 +59,9 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodo> dailyTodos;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<DailyTodoHistory> dailyTodoHistory;
+    // TODO : 대안책이 없는지 영재님이랑 논의
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+//    private List<DailyTodoHistory> dailyTodoHistory;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodoHistoryRead> dailyTodoHistoryRead;

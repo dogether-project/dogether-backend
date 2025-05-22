@@ -73,7 +73,7 @@ public class DailyTodoController {
         @PathVariable final Long groupId,
         @PathVariable final Long targetMemberId
     ) {
-        final FindTargetMemberTodayTodoHistoriesDto targetMemberTodayTodoHistories = dailyTodoHistoryService.findTargetMemberTodayTodoHistories(memberId, groupId, targetMemberId);
+        final FindTargetMemberTodayTodoHistoriesDto targetMemberTodayTodoHistories = dailyTodoHistoryService.findAllTodayTodoHistories(memberId, groupId, targetMemberId);
         final GetChallengeGroupMemberTodayTodoHistoryResponse response = GetChallengeGroupMemberTodayTodoHistoryResponse.from(targetMemberTodayTodoHistories);
         return ResponseEntity.ok(ApiResponse.successWithData(GET_CHALLENGE_GROUP_MEMBER_TODAY_TODO_HISTORY, response));
     }

@@ -20,6 +20,8 @@ import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
 import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
+import site.dogether.dailytodohistory.entity.DailyTodoHistory;
+import site.dogether.dailytodohistory.repository.DailyTodoHistoryRepository;
 import site.dogether.fake.FakeRandomGenerator;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
@@ -44,6 +46,7 @@ class DailyTodoServiceTest {
     @Autowired private ChallengeGroupMemberRepository challengeGroupMemberRepository;
     @Autowired private DailyTodoRepository dailyTodoRepository;
     @Autowired private DailyTodoStatsRepository dailyTodoStatsRepository;
+    @Autowired private DailyTodoHistoryRepository dailyTodoHistoryRepository;
     @Autowired private DailyTodoService dailyTodoService;
     @Autowired private FakeRandomGenerator randomGenerator;
 
@@ -123,6 +126,10 @@ class DailyTodoServiceTest {
                 2,
                 3
         );
+    }
+
+    private static DailyTodoHistory createDailyTodoHistory(final DailyTodo dailyTodo) {
+        return new DailyTodoHistory(dailyTodo);
     }
 
     @DisplayName("유효한 값을 입력하면 데일리 투두를 생성 후 저장한다.")
@@ -296,6 +303,7 @@ class DailyTodoServiceTest {
             LocalDateTime.now()
         ));
         dailyTodoStatsRepository.save(createDailyTodoStats(writer));
+        dailyTodoHistoryRepository.save(createDailyTodoHistory(dailyTodo));
 
         final Long writerId = writer.getId();
         final Long dailyTodoId = dailyTodo.getId();
@@ -334,6 +342,7 @@ class DailyTodoServiceTest {
             LocalDateTime.now()
         ));
         dailyTodoStatsRepository.save(createDailyTodoStats(writer));
+        dailyTodoHistoryRepository.save(createDailyTodoHistory(dailyTodo));
 
         randomGenerator.setResult(2); // 검사자로 썬이 선정되도록 조작
 

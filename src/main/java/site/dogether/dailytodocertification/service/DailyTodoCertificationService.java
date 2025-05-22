@@ -50,7 +50,7 @@ public class DailyTodoCertificationService {
 
         dailyTodo.review(reviewer, dailyTodoCertification, DailyTodoStatus.convertFromValue(reviewResult), reviewFeedback, dailyTodoStats);
 
-        dailyTodoHistoryService.saveDailyTodoHistory(dailyTodo, dailyTodoCertification);
+        dailyTodoHistoryService.updateDailyTodoHistory(dailyTodo);
         sendReviewResultNotificationToDailyTodoWriter(dailyTodo);
     }
 

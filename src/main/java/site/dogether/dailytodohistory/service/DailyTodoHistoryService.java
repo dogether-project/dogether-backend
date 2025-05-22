@@ -7,7 +7,7 @@ import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodocertification.entity.DailyTodoCertification;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodohistory.entity.DailyTodoHistory;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus;
@@ -34,36 +34,25 @@ public class DailyTodoHistoryService {
     private final MemberRepository memberRepository;
     private final DailyTodoHistoryRepository dailyTodoHistoryRepository;
     private final DailyTodoHistoryReadRepository dailyTodoHistoryReadRepository;
+    private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
 
     @Transactional
-    public void saveDailyTodoHistories(final List<DailyTodo> dailyTodos) {
+    public void initDailyTodoHistories(final List<DailyTodo> dailyTodos) {
         final List<DailyTodoHistory> dailyTodoHistories = dailyTodos.stream()
-            .map(dailyTodo -> new DailyTodoHistory(
-                dailyTodo.getChallengeGroup(),
-                dailyTodo.getMember(),
-                dailyTodo.getContent(),
-                dailyTodo.getStatus(),
-                null,
-                null
-            ))
+            .map(DailyTodoHistory::new)
             .toList();
         dailyTodoHistoryRepository.saveAll(dailyTodoHistories);
     }
 
     @Transactional
-    public void saveDailyTodoHistory(final DailyTodo dailyTodo, final DailyTodoCertification dailyTodoCertification) {
-        final DailyTodoHistory dailyTodoHistory = new DailyTodoHistory(
-            dailyTodo.getChallengeGroup(),
-            dailyTodo.getMember(),
-            dailyTodo.getContent(),
-            dailyTodo.getStatus(),
-            dailyTodoCertification.getContent(),
-            dailyTodoCertification.getMediaUrl()
-        );
-        dailyTodoHistoryRepository.save(dailyTodoHistory);
+    public void updateDailyTodoHistory(final DailyTodo dailyTodo) {
+        final DailyTodoHistory dailyTodoHistory = dailyTodoHistoryRepository.findByDailyTodo(dailyTodo)
+            .orElseThrow(() -> new DailyTodoHistoryNotFoundException(String.format("데일리 투두의 히스토리가 존재하지 않습니다. (%s)", dailyTodo)));
+        dailyTodoHistory.updateEventTime();
+        dailyTodoHistoryReadRepository.deleteAllByDailyTodoHistory(dailyTodoHistory);
     }
 
-    public FindTargetMemberTodayTodoHistoriesDto findTargetMemberTodayTodoHistories(
+    public FindTargetMemberTodayTodoHistoriesDto findAllTodayTodoHistories(
         final Long viewerId,
         final Long challengeGroupId,
         final Long targetMemberId
@@ -71,10 +60,7 @@ public class DailyTodoHistoryService {
         final ChallengeGroup challengeGroup = getChallengeGroup(challengeGroupId);
         final Member viewer = getMember(viewerId);
         final Member targetMember = getMember(targetMemberId);
-        final List<DailyTodoHistory> dailyTodoHistories = findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(
-            challengeGroup,
-            targetMember
-        );
+        final List<DailyTodoHistory> dailyTodoHistories = findAllHistoryOfWrittenTodayTodoByChallengeGroupAndTargetMember(challengeGroup, targetMember);
         final List<TodoHistoryDto> todoHistoryDtos = dailyTodoHistories.stream()
             .map(history -> convertDtoFromHistory(history, viewer))
             .toList();
@@ -93,9 +79,9 @@ public class DailyTodoHistoryService {
             .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
-    private List<DailyTodoHistory> findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(final ChallengeGroup challengeGroup, final Member targetMember) {
+    private List<DailyTodoHistory> findAllHistoryOfWrittenTodayTodoByChallengeGroupAndTargetMember(final ChallengeGroup challengeGroup, final Member targetMember) {
         final LocalDate todayDate = LocalDate.now();
-        return dailyTodoHistoryRepository.findAllByChallengeGroupAndMemberAndEventAtBetween(
+        return dailyTodoHistoryRepository.findAllByDailyTodo_ChallengeGroupAndDailyTodo_MemberAndDailyTodo_WrittenAtBetweenOrderByEventTimeAsc(
             challengeGroup,
             targetMember,
             todayDate.atStartOfDay(),
@@ -104,8 +90,23 @@ public class DailyTodoHistoryService {
     }
 
     private TodoHistoryDto convertDtoFromHistory(final DailyTodoHistory history, final Member viewer) {
+        final DailyTodo dailyTodo = history.getDailyTodo();
         final boolean isHistoryRead = checkMemberReadDailyTodoHistory(viewer, history);
-        return TodoHistoryDto.fromTodoHistory(history, isHistoryRead);
+        return dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)
+            .map(dailyTodoCertification -> new TodoHistoryDto(
+                history.getId(),
+                dailyTodo.getContent(),
+                dailyTodo.getStatus(),
+                dailyTodoCertification.getContent(),
+                dailyTodoCertification.getMediaUrl(),
+                isHistoryRead))
+            .orElse(new TodoHistoryDto(
+                history.getId(),
+                dailyTodo.getContent(),
+                dailyTodo.getStatus(),
+                null,
+                null,
+                isHistoryRead));
     }
 
     private boolean checkMemberReadDailyTodoHistory(final Member member, final DailyTodoHistory dailyTodoHistory) {
@@ -149,7 +150,7 @@ public class DailyTodoHistoryService {
         final ChallengeGroup challengeGroup,
         final Member targetMember
     ) {
-        final List<DailyTodoHistory> dailyTodoHistories = findAllTodayDailyTodoHistoryByChallengeGroupAndTargetMember(challengeGroup, targetMember);
+        final List<DailyTodoHistory> dailyTodoHistories = findAllHistoryOfWrittenTodayTodoByChallengeGroupAndTargetMember(challengeGroup, targetMember);
 
         if (dailyTodoHistories.isEmpty()) {
             return DailyTodoHistoryReadStatus.NULL;
