@@ -136,12 +136,12 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
-    private void validateReviewFeedback(final DailyTodoStatus status, final String reviewFeedback) {
-        if (status.isReviewResultStatus() && (reviewFeedback == null || reviewFeedback.isBlank())) {
+    private void validateReviewFeedback(final DailyTodoStatus reviewResult, final String reviewFeedback) {
+        if (reviewResult == REJECT && (reviewFeedback == null || reviewFeedback.isBlank())) {
             throw new InvalidDailyTodoException(String.format("검사 피드백으로 null 혹은 공백을 입력할 수 없습니다. (%s)", reviewFeedback));
         }
 
-        if (status.isReviewResultStatus() && reviewFeedback.length() > MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH) {
+        if (reviewResult == REJECT && reviewFeedback.length() > MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH) {
             throw new InvalidDailyTodoException(String.format("검사 피드백은 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH, reviewFeedback.length(), reviewFeedback));
         }
     }
@@ -280,9 +280,5 @@ public class DailyTodo extends BaseEntity {
 
     public String getMemberName() {
         return member.getName();
-    }
-
-    public LocalDateTime getWrittenAt() {
-        return writtenAt;
     }
 }
