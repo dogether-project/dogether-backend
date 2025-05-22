@@ -2,9 +2,12 @@ package site.dogether.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.controller.request.LoginRequest;
 import site.dogether.auth.controller.request.WithdrawRequest;
 import site.dogether.auth.controller.response.LoginResponse;
@@ -41,11 +44,5 @@ public class AuthController {
     ) {
         authService.withdraw(memberId, request);
         return ResponseEntity.ok(ApiResponse.success(WITHDRAW));
-    }
-
-    @GetMapping("/issue-test-jwt/{testUserId}")
-    @Profile("local")
-    public String issueTestUserJwt(@PathVariable final Long testUserId) {
-        return authService.issueTestUserJwt(testUserId);
     }
 }

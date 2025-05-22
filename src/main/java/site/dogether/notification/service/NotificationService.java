@@ -7,12 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.member.service.MemberService;
 import site.dogether.notification.entity.NotificationToken;
+import site.dogether.notification.exception.InvalidNotificationTokenException;
 import site.dogether.notification.firebase.sender.SimpleFcmNotificationRequest;
 import site.dogether.notification.repository.NotificationTokenRepository;
 import site.dogether.notification.sender.NotificationSender;
-import site.dogether.notification.exception.InvalidNotificationTokenException;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -50,8 +49,9 @@ public class NotificationService {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
         final Member member = getMember(memberId);
-        if (notificationTokenRepository.existsByMemberAndValue(member, notificationToken)) {
-            return;
+        if (notificationTokenRepository.existsByMember(member)) {
+            log.info("회원의 기존 토큰 제거 ({})", memberId);
+            notificationTokenRepository.deleteAllByMember(member);
         }
 
         final NotificationToken notificationTokenJpaEntity = new NotificationToken(member, notificationToken);
