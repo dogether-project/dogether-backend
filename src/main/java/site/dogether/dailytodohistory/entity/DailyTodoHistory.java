@@ -1,5 +1,6 @@
 package site.dogether.dailytodohistory.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -7,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -17,6 +19,7 @@ import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ToString
 @Getter
@@ -35,6 +38,10 @@ public class DailyTodoHistory extends BaseEntity {
 
     @Column(name = "event_time", nullable = false)
     private LocalDateTime eventTime;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "dailyTodoHistory", cascade = CascadeType.REMOVE)
+    private List<DailyTodoHistoryRead> dailyTodoHistoryReads;
 
     public DailyTodoHistory(final DailyTodo dailyTodo) {
         this(null, dailyTodo, LocalDateTime.now());

@@ -96,14 +96,14 @@ public class DailyTodoHistoryService {
             .map(dailyTodoCertification -> new TodoHistoryDto(
                 history.getId(),
                 dailyTodo.getContent(),
-                dailyTodo.getStatus(),
+                dailyTodoCertification.getReviewStatus().name(),
                 dailyTodoCertification.getContent(),
                 dailyTodoCertification.getMediaUrl(),
                 isHistoryRead))
             .orElse(new TodoHistoryDto(
                 history.getId(),
                 dailyTodo.getContent(),
-                dailyTodo.getStatus(),
+                dailyTodo.getStatus().name(),
                 null,
                 null,
                 isHistoryRead));

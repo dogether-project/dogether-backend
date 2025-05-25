@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
@@ -28,7 +27,6 @@ import static site.dogether.dailytodocertification.controller.response.DailyTodo
 @RestController
 public class DailyTodoCertificationController {
 
-    private final DailyTodoService dailyTodoService;
     private final DailyTodoCertificationService dailyTodoCertificationService;
 
     @PostMapping("/todos/{todoId}/certify")
@@ -37,7 +35,7 @@ public class DailyTodoCertificationController {
         @PathVariable final Long todoId,
         @RequestBody final CertifyDailyTodoRequest request
     ) {
-        dailyTodoService.certifyDailyTodo(memberId, todoId, request.content(), request.mediaUrl());
+        dailyTodoCertificationService.certifyDailyTodo(memberId, todoId, request.content(), request.mediaUrl());
         return ResponseEntity.ok(ApiResponse.success(CERTIFY_DAILY_TODO));
     }
 
@@ -60,7 +58,7 @@ public class DailyTodoCertificationController {
     public ResponseEntity<ApiResponse<GetDailyTodoCertificationsForReviewResponse>> getDailyTodoCertificationsForReview(
         @Authenticated Long memberId
     ) {
-        final List<DailyTodoCertificationDto> todoCertificationsForReview = dailyTodoCertificationService.findAllTodoCertificationsForReview(memberId);
+        final List<DailyTodoCertificationDto> todoCertificationsForReview = dailyTodoCertificationService.findAllTodoCertificationsToReviewer(memberId);
         final GetDailyTodoCertificationsForReviewResponse response = GetDailyTodoCertificationsForReviewResponse.from(todoCertificationsForReview);
 
         return ResponseEntity.ok(ApiResponse.successWithData(GET_DAILY_TODO_CERTIFICATIONS_FOR_REVIEW, response));

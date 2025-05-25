@@ -27,6 +27,8 @@ import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.service.DailyTodoService;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
@@ -48,6 +50,7 @@ public class ChallengeGroupService {
     private final ChallengeGroupRepository challengeGroupRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final LastSelectedChallengeGroupRecordRepository lastSelectedChallengeGroupRecordRepository;
+    private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final DailyTodoService dailyTodoService;
     private final DailyTodoHistoryService dailyTodoHistoryService;
     private final NotificationService notificationService;
@@ -281,12 +284,15 @@ public class ChallengeGroupService {
         return groupMembers.stream()
             .map(groupMember -> {
                 final ChallengeGroup challengeGroup = groupMember.getChallengeGroup();
+                final Member member = groupMember.getMember();
+                final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
                 final List<DailyTodo> todos = dailyTodoService.getMemberTodos(challengeGroup, groupMember.getMember());
                 final int achievementRate = AchievementRateCalculator.calculate(
                     todos,
                     groupMember.getCreatedAt(),
                     challengeGroup.getStartAt(),
-                    challengeGroup.getEndAt()
+                    challengeGroup.getEndAt(),
+                    dailyTodoCertificationCount
                 );
 
                 return new ChallengeGroupMemberWithAchievementRateDto(groupMember, achievementRate);

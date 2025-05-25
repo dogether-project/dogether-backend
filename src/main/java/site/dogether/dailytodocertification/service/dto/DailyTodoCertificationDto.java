@@ -15,7 +15,7 @@ public record DailyTodoCertificationDto(
             dailyTodoCertification.getContent(),
             dailyTodoCertification.getMediaUrl(),
             dailyTodoCertification.getDailyTodoContent(),
-            dailyTodoCertification.getDoerName()
+            dailyTodoCertification.getDailyTodoWriterName()
         );
     }
 }

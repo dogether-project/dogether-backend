@@ -14,7 +14,7 @@ import site.dogether.dailytodo.exception.InvalidReviewResultException;
 import site.dogether.dailytodo.exception.NotCertifyPendingDailyTodoException;
 import site.dogether.dailytodo.exception.NotCreatedTodayDailyTodoException;
 import site.dogether.dailytodo.exception.NotDailyTodoWriterException;
-import site.dogether.dailytodo.exception.NotReviewPendingDailyTodoException;
+import site.dogether.dailytodo.exception.AlreadyReviewedDailyTodoCertificationException;
 import site.dogether.dailytodohistory.exception.DailyTodoHistoryAlreadyReadException;
 import site.dogether.dailytodohistory.exception.DailyTodoHistoryNotFoundException;
 
@@ -75,7 +75,7 @@ public class DailyTodoExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleNotReviewPendingDailyTodoException(final NotReviewPendingDailyTodoException e) {
+    public ResponseEntity<ApiResponse<Void>> handleNotReviewPendingDailyTodoException(final AlreadyReviewedDailyTodoCertificationException e) {
         log.info("handle NotReviewPendingDailyTodoException", e);
         return ResponseEntity.badRequest()
             .body(ApiResponse.fail(NOT_REVIEW_PENDING_DAILY_TODO, e.getMessage()));

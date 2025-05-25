@@ -13,26 +13,20 @@ import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodos;
 import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
-import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
+import site.dogether.dailytodo.repository.DailyTodoAndDailyTodoCertification;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
-import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
+import site.dogether.dailytodo.service.dto.DailyTodoDto;
 import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
-import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.entity.DailyTodoStats;
-import site.dogether.memberactivity.exception.DailyTodoStatsNotFoundException;
-import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
-import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
 
 import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
@@ -47,11 +41,7 @@ public class DailyTodoService {
     private final MemberRepository memberRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
-    private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
-    private final DailyTodoStatsRepository dailyTodoStatsRepository;
-    private final ReviewerPicker reviewerPicker;
     private final DailyTodoHistoryService dailyTodoHistoryService;
-    private final NotificationService notificationService;
 
     @Transactional
     public void saveDailyTodos(
@@ -119,53 +109,6 @@ public class DailyTodoService {
         return new DailyTodos(dailyTodos);
     }
 
-    @Transactional
-    public void certifyDailyTodo(
-        final Long memberId,
-        final Long dailyTodoId,
-        final String certifyContent,
-        final String certifyMediaUrl
-    ) {
-        final Member writer = getMember(memberId);
-        final DailyTodo dailyTodo = getDailyTodo(dailyTodoId);
-        final ChallengeGroup challengeGroup = dailyTodo.getChallengeGroup();
-
-        validateMemberIsInChallengeGroup(challengeGroup, writer);
-        validateChallengeGroupIsRunning(challengeGroup);
-
-        final DailyTodoStats dailyTodoStats = dailyTodoStatsRepository.findByMember(writer)
-                .orElseThrow(() -> new DailyTodoStatsNotFoundException(String.format("존재하지 않는 데일리 투두 통계입니다. (%s)", dailyTodo.getMember())));
-
-        final Member reviewer = reviewerPicker.pickReviewerInChallengeGroup(challengeGroup, writer).orElse(null);
-        final DailyTodoCertification dailyTodoCertification = dailyTodo.certify(writer, reviewer, certifyContent, certifyMediaUrl, dailyTodoStats);
-        dailyTodoCertificationRepository.save(dailyTodoCertification);
-
-        dailyTodoHistoryService.updateDailyTodoHistory(dailyTodo);
-        sendNotificationToReviewer(reviewer, writer, dailyTodo);
-    }
-
-    private DailyTodo getDailyTodo(final Long dailyTodoId) {
-        return dailyTodoRepository.findById(dailyTodoId)
-            .orElseThrow(() -> new DailyTodoNotFoundException(String.format("존재하지 않는 데일리 투두 id입니다. (%d)", dailyTodoId)));
-    }
-
-    private void sendNotificationToReviewer(
-        final Member reviewer,
-        final Member writer,
-        final DailyTodo dailyTodo
-    ) {
-        if (reviewer == null) {
-            return;
-        }
-
-        notificationService.sendNotification(
-            reviewer.getId(),
-            String.format("%s님의 투두 인증 검사자로 선정되었습니다.", writer.getName()),
-            String.format("투두 내용 : " + dailyTodo.getContent()),
-            "CERTIFICATION"
-        );
-    }
-
     public List<String> findYesterdayDailyTodos(final Long memberId, final Long groupId) {
         final ChallengeGroup challengeGroup = getChallengeGroup(groupId);
         final Member member = getMember(memberId);
@@ -184,46 +127,79 @@ public class DailyTodoService {
         return dailyTodoRepository.findAllByChallengeGroupAndMember(challengeGroup, member);
     }
 
-    public List<DailyTodoAndDailyTodoCertificationDto> findMyDailyTodo(final FindMyDailyTodosConditionDto condition) {
+    public List<DailyTodoDto> findMyDailyTodos(final FindMyDailyTodosConditionDto condition) {
         final ChallengeGroup challengeGroup = getChallengeGroup(condition.getGroupId());
         final Member member = getMember(condition.getMemberId());
-        final List<DailyTodo> dailyTodos = condition.getDailyTodoStatus()
-            .map(status -> dailyTodoRepository.findAllByChallengeGroupAndMemberAndWrittenAtBetweenAndStatus(
+
+        return condition.findDailyTodoCertificationReviewStatus()
+            .map(status -> findDailyTodosByDailyTodoCertificationReviewStatus(
                 challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX),
                 status))
-            .orElse(getSortingDailyTodos(
+            .orElse(findDailyTodos(
                 challengeGroup,
                 member,
                 condition.getCreatedAt().atStartOfDay(),
                 condition.getCreatedAt().atTime(LocalTime.MAX)));
-
-        return dailyTodos.stream()
-            .map(this::convertToDto)
-            .toList();
     }
 
-    private List<DailyTodo> getSortingDailyTodos(
+    private List<DailyTodoDto> findDailyTodosByDailyTodoCertificationReviewStatus(
         final ChallengeGroup challengeGroup,
         final Member member,
-        final LocalDateTime start,
-        final LocalDateTime end
+        final LocalDateTime startDate,
+        final LocalDateTime endDate,
+        final String dailyTodoCertificationReviewStatusValue
     ) {
-        return dailyTodoRepository.findAllByChallengeGroupAndMemberAndWrittenAtBetween(challengeGroup, member, start, end).stream()
-            .sorted(Comparator.comparing((DailyTodo todo) -> todo.getStatus() != CERTIFY_PENDING)
-                .thenComparing(DailyTodo::getId))
+        final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(dailyTodoCertificationReviewStatusValue);
+        final List<DailyTodoAndDailyTodoCertification> dailyTodoAndCertificationByCondition = dailyTodoRepository.findAllDailyTodoAndCertificationByReviewResult(
+            challengeGroup,
+            member,
+            startDate,
+            endDate,
+            dailyTodoCertificationReviewStatus
+        );
+
+        return dailyTodoAndCertificationByCondition.stream()
+            .map(dailyTodoAndDailyTodoCertification -> {
+                final DailyTodo dailyTodo = dailyTodoAndDailyTodoCertification.dailyTodo();
+                final DailyTodoCertification dailyTodoCertification = dailyTodoAndDailyTodoCertification.dailyTodoCertification();
+                return new DailyTodoDto(dailyTodo, dailyTodoCertification);
+            })
             .toList();
     }
 
-    private DailyTodoAndDailyTodoCertificationDto convertToDto(final DailyTodo dailyTodo) {
-        if (dailyTodo.getStatus() == CERTIFY_PENDING) {
-            return DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodo);
-        }
+    private List<DailyTodoDto> findDailyTodos(
+        final ChallengeGroup challengeGroup,
+        final Member member,
+        final LocalDateTime startDate,
+        final LocalDateTime endDate
+    ) {
+        final List<DailyTodoDto> certifyPendingTodos = new java.util.ArrayList<>(dailyTodoRepository.findAllByChallengeGroupAndMemberAndStatusAndWrittenAtBetween(
+                challengeGroup,
+                member,
+                CERTIFY_PENDING,
+                startDate,
+                endDate)
+            .stream()
+            .map(DailyTodoDto::new)
+            .toList());
 
-        final DailyTodoCertification dailyTodoCertification = dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)
-            .orElseThrow(() -> new DailyTodoCertificationNotFoundException("데일리 투두 인증이 존재하지 않습니다."));
-        return new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification);
+        final List<DailyTodoDto> certifyCompletedTodos = dailyTodoRepository.findAllDailyTodoAndCertification(
+                challengeGroup,
+                member,
+                startDate,
+                endDate)
+            .stream()
+            .map(dailyTodoAndDailyTodoCertification -> {
+                final DailyTodo dailyTodo = dailyTodoAndDailyTodoCertification.dailyTodo();
+                final DailyTodoCertification dailyTodoCertification = dailyTodoAndDailyTodoCertification.dailyTodoCertification();
+                return new DailyTodoDto(dailyTodo, dailyTodoCertification);
+            })
+            .toList();
+
+        certifyPendingTodos.addAll(certifyCompletedTodos);
+        return certifyPendingTodos;
     }
 }
