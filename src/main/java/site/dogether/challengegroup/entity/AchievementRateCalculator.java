@@ -1,6 +1,7 @@
 package site.dogether.challengegroup.entity;
 
 import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -13,22 +14,19 @@ public class AchievementRateCalculator {
         List<DailyTodo> dailyTodos,
         final LocalDateTime challengeGroupJoinedAt,
         final LocalDate challengeGroupStartAt,
-        final LocalDate challengeGroupEndAt
+        final LocalDate challengeGroupEndAt,
+        final DailyTodoCertificationCount dailyTodoCertificationCount
     ) {
         if (dailyTodos.isEmpty()) {
             return 0;
         }
         // TODO: 추후 해당 로직 리팩토링 필요
         final int totalTodoCount = dailyTodos.size();
-        final int certificatedTodoCount = (int) dailyTodos.stream()
-            .filter(DailyTodo::isCertified)
-            .count();
-        final int approvedTodoCount = (int) dailyTodos.stream()
-            .filter(DailyTodo::isApproved)
-            .count();
+        final int certificatedCount = dailyTodoCertificationCount.totalCount().intValue();
+        final int approvedCount = dailyTodoCertificationCount.approvedCount().intValue();
 
-        final double certificationRate = (double) certificatedTodoCount / totalTodoCount;
-        final double approvalRate = (double) approvedTodoCount / certificatedTodoCount;
+        final double certificationRate = (double) certificatedCount / totalTodoCount;
+        final double approvalRate = (double) approvedCount / certificatedCount;
         final double participationRate = calculateParticipationRate(challengeGroupJoinedAt, challengeGroupStartAt, challengeGroupEndAt);
 
         final double score = certificationRate + approvalRate + participationRate;

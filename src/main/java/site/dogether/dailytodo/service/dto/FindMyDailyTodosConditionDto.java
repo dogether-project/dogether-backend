@@ -1,55 +1,40 @@
 package site.dogether.dailytodo.service.dto;
 
-import lombok.Getter;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
-
 import java.time.LocalDate;
 import java.util.Optional;
 
 public class FindMyDailyTodosConditionDto {
 
-    @Getter
     private final Long memberId;
-    @Getter
     private final Long groupId;
-    @Getter
     private final LocalDate createdAt;
-    private final DailyTodoStatus status;
-
-    public static FindMyDailyTodosConditionDto of(
-        final Long memberId,
-        final Long groupId,
-        final LocalDate createdAt,
-        final String status
-    ) {
-        return new FindMyDailyTodosConditionDto(
-            memberId,
-            groupId,
-            createdAt,
-            convertDailyTodoStatus(status)
-        );
-    }
-
-    private static DailyTodoStatus convertDailyTodoStatus(final String dailyTodoStatusValue) {
-        if (dailyTodoStatusValue == null) {
-            return null;
-        }
-        return DailyTodoStatus.valueOf(dailyTodoStatusValue);
-    }
+    private final String dailyTodoCertificationReviewStatus;
 
     public FindMyDailyTodosConditionDto(
         final Long memberId,
         final Long groupId,
         final LocalDate createdAt,
-        final DailyTodoStatus status
+        final String dailyTodoCertificationReviewStatus
     ) {
         this.memberId = memberId;
         this.groupId = groupId;
         this.createdAt = createdAt;
-        this.status = status;
+        this.dailyTodoCertificationReviewStatus = dailyTodoCertificationReviewStatus;
     }
 
-    public Optional<DailyTodoStatus> getDailyTodoStatus() {
-        return Optional.ofNullable(status);
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public Optional<String> findDailyTodoCertificationReviewStatus() {
+        return Optional.ofNullable(dailyTodoCertificationReviewStatus);
     }
 }

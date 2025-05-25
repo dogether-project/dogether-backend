@@ -15,7 +15,7 @@ import site.dogether.dailytodo.controller.response.GetChallengeGroupMemberTodayT
 import site.dogether.dailytodo.controller.response.GetMyDailyTodosResponse;
 import site.dogether.dailytodo.controller.response.GetYesterdayDailyTodosResponse;
 import site.dogether.dailytodo.service.DailyTodoService;
-import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
+import site.dogether.dailytodo.service.dto.DailyTodoDto;
 import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHistoriesDto;
@@ -53,14 +53,14 @@ public class DailyTodoController {
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/my-todos")
-    public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodosWithCertification(
+    public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @RequestParam final LocalDate date,
         @RequestParam(required = false) final String status
     ) {
-        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = FindMyDailyTodosConditionDto.of(memberId, groupId, date, status);
-        final List<DailyTodoAndDailyTodoCertificationDto> myDailyTodos = dailyTodoService.findMyDailyTodo(findMyDailyTodosConditionDto);
+        final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = new FindMyDailyTodosConditionDto(memberId, groupId, date, status);
+        final List<DailyTodoDto> myDailyTodos = dailyTodoService.findMyDailyTodos(findMyDailyTodosConditionDto);
         return ResponseEntity.ok(ApiResponse.successWithData(
             GET_MY_DAILY_TODOS,
             GetMyDailyTodosResponse.of(myDailyTodos)

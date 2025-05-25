@@ -1,7 +1,6 @@
 package site.dogether.dailytodo.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHistoriesDto;
 import site.dogether.dailytodohistory.service.dto.TodoHistoryDto;
 
@@ -19,7 +18,7 @@ public record GetChallengeGroupMemberTodayTodoHistoryResponse(
     public record TodoData(
         Long id,
         String content,
-        DailyTodoStatus status,
+        String status,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         String certificationContent,
         @JsonInclude(JsonInclude.Include.NON_NULL)
