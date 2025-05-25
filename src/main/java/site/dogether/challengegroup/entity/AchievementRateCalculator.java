@@ -22,8 +22,8 @@ public class AchievementRateCalculator {
         }
         // TODO: 추후 해당 로직 리팩토링 필요
         final int totalTodoCount = dailyTodos.size();
-        final int certificatedCount = dailyTodoCertificationCount.totalCount().intValue();
-        final int approvedCount = dailyTodoCertificationCount.approvedCount().intValue();
+        final int certificatedCount = dailyTodoCertificationCount.getTotalCount();
+        final int approvedCount = dailyTodoCertificationCount.getApprovedCount();
 
         final double certificationRate = (double) certificatedCount / totalTodoCount;
         final double approvalRate = (double) approvedCount / certificatedCount;

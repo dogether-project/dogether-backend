@@ -168,9 +168,9 @@ public class MemberActivityService {
         final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
 
         return new GetGroupActivityStatResponse.MemberStatsResponse(
-            dailyTodoCertificationCount.totalCount().intValue(),
-            dailyTodoCertificationCount.approvedCount().intValue(),
-            dailyTodoCertificationCount.rejectedCount().intValue()
+            dailyTodoCertificationCount.getTotalCount(),
+            dailyTodoCertificationCount.getApprovedCount(),
+            dailyTodoCertificationCount.getRejectedCount()
         );
     }
 
