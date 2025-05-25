@@ -96,7 +96,7 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 | 환경 | 구현 여부
 
 | 개발
-| X
+| O
 
 | 운영
 | X
