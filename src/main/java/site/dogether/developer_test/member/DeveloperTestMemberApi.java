@@ -14,7 +14,7 @@ import site.dogether.member.service.MemberService;
 
 import java.util.Map;
 
-@Profile("local")
+@Profile({"local", "dev"})
 @Slf4j
 @RequiredArgsConstructor
 @RestController
