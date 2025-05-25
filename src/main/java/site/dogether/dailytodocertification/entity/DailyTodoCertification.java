@@ -117,7 +117,7 @@ public class DailyTodoCertification extends BaseEntity {
 
     private void validateMediaUrl(final String mediaUrl) {
         if (mediaUrl == null || mediaUrl.isBlank()) {
-            throw new InvalidDailyTodoCertificationException(String.format("데일리 투두 인증 미디어 util null 혹은 공백을 입력할 수 없습니다. (%s)", mediaUrl));
+            throw new InvalidDailyTodoCertificationException(String.format("데일리 투두 인증 미디어 url로 null 혹은 공백을 입력할 수 없습니다. (%s)", mediaUrl));
         }
     }
 

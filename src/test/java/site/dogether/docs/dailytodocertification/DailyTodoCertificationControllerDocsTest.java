@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.controller.DailyTodoCertificationController;
 import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
@@ -27,12 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
 public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
 
-    private final DailyTodoService dailyTodoService = mock(DailyTodoService.class);
     private final DailyTodoCertificationService dailyTodoCertificationService = mock(DailyTodoCertificationService.class);
 
     @Override
     protected Object initController() {
-        return new DailyTodoCertificationController(dailyTodoService, dailyTodoCertificationService);
+        return new DailyTodoCertificationController(dailyTodoCertificationService);
     }
 
     @DisplayName("데일리 투두 수행 인증 생성 API")
@@ -131,7 +129,7 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
             )
         );
 
-        given(dailyTodoCertificationService.findAllTodoCertificationsForReview(any()))
+        given(dailyTodoCertificationService.findAllTodoCertificationsToReviewer(any()))
             .willReturn(dailyTodoCertificationDtos);
 
         mockMvc.perform(
