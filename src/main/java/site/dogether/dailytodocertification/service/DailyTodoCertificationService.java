@@ -30,6 +30,7 @@ import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.notification.service.NotificationService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -63,10 +64,10 @@ public class DailyTodoCertificationService {
         validateChallengeGroupIsRunning(challengeGroup);
 
         final DailyTodoCertification dailyTodoCertification = createDailyTodoCertification(dailyTodo, writer, certifyContent, certifyMediaUrl, dailyTodoStats);
-        final Member reviewer = pickDailyTodoCertificationReviewer(challengeGroup, writer, dailyTodoCertification);
+        final Optional<Member> reviewer = pickDailyTodoCertificationReviewer(challengeGroup, writer, dailyTodoCertification);
         dailyTodoHistoryService.updateDailyTodoHistory(dailyTodo);
 
-        sendNotificationToReviewer(reviewer, writer, dailyTodo);
+        reviewer.ifPresent(target -> sendNotificationToReviewer(target, writer, dailyTodo));
     }
 
     private Member getMember(final Long memberId) {
@@ -107,16 +108,18 @@ public class DailyTodoCertificationService {
         return dailyTodoCertificationRepository.save(dailyTodoCertification);
     }
 
-    private Member pickDailyTodoCertificationReviewer(
+    private Optional<Member> pickDailyTodoCertificationReviewer(
         final ChallengeGroup challengeGroup,
         final Member dailyTodoWriter,
         final DailyTodoCertification dailyTodoCertification
     ) {
-        final Member picked = reviewerPicker.pickReviewerInChallengeGroup(challengeGroup, dailyTodoWriter).orElse(null);
-        final DailyTodoCertificationReviewer dailyTodoCertificationReviewer = new DailyTodoCertificationReviewer(dailyTodoCertification, picked);
-        dailyTodoCertificationReviewerRepository.save(dailyTodoCertificationReviewer);
+        final Optional<Member> pickedMember = reviewerPicker.pickReviewerInChallengeGroup(challengeGroup, dailyTodoWriter);
+        pickedMember.ifPresent(picked -> {
+            final DailyTodoCertificationReviewer dailyTodoCertificationReviewer = new DailyTodoCertificationReviewer(dailyTodoCertification, picked);
+            dailyTodoCertificationReviewerRepository.save(dailyTodoCertificationReviewer);
+        });
 
-        return picked;
+        return pickedMember;
     }
 
     private void sendNotificationToReviewer(
