@@ -1,3 +1,34 @@
 spring:
   profiles:
     active: test
+
+  datasource:
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+    url: ${DB_URL:jdbc:mysql://localhost:33306/dogether}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+
+  jpa:
+    hibernate.ddl-auto: create
+    show-sql: true
+    properties.hibernate.format_sql: true
+
+secret:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:secretsecretsecretsecretsecretsecretsecretsec}
+    expire-time: ${JWT_EXPIRE_TIME:31536000000}
+
+  oauth:
+    apple:
+      key: ${APPLE_KEY_ID:fakeAppleKeyId}
+      team-id: ${APPLE_TEAM_ID:fakeAppleTeamId}
+      client-id: ${APPLE_CLIENT_ID:fakeAppleClientId}
+      private-key: ${APPLE_PRIVATE_KEY:fakeApplePrivateKey}
+
+  aws:
+    s3:
+      bucket-name: ${AWS_S3_BUCKET_NAME:fakeAwsS3BucketName}
+    region: ${AWS_REGION:fakeAWSRegion}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY:fakeAwsAccessKey}
+      secret-key: ${AWS_SECRET_KEY:fakeAwsSecretKey}

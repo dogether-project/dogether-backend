@@ -11,6 +11,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/codeStyles/**
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -174,5 +175,20 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+# env file
+local.env
+
+# docker data
+/docker/data/mysql/mysql
+
+# custom sh
+/sh
+
+# secret resources
+/src/main/resources/secret/
+
+# firebase
+src/main/resources/firebase
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos

@@ -1,0 +1,46 @@
+[[auth-api]]
+== 인증 & 인가 API
+
+[[apple-login]]
+=== 애플 로그인 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/auth-controller-docs-test/login/http-request.adoc[]
+include::{snippets}/auth-controller-docs-test/login/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-docs-test/login/http-response.adoc[]
+include::{snippets}/auth-controller-docs-test/login/response-fields.adoc[]
+
+[[withdraw]]
+=== 회원 탈퇴 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/auth-controller-docs-test/withdraw/http-request.adoc[]
+include::{snippets}/auth-controller-docs-test/withdraw/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-docs-test/withdraw/http-response.adoc[]
+include::{snippets}/auth-controller-docs-test/withdraw/response-fields.adoc[]

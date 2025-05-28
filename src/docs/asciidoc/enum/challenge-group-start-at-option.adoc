@@ -1,0 +1,5 @@
+:doctype: book
+:icons: font
+
+[[challenge-group-start-at-option]]
+include::{snippets}/common-docs-controller-test/enums/custom-response-fields-beneath-challengeGroupStartAtOption.adoc[]

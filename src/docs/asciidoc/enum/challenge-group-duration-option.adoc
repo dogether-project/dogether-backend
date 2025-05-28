@@ -1,0 +1,5 @@
+:doctype: book
+:icons: font
+
+[[challenge-group-duration-option]]
+include::{snippets}/common-docs-controller-test/enums/custom-response-fields-beneath-challengeGroupDurationOption.adoc[]

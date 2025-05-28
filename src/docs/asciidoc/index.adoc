@@ -1,0 +1,23 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= dogether REST API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+ifndef::docinfodir[]
+:docinfodir: ./common
+endif::[]
+:docinfo: shared-head
+
+include::common/overview.adoc[]
+include::auth/auth.adoc[]
+include::challengegroup/challenge-group.adoc[]
+include::dailytodo/daily-todo.adoc[]
+include::dailytodocertification/daily-todo-certification.adoc[]
+include::memberactivity/member-activity.adoc[]
+include::notification/notification.adoc[]
+include::s3/s3.adoc[]

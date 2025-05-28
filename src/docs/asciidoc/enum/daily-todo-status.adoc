@@ -1,0 +1,5 @@
+:doctype: book
+:icons: font
+
+[[daily-todo-status]]
+include::{snippets}/common-docs-controller-test/enums/custom-response-fields-beneath-dailyTodoStatus.adoc[]
