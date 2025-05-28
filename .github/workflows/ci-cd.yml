@@ -32,7 +32,7 @@ jobs:
       - name: Setup Firebase service key
         run: |
           mkdir -p src/main/resources/firebase
-          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key-dev.json
+          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key.json
 
       - name: Execute test
         # test 패키지 하위 application.yml 민감 정보 추가
@@ -162,7 +162,7 @@ jobs:
       - name: Setup Firebase service key
         run: |
           mkdir -p src/main/resources/firebase
-          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key-${{ matrix.environment }}.json
+          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key.json
 
       - name: Build with gradle
         run: ./gradlew bootJar -Pspring.profiles.active=${{ matrix.environment }} --info
@@ -193,9 +193,9 @@ jobs:
           echo "image_build_result=success" >> $GITHUB_OUTPUT
           fi
 
-  deploy:
+  deploy-dev:
     needs: [ setup-deploy, image-build ]
-    if: needs.image-build.outputs.image_build_result == 'success'
+    if: needs.setup-deploy.outputs.environment == 'dev' && needs.image-build.outputs.image_build_result == 'success'
     runs-on: dogether-be-dev-ec2-runner
     strategy:
       matrix:
@@ -280,13 +280,82 @@ jobs:
           echo "deploy_result=success" >> $GITHUB_OUTPUT
           fi
 
+  deploy-prod:
+    needs: [ setup-deploy, image-build ]
+    if: needs.setup-deploy.outputs.environment == 'prod' && needs.image-build.outputs.image_build_result == 'success'
+    runs-on: dogether-be-prod-ec2-runner
+    strategy:
+      matrix:
+        environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
+    environment: ${{ matrix.environment }}
+    outputs:
+      deploy_result: ${{ steps.deploy-result.outputs.deploy_result }}
+    continue-on-error: true
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create .env file
+        run: |
+          cd ~/project
+          cat <<EOF > .env
+          # springboot-app environment
+          SPRINGBOOT_APP_IMAGE_REPOSITORY=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
+          SPRINGBOOT_APP_IMAGE_TAG=${{ github.sha }}
+          
+          # mysql environment
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_URL=${{ secrets.DB_URL }}
+          
+          # jwt environment
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRE_TIME=${{ secrets.JWT_EXPIRE_TIME }}
+          
+          # apple oauth environment
+          APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
+          APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+          APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
+          
+          # AWS
+          AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_REGION=${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+          EOF
+
+      - name: Start new server application
+        id: start-new-server-application
+        run: |
+          cd ~/project
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+          ./deploy.sh
+
+      - name: Set deploy result
+        if: always()
+        id: deploy-result
+        run: |
+          echo "deploy_result=fail" >> $GITHUB_OUTPUT
+          if [[ ${{ steps.start-new-server-application.outcome }} == "success" ]]; then
+          echo "deploy_result=success" >> $GITHUB_OUTPUT
+          fi
+
   notify:
-    needs: [ check-deploy-condition, setup-deploy, image-build, deploy ]
+    needs: [ check-deploy-condition, setup-deploy, image-build, deploy-dev, deploy-prod ]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Send deploy success notification
-        if: needs.check-deploy-condition.outputs.should_deploy == 'true' && needs.image-build.outputs.image_build_result == 'success' && needs.deploy.outputs.deploy_result == 'success'
+        if: needs.check-deploy-condition.outputs.should_deploy == 'true' && needs.image-build.outputs.image_build_result == 'success' && (needs.deploy-dev.outputs.deploy_result == 'success' || needs.deploy-prod.outputs.deploy_result == 'success')
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -300,7 +369,7 @@ jobs:
             - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Send deploy fail notification
-        if: needs.check-deploy-condition.outputs.should_deploy == 'true' && (needs.image-build.outputs.image_build_result != 'success' || needs.deploy.outputs.deploy_result != 'success')
+        if: needs.check-deploy-condition.outputs.should_deploy == 'true' && (needs.image-build.outputs.image_build_result != 'success' || needs.deploy-dev.outputs.deploy_result != 'success' || needs.deploy-prod.outputs.deploy_result != 'success')
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
