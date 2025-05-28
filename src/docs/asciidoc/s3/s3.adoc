@@ -12,7 +12,7 @@
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request

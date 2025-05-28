@@ -12,7 +12,7 @@
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -34,7 +34,7 @@ include::{snippets}/challenge-group-controller-docs-test/create-challenge-group/
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -56,7 +56,7 @@ include::{snippets}/challenge-group-controller-docs-test/join-challenge-group/re
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -78,7 +78,7 @@ include::{snippets}/challenge-group-controller-docs-test/is-participating-challe
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -99,7 +99,7 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -121,7 +121,7 @@ include::{snippets}/challenge-group-controller-docs-test/save-last-selected-chal
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -143,7 +143,7 @@ include::{snippets}/challenge-group-controller-docs-test/get-joining-challenge-g
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
