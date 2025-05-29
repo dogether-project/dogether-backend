@@ -12,7 +12,7 @@
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -35,7 +35,7 @@ include::{snippets}/daily-todo-controller-docs-test/create-daily-todos/response-
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -57,7 +57,7 @@ include::{snippets}/daily-todo-controller-docs-test/get-yesterday-daily-todos/re
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -80,7 +80,7 @@ include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-cert
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -103,7 +103,7 @@ include::{snippets}/daily-todo-controller-docs-test/get-my-daily-todos-with-cert
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -125,7 +125,7 @@ include::{snippets}/daily-todo-controller-docs-test/get-challenge-group-member-t
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request

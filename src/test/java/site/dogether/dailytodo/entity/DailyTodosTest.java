@@ -53,9 +53,9 @@ class DailyTodosTest {
         final Member member = createMember();
         final LocalDateTime writtenAt = LocalDateTime.now();
         final List<DailyTodo> input = List.of(
-            new DailyTodo(1L, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, null, writtenAt),
-            new DailyTodo(2L, challengeGroup, member, "코딩 하기", CERTIFY_PENDING, null, writtenAt),
-            new DailyTodo(3L, challengeGroup, member, "운동 하기", CERTIFY_PENDING, null, writtenAt)
+            new DailyTodo(1L, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, writtenAt),
+            new DailyTodo(2L, challengeGroup, member, "코딩 하기", CERTIFY_PENDING, writtenAt),
+            new DailyTodo(3L, challengeGroup, member, "운동 하기", CERTIFY_PENDING, writtenAt)
         );
 
         // When & Then
@@ -81,7 +81,7 @@ class DailyTodosTest {
         final Member member = createMember();
         final LocalDateTime writtenAt = LocalDateTime.now();
         final List<DailyTodo> input = IntStream.rangeClosed(1, 11)
-            .mapToObj(i -> new DailyTodo((long) i, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, null, writtenAt))
+            .mapToObj(i -> new DailyTodo((long) i, challengeGroup, member, "치킨 먹기", CERTIFY_PENDING, writtenAt))
             .collect(Collectors.toList());
 
         // When & Then

@@ -1,15 +1,26 @@
 package site.dogether.memberactivity.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.common.audit.entity.BaseEntity;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
-import site.dogether.dailytodo.exception.InvalidDailyTodoStatusException;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
+import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificationReviewStatusException;
 import site.dogether.member.entity.Member;
 import site.dogether.memberactivity.exception.InvalidDailyTodoStatsException;
+
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.APPROVE;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REJECT;
 
 @ToString
 @Getter
@@ -67,17 +78,17 @@ public class DailyTodoStats extends BaseEntity {
         this.certificatedCount += 1;
     }
 
-    public void moveCertificatedToResult(final DailyTodoStatus result) {
-        if(result.equals(DailyTodoStatus.APPROVE)) {
+    public void moveCertificatedToResult(final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewResult) {
+        if(dailyTodoCertificationReviewResult == APPROVE) {
             this.approvedCount += 1;
             return;
         }
 
-        if(result.equals(DailyTodoStatus.REJECT)) {
+        if(dailyTodoCertificationReviewResult == REJECT) {
             this.rejectedCount += 1;
             return;
         }
 
-        throw new InvalidDailyTodoStatusException(String.format("존재하지 않는 데일리 투두 상태입니다. (%s)", result));
+        throw new InvalidDailyTodoCertificationReviewStatusException(String.format("유효하지 않은 데일리 투두 인증 검사 결과 입니다. (%s)", dailyTodoCertificationReviewResult));
     }
 }

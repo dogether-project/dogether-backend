@@ -3,12 +3,13 @@ package site.dogether.auth.oauth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Date;
 
 @Slf4j
 @Component
@@ -58,7 +59,7 @@ public class JwtHandler {
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
 
-        log.info("JWT를 생성합니다. {}", token);
+        log.info("회원의 JWT를 생성합니다. {}", memberId);
         return token;
     }
 

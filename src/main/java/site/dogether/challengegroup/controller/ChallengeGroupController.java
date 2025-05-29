@@ -77,6 +77,7 @@ public class ChallengeGroupController {
         @Authenticated final Long memberId,
         @RequestBody final SaveLastSelectedChallengeGroupInfoRequest request
     ) {
+        challengeGroupService.saveLastSelectedChallengeGroupRecord(memberId, request.groupId());
         return ResponseEntity.ok(ApiResponse.success(SAVE_LAST_SELECTED_CHALLENGE_GROUP_ID));
     }
 

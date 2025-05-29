@@ -12,11 +12,12 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
+import site.dogether.challengegroup.entity.LastSelectedChallengeGroupRecord;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodohistory.entity.DailyTodoHistory;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewer;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
@@ -39,7 +40,7 @@ public class Member extends BaseEntity {
     @Column(name = "provider_id", length = 100, nullable = false, unique = true)
     private String providerId;
 
-    @Column(name = "name", length = 20, nullable = false)
+    @Column(name = "name", length = 20, nullable = false, updatable = false)
     private String name;
 
     @Column(name = "profile_image_url", length = 500, nullable = false)
@@ -48,26 +49,33 @@ public class Member extends BaseEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<NotificationToken> notificationTokens;
-
+    @ToString.Exclude
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<ChallengeGroupMember> challengeGroupMembers;
 
-    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE)
-    private List<DailyTodoCertification> dailyTodoCertifications;
+    @ToString.Exclude
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private DailyTodoStats dailyTodoStats;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodo> dailyTodos;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<DailyTodoHistory> dailyTodoHistory;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE)
+    private List<DailyTodoCertificationReviewer> dailyTodoCertificationReviewers;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodoHistoryRead> dailyTodoHistoryRead;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private DailyTodoStats dailyTodoStats;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<LastSelectedChallengeGroupRecord> lastSelectedChallengeGroupRecords;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<NotificationToken> notificationTokens;
 
     public static Member create(final String providerId, final String name) {
         return new Member(null, providerId, name, saveRandomProfileImageUrl(), LocalDateTime.now());

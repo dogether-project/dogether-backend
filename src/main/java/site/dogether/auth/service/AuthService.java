@@ -25,13 +25,13 @@ public class AuthService {
 
     @Transactional
     public AuthenticatedMember login(final LoginRequest request) {
-        log.info("로그인 요청을 받습니다. idToken: {}", request.idToken());
+        log.info("로그인 요청을 받습니다. ({})", request.name());
 
         final String subject = appleOAuthProvider.parseSubject(request.idToken());
-        log.info("subject of apple idToken 을 파싱합니다. sub: {}", subject);
+        log.info("subject of apple idToken 을 파싱합니다. ({})", request.name());
 
         final Member savedMember = memberService.save(subject, request.name());
-        log.info("회원을 저장 or 조회합니다. providerId: {}", savedMember.getProviderId());
+        log.info("회원을 저장 or 조회합니다. ({})", savedMember);
 
         final String authenticationToken = jwtHandler.createToken(savedMember.getId());
 

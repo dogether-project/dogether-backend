@@ -1,5 +1,6 @@
 package site.dogether.dailytodo.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,47 +11,48 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
-import site.dogether.dailytodo.exception.InvalidReviewResultException;
 import site.dogether.dailytodo.exception.NotCertifyPendingDailyTodoException;
 import site.dogether.dailytodo.exception.NotCreatedTodayDailyTodoException;
 import site.dogether.dailytodo.exception.NotDailyTodoWriterException;
-import site.dogether.dailytodo.exception.NotReviewPendingDailyTodoException;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.dailytodocertification.exception.NotDailyTodoCertificationReviewerException;
+import site.dogether.dailytodohistory.entity.DailyTodoHistory;
 import site.dogether.member.entity.Member;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Objects;
 
-import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 @ToString
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "daily_todo")
 @Entity
 public class DailyTodo extends BaseEntity {
 
     public static final int MAXIMUM_ALLOWED_CONTENT_LENGTH = 20;
-    public static final int MAXIMUM_ALLOWED_REJECT_REASON_LENGTH = 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "challenge_group_id", updatable = false)
+    @JoinColumn(name = "challenge_group_id", nullable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private ChallengeGroup challengeGroup;
 
-    @JoinColumn(name = "member_id", updatable = false)
+    @JoinColumn(name = "writer_id", nullable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
@@ -61,11 +63,16 @@ public class DailyTodo extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DailyTodoStatus status;
 
-    @Column(name = "reject_reason", length = 500)
-    private String rejectReason;
-
     @Column(name = "written_at", nullable = false, updatable = false)
     private LocalDateTime writtenAt;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "dailyTodo", cascade = CascadeType.REMOVE)
+    private DailyTodoHistory dailyTodoHistory;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "dailyTodo", cascade = CascadeType.REMOVE)
+    private DailyTodoCertification dailyTodoCertification;
 
     public DailyTodo(
         final ChallengeGroup challengeGroup,
@@ -78,7 +85,6 @@ public class DailyTodo extends BaseEntity {
             member,
             content,
             CERTIFY_PENDING,
-            null,
             LocalDateTime.now()
         );
     }
@@ -89,14 +95,12 @@ public class DailyTodo extends BaseEntity {
         final Member member,
         final String content,
         final DailyTodoStatus status,
-        final String rejectReason,
         final LocalDateTime writtenAt
     ) {
         validateChallengeGroup(challengeGroup);
         validateMember(member);
         validateContent(content);
         validateStatus(status);
-        validateRejectReason(status, rejectReason);
         validateWrittenAt(writtenAt);
 
         this.id = id;
@@ -104,7 +108,6 @@ public class DailyTodo extends BaseEntity {
         this.member = member;
         this.content = content;
         this.status = status;
-        this.rejectReason = rejectReason;
         this.writtenAt = writtenAt;
     }
 
@@ -136,16 +139,6 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
-    private void validateRejectReason(final DailyTodoStatus status, final String rejectReason) {
-        if (status == REJECT && (rejectReason == null || rejectReason.isBlank())) {
-            throw new InvalidDailyTodoException(String.format("노인정 사유로 null 혹은 공백을 입력할 수 없습니다. (%s)", rejectReason));
-        }
-
-        if (status == REJECT && rejectReason.length() > MAXIMUM_ALLOWED_REJECT_REASON_LENGTH) {
-            throw new InvalidDailyTodoException(String.format("노인정 사유는 %d자 이하만 입력할 수 있습니다. (%d) (%s)", MAXIMUM_ALLOWED_REJECT_REASON_LENGTH, rejectReason.length(), rejectReason));
-        }
-    }
-
     private void validateWrittenAt(final LocalDateTime writtenAt) {
         if (writtenAt == null) {
             throw new InvalidDailyTodoException("데일리 투두 작성일로 null을 입력할 수 없습니다.");
@@ -156,13 +149,8 @@ public class DailyTodo extends BaseEntity {
         return status == CERTIFY_PENDING;
     }
 
-    public boolean isWriter(final Member target) {
-        return member.equals(target);
-    }
-
     public DailyTodoCertification certify(
         final Member writer,
-        final Member reviewer,
         final String certifyContent,
         final String certifyMediaUrl,
         final DailyTodoStats dailyTodoStats
@@ -171,10 +159,9 @@ public class DailyTodo extends BaseEntity {
         validateStatusIsCertifyPending();
         validateWrittenToday();
 
-        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(this, reviewer, certifyContent, certifyMediaUrl);
-        status = REVIEW_PENDING;
-
+        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(this, certifyContent, certifyMediaUrl);
         dailyTodoStats.increaseCertificatedCount();
+        status = CERTIFY_COMPLETED;
 
         return dailyTodoCertification;
     }
@@ -198,80 +185,12 @@ public class DailyTodo extends BaseEntity {
         }
     }
 
-    public void review(
-            final Member reviewer,
-            final DailyTodoCertification dailyTodoCertification,
-            final DailyTodoStatus reviewResult,
-            final String rejectReason,
-            final DailyTodoStats dailyTodoStats
-            ) {
-        validateReviewer(reviewer, dailyTodoCertification);
-        validateStatusIsReviewPending();
-        validateReviewResult(reviewResult);
-        validateRejectReason(reviewResult, rejectReason);
-
-        this.status = reviewResult;
-        this.rejectReason = rejectReason;
-
-        dailyTodoStats.moveCertificatedToResult(reviewResult);
+    public boolean isWriter(final Member target) {
+        return member.equals(target);
     }
 
-    private void validateReviewer(final Member reviewer, final DailyTodoCertification dailyTodoCertification) {
-        if (!dailyTodoCertification.isReviewer(reviewer)) {
-            throw new NotDailyTodoCertificationReviewerException(String.format("해당 투두 인증 검사자 외 멤버는 검사를 수행할 수 없습니다. (%s) (%s)", reviewer, dailyTodoCertification));
-        }
-    }
-
-    private void validateStatusIsReviewPending() {
-        if (this.status != REVIEW_PENDING) {
-            throw new NotReviewPendingDailyTodoException(String.format("검사 대기가 아닌 투두는 검사를 수행할 수 없습니다. (%s)", this));
-        }
-    }
-
-    private void validateReviewResult(final DailyTodoStatus reviewResult) {
-        if (!reviewResult.isReviewResultStatus()) {
-            throw new InvalidReviewResultException(String.format("검사 결과는 인정 혹은 노인정만 입력할 수 있습니다. (%s) (%s)", reviewResult, this));
-        }
-    }
-
-    public boolean isApproved() {
-        return status == APPROVE;
-    }
-
-    public boolean isRejected() {
-        return status == REJECT;
-    }
-
-    public boolean isCertified() {
-        return status.isCertificatedStatus();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public ChallengeGroup getChallengeGroup() {
-        return challengeGroup;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public DailyTodoStatus getStatus() {
-        return status;
-    }
-
-    public Optional<String> getRejectReason() {
-        return Optional.ofNullable(rejectReason);
-    }
-
-    public String getStatusDescription() {
-        return status.getDescription();
-    }
-
-    public Member getMember() {
-        return member;
+    public boolean isCertifyCompleted() {
+        return status == CERTIFY_COMPLETED;
     }
 
     public Long getWriterId() {
@@ -280,5 +199,17 @@ public class DailyTodo extends BaseEntity {
 
     public String getMemberName() {
         return member.getName();
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        final DailyTodo dailyTodo = (DailyTodo) object;
+        return Objects.equals(id, dailyTodo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -10,7 +10,7 @@ import site.dogether.dailytodo.controller.DailyTodoController;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.service.DailyTodoService;
-import site.dogether.dailytodo.service.dto.DailyTodoAndDailyTodoCertificationDto;
+import site.dogether.dailytodo.service.dto.DailyTodoDto;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHistoriesDto;
@@ -30,7 +30,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.*;
 
 @DisplayName("데일리 투두 API 문서화 테스트")
 public class DailyTodoControllerDocsTest extends RestDocsSupport {
@@ -120,27 +122,26 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     @Test
     void getMyDailyTodosWithCertificationInputDate() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
-        final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
         final List<DailyTodo> dailyTodos = List.of(
-            new DailyTodo(1L, challengeGroup, doer, "운동 하기", REVIEW_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(2L, challengeGroup, doer, "인강 듣기", APPROVE, "와.. 오늘 이걸 다 들었어요...?", LocalDateTime.now()),
-            new DailyTodo(3L, challengeGroup, doer, "치킨 먹기", CERTIFY_PENDING, null, LocalDateTime.now()),
-            new DailyTodo(4L, challengeGroup, doer, "DND API 구현", REJECT, "코드 개판이네 ㅎ", LocalDateTime.now())
+            new DailyTodo(1L, challengeGroup, doer, "운동 하기", CERTIFY_COMPLETED, LocalDateTime.now()),
+            new DailyTodo(2L, challengeGroup, doer, "인강 듣기", CERTIFY_COMPLETED, LocalDateTime.now()),
+            new DailyTodo(3L, challengeGroup, doer, "치킨 먹기", CERTIFY_PENDING, LocalDateTime.now()),
+            new DailyTodo(4L, challengeGroup, doer, "DND API 구현", CERTIFY_COMPLETED, LocalDateTime.now())
         );
         final List<DailyTodoCertification> dailyTodoCertifications = List.of(
-            new DailyTodoCertification(1L, dailyTodos.get(0), reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", LocalDateTime.now().plusHours(1)),
-            new DailyTodoCertification(2L, dailyTodos.get(1), reviewer, "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url", LocalDateTime.now().plusHours(3)),
-            new DailyTodoCertification(3L, dailyTodos.get(3), reviewer, "API 좀 잘 만든듯 ㅋ", "https://image.url", LocalDateTime.now().plusHours(2))
+            new DailyTodoCertification(1L, dailyTodos.get(0), "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", REVIEW_PENDING, null, LocalDateTime.now().plusHours(1)),
+            new DailyTodoCertification(2L, dailyTodos.get(1), "인강 진짜 열심히 들었습니다. ㅎ", "https://image.url", APPROVE, "와.. 오늘 이걸 다 들었어요...?", LocalDateTime.now().plusHours(3)),
+            new DailyTodoCertification(3L, dailyTodos.get(3), "API 좀 잘 만든듯 ㅋ", "https://image.url", REJECT, "코드 개판이네 ㅎ", LocalDateTime.now().plusHours(2))
         );
-        final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(
-            DailyTodoAndDailyTodoCertificationDto.withoutDailyTodoCertification(dailyTodos.get(2)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(0), dailyTodoCertifications.get(0)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(1), dailyTodoCertifications.get(1)),
-            new DailyTodoAndDailyTodoCertificationDto(dailyTodos.get(3), dailyTodoCertifications.get(2)));
 
-        given(dailyTodoService.findMyDailyTodo(any()))
-            .willReturn(dailyTodoAndDailyTodoCertificationDtos);
+        final List<DailyTodoDto> dailyTodoDtos = List.of(
+            new DailyTodoDto(dailyTodos.get(2)),
+            new DailyTodoDto(dailyTodos.get(0), dailyTodoCertifications.get(0)),
+            new DailyTodoDto(dailyTodos.get(1), dailyTodoCertifications.get(1)),
+            new DailyTodoDto(dailyTodos.get(3), dailyTodoCertifications.get(2))
+        );
+        given(dailyTodoService.findMyDailyTodos(any())).willReturn(dailyTodoDtos);
 
         mockMvc.perform(
                 get("/api/challenge-groups/{groupId}/my-todos", 1)
@@ -195,12 +196,11 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
-        final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", REVIEW_PENDING, null, LocalDateTime.now().plusHours(2));
-        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, reviewer, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", LocalDateTime.now().plusHours(3));
-        final List<DailyTodoAndDailyTodoCertificationDto> dailyTodoAndDailyTodoCertificationDtos = List.of(new DailyTodoAndDailyTodoCertificationDto(dailyTodo, dailyTodoCertification));
+        final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", CERTIFY_COMPLETED, LocalDateTime.now().plusHours(2));
+        final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", REVIEW_PENDING, null, LocalDateTime.now().plusHours(3));
+        final List<DailyTodoDto> dailyTodoDtos = List.of(new DailyTodoDto(dailyTodo, dailyTodoCertification));
 
-        given(dailyTodoService.findMyDailyTodo(any()))
-            .willReturn(dailyTodoAndDailyTodoCertificationDtos);
+        given(dailyTodoService.findMyDailyTodos(any())).willReturn(dailyTodoDtos);
 
         mockMvc.perform(
                 get("/api/challenge-groups/{groupId}/my-todos", 1)
@@ -253,15 +253,15 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         final FindTargetMemberTodayTodoHistoriesDto serviceMockResponse = new FindTargetMemberTodayTodoHistoriesDto(
             3,
             List.of(
-                new TodoHistoryDto(1L, "치킨 먹기", CERTIFY_PENDING, null, null, true),
-                new TodoHistoryDto(2L, "재홍님 갈구기", CERTIFY_PENDING, null, null, true),
-                new TodoHistoryDto(3L, "치킨 먹기", REVIEW_PENDING, "개꿀맛 치킨 냠냠", "https://치킨.png", true),
-                new TodoHistoryDto(4L, "재홍님 갈구기", REVIEW_PENDING, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false),
-                new TodoHistoryDto(5L, "재홍님 갈구기", APPROVE, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false),
-                new TodoHistoryDto(6L, "치킨 먹기", REJECT, "개꿀맛 치킨 냠냠", "https://치킨.png", false)
+                new TodoHistoryDto(1L, "치킨 먹기", CERTIFY_PENDING.name(), null, null, true),
+                new TodoHistoryDto(2L, "재홍님 갈구기", CERTIFY_PENDING.name(), null, null, true),
+                new TodoHistoryDto(3L, "치킨 먹기", REVIEW_PENDING.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", true),
+                new TodoHistoryDto(4L, "재홍님 갈구기", REVIEW_PENDING.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false),
+                new TodoHistoryDto(5L, "재홍님 갈구기", APPROVE.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false),
+                new TodoHistoryDto(6L, "치킨 먹기", REJECT.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", false)
             )
         );
-        given(dailyTodoHistoryService.findTargetMemberTodayTodoHistories(any(), any(), any()))
+        given(dailyTodoHistoryService.findAllTodayTodoHistories(any(), any(), any()))
             .willReturn(serviceMockResponse);
 
         mockMvc.perform(

@@ -12,7 +12,7 @@
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -35,7 +35,7 @@ include::{snippets}/daily-todo-certification-controller-docs-test/certify-daily-
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -58,7 +58,7 @@ include::{snippets}/daily-todo-certification-controller-docs-test/review-daily-t
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request

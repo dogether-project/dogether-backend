@@ -12,20 +12,19 @@ import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
-import site.dogether.dailytodo.entity.MyTodoSummary;
-import site.dogether.dailytodo.exception.InvalidDailyTodoStatusException;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
+import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.entity.DailyTodoStats;
-import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.entity.DailyTodoStats;
+import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
@@ -138,7 +137,7 @@ public class MemberActivityService {
         final int createdCount = todos.size();
 
         final int certificatedCount = (int) todos.stream()
-                .filter(DailyTodo::isCertified)
+                .filter(DailyTodo::isCertifyCompleted)
                 .count();
 
         final int certificationRate = calculateCertificationRate(createdCount, certificatedCount);
@@ -166,13 +165,12 @@ public class MemberActivityService {
     }
 
     public GetGroupActivityStatResponse.MemberStatsResponse getMemberGroupStats(final Member member, final ChallengeGroup challengeGroup) {
-        final List<DailyTodo> myTodos = dailyTodoService.getMemberTodos(challengeGroup, member);
-        final MyTodoSummary myTodoSummary = new MyTodoSummary(myTodos);
+        final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
 
         return new GetGroupActivityStatResponse.MemberStatsResponse(
-                myTodoSummary.calculateTotalCertificatedCount(),
-                myTodoSummary.calculateTotalApprovedCount(),
-                myTodoSummary.calculateTotalRejectedCount()
+            dailyTodoCertificationCount.getTotalCount(),
+            dailyTodoCertificationCount.getApprovedCount(),
+            dailyTodoCertificationCount.getRejectedCount()
         );
     }
 
@@ -209,21 +207,11 @@ public class MemberActivityService {
 
     private List<DailyTodoCertification> getCertificationsByStatus(Member member, String status) {
         if (status != null && !status.isBlank()) {
-            DailyTodoStatus statusEnum = DailyTodoStatus.convertFromValue(status);
-            validateCertificationListStatus(statusEnum);
-
-            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_Status(member, statusEnum);
+            final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(status);
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndReviewStatus(member, dailyTodoCertificationReviewStatus);
         }
 
         return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member);
-    }
-
-    private void validateCertificationListStatus(DailyTodoStatus status) {
-        if (!status.isCertificatedStatus()) {
-            throw new InvalidDailyTodoStatusException(
-                    String.format("APPROVE, REJECT, REVIEW_PENDING만 유효한 상태입니다. (%s)", status.name())
-            );
-        }
     }
 
     private List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
@@ -262,10 +250,10 @@ public class MemberActivityService {
         return new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
                 todo.getId(),
                 todo.getContent(),
-                todo.getStatus().name(),
+                certification.getReviewStatus().name(),
                 certification.getContent(),
                 certification.getMediaUrl(),
-                todo.getRejectReason().orElse(null)
+                certification.findReviewFeedback().orElse(null)
         );
     }
 

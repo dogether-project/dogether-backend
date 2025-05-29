@@ -12,7 +12,7 @@
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request
@@ -34,7 +34,7 @@ include::{snippets}/auth-controller-docs-test/login/response-fields.adoc[]
 | O
 
 | 운영
-| X
+| O
 |===
 
 ==== HTTP Request

@@ -1,0 +1,14 @@
+server.port: ${APPLICATION_PORT}
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa.hibernate.ddl-auto: validate
+
+logging:
+  config: classpath:logback/logback-prod.xml
+  level.site.dogether: info
