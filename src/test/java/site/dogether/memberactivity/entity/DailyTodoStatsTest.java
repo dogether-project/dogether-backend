@@ -3,6 +3,7 @@ package site.dogether.memberactivity.entity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
+import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
 import site.dogether.member.entity.Member;
 import site.dogether.memberactivity.exception.InvalidDailyTodoStatsException;
 
@@ -120,7 +121,7 @@ class DailyTodoStatsTest {
         final Member member = createMember();
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(member);
         final int approvedCount = dailyTodoStats.getApprovedCount();
-        final DailyTodoStatus status = DailyTodoStatus.APPROVE;
+        final DailyTodoCertificationReviewStatus status = DailyTodoCertificationReviewStatus.APPROVE;
 
         //When
         dailyTodoStats.moveCertificatedToResult(status);
@@ -136,7 +137,7 @@ class DailyTodoStatsTest {
         final Member member = createMember();
         final DailyTodoStats dailyTodoStats = createDailyTodoStats(member);
         final int rejectedCount = dailyTodoStats.getRejectedCount();
-        final DailyTodoStatus status = DailyTodoStatus.REJECT;
+        final DailyTodoCertificationReviewStatus status = DailyTodoCertificationReviewStatus.REJECT;
 
         //When
         dailyTodoStats.moveCertificatedToResult(status);
