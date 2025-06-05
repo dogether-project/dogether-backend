@@ -2,8 +2,11 @@ package site.dogether.memberactivity.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import site.dogether.dailytodo.entity.DailyTodoStatus;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
+import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificationReviewStatusException;
 import site.dogether.member.entity.Member;
 import site.dogether.memberactivity.exception.InvalidDailyTodoStatsException;
 
@@ -144,5 +147,19 @@ class DailyTodoStatsTest {
 
         //Then
         assertThat(dailyTodoStats.getRejectedCount()).isEqualTo(rejectedCount + 1);
+    }
+
+    @DisplayName("데일리 투두 인증 상태로 유효하지 않은 값을 넣으면 예외가 발생한다")
+    @EnumSource(value = DailyTodoCertificationReviewStatus.class, names = {"REVIEW_PENDING"})
+    @ParameterizedTest
+    void throwExceptionWhenInputInvalidStatus(final DailyTodoCertificationReviewStatus status) {
+        //Given
+        final Member member = createMember();
+        final DailyTodoStats dailyTodoStats = createDailyTodoStats(member);
+
+        //When & Then
+        assertThatThrownBy(() -> dailyTodoStats.moveCertificatedToResult(status))
+            .isInstanceOf(InvalidDailyTodoCertificationReviewStatusException.class)
+            .hasMessage("유효하지 않은 데일리 투두 인증 검사 결과 입니다. (%s)", status);
     }
 }
