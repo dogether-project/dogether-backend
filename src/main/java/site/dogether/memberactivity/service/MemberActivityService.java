@@ -52,7 +52,6 @@ public class MemberActivityService {
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final MemberRepository memberRepository;
     private final ChallengeGroupService challengeGroupService;
-    private final DailyTodoService dailyTodoService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
