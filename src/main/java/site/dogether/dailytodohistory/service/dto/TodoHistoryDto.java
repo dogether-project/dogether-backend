@@ -6,5 +6,6 @@ public record TodoHistoryDto(
     String status,
     String certificationContent,
     String certificationMediaUrl,
-    boolean isRead
+    boolean isRead,
+    String reviewFeedback
 ) {}
