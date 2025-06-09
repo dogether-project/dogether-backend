@@ -260,10 +260,10 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             List.of(
                 new TodoHistoryDto(1L, "치킨 먹기", CERTIFY_PENDING.name(), null, null, true, null),
                 new TodoHistoryDto(2L, "재홍님 갈구기", CERTIFY_PENDING.name(), null, null, true, null),
-                new TodoHistoryDto(3L, "치킨 먹기", REVIEW_PENDING.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", true, "치킨 부럽다ㅠㅠ"),
-                new TodoHistoryDto(4L, "재홍님 갈구기", REVIEW_PENDING.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요"),
+                new TodoHistoryDto(3L, "치킨 먹기", REVIEW_PENDING.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", true, null),
+                new TodoHistoryDto(4L, "재홍님 갈구기", REVIEW_PENDING.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null),
                 new TodoHistoryDto(5L, "재홍님 갈구기", APPROVE.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요"),
-                new TodoHistoryDto(6L, "치킨 먹기", REJECT.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ")
+                new TodoHistoryDto(6L, "치킨 먹기", REJECT.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!")
             )
         );
         given(dailyTodoHistoryService.findAllTodayTodoHistories(any(), any(), any()))

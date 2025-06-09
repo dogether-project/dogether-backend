@@ -133,6 +133,7 @@ public class DailyTodoHistoryServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(targetMemberTodayTodoHistories.currentTodoHistoryToReadIndex()).isEqualTo(0);
             assertThat(targetMemberTodayTodoHistories.todoHistories().get(0).content()).isEqualTo("치킨 먹기");
+            assertThat(targetMemberTodayTodoHistories.todoHistories().get(0).status()).isEqualTo(DailyTodoCertificationReviewStatus.APPROVE.name());
             assertThat(targetMemberTodayTodoHistories.todoHistories().get(0).certificationContent()).isEqualTo("치킨 먹었습니다! 맛있어요!");
             assertThat(targetMemberTodayTodoHistories.todoHistories().get(0).certificationMediaUrl()).isEqualTo("chicken.url");
             assertThat(targetMemberTodayTodoHistories.todoHistories().get(0).isRead()).isFalse();
