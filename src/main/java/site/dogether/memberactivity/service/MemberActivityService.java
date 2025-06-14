@@ -13,7 +13,6 @@ import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
-import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
@@ -74,12 +73,10 @@ public class MemberActivityService {
             throw new MemberNotInChallengeGroupException("그룹에 속해있지 않은 유저입니다.");
         }
 
-        final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
-
         return new GetGroupActivityStatResponse(
                 getChallengeGroupInfo(challengeGroup),
                 getCertificationPeriods(member, challengeGroup),
-                getMyRank(member, groupMembers, challengeGroup),
+                getMyRank(member, challengeGroup),
                 getMemberGroupStats(member, challengeGroup)
         );
     }
@@ -156,7 +153,9 @@ public class MemberActivityService {
         return (int) (((double) certificatedCount / createdCount) * 100);
     }
 
-    public GetGroupActivityStatResponse.RankingResponse getMyRank(final Member target, final List<ChallengeGroupMember> groupMembers, final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatResponse.RankingResponse getMyRank(final Member target, final ChallengeGroup challengeGroup) {
+        final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
+
         final int totalMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
         final int myRank = challengeGroupService.getMyRank(target, groupMembers);
 
