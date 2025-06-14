@@ -1,6 +1,12 @@
 package site.dogether.dailytodo.service;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,17 +21,9 @@ import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
-import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -97,6 +95,37 @@ class DailyTodoServiceTest {
             memberId,
             challengeGroupId,
             dailyTodoContents))
+            .doesNotThrowAnyException();
+    }
+
+    @DisplayName("데일리 투두를 추가로 작성한다.")
+    @Test
+    void addDailyTodos() {
+        // Given
+        final Member member = memberRepository.save(createMember());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
+
+        final Long memberId = member.getId();
+        final Long challengeGroupId = challengeGroup.getId();
+        final List<String> dailyTodoContents = List.of(
+                "치킨 먹기",
+                "코딩 하기",
+                "운동 하기"
+        );
+        dailyTodoService.saveDailyTodos(
+                memberId,
+                challengeGroupId,
+                dailyTodoContents
+        );
+
+        final List<String> additionalDailyTodoContents = List.of("독서 하기", "산책 하기");
+
+        // When & Then
+        assertThatCode(() -> dailyTodoService.saveDailyTodos(
+            memberId,
+            challengeGroupId,
+            additionalDailyTodoContents))
             .doesNotThrowAnyException();
     }
 
@@ -208,27 +237,5 @@ class DailyTodoServiceTest {
             dailyTodoContents))
             .isInstanceOf(MemberNotInChallengeGroupException.class)
             .hasMessage(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (%s) (%s)", challengeGroup, otherMember));
-    }
-
-    @DisplayName("데일리 투두를 생성하려는 챌린지 그룹에 오늘 투두를 이미 작성했다면 예외가 발생한다.")
-    @Test
-    void throwExceptionAlreadyHasTodayTodos() {
-        // Given
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
-        final Member member = memberRepository.save(createMember());
-        challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
-        dailyTodoService.saveDailyTodos(
-            member.getId(),
-            challengeGroup.getId(),
-            List.of("이미 투두 작성", "이따 또 적어야징 히히", "아이 재밌다 낄낄"));
-
-        final Long memberId = member.getId();
-        final Long challengeGroupId = challengeGroup.getId();
-        final List<String> dailyTodoContents = List.of("새로운 투두", "또 적으려고 왔습니당 히히");
-
-        // When & Then
-        assertThatThrownBy(() -> dailyTodoService.saveDailyTodos(memberId, challengeGroupId, dailyTodoContents))
-            .isInstanceOf(DailyTodoAlreadyCreatedException.class)
-            .hasMessage("사용자가 해당 챌린지 그룹에 오늘 작성한 투두가 이미 존재합니다. (%s) (%s)", challengeGroup, member);
     }
 }
