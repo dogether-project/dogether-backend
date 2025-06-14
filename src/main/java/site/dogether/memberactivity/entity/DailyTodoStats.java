@@ -17,6 +17,7 @@ import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
 import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificationReviewStatusException;
 import site.dogether.member.entity.Member;
+import site.dogether.memberactivity.exception.InvalidDailyTodoStatsException;
 
 import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.APPROVE;
 import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REJECT;
@@ -45,10 +46,6 @@ public class DailyTodoStats extends BaseEntity {
     @Column(name = "rejected_count", nullable = false, columnDefinition = "INT DEFAULT 0")
     private int rejectedCount = 0;
 
-    public DailyTodoStats(final Member member) {
-        this.member = member;
-    }
-
     public DailyTodoStats(
             final Long id,
             final Member member,
@@ -56,11 +53,25 @@ public class DailyTodoStats extends BaseEntity {
             final int approvedCount,
             final int rejectedCount
     ) {
+        validateMember(member);
+
         this.id = id;
         this.member = member;
         this.certificatedCount = certificatedCount;
         this.approvedCount = approvedCount;
         this.rejectedCount = rejectedCount;
+    }
+
+    public DailyTodoStats(final Member member) {
+        validateMember(member);
+
+        this.member = member;
+    }
+
+    private void validateMember(final Member member) {
+        if(member == null) {
+            throw new InvalidDailyTodoStatsException("데일리 투두 통계 멤버로 null을 입력할 수 없습니다.");
+        }
     }
 
     public void increaseCertificatedCount() {
