@@ -42,7 +42,7 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 @Entity
 public class DailyTodo extends BaseEntity {
 
-    public static final int MAXIMUM_ALLOWED_CONTENT_LENGTH = 20;
+    public static final int MAXIMUM_ALLOWED_CONTENT_LENGTH = 400;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +56,7 @@ public class DailyTodo extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Column(name = "content", length = 30, nullable = false, updatable = false)
+    @Column(name = "content", length = 400, nullable = false, updatable = false)
     private String content;
 
     @Column(name = "status", length = 20, nullable = false)
