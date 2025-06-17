@@ -35,8 +35,8 @@ import static site.dogether.dailytodocertification.entity.DailyTodoCertification
 @Entity
 public class DailyTodoCertification extends BaseEntity {
 
-    public static final int MAXIMUM_ALLOWED_CONTENT_LENGTH = 40;
-    public static final int MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH = 60;
+    public static final int MAXIMUM_ALLOWED_CONTENT_LENGTH = 500;
+    public static final int MAXIMUM_ALLOWED_REVIEW_FEEDBACK_LENGTH = 800;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +46,7 @@ public class DailyTodoCertification extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private DailyTodo dailyTodo;
 
-    @Column(name = "content", length = 200, nullable = false, updatable = false)
+    @Column(name = "content", length = 500, nullable = false, updatable = false)
     private String content;
 
     @Column(name = "media_url", length = 500, nullable = false, updatable = false)
@@ -56,7 +56,7 @@ public class DailyTodoCertification extends BaseEntity {
     @Column(name = "review_status", length = 20, nullable = false)
     private DailyTodoCertificationReviewStatus reviewStatus;
 
-    @Column(name = "review_feedback", length = 100)
+    @Column(name = "review_feedback", length = 800)
     private String reviewFeedback;
 
     @Column(name = "created_at", nullable = false, updatable = false)
