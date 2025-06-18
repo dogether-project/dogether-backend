@@ -30,7 +30,7 @@ import static site.dogether.challengegroup.entity.ChallengeGroupStatus.*;
 @Entity
 public class ChallengeGroup extends BaseEntity {
 
-    private static final int MAXIMUM_GROUP_NAME_LENGTH = 10;
+    private static final int MAXIMUM_GROUP_NAME_LENGTH = 200;
     private static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
     private static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
     private static final int JOIN_CODE_LENGTH = 8;
