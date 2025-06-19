@@ -5,47 +5,55 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationCou
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AchievementRateCalculator {
 
+    private static final int DAILY_TODO_LIMIT = 10;
+
     public static int calculate(
         List<DailyTodo> dailyTodos,
-        final LocalDateTime challengeGroupJoinedAt,
         final LocalDate challengeGroupStartAt,
         final LocalDate challengeGroupEndAt,
         final DailyTodoCertificationCount dailyTodoCertificationCount
     ) {
+
         if (dailyTodos.isEmpty()) {
             return 0;
         }
-        // TODO: 추후 해당 로직 리팩토링 필요
+
+        if (!challengeGroupEndAt.isAfter(challengeGroupStartAt)) {
+            return 0;
+        }
+
+        final long totalGroupDuration = Duration.between(challengeGroupStartAt.atStartOfDay(), challengeGroupEndAt.atStartOfDay()).toDays();
+
+        final long groupTotalTodoLimit = DAILY_TODO_LIMIT * totalGroupDuration;
+
         final int totalTodoCount = dailyTodos.size();
         final int certificatedCount = dailyTodoCertificationCount.getTotalCount();
         final int approvedCount = dailyTodoCertificationCount.getApprovedCount();
 
-        final double certificationRate = (double) certificatedCount / totalTodoCount;
-        final double approvalRate = (double) approvedCount / certificatedCount;
-        final double participationRate = calculateParticipationRate(challengeGroupJoinedAt, challengeGroupStartAt, challengeGroupEndAt);
+        final double todoWriteRate = (double) totalTodoCount / groupTotalTodoLimit;
+        final double certificationRate = (double) certificatedCount / groupTotalTodoLimit;
+        final double approvalRate = (double) approvedCount / groupTotalTodoLimit;
+        final double participationRate = calculateParticipationRate(dailyTodos, totalGroupDuration);
 
-        final double score = certificationRate + approvalRate + participationRate;
-        return (int) Math.floor((score / 3.0) * 100);
+        final double score = todoWriteRate + certificationRate + approvalRate + participationRate;
+
+        return (int) Math.floor((score / 4.0) * 100);
     }
 
     private static double calculateParticipationRate(
-        final LocalDateTime challengeGroupJoinedAt,
-        final LocalDate challengeGroupStartAt,
-        final LocalDate challengeGroupEndAt
+        final List<DailyTodo> dailyTodos,
+        final long totalGroupDuration
     ) {
-        final LocalDate nowDate = LocalDate.now();
-        final long totalGroupDuration = Duration.between(challengeGroupStartAt.atStartOfDay(), challengeGroupEndAt.atStartOfDay()).toDays();
-        final long participatedDays = Duration.between(challengeGroupJoinedAt, nowDate.atStartOfDay()).toDays();
+        final int activeWritingDaysCount = dailyTodos.stream()
+            .map(todo -> todo.getWrittenAt().toLocalDate())
+            .collect(Collectors.toSet())
+            .size();
 
-        if (totalGroupDuration <= 0) {
-            return 0;
-        }
-
-        return Math.min((double) participatedDays / totalGroupDuration, 1.0);
+        return Math.min((double) activeWritingDaysCount / totalGroupDuration, 1.0);
     }
 }
