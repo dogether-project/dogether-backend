@@ -12,6 +12,12 @@ public class AchievementRateCalculator {
 
     private static final int DAILY_TODO_LIMIT = 10;
 
+    private static final int TODO_WRITE_WEIGHT = 1;
+    private static final int CERTIFICATION_WEIGHT = 2;
+    private static final int APPROVAL_WEIGHT = 3;
+    private static final int PARTICIPATION_WEIGHT = 4;
+    private static final int TOTAL_WEIGHT = TODO_WRITE_WEIGHT + CERTIFICATION_WEIGHT + APPROVAL_WEIGHT + PARTICIPATION_WEIGHT;
+
     public static int calculate(
         List<DailyTodo> dailyTodos,
         final LocalDate challengeGroupStartAt,
@@ -40,9 +46,9 @@ public class AchievementRateCalculator {
         final double approvalRate = (double) approvedCount / groupTotalTodoLimit;
         final double participationRate = calculateParticipationRate(dailyTodos, totalGroupDuration);
 
-        final double score = todoWriteRate + certificationRate + approvalRate + participationRate;
+        final double score = (todoWriteRate * TODO_WRITE_WEIGHT) + (certificationRate * CERTIFICATION_WEIGHT) + (approvalRate * APPROVAL_WEIGHT) + (participationRate * PARTICIPATION_WEIGHT);
 
-        return (int) Math.floor((score / 4.0) * 100);
+        return (int) Math.floor((score / TOTAL_WEIGHT) * 100);
     }
 
     private static double calculateParticipationRate(
