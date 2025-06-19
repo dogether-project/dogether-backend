@@ -148,5 +148,4 @@ class AchievementRateCalculatorTest {
         // Then
         assertThat(result).isLessThan(100).isGreaterThan(0);
     }
-
 }
