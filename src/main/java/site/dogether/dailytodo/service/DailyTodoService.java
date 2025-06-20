@@ -1,5 +1,11 @@
 package site.dogether.dailytodo.service;
 
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +18,6 @@ import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodos;
-import site.dogether.dailytodo.exception.DailyTodoAlreadyCreatedException;
 import site.dogether.dailytodo.repository.DailyTodoAndDailyTodoCertification;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodo.service.dto.DailyTodoDto;
@@ -23,13 +28,6 @@ import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-
-import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,7 +52,6 @@ public class DailyTodoService {
 
         validateMemberIsInChallengeGroup(challengeGroup, member);
         validateChallengeGroupIsRunning(challengeGroup);
-        validateMemberHasCreatedDailyTodoToday(challengeGroup, member);
 
         final DailyTodos dailyTodos = createDailyTodos(challengeGroup, member, dailyTodoContents);
         final List<DailyTodo> savedDailyTodos = dailyTodoRepository.saveAll(dailyTodos.getValues());
@@ -81,19 +78,6 @@ public class DailyTodoService {
     private void validateMemberIsInChallengeGroup(final ChallengeGroup challengeGroup, final Member member) {
         if (!challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, member)) {
             throw new MemberNotInChallengeGroupException(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (%s) (%s)", challengeGroup, member));
-        }
-    }
-
-    private void validateMemberHasCreatedDailyTodoToday(final ChallengeGroup challengeGroup, final Member member) {
-        final boolean createdDailyTodoToday = dailyTodoRepository.existsByChallengeGroupAndMemberAndWrittenAtBetween(
-            challengeGroup,
-            member,
-            LocalDate.now().atStartOfDay(),
-            LocalDate.now().atTime(LocalTime.MAX)
-        );
-
-        if (createdDailyTodoToday) {
-            throw new DailyTodoAlreadyCreatedException(String.format("사용자가 해당 챌린지 그룹에 오늘 작성한 투두가 이미 존재합니다. (%s) (%s)", challengeGroup, member));
         }
     }
 
