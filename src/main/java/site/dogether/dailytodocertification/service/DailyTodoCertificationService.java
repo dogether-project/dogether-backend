@@ -134,7 +134,7 @@ public class DailyTodoCertificationService {
         notificationService.sendNotification(
             reviewer.getId(),
             String.format("%s님의 투두 인증 검사자로 선정되었습니다.", writer.getName()),
-            String.format("투두 내용 : " + dailyTodo.getContent()),
+            String.format("투두 내용 : %s",dailyTodo.getContent()),
             "CERTIFICATION"
         );
     }
