@@ -357,7 +357,7 @@ jobs:
       - name: Send deploy success notification
         if: needs.check-deploy-condition.outputs.should_deploy == 'true' &&
           needs.image-build.outputs.image_build_result == 'success' &&
-          (needs.deploy-dev.result == 'success' || needs.deploy-prod.result == 'success')
+          (needs.deploy-dev.outputs.deploy_result == 'success' || needs.deploy-prod.outputs.deploy_result == 'success')
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -373,7 +373,8 @@ jobs:
       - name: Send deploy fail notification
         if: needs.check-deploy-condition.outputs.should_deploy == 'true' &&
           (needs.image-build.outputs.image_build_result != 'success' ||
-          (needs.deploy-dev.result != 'success' && needs.deploy-prod.result != 'success'))
+          (needs.deploy-dev.outputs.deploy_result != 'success' &&
+          needs.deploy-prod.outputs.deploy_result != 'success'))
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
