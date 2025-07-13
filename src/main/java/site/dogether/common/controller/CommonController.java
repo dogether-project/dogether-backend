@@ -14,8 +14,8 @@ public class CommonController {
         return "Dogether Backend Service is OK 👍🔥\n";
     }
 
-    @GetMapping("/api/chicken")
+    @GetMapping("/api/infra-test")
     public String chicken() {
-        return "앙 개꿀맛 치킨 ㅎ\n";
+        return "이제 그만할래... 인프라 그만...\n";
     }
 }
