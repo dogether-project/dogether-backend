@@ -196,7 +196,7 @@ jobs:
   deploy-dev:
     needs: [ setup-deploy, image-build ]
     if: needs.setup-deploy.outputs.environment == 'dev' && needs.image-build.outputs.image_build_result == 'success'
-    runs-on: dogether-be-dev-ec2-runner
+    runs-on: dogether-app-dev-runner
     strategy:
       matrix:
         environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
@@ -283,7 +283,7 @@ jobs:
   deploy-prod:
     needs: [ setup-deploy, image-build ]
     if: needs.setup-deploy.outputs.environment == 'prod' && needs.image-build.outputs.image_build_result == 'success'
-    runs-on: dogether-be-prod-ec2-runner
+    runs-on: dogether-app-prod-runner
     strategy:
       matrix:
         environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
