@@ -1,4 +1,4 @@
-package site.dogether.notification.controller;
+package site.dogether.notification.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.notification.exception.InvalidNotificationTokenException;
+import site.dogether.notification.exception.NotificationException;
 
-import static site.dogether.notification.controller.response.NotificationErrorCode.INVALID_NOTIFICATION_TOKEN;
+import static site.dogether.common.controller.response.ApiResponse.fail;
+import static site.dogether.notification.exception.handler.NotificationErrorCode.NOTIFICATION_ERROR;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -17,9 +18,9 @@ import static site.dogether.notification.controller.response.NotificationErrorCo
 public class NotificationExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleInvalidNotificationTokenException(final InvalidNotificationTokenException e) {
-        log.info("handle InvalidNotificationTokenException", e);
+    public ResponseEntity<ApiResponse<Void>> handleNotificationException(final NotificationException e) {
+        log.error("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
-                .body(ApiResponse.fail(INVALID_NOTIFICATION_TOKEN, e.getMessage()));
+                .body(fail(NOTIFICATION_ERROR));
     }
 }

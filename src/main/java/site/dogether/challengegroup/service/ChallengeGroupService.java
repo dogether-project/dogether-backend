@@ -15,7 +15,7 @@ import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
 import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
-import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
+import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
@@ -136,7 +136,7 @@ public class ChallengeGroupService {
 
     private void memberAlreadyInSameGroup(ChallengeGroup challengeGroup, Member joinMember) {
         if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
-            throw new MemberAlreadyInChallengeGroupException(
+            throw new AlreadyJoinChallengeGroupException(
                     String.format("이미 참여 중인 그룹입니다. (memberId: %d), groupId : %d)",
                             joinMember.getId(), challengeGroup.getId()));
         }

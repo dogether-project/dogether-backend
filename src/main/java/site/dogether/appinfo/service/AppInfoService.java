@@ -1,7 +1,7 @@
 package site.dogether.appinfo.service;
 
 import org.springframework.stereotype.Service;
-import site.dogether.appinfo.service.exception.InvalidAppVersionException;
+import site.dogether.appinfo.exception.InvalidAppVersionException;
 
 @Service
 public class AppInfoService {

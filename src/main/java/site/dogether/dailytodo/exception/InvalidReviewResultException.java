@@ -1,7 +1,8 @@
 package site.dogether.dailytodo.exception;
 
-public class InvalidReviewResultException extends RuntimeException {
-    public InvalidReviewResultException(String message) {
+public class InvalidReviewResultException extends DailyTodoException {
+
+    public InvalidReviewResultException(final String message) {
         super(message);
     }
 }

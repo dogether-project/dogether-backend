@@ -1,4 +1,4 @@
-package site.dogether.appinfo.controller;
+package site.dogether.appinfo.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -6,10 +6,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import site.dogether.appinfo.service.exception.InvalidAppVersionException;
+import site.dogether.appinfo.exception.AppInfoException;
 import site.dogether.common.controller.response.ApiResponse;
 
-import static site.dogether.appinfo.controller.response.AppInfoErrorCode.INVALID_APP_VERSION;
+import static site.dogether.appinfo.exception.handler.AppInfoErrorCode.APP_INFO_ERROR;
+import static site.dogether.common.controller.response.ApiResponse.fail;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -17,9 +18,9 @@ import static site.dogether.appinfo.controller.response.AppInfoErrorCode.INVALID
 public class AppInfoExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleInvalidAppVersionException(final InvalidAppVersionException e) {
-        log.info("handle InvalidAppVersionException", e);
+    public ResponseEntity<ApiResponse<Void>> handleAppInfoException(final AppInfoException e) {
+        log.error("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(INVALID_APP_VERSION, e.getMessage()));
+            .body(fail(APP_INFO_ERROR));
     }
 }

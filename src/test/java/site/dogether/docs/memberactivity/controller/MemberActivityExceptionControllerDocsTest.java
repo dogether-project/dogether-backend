@@ -23,7 +23,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("사용자 활동 API 문서화 테스트")
-class MemberActivityControllerDocsTest extends RestDocsSupport {
+class MemberActivityExceptionControllerDocsTest extends RestDocsSupport {
 
     private final MemberActivityService memberActivityService = mock(MemberActivityService.class);
 

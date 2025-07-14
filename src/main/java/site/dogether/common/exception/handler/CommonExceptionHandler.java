@@ -1,4 +1,4 @@
-package site.dogether.common.controller;
+package site.dogether.common.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import site.dogether.common.controller.response.ApiResponse;
 
-import static org.springframework.http.ResponseEntity.internalServerError;
-import static site.dogether.common.exception.CommonErrorCode.INTERNAL_SERVER_APPLICATION;
+import static site.dogether.common.controller.response.ApiResponse.fail;
+import static site.dogether.common.exception.handler.CommonErrorCode.INTERNAL_SERVER_APPLICATION_ERROR;
 
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -19,14 +19,15 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(final NoResourceFoundException e) {
-        log.warn("handle NoResourceFoundException - {}", e.getResourcePath());
-        return ResponseEntity.notFound().build();
+        log.warn("{} 발생!", e.getClass().getSimpleName(), e);
+        return ResponseEntity.notFound()
+            .build();
     }
 
     @ExceptionHandler
     public ResponseEntity<ApiResponse<Void>> handleException(final Exception e) {
-        log.error("handle Exception", e);
-        return internalServerError()
-            .body(ApiResponse.fail(INTERNAL_SERVER_APPLICATION, e.getMessage()));
+        log.error("{} 발생!", e.getClass().getSimpleName(), e);
+        return ResponseEntity.internalServerError()
+            .body(fail(INTERNAL_SERVER_APPLICATION_ERROR));
     }
 }
