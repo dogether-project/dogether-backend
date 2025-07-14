@@ -23,7 +23,7 @@ import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHisto
 import java.time.LocalDate;
 import java.util.List;
 
-import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.*;
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -39,7 +39,7 @@ public class DailyTodoController {
         @RequestBody final CreateDailyTodosRequest request
     ) {
         dailyTodoService.saveDailyTodos(memberId, groupId, request.todos());
-        return ResponseEntity.ok(ApiResponse.success(CREATE_DAILY_TODOS));
+        return ResponseEntity.ok(success());
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/my-yesterday-todos")
@@ -49,7 +49,7 @@ public class DailyTodoController {
     ) {
         final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId, groupId);
         final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_YESTERDAY_DAILY_TODOS, response));
+        return ResponseEntity.ok(success(response));
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/my-todos")
@@ -61,10 +61,7 @@ public class DailyTodoController {
     ) {
         final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = new FindMyDailyTodosConditionDto(memberId, groupId, date, status);
         final List<DailyTodoDto> myDailyTodos = dailyTodoService.findMyDailyTodos(findMyDailyTodosConditionDto);
-        return ResponseEntity.ok(ApiResponse.successWithData(
-            GET_MY_DAILY_TODOS,
-            GetMyDailyTodosResponse.of(myDailyTodos)
-        ));
+        return ResponseEntity.ok(success(GetMyDailyTodosResponse.of(myDailyTodos)));
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{targetMemberId}/today-todo-history")
@@ -75,7 +72,7 @@ public class DailyTodoController {
     ) {
         final FindTargetMemberTodayTodoHistoriesDto targetMemberTodayTodoHistories = dailyTodoHistoryService.findAllTodayTodoHistories(memberId, groupId, targetMemberId);
         final GetChallengeGroupMemberTodayTodoHistoryResponse response = GetChallengeGroupMemberTodayTodoHistoryResponse.from(targetMemberTodayTodoHistories);
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_CHALLENGE_GROUP_MEMBER_TODAY_TODO_HISTORY, response));
+        return ResponseEntity.ok(success(response));
     }
 
     @PostMapping("/api/todo-history/{todoHistoryId}")
@@ -84,6 +81,6 @@ public class DailyTodoController {
         @PathVariable final Long todoHistoryId
     ) {
         dailyTodoHistoryService.saveDailyTodoHistoryRead(memberId, todoHistoryId);
-        return ResponseEntity.ok(ApiResponse.success(MARK_TODO_HISTORY_AS_READ));
+        return ResponseEntity.ok(success());
     }
 }

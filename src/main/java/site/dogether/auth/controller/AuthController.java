@@ -16,8 +16,7 @@ import site.dogether.auth.service.AuthService;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
-import static site.dogether.auth.controller.response.AuthSuccessCode.LOGIN;
-import static site.dogether.auth.controller.response.AuthSuccessCode.WITHDRAW;
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,9 +31,7 @@ public class AuthController {
             @RequestBody final LoginRequest request
     ) {
         final AuthenticatedMember authenticatedMember = authService.login(request);
-        return ResponseEntity.ok(ApiResponse.successWithData(
-            LOGIN, new LoginResponse(authenticatedMember)
-        ));
+        return ResponseEntity.ok(success(new LoginResponse(authenticatedMember)));
     }
 
     @DeleteMapping("/withdraw")
@@ -43,6 +40,6 @@ public class AuthController {
             @RequestBody final WithdrawRequest request
     ) {
         authService.withdraw(memberId, request);
-        return ResponseEntity.ok(ApiResponse.success(WITHDRAW));
+        return ResponseEntity.ok(success());
     }
 }
