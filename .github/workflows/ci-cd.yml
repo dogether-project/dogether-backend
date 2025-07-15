@@ -129,10 +129,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "집에 가자... 집에 가자... 제발... 😣\n
-                              - 작업자 : ${{ steps.set-assignees.outputs.assignees }}\n
-                              - PR : ${{ github.event.pull_request.html_url }}\n
-                              - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": "집에 가자... 집에 가자... 제발... 😣\n- 작업자 : ${{ steps.set-assignees.outputs.assignees }}\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
