@@ -37,7 +37,7 @@
 |===
 
 [[overview-api-error-code]]
-==== API Error Code
+=== API Error Code
 
 |===
 | 에러 코드 | 설명
