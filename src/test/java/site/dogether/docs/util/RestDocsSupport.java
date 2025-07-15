@@ -29,6 +29,10 @@ public abstract class RestDocsSupport {
         return new Attributes.Attribute("constraints", value);
     }
 
+    protected static Attributes.Attribute options(String... values) {
+        return new Attributes.Attribute("options", String.join(", ", values));
+    }
+
     protected static Attributes.Attribute pathVariableExample(final long value) {
         return new Attributes.Attribute("pathVariableExample", value);
     }

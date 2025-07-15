@@ -95,7 +95,8 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("result")
                         .description("검사 결과")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ APPROVE(인정), REJECT(노인정) ]")),
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("APPROVE(인정)", "REJECT(노인정)")),
                     fieldWithPath("reviewFeedback")
                         .description("검사 피드백")
                         .type(JsonFieldType.STRING)

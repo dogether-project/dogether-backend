@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
 import site.dogether.challengegroup.exception.ChallengeGroupException;
-import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
-import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFinishedException;
 import site.dogether.common.controller.response.ApiResponse;
 
 import static site.dogether.challengegroup.exception.handler.ChallengeGroupErrorCode.*;
@@ -35,23 +35,23 @@ public class ChallengeGroupExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleFullMemberInChallengeGroupException(final FullMemberInChallengeGroupException e) {
+    public ResponseEntity<ApiResponse<Void>> handleFullMemberInChallengeGroupException(final JoiningChallengeGroupAlreadyFullMemberException e) {
         log.info("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(FULL_MEMBER_IN_CHALLENGE_GROUP_ERROR));
+            .body(ApiResponse.fail(JOINING_CHALLENGE_GROUP_ALREADY_FULL_MEMBER_ERROR));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleFinishedChallengeGroupException(final FinishedChallengeGroupException e) {
+    public ResponseEntity<ApiResponse<Void>> handleJoiningChallengeGroupAlreadyFinishedException(final JoiningChallengeGroupAlreadyFinishedException e) {
         log.info("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(FINISHED_CHALLENGE_GROUP_ERROR));
+            .body(ApiResponse.fail(JOINING_CHALLENGE_GROUP_ALREADY_FINISHED_ERROR));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse<Void>> handleChallengeGroupNotFoundException(final ChallengeGroupNotFoundException e) {
+    public ResponseEntity<ApiResponse<Void>> handleChallengeGroupNotFoundByJoinCodeException(final JoiningChallengeGroupNotFoundException e) {
         log.info("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
-            .body(ApiResponse.fail(CHALLENGE_GROUP_NOT_FOUND_ERROR));
+            .body(ApiResponse.fail(JOINING_CHALLENGE_GROUP_NOT_FOUND_ERROR));
     }
 }

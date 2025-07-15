@@ -27,8 +27,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus.*;
-import static site.dogether.docs.util.DocumentLinkGenerator.DocUrl.*;
-import static site.dogether.docs.util.DocumentLinkGenerator.generateLink;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
 public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
@@ -70,13 +68,15 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .type(JsonFieldType.NUMBER)
                         .attributes(constraints("2 ~ 20 범위 정수")),
                     fieldWithPath("startAt")
-                        .description(generateLink(CHALLENGE_GROUP_START_AT_OPTION))
+                        .description("그룹 시작일")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("정해진 값만 입력 허용")),
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("TODAY(오늘 시작)", "TOMORROW(내일 시작)")),
                     fieldWithPath("duration")
-                        .description(generateLink(CHALLENGE_GROUP_DURATION_OPTION))
+                        .description("그룹 진행 기간")
                         .type(JsonFieldType.NUMBER)
-                        .attributes(constraints("정해진 값만 입력 허용"))
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("3(3일)", "7(7일)", "14(14일)", "28(28일)"))
                 ),
                 responseFields(
                     fieldWithPath("code")
@@ -209,9 +209,9 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                         .description("그룹 참여 코드")
                         .type(JsonFieldType.STRING),
                     fieldWithPath("data.joiningChallengeGroups[].status")
-                        .description(generateLink(CHALLENGE_GROUP_STATUS))
+                        .description("그룹 상태")
                         .type(JsonFieldType.STRING)
-                        .attributes(constraints("정해진 값만 입력 허용")),
+                        .attributes(options("READY(시작 전)", "RUNNING(진행중)", "D_DAY(오늘 종료)", "FINISHED(종료)")),
                     fieldWithPath("data.joiningChallengeGroups[].startAt")
                         .description("챌린지 시작일")
                         .type(JsonFieldType.STRING),
