@@ -123,8 +123,15 @@ jobs:
         with:
           payload: |
             {
-              "text": "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})",
               "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})",
+                    "emoji": true
+                  }
+                },
                 {
                   "type": "section",
                   "text": {
@@ -370,11 +377,18 @@ jobs:
         with:
           payload: |
             {
-              "text": "🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})",
               "attachments": [
                 {
-                  "color": "#3066993",
+                  "color": "#36a64f",
                   "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})",
+                        "emoji": true
+                      }
+                    },
                     {
                       "type": "section",
                       "text": {
@@ -399,11 +413,18 @@ jobs:
         with:
           payload: |
             {
-              "text": "❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})",
               "attachments": [
                 {
-                  "color": "#15158332",
+                  "color": "#ff0000",
                   "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})",
+                        "emoji": true
+                      }
+                    },
                     {
                       "type": "section",
                       "text": {
