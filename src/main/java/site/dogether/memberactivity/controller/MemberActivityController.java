@@ -15,7 +15,7 @@ import site.dogether.memberactivity.controller.response.GetMyProfileResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.*;
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/my")
@@ -30,7 +30,7 @@ public class MemberActivityController {
     ) {
         final GetGroupActivityStatResponse groupActivityStat = memberActivityService.getGroupActivityStat(memberId, groupId);
 
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, groupActivityStat));
+        return ResponseEntity.ok(success(groupActivityStat));
     }
 
     // TODO: DailyTodoStats 레코드 명이 entity 명과 동일함. 추후 수정 필요
@@ -42,7 +42,7 @@ public class MemberActivityController {
     ) {
         final GetMemberAllStatsResponse memberAllStats = memberActivityService.getMemberAllStats(memberId, sort, status);
 
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_MEMBER_ALL_STATS, memberAllStats));
+        return ResponseEntity.ok(success(memberAllStats));
     }
 
     @GetMapping("/profile")
@@ -52,6 +52,6 @@ public class MemberActivityController {
         final FindMyProfileDto myProfile = memberActivityService.getMyProfile(memberId);
         final GetMyProfileResponse response = GetMyProfileResponse.from(myProfile);
 
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_MEMBER_PROFILE,response));
+        return ResponseEntity.ok(success(response));
     }
 }

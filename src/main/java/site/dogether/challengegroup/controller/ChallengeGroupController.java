@@ -26,8 +26,7 @@ import site.dogether.common.controller.response.ApiResponse;
 
 import java.util.List;
 
-import static site.dogether.challengegroup.controller.response.ChallengeGroupSuccessCode.*;
-import static site.dogether.memberactivity.controller.response.MemberActivitySuccessCode.GET_GROUP_ACTIVITY_STAT;
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
@@ -42,10 +41,7 @@ public class ChallengeGroupController {
             @RequestBody final CreateChallengeGroupRequest request
     ) {
         final String joinCode = challengeGroupService.createChallengeGroup(request, memberId);
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                CREATE_CHALLENGE_GROUP,
-                new CreateChallengeGroupResponse(joinCode)));
+        return ResponseEntity.ok(success(new CreateChallengeGroupResponse(joinCode)));
     }
 
     @PostMapping("/join")
@@ -54,10 +50,7 @@ public class ChallengeGroupController {
             @RequestBody final JoinChallengeGroupRequest request
     ) {
         final JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(request.joinCode(), memberId);
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                JOIN_CHALLENGE_GROUP,
-                JoinChallengeGroupResponse.from(joinChallengeGroupDto)));
+        return ResponseEntity.ok(success(JoinChallengeGroupResponse.from(joinChallengeGroupDto)));
     }
 
     @GetMapping("/my")
@@ -65,11 +58,7 @@ public class ChallengeGroupController {
             @Authenticated final Long memberId
     ) {
         final JoiningChallengeGroupsWithLastSelectedGroupIndexDto joiningChallengeGroups = challengeGroupService.getJoiningChallengeGroups(memberId);
-        return ResponseEntity.ok(
-            ApiResponse.successWithData(
-                GET_JOINING_CHALLENGE_GROUPS,
-                new GetJoiningChallengeGroupsResponse(joiningChallengeGroups.lastSelectedGroupIndex(), joiningChallengeGroups.joiningChallengeGroups()))
-        );
+        return ResponseEntity.ok(success(new GetJoiningChallengeGroupsResponse(joiningChallengeGroups.lastSelectedGroupIndex(), joiningChallengeGroups.joiningChallengeGroups())));
     }
 
     @PostMapping("/last-selected")
@@ -78,7 +67,7 @@ public class ChallengeGroupController {
         @RequestBody final SaveLastSelectedChallengeGroupInfoRequest request
     ) {
         challengeGroupService.saveLastSelectedChallengeGroupRecord(memberId, request.groupId());
-        return ResponseEntity.ok(ApiResponse.success(SAVE_LAST_SELECTED_CHALLENGE_GROUP_ID));
+        return ResponseEntity.ok(success());
     }
 
     @DeleteMapping("/{groupId}/leave")
@@ -87,21 +76,15 @@ public class ChallengeGroupController {
             @PathVariable final Long groupId
     ) {
         challengeGroupService.leaveChallengeGroup(memberId, groupId);
-        return ResponseEntity.ok(ApiResponse.success(
-                LEAVE_CHALLENGE_GROUP
-        ));
+        return ResponseEntity.ok(success());
     }
 
     @GetMapping("/participating")
     public ResponseEntity<ApiResponse<IsParticipatingChallengeGroupResponse>> isParticipatingChallengeGroup(
             @Authenticated final Long memberId
     ) {
-        IsParticipatingChallengeGroupResponse response
-                = challengeGroupService.isParticipatingChallengeGroup(memberId);
-        return ResponseEntity.ok(ApiResponse.successWithData(
-                IS_PARTICIPATING_CHALLENGE_GROUP,
-                response
-        ));
+        IsParticipatingChallengeGroupResponse response = challengeGroupService.isParticipatingChallengeGroup(memberId);
+        return ResponseEntity.ok(success(response));
     }
 
     @GetMapping("/{groupId}/ranking")
@@ -112,6 +95,6 @@ public class ChallengeGroupController {
         final List<ChallengeGroupMemberOverviewDto> challengeGroupMemberOverview = challengeGroupService.getChallengeGroupMemberOverview(memberId, groupId);
         GetChallengeGroupMembersRankResponse response = GetChallengeGroupMembersRankResponse.from(challengeGroupMemberOverview);
 
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_GROUP_ACTIVITY_STAT, response));
+        return ResponseEntity.ok(success(response));
     }
 }

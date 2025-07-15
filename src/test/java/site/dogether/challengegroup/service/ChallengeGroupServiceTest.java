@@ -16,7 +16,7 @@ import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
-import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
+import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
@@ -121,7 +121,7 @@ class ChallengeGroupServiceTest {
 
         //when & then
         assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(joinCode, member.getId()))
-                .isInstanceOf(MemberAlreadyInChallengeGroupException.class);
+                .isInstanceOf(AlreadyJoinChallengeGroupException.class);
     }
 
     @Test

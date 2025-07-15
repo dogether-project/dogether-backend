@@ -18,9 +18,7 @@ import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDt
 
 import java.util.List;
 
-import static site.dogether.dailytodo.controller.response.DailyTodoSuccessCode.CERTIFY_DAILY_TODO;
-import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationSuccessCode.GET_DAILY_TODO_CERTIFICATIONS_FOR_REVIEW;
-import static site.dogether.dailytodocertification.controller.response.DailyTodoCertificationSuccessCode.REVIEW_DAILY_TODO_CERTIFICATION;
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -36,7 +34,7 @@ public class DailyTodoCertificationController {
         @RequestBody final CertifyDailyTodoRequest request
     ) {
         dailyTodoCertificationService.certifyDailyTodo(memberId, todoId, request.content(), request.mediaUrl());
-        return ResponseEntity.ok(ApiResponse.success(CERTIFY_DAILY_TODO));
+        return ResponseEntity.ok(success());
     }
 
     @PostMapping("/todo-certifications/{todoCertificationId}/review")
@@ -51,7 +49,7 @@ public class DailyTodoCertificationController {
             request.result(),
             request.reviewFeedback()
         );
-        return ResponseEntity.ok(ApiResponse.success(REVIEW_DAILY_TODO_CERTIFICATION));
+        return ResponseEntity.ok(success());
     }
 
     @GetMapping("/todo-certifications/pending-review")
@@ -61,6 +59,6 @@ public class DailyTodoCertificationController {
         final List<DailyTodoCertificationDto> todoCertificationsForReview = dailyTodoCertificationService.findAllTodoCertificationsToReviewer(memberId);
         final GetDailyTodoCertificationsForReviewResponse response = GetDailyTodoCertificationsForReviewResponse.from(todoCertificationsForReview);
 
-        return ResponseEntity.ok(ApiResponse.successWithData(GET_DAILY_TODO_CERTIFICATIONS_FOR_REVIEW, response));
+        return ResponseEntity.ok(success(response));
     }
 }

@@ -2,7 +2,7 @@ package site.dogether.common.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import site.dogether.common.exception.ErrorCode;
+import site.dogether.common.exception.handler.ErrorCode;
 
 @Getter
 public class ApiResponse<T> {
@@ -12,16 +12,16 @@ public class ApiResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final T data;
 
-    public static ApiResponse<Void> success(final SuccessCode code) {
-        return new ApiResponse<>(code.getValue(), code.getMessage(), null);
+    public static ApiResponse<Void> success() {
+        return new ApiResponse<>("success", "API 요청이 정상적으로 수행되었습니다.", null);
     }
 
-    public static <T> ApiResponse<T> successWithData(final SuccessCode code, final T data) {
-        return new ApiResponse<>(code.getValue(), code.getMessage(), data);
+    public static <T> ApiResponse<T> success(final T data) {
+        return new ApiResponse<>("success", "API 요청이 정상적으로 수행되었습니다.", data);
     }
 
-    public static ApiResponse<Void> fail(final ErrorCode errorCode, final String message) {
-        return new ApiResponse<>(errorCode.getValue(), message, null);
+    public static ApiResponse<Void> fail(final ErrorCode errorCode) {
+        return new ApiResponse<>(errorCode.getValue(), errorCode.getMessage(), null);
     }
 
     private ApiResponse(
