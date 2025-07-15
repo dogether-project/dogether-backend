@@ -123,6 +123,7 @@ jobs:
         with:
           payload: |
             {
+              "text": "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})",
               "blocks": [
                 {
                   "type": "header",
