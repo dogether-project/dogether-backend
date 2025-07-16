@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 public class ApiRequestLoggingFilter implements Filter {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final List<String> IGNORE = List.of(
+        "/api/actuator/prometheus"
+    );
 
     @Override
     public void doFilter(
@@ -33,13 +37,18 @@ public class ApiRequestLoggingFilter implements Filter {
 
             // URL, 메서드 및 요청 바디 로깅
             final String url = wrappedRequest.getRequestURI();
+            if (IGNORE.contains(url)) {
+                filterChain.doFilter(wrappedRequest, response);
+                return;
+            }
+
             final String method = wrappedRequest.getMethod();
             final String rawBody = wrappedRequest.getReader().lines().collect(Collectors.joining());
 
             final String prettyHeader = formatHeaders(wrappedRequest);
             final String prettyBody = formatJsonBody(rawBody);
 
-            log.trace("Incoming API Request ({})\n======== [ Header ] ========\n{}\n\n======== [ Body ] ========\n{}", method + " " + url, prettyHeader, prettyBody + "\n");
+            log.trace("Incoming API Request ({})\n============= [ Header ] =============\n{}\n\n============= [ Body ] =============\n{}", method + " " + url, prettyHeader, prettyBody + "\n");
 
             // 래핑된 요청 객체를 다음 필터 체인으로 전달
             filterChain.doFilter(wrappedRequest, response);
