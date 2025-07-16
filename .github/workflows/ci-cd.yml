@@ -137,7 +137,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "집에 가자... 집에 가자... 제발... 😣\n- 작업자 : ${{ steps.set-assignees.outputs.assignees }}\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": "집에 가자... 집에 가자... 제발... 😣\n- 작업자 : `${{ steps.set-assignees.outputs.assignees }}`\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
@@ -378,7 +378,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "**🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})**",
+              "text": "*🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})*",
               "attachments": [
                 {
                   "color": "#36a64f",
@@ -407,7 +407,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "**❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})**",
+              "text": "*❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})*",
               "attachments": [
                 {
                   "color": "#ff0000",
