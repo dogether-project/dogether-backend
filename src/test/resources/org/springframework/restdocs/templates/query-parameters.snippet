@@ -1,6 +1,6 @@
 ===== Query Parameters
 |===
-|설명|파라미터명|필수여부|제약조건
+|Description|Parameter|Required|Constraint|Option
 
 {{#parameters}}
 
@@ -8,6 +8,7 @@
 |{{#tableCellContent}}`+{{name}}+`{{/tableCellContent}}
 |{{#tableCellContent}}{{#optional}}X{{/optional}}{{^optional}}O{{/optional}}{{/tableCellContent}}
 |{{#tableCellContent}}{{#constraints}}{{.}}{{/constraints}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#options}}{{.}}{{/options}}{{/tableCellContent}}
 
 {{/parameters}}
 |===

@@ -1,6 +1,6 @@
 ===== Response Fields
 |===
-|설명|경로|타입|공백 여부
+|Description|Field|Type|Nullable|Option
 
 {{#fields}}
 
@@ -8,6 +8,7 @@
 |{{#tableCellContent}}`+{{path}}+`{{/tableCellContent}}
 |{{#tableCellContent}}`+{{type}}+`{{/tableCellContent}}
 |{{#tableCellContent}}{{#optional}}O{{/optional}}{{^optional}}X{{/optional}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#options}}{{.}}{{/options}}{{/tableCellContent}}
 
 {{/fields}}
 

@@ -1,26 +1,5 @@
 package site.dogether.docs.dailytodo;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
-import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
-import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.APPROVE;
-import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REJECT;
-import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REVIEW_PENDING;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -38,6 +17,22 @@ import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHisto
 import site.dogether.dailytodohistory.service.dto.TodoHistoryDto;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.member.entity.Member;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.*;
 
 @DisplayName("데일리 투두 API 문서화 테스트")
 public class DailyTodoControllerDocsTest extends RestDocsSupport {
@@ -224,7 +219,8 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
                         .description("데일리 투두 날짜"),
                     parameterWithName("status")
                         .description("데일리 투두 상태")
-                        .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("CERTIFY_PENDING(인증 대기)", "REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")

@@ -23,7 +23,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("사용자 활동 API 문서화 테스트")
-class MemberActivityExceptionControllerDocsTest extends RestDocsSupport {
+class MemberActivityControllerDocsTest extends RestDocsSupport {
 
     private final MemberActivityService memberActivityService = mock(MemberActivityService.class);
 
@@ -184,11 +184,13 @@ class MemberActivityExceptionControllerDocsTest extends RestDocsSupport {
                         queryParameters(
                                 parameterWithName("sort")
                                     .description("정렬 방식")
-                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ TODO_COMPLETED_AT(투두 완료일 순), GROUP_CREATED_AT(그룹 생성일 순) ]")),
+                                    .attributes(constraints("옵션으로 정해진 값만 허용"))
+                                    .attributes(options("TODO_COMPLETED_AT(투두 완료일 순)", "GROUP_CREATED_AT(그룹 생성일 순)")),
                                 parameterWithName("status")
                                     .optional()
                                     .description("데일리 투두 상태")
-                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
+                                    .attributes(constraints("옵션으로 정해진 값만 허용"))
+                                    .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)"))),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
@@ -291,11 +293,13 @@ class MemberActivityExceptionControllerDocsTest extends RestDocsSupport {
                         queryParameters(
                                 parameterWithName("sort")
                                     .description("정렬 방식")
-                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ TODO_COMPLETED_AT(투두 완료일 순), GROUP_CREATED_AT(그룹 생성일 순) ]")),
+                                    .attributes(constraints("옵션으로 정해진 값만 허용"))
+                                    .attributes(options("TODO_COMPLETED_AT(투두 완료일 순)", "GROUP_CREATED_AT(그룹 생성일 순)")),
                                 parameterWithName("status")
                                     .optional()
                                     .description("데일리 투두 상태")
-                                    .attributes(constraints("시스템에서 제공하는 값만 입력 가능, [ REVIEW_PENDING(검사 대기), APPROVE(인정), REJECT(노인정) ]"))),
+                                    .attributes(constraints("옵션으로 정해진 값만 허용"))
+                                    .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)"))),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
