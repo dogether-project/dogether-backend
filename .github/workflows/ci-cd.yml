@@ -378,24 +378,16 @@ jobs:
         with:
           payload: |
             {
-              "text": "🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})",
+              "text": "**🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})**",
               "attachments": [
                 {
                   "color": "#36a64f",
                   "blocks": [
                     {
-                      "type": "header",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})",
-                        "emoji": true
-                      }
-                    },
-                    {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "오늘은 생맥 ㅎ 🍺\n- 작업자 : ${{ needs.setup-deploy.outputs.assignees }}\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        "text": "오늘은 생맥 ㅎ 🍺\n- 작업자 : `${{ needs.setup-deploy.outputs.assignees }}`\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                       }
                     }
                   ]
@@ -415,24 +407,16 @@ jobs:
         with:
           payload: |
             {
-              "text": "❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})",
+              "text": "**❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})**",
               "attachments": [
                 {
                   "color": "#ff0000",
                   "blocks": [
                     {
-                      "type": "header",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})",
-                        "emoji": true
-                      }
-                    },
-                    {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "뭐해요? 야근해야죠... 🌝\n- 작업자 : ${{ needs.setup-deploy.outputs.assignees }}\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        "text": "뭐해요? 야근해야죠... 🌝\n- 작업자 : `${{ needs.setup-deploy.outputs.assignees }}`\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                       }
                     }
                   ]
