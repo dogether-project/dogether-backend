@@ -1,7 +1,8 @@
 package site.dogether.dailytodohistory.exception;
 
-public class DailyTodoHistoryAlreadyReadException extends RuntimeException {
-    public DailyTodoHistoryAlreadyReadException(String message) {
+public class DailyTodoHistoryAlreadyReadException extends DailyTodoHistoryException {
+
+    public DailyTodoHistoryAlreadyReadException(final String message) {
         super(message);
     }
 }

@@ -1,7 +1,8 @@
 package site.dogether.dailytodo.exception;
 
-public class InvalidDailyTodoStatusException extends RuntimeException {
-  public InvalidDailyTodoStatusException(String message) {
+public class InvalidDailyTodoStatusException extends DailyTodoException {
+
+  public InvalidDailyTodoStatusException(final String message) {
     super(message);
   }
 }

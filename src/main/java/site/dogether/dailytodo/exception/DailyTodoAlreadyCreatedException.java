@@ -1,7 +1,8 @@
 package site.dogether.dailytodo.exception;
 
-public class DailyTodoAlreadyCreatedException extends RuntimeException {
-    public DailyTodoAlreadyCreatedException(String message) {
+public class DailyTodoAlreadyCreatedException extends DailyTodoException {
+
+    public DailyTodoAlreadyCreatedException(final String message) {
         super(message);
     }
 }

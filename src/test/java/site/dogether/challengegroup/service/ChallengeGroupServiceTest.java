@@ -1,10 +1,5 @@
 package site.dogether.challengegroup.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,16 +8,23 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
+import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.FullMemberInChallengeGroupException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
-import site.dogether.challengegroup.exception.MemberAlreadyInChallengeGroupException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.member.entity.Member;
 import site.dogether.member.repository.MemberRepository;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -104,7 +106,7 @@ class ChallengeGroupServiceTest {
 
         //when & then
         assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(joinCode, member.getId()))
-                .isInstanceOf(ChallengeGroupNotFoundException.class);
+                .isInstanceOf(JoiningChallengeGroupNotFoundException.class);
     }
 
     @Test
@@ -121,7 +123,7 @@ class ChallengeGroupServiceTest {
 
         //when & then
         assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(joinCode, member.getId()))
-                .isInstanceOf(MemberAlreadyInChallengeGroupException.class);
+                .isInstanceOf(AlreadyJoinChallengeGroupException.class);
     }
 
     @Test
@@ -142,7 +144,7 @@ class ChallengeGroupServiceTest {
 
         //when & then
         assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(joinCode, member3.getId()))
-                .isInstanceOf(FullMemberInChallengeGroupException.class);
+                .isInstanceOf(JoiningChallengeGroupAlreadyFullMemberException.class);
     }
 
     @Test

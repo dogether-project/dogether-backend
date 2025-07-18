@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.s3.controller.request.IssueS3PresignedUrlsRequest;
 import site.dogether.s3.controller.response.IssueS3PresignedUrlsResponse;
-import site.dogether.s3.controller.response.S3SuccessCode;
 import site.dogether.s3.service.S3Service;
 
 import java.util.List;
+
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/s3")
@@ -26,9 +27,6 @@ public class S3Controller {
         @RequestBody IssueS3PresignedUrlsRequest request
     ) {
         final List<String> s3PresignedUrls = s3Service.issueS3PresignedUrls(request.dailyTodoId(), request.uploadFileTypes());
-        return ResponseEntity.ok(ApiResponse.successWithData(
-            S3SuccessCode.ISSUED_S3_PRESIGNED_URLS,
-            new IssueS3PresignedUrlsResponse(s3PresignedUrls)
-        ));
+        return ResponseEntity.ok(success(new IssueS3PresignedUrlsResponse(s3PresignedUrls)));
     }
 }

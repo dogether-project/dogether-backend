@@ -119,16 +119,32 @@ jobs:
             core.setOutput("assignees", assignees);        
 
       - name: Send deploy start notification
-        uses: tsickert/discord-webhook@v7.0.0
+        uses: slackapi/slack-github-action@v1.24.0
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          embed-title: "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})"
-          embed-description: |
-            집에 가자... 집에 가자... 제발... 😣
-
-            - 작업자 : ${{ steps.set-assignees.outputs.assignees }}
-            - PR : ${{ github.event.pull_request.html_url }}
-            - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          payload: |
+            {
+              "text": "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🙏 BE 배포 시작 알림 (${{ steps.set-environment.outputs.environment }})",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "집에 가자... 집에 가자... 제발... 😣\n- 작업자 : `${{ steps.set-assignees.outputs.assignees }}`\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   image-build:
     needs: [ setup-deploy ]
@@ -196,7 +212,7 @@ jobs:
   deploy-dev:
     needs: [ setup-deploy, image-build ]
     if: needs.setup-deploy.outputs.environment == 'dev' && needs.image-build.outputs.image_build_result == 'success'
-    runs-on: dogether-be-dev-ec2-runner
+    runs-on: dogether-app-dev-runner
     strategy:
       matrix:
         environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
@@ -283,7 +299,7 @@ jobs:
   deploy-prod:
     needs: [ setup-deploy, image-build ]
     if: needs.setup-deploy.outputs.environment == 'prod' && needs.image-build.outputs.image_build_result == 'success'
-    runs-on: dogether-be-prod-ec2-runner
+    runs-on: dogether-app-prod-runner
     strategy:
       matrix:
         environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
@@ -357,31 +373,56 @@ jobs:
       - name: Send deploy success notification
         if: needs.check-deploy-condition.outputs.should_deploy == 'true' &&
           needs.image-build.outputs.image_build_result == 'success' &&
-          (needs.deploy-dev.result == 'success' || needs.deploy-prod.result == 'success')
-        uses: tsickert/discord-webhook@v7.0.0
+          (needs.deploy-dev.outputs.deploy_result == 'success' || needs.deploy-prod.outputs.deploy_result == 'success')
+        uses: slackapi/slack-github-action@v1.24.0
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          embed-color: 3066993
-          embed-title: "🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})"
-          embed-description: |
-            오늘은 생맥 ㅎ 🍺
-
-            - 작업자 : ${{ needs.setup-deploy.outputs.assignees }}
-            - PR : ${{ github.event.pull_request.html_url }}
-            - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          payload: |
+            {
+              "text": "*🎉 BE 배포 성공 알림! (${{ needs.setup-deploy.outputs.environment }})*",
+              "attachments": [
+                {
+                  "color": "#36a64f",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "오늘은 생맥 ㅎ 🍺\n- 작업자 : `${{ needs.setup-deploy.outputs.assignees }}`\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
       - name: Send deploy fail notification
         if: needs.check-deploy-condition.outputs.should_deploy == 'true' &&
           (needs.image-build.outputs.image_build_result != 'success' ||
-          (needs.deploy-dev.result != 'success' && needs.deploy-prod.result != 'success'))
-        uses: tsickert/discord-webhook@v7.0.0
+          (needs.deploy-dev.outputs.deploy_result != 'success' &&
+          needs.deploy-prod.outputs.deploy_result != 'success'))
+        uses: slackapi/slack-github-action@v1.24.0
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          embed-color: 15158332
-          embed-title: "❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})"
-          embed-description: |
-            뭐해요? 야근해야죠... 🌝
-
-            - 작업자 : ${{ needs.setup-deploy.outputs.assignees }}
-            - PR : ${{ github.event.pull_request.html_url }}
-            - Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          payload: |
+            {
+              "text": "*❌ BE 배포 실패 알림ㅜ (${{ needs.setup-deploy.outputs.environment }})*",
+              "attachments": [
+                {
+                  "color": "#ff0000",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "뭐해요? 야근해야죠... 🌝\n- 작업자 : `${{ needs.setup-deploy.outputs.assignees }}`\n- PR : ${{ github.event.pull_request.html_url }}\n- Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

@@ -1,8 +1,8 @@
 package site.dogether.member.exception;
 
-public class MemberNotFoundException extends RuntimeException {
+public class MemberNotFoundException extends MemberException {
 
-    public MemberNotFoundException(String message) {
+    public MemberNotFoundException(final String message) {
         super(message);
     }
 }

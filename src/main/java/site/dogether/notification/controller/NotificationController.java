@@ -9,8 +9,7 @@ import site.dogether.notification.controller.request.DeleteNotificationTokenRequ
 import site.dogether.notification.controller.request.SaveNotificationTokenRequest;
 import site.dogether.notification.service.NotificationService;
 
-import static site.dogether.notification.controller.response.NotificationSuccessCode.DELETE_NOTIFICATION_TOKEN;
-import static site.dogether.notification.controller.response.NotificationSuccessCode.SAVE_NOTIFICATION_TOKEN;
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
@@ -24,7 +23,7 @@ public class NotificationController {
             @Authenticated final Long memberId,
             @RequestBody final SaveNotificationTokenRequest request) {
         notificationService.saveNotificationToken(memberId, request.token());
-        return ResponseEntity.ok(ApiResponse.success(SAVE_NOTIFICATION_TOKEN));
+        return ResponseEntity.ok(success());
     }
 
     @DeleteMapping("/tokens")
@@ -32,6 +31,6 @@ public class NotificationController {
             @Authenticated final Long memberId,
             @RequestBody final DeleteNotificationTokenRequest request) {
         notificationService.deleteNotificationToken(memberId, request.token());
-        return ResponseEntity.ok(ApiResponse.success(DELETE_NOTIFICATION_TOKEN));
+        return ResponseEntity.ok(success());
     }
 }

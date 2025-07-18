@@ -1,7 +1,8 @@
 package site.dogether.challengegroup.exception;
 
-public class JoiningChallengeGroupMaxCountException extends RuntimeException {
-    public JoiningChallengeGroupMaxCountException(String message) {
+public class JoiningChallengeGroupMaxCountException extends ChallengeGroupException {
+
+    public JoiningChallengeGroupMaxCountException(final String message) {
         super(message);
     }
 }
