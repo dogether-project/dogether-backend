@@ -9,6 +9,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,8 +18,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Profile("!prod")
+@Order(2)
 @Component
-public class ApiRequestLoggingFilter implements Filter {
+public class ApiRequestHeaderAndLoggingFilter implements Filter {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final List<String> IGNORE = List.of(
