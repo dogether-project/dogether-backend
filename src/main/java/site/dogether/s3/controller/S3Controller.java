@@ -28,10 +28,7 @@ public class S3Controller {
     public ResponseEntity<ApiResponse<IssueS3PresignedUrlsResponse>> issueS3PresignedUrls(
         @RequestBody IssueS3PresignedUrlsRequest request
     ) {
-        long start = System.currentTimeMillis();
         final List<String> s3PresignedUrls = s3Service.issueS3PresignedUrls(request.dailyTodoId(), request.uploadFileTypes());
-        long end = System.currentTimeMillis();
-        log.trace("S3 presigned url 발급 시간: {} ms", (end - start));
         return ResponseEntity.ok(success(new IssueS3PresignedUrlsResponse(s3PresignedUrls)));
     }
 }
