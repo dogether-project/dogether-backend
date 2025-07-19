@@ -179,8 +179,9 @@ gradle-app.setting
 # env file
 local.env
 
-# docker data
-/docker/data/mysql/mysql
+# docker
+/docker/local_mysql/data/mysql/mysql
+/docker/performance_test/
 
 # custom sh
 /sh
