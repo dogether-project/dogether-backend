@@ -157,9 +157,37 @@ jobs:
         environment: [ "${{ needs.setup-deploy.outputs.environment }}" ]
     environment: ${{ matrix.environment }}
     outputs:
+      springboot_app_profile: ${{ steps.set-springboot-app-profile.outputs.springboot_app_profile }}
       image_build_result: ${{ steps.image-build-result.outputs.image_build_result }}
     continue-on-error: true
     steps:
+      - name: Set spring boot app profile
+        id: set-springboot-app-profile
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
+            const hasPerformanceTestLabel = pr.data.labels.map(label => label.name).includes("performance-test");
+            const environment = '${{ matrix.environment }}';
+            
+            let profile = '';
+            
+            if (environment === 'prod') {
+              profile = 'prod';
+            } else if (environment === 'dev') {
+              profile = hasPerformanceTestLabel ? 'performance-test' : 'dev';
+            } else {
+              core.setFailed(`Unexpected environment: ${environment}`);
+            }
+            
+            console.log(`🔧 hasPerformanceTestLabel=${hasPerformanceTestLabel}, profile=${profile}`);
+            core.setOutput("springboot_app_profile", profile);
+
       - name: Checkout the code
         uses: actions/checkout@v4
 
@@ -181,7 +209,7 @@ jobs:
           echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > src/main/resources/firebase/dogether-firebase-key.json
 
       - name: Build with gradle
-        run: ./gradlew bootJar -Pspring.profiles.active=${{ matrix.environment }} --info
+        run: ./gradlew bootJar -Pspring.profiles.active=${{ steps.set-springboot-app-profile.outputs.springboot_app_profile }} --info
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -197,7 +225,7 @@ jobs:
       - name: Docker build & push
         id: docker-build-and-push
         run: |
-          docker build --build-arg SPRINGBOOT_APP_PROFILE=${{ matrix.environment }} --platform linux/arm64 -f docker/Dockerfile --tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
+          docker build --build-arg SPRINGBOOT_APP_PROFILE=${{ steps.set-springboot-app-profile.outputs.springboot_app_profile }} --platform linux/arm64 -f docker/Dockerfile --tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
       - name: Set image build result
