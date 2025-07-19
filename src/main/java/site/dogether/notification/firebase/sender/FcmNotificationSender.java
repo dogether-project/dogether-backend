@@ -15,8 +15,11 @@ public class FcmNotificationSender implements NotificationSender {
 
     @Override
     public void send(final NotificationRequest request) {
+        long start = System.currentTimeMillis();
         final FcmNotificationRequest fcmNotificationRequest = (FcmNotificationRequest) request;
         sendPushNotification(fcmNotificationRequest.convertFcmMessage());
+        long end = System.currentTimeMillis();
+        log.trace("FCM 푸시 알림 실제 전송 시간: {} ms", (end - start));
     }
 
     private void sendPushNotification(final Message fcmMessage) {
