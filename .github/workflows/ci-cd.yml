@@ -185,7 +185,7 @@ jobs:
               core.setFailed(`Unexpected environment: ${environment}`);
             }
             
-            console.log(`🔧 hasPerformanceTestLabel=${hasPerformanceTestLabel}, profile=${profile}`);
+            console.log(`🔧profile=${profile}`);
             core.setOutput("springboot_app_profile", profile);
 
       - name: Checkout the code
