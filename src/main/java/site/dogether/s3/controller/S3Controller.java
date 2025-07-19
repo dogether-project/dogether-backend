@@ -1,6 +1,7 @@
 package site.dogether.s3.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static site.dogether.common.controller.response.ApiResponse.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/s3")
 @RestController
@@ -26,7 +28,10 @@ public class S3Controller {
     public ResponseEntity<ApiResponse<IssueS3PresignedUrlsResponse>> issueS3PresignedUrls(
         @RequestBody IssueS3PresignedUrlsRequest request
     ) {
+        long start = System.currentTimeMillis();
         final List<String> s3PresignedUrls = s3Service.issueS3PresignedUrls(request.dailyTodoId(), request.uploadFileTypes());
+        long end = System.currentTimeMillis();
+        log.trace("S3 presigned url 발급 시간: {} ms", (end - start));
         return ResponseEntity.ok(success(new IssueS3PresignedUrlsResponse(s3PresignedUrls)));
     }
 }
