@@ -1,13 +1,13 @@
-package site.dogether.notification.firebase.sender;
+package site.dogether.notification.sender.firebase;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import site.dogether.notification.exception.InvalidNotificationTokenException;
 import site.dogether.notification.sender.NotificationRequest;
 import site.dogether.notification.sender.NotificationSender;
-import site.dogether.notification.exception.InvalidNotificationTokenException;
 
 @Slf4j
 @Component
@@ -15,11 +15,8 @@ public class FcmNotificationSender implements NotificationSender {
 
     @Override
     public void send(final NotificationRequest request) {
-        long start = System.currentTimeMillis();
         final FcmNotificationRequest fcmNotificationRequest = (FcmNotificationRequest) request;
         sendPushNotification(fcmNotificationRequest.convertFcmMessage());
-        long end = System.currentTimeMillis();
-        log.trace("FCM 푸시 알림 실제 전송 시간: {} ms", (end - start));
     }
 
     private void sendPushNotification(final Message fcmMessage) {

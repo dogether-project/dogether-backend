@@ -14,7 +14,7 @@ import site.dogether.member.service.MemberService;
 
 import java.util.Map;
 
-@Profile({"local", "dev"})
+@Profile("!prod")
 @Slf4j
 @RequiredArgsConstructor
 @RestController

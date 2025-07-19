@@ -1,4 +1,4 @@
-package site.dogether.notification.firebase.sender;
+package site.dogether.notification.sender.firebase;
 
 import com.google.firebase.messaging.*;
 
