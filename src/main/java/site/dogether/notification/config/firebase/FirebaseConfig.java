@@ -1,4 +1,4 @@
-package site.dogether.notification.firebase.config;
+package site.dogether.notification.config.firebase;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
