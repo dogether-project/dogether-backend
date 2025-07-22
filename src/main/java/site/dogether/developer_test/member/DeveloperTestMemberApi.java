@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.service.AuthService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
+import site.dogether.notification.entity.NotificationToken;
+import site.dogether.notification.repository.NotificationTokenRepository;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Profile("!prod")
 @Slf4j
@@ -22,11 +25,14 @@ public class DeveloperTestMemberApi {
 
     private final MemberService memberService;
     private final AuthService authService;
+    private final NotificationTokenRepository notificationTokenRepository;
 
     @PostMapping("/api/dev/save-member")
     public String saveMember(@RequestBody final Map<String, String> request) {
         final Member saved = memberService.save(request.get("providerId"), request.get("name"));
-        log.info("member save : {}", saved);
+        final String token = UUID.randomUUID().toString();
+        notificationTokenRepository.save(new NotificationToken(saved, token));
+        log.info("develop test member save : {}, {}", saved, token);
         return authService.issueTestUserJwt(saved.getId());
     }
 
