@@ -10,5 +10,5 @@ spring:
   jpa.hibernate.ddl-auto: create
 
 logging:
-  config: classpath:logback/logback-performance-test.xml
+  config: classpath:logback/logback-pt.xml
   level.site.dogether: trace

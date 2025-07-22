@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Profile("performance-test")
+@Profile("pt")
 @Primary
 @Component
 public class PerformanceTestPresignedUrlGenerator implements PresignedUrlGenerator{
