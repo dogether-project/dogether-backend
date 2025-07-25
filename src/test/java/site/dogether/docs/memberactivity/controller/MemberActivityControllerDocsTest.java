@@ -6,9 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.memberactivity.controller.MemberActivityController;
-import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
-import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.controller.v0.MemberActivityController;
+import site.dogether.memberactivity.controller.v0.dto.response.GetGroupActivityStatResponse;
+import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
