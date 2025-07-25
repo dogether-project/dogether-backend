@@ -1,4 +1,4 @@
-package site.dogether.docs.memberactivity.controller;
+package site.dogether.docs.memberactivity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
