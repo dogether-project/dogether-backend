@@ -1,11 +1,5 @@
 package site.dogether.dailytodo.service;
 
-import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +22,13 @@ import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -160,7 +161,7 @@ public class DailyTodoService {
         final LocalDateTime startDate,
         final LocalDateTime endDate
     ) {
-        final List<DailyTodoDto> certifyPendingTodos = new java.util.ArrayList<>(dailyTodoRepository.findAllByChallengeGroupAndMemberAndStatusAndWrittenAtBetween(
+        final List<DailyTodoDto> certifyPendingTodos = new java.util.ArrayList<>(dailyTodoRepository.findAllByChallengeGroupAndMemberAndStatusAndWrittenAtBetweenOrderByWrittenAtDesc(
                 challengeGroup,
                 member,
                 CERTIFY_PENDING,
