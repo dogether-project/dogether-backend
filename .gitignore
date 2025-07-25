@@ -192,4 +192,7 @@ local.env
 # firebase
 src/main/resources/firebase
 
+# k6
+/k6
+
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
