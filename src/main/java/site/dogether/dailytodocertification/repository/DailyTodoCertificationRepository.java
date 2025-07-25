@@ -1,5 +1,7 @@
 package site.dogether.dailytodocertification.repository;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,10 @@ public interface DailyTodoCertificationRepository extends JpaRepository<DailyTod
     List<DailyTodoCertification> findAllByDailyTodo_Member(Member member);
 
     List<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatus(Member member, DailyTodoCertificationReviewStatus reviewStatus);
+
+    Slice<DailyTodoCertification> findAllByDailyTodo_Member(Member member, Pageable pageable);
+
+    Slice<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatus(Member member, DailyTodoCertificationReviewStatus status, Pageable pageable);
 
     @Query("""
     SELECT dtc

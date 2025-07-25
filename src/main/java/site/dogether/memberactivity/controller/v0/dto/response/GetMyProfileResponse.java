@@ -1,4 +1,4 @@
-package site.dogether.memberactivity.controller.response;
+package site.dogether.memberactivity.controller.v0.dto.response;
 
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
