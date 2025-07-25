@@ -103,7 +103,8 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                         .attributes(constraints("옵션으로 정해진 값만 허용"))
                         .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)")),
                     parameterWithName("page")
-                        .description("페이지 번호 (0부터 시작)")),
+                        .description("페이지 번호")
+                        .attributes(constraints("0부터 시작"))),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
@@ -235,7 +236,8 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                     .attributes(constraints("옵션으로 정해진 값만 허용"))
                                     .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)")),
                                 parameterWithName("page")
-                                    .description("페이지 번호 (0부터 시작)")),
+                                    .description("페이지 번호")
+                                    .attributes(constraints("0부터 시작"))),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
