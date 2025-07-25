@@ -33,7 +33,6 @@ public class MemberActivityController {
         return ResponseEntity.ok(success(groupActivityStat));
     }
 
-    // TODO: DailyTodoStats 레코드 명이 entity 명과 동일함. 추후 수정 필요
     @GetMapping("/activity")
     public ResponseEntity<ApiResponse<GetMemberAllStatsResponse>> getMemberAllStats(
             @Authenticated final Long memberId,
