@@ -33,7 +33,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
     @DisplayName("[V1]사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
     @Test
-    void getMemberAllStatsSortedByTodoCompletedAt() throws Exception {
+    void getMemberAllStatsSortedByTodoCompletedAtV1() throws Exception {
 
         GetMemberAllStatsResponseV1.DailyTodoStats stats = new GetMemberAllStatsResponseV1.DailyTodoStats(
                 5,
@@ -88,7 +88,6 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                     .param("sortBy", "TODO_COMPLETED_AT")
                     .param("status", "APPROVE")
                     .param("page", "0")
-                    .param("size", "50")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -104,9 +103,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                         .attributes(constraints("옵션으로 정해진 값만 허용"))
                         .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)")),
                     parameterWithName("page")
-                        .description("페이지 번호 (0부터 시작)"),
-                    parameterWithName("size")
-                        .description("한 페이지에 인증 목록 50개")),
+                        .description("페이지 번호 (0부터 시작)")),
                 responseFields(
                     fieldWithPath("code")
                         .description("응답 코드")
@@ -169,7 +166,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
     @DisplayName("[V1]사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
     @Test
-    void getMemberAllStatsSortedByGroupCreatedAt() throws Exception {
+    void getMemberAllStatsSortedByGroupCreatedAtV1() throws Exception {
 
         GetMemberAllStatsResponseV1.DailyTodoStats stats = new GetMemberAllStatsResponseV1.DailyTodoStats(
                 5,
@@ -223,7 +220,6 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 .param("sortBy", "GROUP_CREATED_AT")
                                 .param("status", "REJECT")
                                 .param("page", "0")
-                                .param("size", "50")
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -239,9 +235,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                     .attributes(constraints("옵션으로 정해진 값만 허용"))
                                     .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)")),
                                 parameterWithName("page")
-                                    .description("페이지 번호 (0부터 시작)"),
-                                parameterWithName("size")
-                                    .description("한 페이지에 인증 목록 50개")),
+                                    .description("페이지 번호 (0부터 시작)")),
                         responseFields(
                                 fieldWithPath("code")
                                         .description("응답 코드")
