@@ -7,7 +7,7 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
-  jpa.hibernate.ddl-auto: create
+  jpa.hibernate.ddl-auto: update
 
 logging:
   config: classpath:logback/logback-pt.xml
