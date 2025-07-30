@@ -1,4 +1,4 @@
-package site.dogether.memberactivity.controller;
+package site.dogether.memberactivity.controller.v0;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
-import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
-import site.dogether.memberactivity.controller.response.GetMyProfileResponse;
+import site.dogether.memberactivity.controller.v0.dto.response.GetGroupActivityStatResponse;
+import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.controller.v0.dto.response.GetMyProfileResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
@@ -33,7 +33,6 @@ public class MemberActivityController {
         return ResponseEntity.ok(success(groupActivityStat));
     }
 
-    // TODO: DailyTodoStats 레코드 명이 entity 명과 동일함. 추후 수정 필요
     @GetMapping("/activity")
     public ResponseEntity<ApiResponse<GetMemberAllStatsResponse>> getMemberAllStats(
             @Authenticated final Long memberId,

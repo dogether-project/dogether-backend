@@ -20,8 +20,8 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.controller.response.GetGroupActivityStatResponse;
-import site.dogether.memberactivity.controller.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.controller.v0.dto.response.GetGroupActivityStatResponse;
+import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
@@ -172,6 +172,7 @@ public class MemberActivityService {
         );
     }
 
+    //TODO: 추후 로직 개선을 위한 리팩토링 진행 예정
     public GetMemberAllStatsResponse getMemberAllStats(Long memberId, String sort, String status) {
         final Member member = getMember(memberId);
 
