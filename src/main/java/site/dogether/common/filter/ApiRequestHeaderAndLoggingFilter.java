@@ -39,6 +39,9 @@ public class ApiRequestHeaderAndLoggingFilter implements Filter {
 
             // URL, 메서드 및 요청 바디 로깅
             final String url = wrappedRequest.getRequestURI();
+            final String queryString = wrappedRequest.getQueryString();
+            final String fullUrl = queryString == null ? url : url + "?" + queryString;
+
             if (IGNORE.contains(url)) {
                 filterChain.doFilter(wrappedRequest, response);
                 return;
@@ -50,7 +53,7 @@ public class ApiRequestHeaderAndLoggingFilter implements Filter {
             final String prettyHeader = formatHeaders(wrappedRequest);
             final String prettyBody = formatJsonBody(rawBody);
 
-            log.trace("Incoming API Request ({})\n============= [ Header ] =============\n{}\n\n============= [ Body ] =============\n{}", method + " " + url, prettyHeader, prettyBody + "\n");
+            log.trace("Incoming API Request ({})\n============= [ Header ] =============\n{}\n\n============= [ Body ] =============\n{}", method + " " + fullUrl, prettyHeader, prettyBody + "\n");
 
             // 래핑된 요청 객체를 다음 필터 체인으로 전달
             filterChain.doFilter(wrappedRequest, response);
