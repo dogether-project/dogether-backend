@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
-import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
+import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.entity.AchievementRateCalculator;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
@@ -58,7 +58,7 @@ public class ChallengeGroupService {
     private final NotificationService notificationService;
 
     @Transactional
-    public String createChallengeGroup(final CreateChallengeGroupRequest request, final Long memberId) {
+    public String createChallengeGroup(final CreateChallengeGroupApiRequestV1 request, final Long memberId) {
         final Member member = getMember(memberId);
         validateJoiningGroupMaxCount(member);
 
@@ -250,14 +250,14 @@ public class ChallengeGroupService {
             );
     }
 
-    public IsParticipatingChallengeGroupResponse isParticipatingChallengeGroup(Long memberId) {
+    public CheckParticipatingChallengeGroupApiResponseV1 checkParticipatingChallengeGroup(Long memberId) {
         final Member member = getMember(memberId);
         final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
 
         if (challengeGroupMembers.isEmpty()) {
-            return new IsParticipatingChallengeGroupResponse(false);
+            return new CheckParticipatingChallengeGroupApiResponseV1(true);
         }
-        return new IsParticipatingChallengeGroupResponse(true);
+        return new CheckParticipatingChallengeGroupApiResponseV1(false);
     }
 
     public List<ChallengeGroupMemberOverviewDto> getChallengeGroupMemberOverview(final Long memberId, final Long groupId) {

@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
-import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
-import site.dogether.challengegroup.controller.request.SaveLastSelectedChallengeGroupInfoRequest;
-import site.dogether.challengegroup.controller.response.CreateChallengeGroupResponse;
-import site.dogether.challengegroup.controller.response.GetChallengeGroupMembersRankResponse;
-import site.dogether.challengegroup.controller.response.GetJoiningChallengeGroupsResponse;
-import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
-import site.dogether.challengegroup.controller.response.JoinChallengeGroupResponse;
+import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.request.JoinChallengeGroupApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.request.SaveLastSelectedChallengeGroupInfoApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.response.CreateChallengeGroupApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.GetChallengeGroupMembersRankApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.GetJoiningChallengeGroupsApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.JoinChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
 import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 
 import java.util.List;
 
-import static site.dogether.common.controller.response.ApiResponse.*;
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
@@ -36,35 +36,35 @@ public class ChallengeGroupController {
     private final ChallengeGroupService challengeGroupService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CreateChallengeGroupResponse>> createChallengeGroup(
+    public ResponseEntity<ApiResponse<CreateChallengeGroupApiResponseV1>> createChallengeGroup(
             @Authenticated final Long memberId,
-            @RequestBody final CreateChallengeGroupRequest request
+            @RequestBody final CreateChallengeGroupApiRequestV1 request
     ) {
         final String joinCode = challengeGroupService.createChallengeGroup(request, memberId);
-        return ResponseEntity.ok(success(new CreateChallengeGroupResponse(joinCode)));
+        return ResponseEntity.ok(success(new CreateChallengeGroupApiResponseV1(joinCode)));
     }
 
     @PostMapping("/join")
-    public ResponseEntity<ApiResponse<JoinChallengeGroupResponse>> joinChallengeGroup(
+    public ResponseEntity<ApiResponse<JoinChallengeGroupApiResponseV1>> joinChallengeGroup(
             @Authenticated final Long memberId,
-            @RequestBody final JoinChallengeGroupRequest request
+            @RequestBody final JoinChallengeGroupApiRequestV1 request
     ) {
         final JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(request.joinCode(), memberId);
-        return ResponseEntity.ok(success(JoinChallengeGroupResponse.from(joinChallengeGroupDto)));
+        return ResponseEntity.ok(success(JoinChallengeGroupApiResponseV1.from(joinChallengeGroupDto)));
     }
 
     @GetMapping("/my")
-    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsResponse>> getJoiningChallengeGroups(
+    public ResponseEntity<ApiResponse<GetJoiningChallengeGroupsApiResponseV1>> getJoiningChallengeGroups(
             @Authenticated final Long memberId
     ) {
         final JoiningChallengeGroupsWithLastSelectedGroupIndexDto joiningChallengeGroups = challengeGroupService.getJoiningChallengeGroups(memberId);
-        return ResponseEntity.ok(success(new GetJoiningChallengeGroupsResponse(joiningChallengeGroups.lastSelectedGroupIndex(), joiningChallengeGroups.joiningChallengeGroups())));
+        return ResponseEntity.ok(success(new GetJoiningChallengeGroupsApiResponseV1(joiningChallengeGroups.lastSelectedGroupIndex(), joiningChallengeGroups.joiningChallengeGroups())));
     }
 
     @PostMapping("/last-selected")
     public ResponseEntity<ApiResponse<Void>> saveLastSelectedChallengeGroupInfo(
         @Authenticated final Long memberId,
-        @RequestBody final SaveLastSelectedChallengeGroupInfoRequest request
+        @RequestBody final SaveLastSelectedChallengeGroupInfoApiRequestV1 request
     ) {
         challengeGroupService.saveLastSelectedChallengeGroupRecord(memberId, request.groupId());
         return ResponseEntity.ok(success());
@@ -80,20 +80,20 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/participating")
-    public ResponseEntity<ApiResponse<IsParticipatingChallengeGroupResponse>> isParticipatingChallengeGroup(
+    public ResponseEntity<ApiResponse<CheckParticipatingChallengeGroupApiResponseV1>> isParticipatingChallengeGroup(
             @Authenticated final Long memberId
     ) {
-        IsParticipatingChallengeGroupResponse response = challengeGroupService.isParticipatingChallengeGroup(memberId);
+        CheckParticipatingChallengeGroupApiResponseV1 response = challengeGroupService.checkParticipatingChallengeGroup(memberId);
         return ResponseEntity.ok(success(response));
     }
 
     @GetMapping("/{groupId}/ranking")
-    public ResponseEntity<ApiResponse<GetChallengeGroupMembersRankResponse>> getJoiningChallengeGroupTeamRanking(
+    public ResponseEntity<ApiResponse<GetChallengeGroupMembersRankApiResponseV1>> getJoiningChallengeGroupTeamRanking(
             @Authenticated final Long memberId,
             @PathVariable final Long groupId
     ) {
         final List<ChallengeGroupMemberOverviewDto> challengeGroupMemberOverview = challengeGroupService.getChallengeGroupMemberOverview(memberId, groupId);
-        GetChallengeGroupMembersRankResponse response = GetChallengeGroupMembersRankResponse.from(challengeGroupMemberOverview);
+        GetChallengeGroupMembersRankApiResponseV1 response = GetChallengeGroupMembersRankApiResponseV1.from(challengeGroupMemberOverview);
 
         return ResponseEntity.ok(success(response));
     }

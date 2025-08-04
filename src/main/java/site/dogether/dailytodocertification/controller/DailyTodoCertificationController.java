@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
-import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
-import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
+import site.dogether.dailytodocertification.controller.v1.dto.request.CertifyDailyTodoApiRequestV1;
+import site.dogether.dailytodocertification.controller.v1.dto.request.ReviewDailyTodoCertificationApiRequestV1;
+import site.dogether.dailytodocertification.controller.v1.dto.response.GetDailyTodoCertificationsForReviewApiResponseV1;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 
 import java.util.List;
 
-import static site.dogether.common.controller.response.ApiResponse.*;
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -31,7 +31,7 @@ public class DailyTodoCertificationController {
     public ResponseEntity<ApiResponse<Void>> certifyDailyTodo(
         @Authenticated Long memberId,
         @PathVariable final Long todoId,
-        @RequestBody final CertifyDailyTodoRequest request
+        @RequestBody final CertifyDailyTodoApiRequestV1 request
     ) {
         dailyTodoCertificationService.certifyDailyTodo(memberId, todoId, request.content(), request.mediaUrl());
         return ResponseEntity.ok(success());
@@ -41,7 +41,7 @@ public class DailyTodoCertificationController {
     public ResponseEntity<ApiResponse<Void>> reviewDailyTodoCertification(
         @Authenticated Long memberId,
         @PathVariable Long todoCertificationId,
-        @RequestBody final ReviewDailyTodoCertificationRequest request
+        @RequestBody final ReviewDailyTodoCertificationApiRequestV1 request
     ) {
         dailyTodoCertificationService.reviewDailyTodoCertification(
             memberId,
@@ -53,11 +53,11 @@ public class DailyTodoCertificationController {
     }
 
     @GetMapping("/todo-certifications/pending-review")
-    public ResponseEntity<ApiResponse<GetDailyTodoCertificationsForReviewResponse>> getDailyTodoCertificationsForReview(
+    public ResponseEntity<ApiResponse<GetDailyTodoCertificationsForReviewApiResponseV1>> getDailyTodoCertificationsForReview(
         @Authenticated Long memberId
     ) {
         final List<DailyTodoCertificationDto> todoCertificationsForReview = dailyTodoCertificationService.findAllTodoCertificationsToReviewer(memberId);
-        final GetDailyTodoCertificationsForReviewResponse response = GetDailyTodoCertificationsForReviewResponse.from(todoCertificationsForReview);
+        final GetDailyTodoCertificationsForReviewApiResponseV1 response = GetDailyTodoCertificationsForReviewApiResponseV1.from(todoCertificationsForReview);
 
         return ResponseEntity.ok(success(response));
     }

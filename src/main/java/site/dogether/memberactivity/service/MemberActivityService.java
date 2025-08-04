@@ -20,8 +20,8 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.controller.v0.dto.response.GetGroupActivityStatResponse;
-import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsApiResponseV1;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
@@ -59,7 +59,7 @@ public class MemberActivityService {
         dailyTodoStatsRepository.save(stats);
     }
 
-    public GetGroupActivityStatResponse getGroupActivityStat(final Long memberId, final Long groupId) {
+    public GetGroupActivityStatApiResponseV1 getGroupActivityStat(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
 
         final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
@@ -73,7 +73,7 @@ public class MemberActivityService {
             throw new MemberNotInChallengeGroupException("그룹에 속해있지 않은 유저입니다.");
         }
 
-        return new GetGroupActivityStatResponse(
+        return new GetGroupActivityStatApiResponseV1(
                 getChallengeGroupInfo(challengeGroup),
                 getCertificationPeriods(member, challengeGroup),
                 getMyRank(member, challengeGroup),
@@ -86,13 +86,13 @@ public class MemberActivityService {
                 .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
-    public GetGroupActivityStatResponse.ChallengeGroupInfoResponse getChallengeGroupInfo(final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse getChallengeGroupInfo(final ChallengeGroup challengeGroup) {
         final int currentMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
 
         final String endAt = challengeGroup.getEndAt()
                 .format(DateTimeFormatter.ofPattern("yy.MM.dd"));
 
-        return new GetGroupActivityStatResponse.ChallengeGroupInfoResponse(
+        return new GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse(
                 challengeGroup.getName(),
                 challengeGroup.getMaximumMemberCount(),
                 currentMemberCount,
@@ -101,8 +101,8 @@ public class MemberActivityService {
         );
     }
 
-    public List<GetGroupActivityStatResponse.CertificationPeriodResponse> getCertificationPeriods(final Member member, final ChallengeGroup challengeGroup) {
-        List<GetGroupActivityStatResponse.CertificationPeriodResponse> result = new ArrayList<>();
+    public List<GetGroupActivityStatApiResponseV1.CertificationPeriodResponse> getCertificationPeriods(final Member member, final ChallengeGroup challengeGroup) {
+        List<GetGroupActivityStatApiResponseV1.CertificationPeriodResponse> result = new ArrayList<>();
         final LocalDate today = LocalDate.now();
         final LocalDate groupStartAt = challengeGroup.getStartAt();
 
@@ -119,7 +119,7 @@ public class MemberActivityService {
         return result;
     }
 
-    public GetGroupActivityStatResponse.CertificationPeriodResponse certificationPeriod(final int day, final LocalDate date, final Member member, final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatApiResponseV1.CertificationPeriodResponse certificationPeriod(final int day, final LocalDate date, final Member member, final ChallengeGroup challengeGroup) {
         final LocalDateTime startOfDay = date.atStartOfDay();
         final LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
@@ -138,7 +138,7 @@ public class MemberActivityService {
 
         final int certificationRate = calculateCertificationRate(createdCount, certificatedCount);
 
-        return new GetGroupActivityStatResponse.CertificationPeriodResponse(
+        return new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(
                 day,
                 createdCount,
                 certificatedCount,
@@ -153,19 +153,19 @@ public class MemberActivityService {
         return (int) (((double) certificatedCount / createdCount) * 100);
     }
 
-    public GetGroupActivityStatResponse.RankingResponse getMyRank(final Member target, final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatApiResponseV1.RankingResponse getMyRank(final Member target, final ChallengeGroup challengeGroup) {
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
 
         final int totalMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
         final int myRank = challengeGroupService.getMyRank(target, groupMembers);
 
-        return new GetGroupActivityStatResponse.RankingResponse(totalMemberCount, myRank);
+        return new GetGroupActivityStatApiResponseV1.RankingResponse(totalMemberCount, myRank);
     }
 
-    public GetGroupActivityStatResponse.MemberStatsResponse getMemberGroupStats(final Member member, final ChallengeGroup challengeGroup) {
+    public GetGroupActivityStatApiResponseV1.MemberStatsResponse getMemberGroupStats(final Member member, final ChallengeGroup challengeGroup) {
         final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
 
-        return new GetGroupActivityStatResponse.MemberStatsResponse(
+        return new GetGroupActivityStatApiResponseV1.MemberStatsResponse(
             dailyTodoCertificationCount.getTotalCount(),
             dailyTodoCertificationCount.getApprovedCount(),
             dailyTodoCertificationCount.getRejectedCount()
@@ -173,35 +173,35 @@ public class MemberActivityService {
     }
 
     //TODO: 추후 로직 개선을 위한 리팩토링 진행 예정
-    public GetMemberAllStatsResponse getMemberAllStats(Long memberId, String sort, String status) {
+    public GetMemberAllStatsApiResponseV1 getMemberAllStats(Long memberId, String sort, String status) {
         final Member member = getMember(memberId);
 
-        GetMemberAllStatsResponse.DailyTodoStats stats = getStats(member);
+        GetMemberAllStatsApiResponseV1.DailyTodoStats stats = getStats(member);
         List<DailyTodoCertification> certifications = getCertificationsByStatus(member, status);
 
         if ("TODO_COMPLETED_AT".equals(sort)) {
-            List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> groupedCertifications =
+            List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> groupedCertifications =
                     getCertificationsSortedByTodoCompletedAt(certifications);
-            return new GetMemberAllStatsResponse(stats, groupedCertifications, null);
+            return new GetMemberAllStatsApiResponseV1(stats, groupedCertifications, null);
         }
 
         if ("GROUP_CREATED_AT".equals(sort)) {
-            List<GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt> groupedCertifications =
+            List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt> groupedCertifications =
                     getCertificationsSortedByGroupCreatedAt(certifications);
-            return new GetMemberAllStatsResponse(stats, null, groupedCertifications);
+            return new GetMemberAllStatsApiResponseV1(stats, null, groupedCertifications);
         }
 
         throw new InvalidParameterException("유효하지 않은 sort 파라미터입니다.");
     }
 
-    private GetMemberAllStatsResponse.DailyTodoStats getStats(Member member) {
+    private GetMemberAllStatsApiResponseV1.DailyTodoStats getStats(Member member) {
         return dailyTodoStatsRepository.findByMember(member)
-                .map(stats -> new GetMemberAllStatsResponse.DailyTodoStats(
+                .map(stats -> new GetMemberAllStatsApiResponseV1.DailyTodoStats(
                         stats.getCertificatedCount(),
                         stats.getApprovedCount(),
                         stats.getRejectedCount()
                 ))
-                .orElseGet(() -> new GetMemberAllStatsResponse.DailyTodoStats(0, 0, 0));
+                .orElseGet(() -> new GetMemberAllStatsApiResponseV1.DailyTodoStats(0, 0, 0));
     }
 
     private List<DailyTodoCertification> getCertificationsByStatus(Member member, String status) {
@@ -213,12 +213,12 @@ public class MemberActivityService {
         return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member);
     }
 
-    private List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
+    private List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(cert -> cert.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt(
+                .map(entry -> new GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt(
                         entry.getKey(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -228,12 +228,12 @@ public class MemberActivityService {
                 .collect(Collectors.toList());
     }
 
-    private List<GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
+    private List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
                 .entrySet().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt(
+                .map(entry -> new GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt(
                         entry.getKey().getName(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -243,10 +243,10 @@ public class MemberActivityService {
                 .collect(Collectors.toList());
     }
 
-    private GetMemberAllStatsResponse.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
+    private GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
         DailyTodo todo = certification.getDailyTodo();
 
-        return new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+        return new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
                 todo.getId(),
                 todo.getContent(),
                 certification.getReviewStatus().name(),
