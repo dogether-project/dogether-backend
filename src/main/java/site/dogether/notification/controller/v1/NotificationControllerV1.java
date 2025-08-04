@@ -1,12 +1,8 @@
-package site.dogether.notification.controller;
+package site.dogether.notification.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.notification.controller.v1.dto.request.DeleteNotificationTokenApiRequestV1;
@@ -16,9 +12,9 @@ import site.dogether.notification.service.NotificationService;
 import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/notification")
+@RequestMapping("/api/v1/notification")
 @RestController
-public class NotificationController {
+public class NotificationControllerV1 {
 
     private final NotificationService notificationService;
 

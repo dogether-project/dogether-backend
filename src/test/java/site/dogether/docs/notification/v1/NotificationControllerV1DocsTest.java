@@ -1,13 +1,13 @@
-package site.dogether.docs.notification;
+package site.dogether.docs.notification.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.notification.controller.NotificationController;
-import site.dogether.notification.controller.request.DeleteNotificationTokenRequest;
-import site.dogether.notification.controller.request.SaveNotificationTokenRequest;
+import site.dogether.notification.controller.v1.NotificationControllerV1;
+import site.dogether.notification.controller.v1.dto.request.DeleteNotificationTokenApiRequestV1;
+import site.dogether.notification.controller.v1.dto.request.SaveNotificationTokenApiRequestV1;
 import site.dogether.notification.service.NotificationService;
 
 import static org.mockito.Mockito.mock;
@@ -16,22 +16,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("푸시 알림 API 문서화 테스트")
-public class NotificationControllerDocsTest extends RestDocsSupport {
+public class NotificationControllerV1DocsTest extends RestDocsSupport {
 
     private final NotificationService notificationService = mock(NotificationService.class);
 
     @Override
     protected Object initController() {
-        return new NotificationController(notificationService);
+        return new NotificationControllerV1(notificationService);
     }
 
     @DisplayName("푸시 알림 토큰 저장 API")
     @Test
     void saveNotificationToken() throws Exception {
-        final SaveNotificationTokenRequest request = new SaveNotificationTokenRequest("kelly-token-value");
+        final SaveNotificationTokenApiRequestV1 request = new SaveNotificationTokenApiRequestV1("kelly-token-value");
 
         mockMvc.perform(
-                post("/api/notification/tokens")
+                post("/api/v1/notification/tokens")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -54,10 +54,10 @@ public class NotificationControllerDocsTest extends RestDocsSupport {
     @DisplayName("푸시 알림 토큰 삭제 API")
     @Test
     void deleteNotificationToken() throws Exception {
-        final DeleteNotificationTokenRequest request = new DeleteNotificationTokenRequest("kelly-token-value");
+        final DeleteNotificationTokenApiRequestV1 request = new DeleteNotificationTokenApiRequestV1("kelly-token-value");
 
         mockMvc.perform(
-                delete("/api/notification/tokens")
+                delete("/api/v1/notification/tokens")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
