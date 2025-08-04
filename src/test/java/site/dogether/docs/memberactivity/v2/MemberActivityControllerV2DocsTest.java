@@ -1,4 +1,4 @@
-package site.dogether.docs.memberactivity;
+package site.dogether.docs.memberactivity.v2;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.memberactivity.controller.v1.MemberActivityControllerV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsResponseV1;
-import site.dogether.memberactivity.service.MemberActivityServiceV1;
+import site.dogether.memberactivity.controller.v2.MemberActivityControllerV2;
+import site.dogether.memberactivity.controller.v2.dto.response.GetMemberAllStatsResponseV2;
+import site.dogether.memberactivity.service.MemberActivityServiceV2;
 
 import java.util.List;
 
@@ -21,31 +21,31 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("사용자 활동 V1 API 문서화 테스트")
-class MemberActivityControllerV1DocsTest extends RestDocsSupport {
+@DisplayName("사용자 활동 V2 API 문서화 테스트")
+class MemberActivityControllerV2DocsTest extends RestDocsSupport {
 
-    private final MemberActivityServiceV1 memberActivityServiceV1 = mock(MemberActivityServiceV1.class);
+    private final MemberActivityServiceV2 memberActivityServiceV2 = mock(MemberActivityServiceV2.class);
 
     @Override
     protected Object initController() {
-        return new MemberActivityControllerV1(memberActivityServiceV1);
+        return new MemberActivityControllerV2(memberActivityServiceV2);
     }
 
-    @DisplayName("[V1]사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
+    @DisplayName("[V2] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
     @Test
     void getMemberAllStatsSortedByTodoCompletedAtV1() throws Exception {
 
-        GetMemberAllStatsResponseV1.DailyTodoStats stats = new GetMemberAllStatsResponseV1.DailyTodoStats(
+        GetMemberAllStatsResponseV2.DailyTodoStats stats = new GetMemberAllStatsResponseV2.DailyTodoStats(
                 5,
                 3,
                 2
         );
 
-        List<GetMemberAllStatsResponseV1.CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt = List.of(
-                new GetMemberAllStatsResponseV1.CertificationsGroupedByTodoCompletedAt(
+        List<GetMemberAllStatsResponseV2.CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt = List.of(
+                new GetMemberAllStatsResponseV2.CertificationsGroupedByTodoCompletedAt(
                         "2025.05.01",
                         List.of(
-                                new GetMemberAllStatsResponseV1.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsResponseV2.DailyTodoCertificationInfo(
                                         1L,
                                         "운동 하기",
                                         "APPROVE",
@@ -55,10 +55,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsResponseV1.CertificationsGroupedByTodoCompletedAt(
+                new GetMemberAllStatsResponseV2.CertificationsGroupedByTodoCompletedAt(
                         "2025.05.02",
                         List.of(
-                                new GetMemberAllStatsResponseV1.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsResponseV2.DailyTodoCertificationInfo(
                                         2L,
                                         "인강 듣기",
                                         "APPROVE",
@@ -70,7 +70,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        GetMemberAllStatsResponseV1.PageInfoDto pageInfoDto = new GetMemberAllStatsResponseV1.PageInfoDto(
+        GetMemberAllStatsResponseV2.PageInfoDto pageInfoDto = new GetMemberAllStatsResponseV2.PageInfoDto(
             10,
             0,
             true,
@@ -78,13 +78,13 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
         );
 
 
-        GetMemberAllStatsResponseV1 response = new GetMemberAllStatsResponseV1(stats, certificationsGroupedByTodoCompletedAt, null, pageInfoDto);
+        GetMemberAllStatsResponseV2 response = new GetMemberAllStatsResponseV2(stats, certificationsGroupedByTodoCompletedAt, null, pageInfoDto);
 
-        given(memberActivityServiceV1.getMemberAllStats(any(), any(), any(), any()))
+        given(memberActivityServiceV2.getMemberAllStats(any(), any(), any(), any()))
                 .willReturn(response);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/my/activity")
+                MockMvcRequestBuilders.get("/api/v2/my/activity")
                     .param("sortBy", "TODO_COMPLETED_AT")
                     .param("status", "APPROVE")
                     .param("page", "0")
@@ -165,21 +165,21 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )));
     }
 
-    @DisplayName("[V1]사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
+    @DisplayName("[V2] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
     @Test
     void getMemberAllStatsSortedByGroupCreatedAtV1() throws Exception {
 
-        GetMemberAllStatsResponseV1.DailyTodoStats stats = new GetMemberAllStatsResponseV1.DailyTodoStats(
+        GetMemberAllStatsResponseV2.DailyTodoStats stats = new GetMemberAllStatsResponseV2.DailyTodoStats(
                 5,
                 3,
                 2
         );
 
-        List<GetMemberAllStatsResponseV1.CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt = List.of(
-                new GetMemberAllStatsResponseV1.CertificationsGroupedByGroupCreatedAt(
+        List<GetMemberAllStatsResponseV2.CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt = List.of(
+                new GetMemberAllStatsResponseV2.CertificationsGroupedByGroupCreatedAt(
                         "스쿼트 챌린지",
                         List.of(
-                                new GetMemberAllStatsResponseV1.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsResponseV2.DailyTodoCertificationInfo(
                                         1L,
                                         "운동 하기",
                                         "REJECT",
@@ -189,10 +189,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsResponseV1.CertificationsGroupedByGroupCreatedAt(
+                new GetMemberAllStatsResponseV2.CertificationsGroupedByGroupCreatedAt(
                         "TIL 챌린지",
                         List.of(
-                                new GetMemberAllStatsResponseV1.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsResponseV2.DailyTodoCertificationInfo(
                                         2L,
                                         "인강 듣기",
                                         "REJECT",
@@ -204,20 +204,20 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        GetMemberAllStatsResponseV1.PageInfoDto pageInfoDto = new GetMemberAllStatsResponseV1.PageInfoDto(
+        GetMemberAllStatsResponseV2.PageInfoDto pageInfoDto = new GetMemberAllStatsResponseV2.PageInfoDto(
             10,
             0,
             true,
             50
         );
 
-        GetMemberAllStatsResponseV1 response = new GetMemberAllStatsResponseV1(stats, null, certificationsGroupedByGroupCreatedAt, pageInfoDto);
+        GetMemberAllStatsResponseV2 response = new GetMemberAllStatsResponseV2(stats, null, certificationsGroupedByGroupCreatedAt, pageInfoDto);
 
-        given(memberActivityServiceV1.getMemberAllStats(any(), any(), any(), any()))
+        given(memberActivityServiceV2.getMemberAllStats(any(), any(), any(), any()))
                 .willReturn(response);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/v1/my/activity")
+                        MockMvcRequestBuilders.get("/api/v2/my/activity")
                                 .param("sortBy", "GROUP_CREATED_AT")
                                 .param("status", "REJECT")
                                 .param("page", "0")

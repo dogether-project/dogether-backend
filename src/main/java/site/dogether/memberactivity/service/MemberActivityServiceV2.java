@@ -13,7 +13,7 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsResponseV1;
+import site.dogether.memberactivity.controller.v2.dto.response.GetMemberAllStatsResponseV2;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class MemberActivityServiceV1 {
+public class MemberActivityServiceV2 {
 
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
@@ -37,21 +37,21 @@ public class MemberActivityServiceV1 {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-    public GetMemberAllStatsResponseV1 getMemberAllStats(Long memberId, String sort, String status, Pageable pageable) {
+    public GetMemberAllStatsResponseV2 getMemberAllStats(Long memberId, String sort, String status, Pageable pageable) {
         final Member member = getMember(memberId);
 
-        GetMemberAllStatsResponseV1.DailyTodoStats stats = getStats(member);
+        GetMemberAllStatsResponseV2.DailyTodoStats stats = getStats(member);
         Slice<DailyTodoCertification> certificationsBySlice = getCertificationsByStatus(member, status, pageable);
         List<DailyTodoCertification> certifications = certificationsBySlice.getContent();
 
         if ("TODO_COMPLETED_AT".equals(sort)) {
-            List<GetMemberAllStatsResponseV1.CertificationsGroupedByTodoCompletedAt> groupedCertifications = getCertificationsSortedByTodoCompletedAt(certifications);
-            return new GetMemberAllStatsResponseV1(stats, groupedCertifications, null, GetMemberAllStatsResponseV1.from(certificationsBySlice));
+            List<GetMemberAllStatsResponseV2.CertificationsGroupedByTodoCompletedAt> groupedCertifications = getCertificationsSortedByTodoCompletedAt(certifications);
+            return new GetMemberAllStatsResponseV2(stats, groupedCertifications, null, GetMemberAllStatsResponseV2.from(certificationsBySlice));
         }
 
         if ("GROUP_CREATED_AT".equals(sort)) {
-            List<GetMemberAllStatsResponseV1.CertificationsGroupedByGroupCreatedAt> groupedCertifications = getCertificationsSortedByGroupCreatedAt(certifications);
-            return new GetMemberAllStatsResponseV1(stats, null, groupedCertifications, GetMemberAllStatsResponseV1.from(certificationsBySlice));
+            List<GetMemberAllStatsResponseV2.CertificationsGroupedByGroupCreatedAt> groupedCertifications = getCertificationsSortedByGroupCreatedAt(certifications);
+            return new GetMemberAllStatsResponseV2(stats, null, groupedCertifications, GetMemberAllStatsResponseV2.from(certificationsBySlice));
         }
 
         throw new InvalidParameterException("유효하지 않은 sort 파라미터입니다.");
@@ -62,14 +62,14 @@ public class MemberActivityServiceV1 {
             .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
-    private GetMemberAllStatsResponseV1.DailyTodoStats getStats(Member member) {
+    private GetMemberAllStatsResponseV2.DailyTodoStats getStats(Member member) {
         return dailyTodoStatsRepository.findByMember(member)
-                .map(stats -> new GetMemberAllStatsResponseV1.DailyTodoStats(
+                .map(stats -> new GetMemberAllStatsResponseV2.DailyTodoStats(
                         stats.getCertificatedCount(),
                         stats.getApprovedCount(),
                         stats.getRejectedCount()
                 ))
-                .orElseGet(() -> new GetMemberAllStatsResponseV1.DailyTodoStats(0, 0, 0));
+                .orElseGet(() -> new GetMemberAllStatsResponseV2.DailyTodoStats(0, 0, 0));
     }
 
     private Slice<DailyTodoCertification> getCertificationsByStatus(Member member, String status, Pageable pageable) {
@@ -81,12 +81,12 @@ public class MemberActivityServiceV1 {
         return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member, pageable);
     }
 
-    private List<GetMemberAllStatsResponseV1.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
+    private List<GetMemberAllStatsResponseV2.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(cert -> cert.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsResponseV1.CertificationsGroupedByTodoCompletedAt(
+                .map(entry -> new GetMemberAllStatsResponseV2.CertificationsGroupedByTodoCompletedAt(
                         entry.getKey(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -96,12 +96,12 @@ public class MemberActivityServiceV1 {
                 .collect(Collectors.toList());
     }
 
-    private List<GetMemberAllStatsResponseV1.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
+    private List<GetMemberAllStatsResponseV2.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
                 .entrySet().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsResponseV1.CertificationsGroupedByGroupCreatedAt(
+                .map(entry -> new GetMemberAllStatsResponseV2.CertificationsGroupedByGroupCreatedAt(
                         entry.getKey().getName(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -111,10 +111,10 @@ public class MemberActivityServiceV1 {
                 .collect(Collectors.toList());
     }
 
-    private GetMemberAllStatsResponseV1.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
+    private GetMemberAllStatsResponseV2.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
         DailyTodo todo = certification.getDailyTodo();
 
-        return new GetMemberAllStatsResponseV1.DailyTodoCertificationInfo(
+        return new GetMemberAllStatsResponseV2.DailyTodoCertificationInfo(
                 todo.getId(),
                 todo.getContent(),
                 certification.getReviewStatus().name(),

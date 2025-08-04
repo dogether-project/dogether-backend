@@ -1,11 +1,11 @@
-package site.dogether.memberactivity.controller.v1.dto.response;
+package site.dogether.memberactivity.controller.v2.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
-public record GetMemberAllStatsResponseV1(
+public record GetMemberAllStatsResponseV2(
     DailyTodoStats dailyTodoStats,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
