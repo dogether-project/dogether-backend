@@ -33,7 +33,7 @@ class MemberActivityControllerV2DocsTest extends RestDocsSupport {
 
     @DisplayName("[V2] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
     @Test
-    void getMemberAllStatsSortedByTodoCompletedAtV1() throws Exception {
+    void getMemberAllStatsSortedByTodoCompletedAtV2() throws Exception {
 
         GetMemberAllStatsResponseV2.DailyTodoStats stats = new GetMemberAllStatsResponseV2.DailyTodoStats(
                 5,
@@ -167,7 +167,7 @@ class MemberActivityControllerV2DocsTest extends RestDocsSupport {
 
     @DisplayName("[V2] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
     @Test
-    void getMemberAllStatsSortedByGroupCreatedAtV1() throws Exception {
+    void getMemberAllStatsSortedByGroupCreatedAtV2() throws Exception {
 
         GetMemberAllStatsResponseV2.DailyTodoStats stats = new GetMemberAllStatsResponseV2.DailyTodoStats(
                 5,

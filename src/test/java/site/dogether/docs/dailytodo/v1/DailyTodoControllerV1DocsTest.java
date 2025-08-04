@@ -34,7 +34,7 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
 import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.*;
 
-@DisplayName("데일리 투두 API 문서화 테스트")
+@DisplayName("데일리 투두 V1 API 문서화 테스트")
 public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
 
     private final DailyTodoService dailyTodoService = mock(DailyTodoService.class);
@@ -45,9 +45,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
         return new DailyTodoControllerV1(dailyTodoService, dailyTodoHistoryService);
     }
 
-    @DisplayName("데일리 투두 생성 API")
+    @DisplayName("[V1] 데일리 투두 생성 API")
     @Test        
-    void createDailyTodos() throws Exception {
+    void createDailyTodosV1() throws Exception {
         final CreateDailyTodosApiRequestV1 request = new CreateDailyTodosApiRequestV1(List.of(
             "프로그래머스 코테 두 문제 풀기",
             "저녁 운동 조지기",
@@ -82,9 +82,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹에서 어제 본인이 작성한 투두 내용 전체 조회 API")
+    @DisplayName("[V1] 참여중인 특정 챌린지 그룹에서 어제 본인이 작성한 투두 내용 전체 조회 API")
     @Test
-    void getYesterdayDailyTodos() throws Exception {
+    void getYesterdayDailyTodosV1() throws Exception {
         final List<String> yesterdayTodos = List.of(
             "치킨 먹기",
             "치즈볼 먹기",
@@ -118,9 +118,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.ARRAY))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
+    @DisplayName("[V1] 참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜만 입력)")
     @Test
-    void getMyDailyTodosWithCertificationInputDate() throws Exception {
+    void getMyDailyTodosWithCertificationInputDateV1() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
         final List<DailyTodo> dailyTodos = List.of(
@@ -190,9 +190,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
+    @DisplayName("[V1] 참여중인 특정 챌린지 그룹에서 내 데일리 투두 전체 조회 API (투두 작성 날짜 & 투두 상태 입력)")
     @Test
-    void getMyDailyTodosWithCertificationInputDateAndTodoStatus() throws Exception {
+    void getMyDailyTodosWithCertificationInputDateAndTodoStatusV1() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
@@ -248,9 +248,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹에 속한 특정 그룹원의 당일 데일리 투두 히스토리 전체 조회 API")
+    @DisplayName("[V1] 참여중인 특정 챌린지 그룹에 속한 특정 그룹원의 당일 데일리 투두 히스토리 전체 조회 API")
     @Test
-    void getChallengeGroupMemberTodayTodoHistory() throws Exception {
+    void getChallengeGroupMemberTodayTodoHistoryV1() throws Exception {
         final FindTargetMemberTodayTodoHistoriesDto serviceMockResponse = new FindTargetMemberTodayTodoHistoriesDto(
             3,
             List.of(
@@ -317,9 +317,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("특정 투두 히스토리 읽음 처리 API")
+    @DisplayName("[V1] 특정 투두 히스토리 읽음 처리 API")
     @Test
-    void markTodoHistoryAsRead() throws Exception {
+    void markTodoHistoryAsReadV1() throws Exception {
         mockMvc.perform(
                 post("/api/v1/todo-history/{todoHistoryId}", 1)
                     .header("Authorization", "Bearer access_token")

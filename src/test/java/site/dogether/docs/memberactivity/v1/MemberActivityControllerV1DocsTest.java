@@ -22,7 +22,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("사용자 활동 API 문서화 테스트")
+@DisplayName("사용자 활동 V1 API 문서화 테스트")
 class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
     private final MemberActivityService memberActivityService = mock(MemberActivityService.class);
@@ -32,9 +32,9 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
         return new MemberActivityControllerV1(memberActivityService);
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹 활동 통계 조회 API")
+    @DisplayName("[V1] 참여중인 특정 챌린지 그룹 활동 통계 조회 API")
     @Test
-    void getGroupActivityStat() throws Exception {
+    void getGroupActivityStatV1() throws Exception {
         GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse(
                 "그로밋과 함께하는 챌린지",
                 10,
@@ -128,9 +128,9 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.NUMBER))));
     }
 
-    @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
+    @DisplayName("[V1] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
     @Test
-    void getMemberAllStatsSortedByTodoCompletedAt() throws Exception {
+    void getMemberAllStatsSortedByTodoCompletedAtV1() throws Exception {
 
         GetMemberAllStatsApiResponseV1.DailyTodoStats stats = new GetMemberAllStatsApiResponseV1.DailyTodoStats(
                 5,
@@ -238,9 +238,9 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
+    @DisplayName("[V1] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
     @Test
-    void getMemberAllStatsSortedByGroupCreatedAt() throws Exception {
+    void getMemberAllStatsSortedByGroupCreatedAtV1() throws Exception {
 
         GetMemberAllStatsApiResponseV1.DailyTodoStats stats = new GetMemberAllStatsApiResponseV1.DailyTodoStats(
                 5,
@@ -347,9 +347,9 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("사용자 프로필 조회 API")
+    @DisplayName("[V1] 사용자 프로필 조회 API")
     @Test
-    void getMyProfile() throws Exception {
+    void getMyProfileV1() throws Exception {
 
         FindMyProfileDto myProfileDto = new FindMyProfileDto(
                 "그로밋",

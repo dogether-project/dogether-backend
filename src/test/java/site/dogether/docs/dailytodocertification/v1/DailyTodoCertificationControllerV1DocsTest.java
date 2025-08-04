@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
+@DisplayName("데일리 투두 수행 인증 V1 API 문서화 테스트")
 public class DailyTodoCertificationControllerV1DocsTest extends RestDocsSupport {
 
     private final DailyTodoCertificationService dailyTodoCertificationService = mock(DailyTodoCertificationService.class);
@@ -33,9 +33,9 @@ public class DailyTodoCertificationControllerV1DocsTest extends RestDocsSupport 
         return new DailyTodoCertificationControllerV1(dailyTodoCertificationService);
     }
 
-    @DisplayName("데일리 투두 수행 인증 생성 API")
+    @DisplayName("[V1] 데일리 투두 수행 인증 생성 API")
     @Test
-    void certifyDailyTodo() throws Exception {
+    void certifyDailyTodoV1() throws Exception {
         final long todoId = 1L;
         final CertifyDailyTodoApiRequestV1 request = new CertifyDailyTodoApiRequestV1(
             "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
@@ -71,9 +71,9 @@ public class DailyTodoCertificationControllerV1DocsTest extends RestDocsSupport 
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("데일리 투두 수행 인증 검사 API")
+    @DisplayName("[V1] 데일리 투두 수행 인증 검사 API")
     @Test
-    void reviewDailyTodoCertification() throws Exception {
+    void reviewDailyTodoCertificationV1() throws Exception {
         final long todoCertificationId = 1L;
         final ReviewDailyTodoCertificationApiRequestV1 request = new ReviewDailyTodoCertificationApiRequestV1(
             "REJECT",
@@ -110,9 +110,9 @@ public class DailyTodoCertificationControllerV1DocsTest extends RestDocsSupport 
                         .type(JsonFieldType.STRING))));
     }
     
-    @DisplayName("본인이 검사해 줘야 하는 투두 수행 인증 전체 조회 API")
+    @DisplayName("[V1] 본인이 검사해 줘야 하는 투두 수행 인증 전체 조회 API")
     @Test        
-    void getDailyTodoCertificationsForReview() throws Exception {
+    void getDailyTodoCertificationsForReviewV1() throws Exception {
         final List<DailyTodoCertificationDto> dailyTodoCertificationDtos = List.of(
             new DailyTodoCertificationDto(
                 1L,

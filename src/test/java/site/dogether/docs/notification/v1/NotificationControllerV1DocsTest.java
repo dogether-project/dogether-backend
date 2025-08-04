@@ -15,7 +15,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("푸시 알림 API 문서화 테스트")
+@DisplayName("푸시 알림 V1 API 문서화 테스트")
 public class NotificationControllerV1DocsTest extends RestDocsSupport {
 
     private final NotificationService notificationService = mock(NotificationService.class);
@@ -25,9 +25,9 @@ public class NotificationControllerV1DocsTest extends RestDocsSupport {
         return new NotificationControllerV1(notificationService);
     }
 
-    @DisplayName("푸시 알림 토큰 저장 API")
+    @DisplayName("[V1] 푸시 알림 토큰 저장 API")
     @Test
-    void saveNotificationToken() throws Exception {
+    void saveNotificationTokenV1() throws Exception {
         final SaveNotificationTokenApiRequestV1 request = new SaveNotificationTokenApiRequestV1("kelly-token-value");
 
         mockMvc.perform(
@@ -51,9 +51,9 @@ public class NotificationControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("푸시 알림 토큰 삭제 API")
+    @DisplayName("[V1] 푸시 알림 토큰 삭제 API")
     @Test
-    void deleteNotificationToken() throws Exception {
+    void deleteNotificationTokenV1() throws Exception {
         final DeleteNotificationTokenApiRequestV1 request = new DeleteNotificationTokenApiRequestV1("kelly-token-value");
 
         mockMvc.perform(

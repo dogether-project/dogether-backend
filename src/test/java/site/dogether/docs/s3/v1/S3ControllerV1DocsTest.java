@@ -18,7 +18,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("S3 API 문서화 테스트")
+@DisplayName("S3 V1 API 문서화 테스트")
 public class S3ControllerV1DocsTest extends RestDocsSupport {
 
     private final S3Service s3Service = mock(S3Service.class);
@@ -28,9 +28,9 @@ public class S3ControllerV1DocsTest extends RestDocsSupport {
         return new S3ControllerV1(s3Service);
     }
 
-    @DisplayName("S3 Presigned Url 생성 API")
+    @DisplayName("[V1] S3 Presigned Url 생성 API")
     @Test
-    void issueS3PresignedUrls() throws Exception {
+    void issueS3PresignedUrlsV1() throws Exception {
         final IssueS3PresignedUrlsApiRequestV1 request = new IssueS3PresignedUrlsApiRequestV1(
             1L,
             List.of("IMAGE", "IMAGE", "IMAGE")

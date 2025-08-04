@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus.*;
 
-@DisplayName("챌린지 그룹 API 문서화 테스트")
+@DisplayName("챌린지 그룹 V1 API 문서화 테스트")
 public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
 
     private final ChallengeGroupService challengeGroupService = mock(ChallengeGroupService.class);
@@ -38,9 +38,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
         return new ChallengeGroupControllerV1(challengeGroupService);
     }
 
-    @DisplayName("챌린지 그룹 생성 API")
+    @DisplayName("[V1] 챌린지 그룹 생성 API")
     @Test
-    void createChallengeGroup() throws Exception {
+    void createChallengeGroupV1() throws Exception {
         final CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
             "성욱이와 친구들",
             10,
@@ -90,9 +90,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("챌린지 그룹 참가 API")
+    @DisplayName("[V1] 챌린지 그룹 참가 API")
     @Test
-    void joinChallengeGroup() throws Exception {
+    void joinChallengeGroupV1() throws Exception {
         final JoinChallengeGroupApiRequestV1 request = new JoinChallengeGroupApiRequestV1("A1Bc4dEf");
 
         given(challengeGroupService.joinChallengeGroup(any(), any()))
@@ -140,9 +140,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("참여중인 챌린지 그룹 정보 전체 조회 API")
+    @DisplayName("[V1] 참여중인 챌린지 그룹 정보 전체 조회 API")
     @Test
-    void getJoiningChallengeGroups() throws Exception {
+    void getJoiningChallengeGroupsV1() throws Exception {
         List<JoiningChallengeGroupDto> joiningChallengeGroups = List.of(
             new JoiningChallengeGroupDto(
                     1L,
@@ -227,9 +227,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                 )));
     }
 
-    @DisplayName("사용자가 가장 마지막에 선택한 챌린지 그룹 id 저장 API")
+    @DisplayName("[V1] 사용자가 가장 마지막에 선택한 챌린지 그룹 id 저장 API")
     @Test
-    void saveLastSelectedChallengeGroupInfo() throws Exception {
+    void saveLastSelectedChallengeGroupInfoV1() throws Exception {
         final SaveLastSelectedChallengeGroupInfoApiRequestV1 request = new SaveLastSelectedChallengeGroupInfoApiRequestV1(1L);
 
         mockMvc.perform(
@@ -253,9 +253,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("챌린지 그룹 탈퇴 API")
+    @DisplayName("[V1] 챌린지 그룹 탈퇴 API")
     @Test
-    void leaveChallengeGroup() throws Exception {
+    void leaveChallengeGroupV1() throws Exception {
         final Long groupId = 1L;
 
         mockMvc.perform(
@@ -277,9 +277,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                             .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("챌린지 그룹 참여 여부 조회 API")
+    @DisplayName("[V1] 챌린지 그룹 참여 여부 조회 API")
     @Test
-    void checkParticipatingChallengeGroup() throws Exception {
+    void checkParticipatingChallengeGroupV1() throws Exception {
         given(challengeGroupService.checkParticipatingChallengeGroup(any()))
             .willReturn(new CheckParticipatingChallengeGroupApiResponseV1(true));
 
@@ -301,9 +301,9 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.BOOLEAN))));
     }
 
-    @DisplayName("참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회 API")
+    @DisplayName("[V1] 참여중인 특정 챌린지 그룹의 그룹원 전체 랭킹 조회 API")
     @Test
-    void getJoiningChallengeGroupTeamActivitySummary() throws Exception {
+    void getJoiningChallengeGroupTeamActivitySummaryV1() throws Exception {
         final List<ChallengeGroupMemberOverviewDto> groupMemberRanks = List.of(
             new ChallengeGroupMemberOverviewDto(
                 1L,

@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("로그인 & 회원 탈퇴 API 문서화 테스트")
+@DisplayName("로그인 & 회원 탈퇴 V1 API 문서화 테스트")
 public class AuthControllerV1DocsTest extends RestDocsSupport {
 
     private final AuthService authService = mock(AuthService.class);
@@ -31,9 +31,9 @@ public class AuthControllerV1DocsTest extends RestDocsSupport {
         return new AuthControllerV1(authService);
     }
 
-    @DisplayName("애플 로그인 API")
+    @DisplayName("[V1] 애플 로그인 API")
     @Test
-    void login() throws Exception {
+    void loginV1() throws Exception {
         final LoginApiRequestV1 request = new LoginApiRequestV1(
             "김영재",
             "idToken"
@@ -74,9 +74,9 @@ public class AuthControllerV1DocsTest extends RestDocsSupport {
                         .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("회원 탈퇴 API")
+    @DisplayName("[V1] 회원 탈퇴 API")
     @Test
-    void withdraw() throws Exception {
+    void withdrawV1() throws Exception {
         final WithdrawApiRequestV1 request = new WithdrawApiRequestV1(
             "authorizationCode"
         );

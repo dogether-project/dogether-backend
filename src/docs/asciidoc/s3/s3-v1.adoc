@@ -1,0 +1,24 @@
+[[s3-v1-api]]
+== [V1] S3 API
+
+[[issue-s3-presigned-urls-v1]]
+=== [V1] S3 Presigned URL 발급
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/s3-controller-v1-docs-test/issue-s3-presigned-urls-v1/http-request.adoc[]
+include::{snippets}/s3-controller-v1-docs-test/issue-s3-presigned-urls-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/s3-controller-v1-docs-test/issue-s3-presigned-urls-v1/http-response.adoc[]
+include::{snippets}/s3-controller-v1-docs-test/issue-s3-presigned-urls-v1/response-fields.adoc[]

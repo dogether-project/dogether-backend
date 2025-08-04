@@ -17,7 +17,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("앱 정보 API 문서화 테스트")
+@DisplayName("앱 정보 V1 API 문서화 테스트")
 public class AppInfoControllerV1DocsTest extends RestDocsSupport {
 
     private final AppInfoService appInfoService = mock(AppInfoService.class);
@@ -27,9 +27,9 @@ public class AppInfoControllerV1DocsTest extends RestDocsSupport {
         return new AppInfoControllerV1(appInfoService);
     }
 
-    @DisplayName("앱 강제 업데이트 필요 여부 조회 API")
+    @DisplayName("[V1] 앱 강제 업데이트 필요 여부 조회 API")
     @Test
-    void forceUpdateCheck() throws Exception {
+    void forceUpdateCheckV1() throws Exception {
         final String requestAppVersion = "1.0.2";
         given(appInfoService.forceUpdateCheck(requestAppVersion))
             .willReturn(true);

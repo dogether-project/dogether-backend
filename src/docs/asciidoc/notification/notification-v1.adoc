@@ -1,0 +1,46 @@
+[[notification-v1-api]]
+== [V1] 푸시 알림 API
+
+[[save-notification-token-v1]]
+=== [V1] 푸시 알림 토큰 저장
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/notification-controller-v1-docs-test/save-notification-token-v1/http-request.adoc[]
+include::{snippets}/notification-controller-v1-docs-test/save-notification-token-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/notification-controller-v1-docs-test/save-notification-token-v1/http-response.adoc[]
+include::{snippets}/notification-controller-v1-docs-test/save-notification-token-v1/response-fields.adoc[]
+
+[[delete-notification-token-v1]]
+=== [V1] 푸시 알림 토큰 삭제
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/notification-controller-v1-docs-test/delete-notification-token-v1/http-request.adoc[]
+include::{snippets}/notification-controller-v1-docs-test/delete-notification-token-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/notification-controller-v1-docs-test/delete-notification-token-v1/http-response.adoc[]
+include::{snippets}/notification-controller-v1-docs-test/delete-notification-token-v1/response-fields.adoc[]

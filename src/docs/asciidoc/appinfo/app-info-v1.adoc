@@ -1,0 +1,24 @@
+[[app-info-v1-api]]
+== [V1] 앱 정보 관련 API
+
+[[force-update-check-v1]]
+=== [V1] 앱 강제 업데이트 필요 여부 조회 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/app-info-controller-v1-docs-test/force-update-check-v1/http-request.adoc[]
+include::{snippets}/app-info-controller-v1-docs-test/force-update-check-v1/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/app-info-controller-v1-docs-test/force-update-check-v1/http-response.adoc[]
+include::{snippets}/app-info-controller-v1-docs-test/force-update-check-v1/response-fields.adoc[]
