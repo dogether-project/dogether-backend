@@ -1,4 +1,4 @@
-package site.dogether.docs.dailytodo;
+package site.dogether.docs.dailytodo.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,8 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.dailytodo.controller.DailyTodoController;
-import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
+import site.dogether.dailytodo.controller.v1.DailyTodoControllerV1;
+import site.dogether.dailytodo.controller.v1.dto.request.CreateDailyTodosApiRequestV1;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodo.service.dto.DailyTodoDto;
@@ -35,27 +35,27 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.*;
 
 @DisplayName("데일리 투두 API 문서화 테스트")
-public class DailyTodoControllerDocsTest extends RestDocsSupport {
+public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
 
     private final DailyTodoService dailyTodoService = mock(DailyTodoService.class);
     private final DailyTodoHistoryService dailyTodoHistoryService = mock(DailyTodoHistoryService.class);
 
     @Override
     protected Object initController() {
-        return new DailyTodoController(dailyTodoService, dailyTodoHistoryService);
+        return new DailyTodoControllerV1(dailyTodoService, dailyTodoHistoryService);
     }
 
     @DisplayName("데일리 투두 생성 API")
     @Test        
     void createDailyTodos() throws Exception {
-        final CreateDailyTodosRequest request = new CreateDailyTodosRequest(List.of(
+        final CreateDailyTodosApiRequestV1 request = new CreateDailyTodosApiRequestV1(List.of(
             "프로그래머스 코테 두 문제 풀기",
             "저녁 운동 조지기",
             "감정 회고록 작성하기"
         ));
 
         mockMvc.perform(
-                post("/api/challenge-groups/{groupId}/todos", 1)
+                post("/api/v1/challenge-groups/{groupId}/todos", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -96,7 +96,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(yesterdayTodos);
 
         mockMvc.perform(
-                get("/api/challenge-groups/{groupId}/my-yesterday-todos", 1)
+                get("/api/v1/challenge-groups/{groupId}/my-yesterday-todos", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -144,7 +144,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         given(dailyTodoService.findMyDailyTodos(any())).willReturn(dailyTodoDtos);
 
         mockMvc.perform(
-                get("/api/challenge-groups/{groupId}/my-todos", 1)
+                get("/api/v1/challenge-groups/{groupId}/my-todos", 1)
                     .param("date", LocalDate.now().toString())
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -203,7 +203,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
         given(dailyTodoService.findMyDailyTodos(any())).willReturn(dailyTodoDtos);
 
         mockMvc.perform(
-                get("/api/challenge-groups/{groupId}/my-todos", 1)
+                get("/api/v1/challenge-groups/{groupId}/my-todos", 1)
                     .param("date", LocalDate.now().toString())
                     .param("status", REVIEW_PENDING.name())
                     .header("Authorization", "Bearer access_token")
@@ -266,7 +266,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
             .willReturn(serviceMockResponse);
 
         mockMvc.perform(
-                get("/api/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history", 1, 2)
+                get("/api/v1/challenge-groups/{groupId}/challenge-group-members/{challengeGroupMemberId}/today-todo-history", 1, 2)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -321,7 +321,7 @@ public class DailyTodoControllerDocsTest extends RestDocsSupport {
     @Test
     void markTodoHistoryAsRead() throws Exception {
         mockMvc.perform(
-                post("/api/todo-history/{todoHistoryId}", 1)
+                post("/api/v1/todo-history/{todoHistoryId}", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

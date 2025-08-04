@@ -1,4 +1,4 @@
-package site.dogether.dailytodo.controller.response;
+package site.dogether.dailytodo.controller.v1.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import site.dogether.dailytodo.service.dto.DailyTodoDto;
@@ -8,12 +8,12 @@ import java.util.List;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public record GetMyDailyTodosResponse(List<Data> todos) {
+public record GetMyDailyTodosApiResponseV1(List<Data> todos) {
 
-    public static GetMyDailyTodosResponse of(List<DailyTodoDto> todos) {
+    public static GetMyDailyTodosApiResponseV1 of(List<DailyTodoDto> todos) {
         return todos.stream()
             .map(Data::from)
-            .collect(collectingAndThen(toList(), GetMyDailyTodosResponse::new));
+            .collect(collectingAndThen(toList(), GetMyDailyTodosApiResponseV1::new));
     }
 
     record Data(

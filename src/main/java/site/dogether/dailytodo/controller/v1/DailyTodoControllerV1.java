@@ -1,4 +1,4 @@
-package site.dogether.dailytodo.controller;
+package site.dogether.dailytodo.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +27,12 @@ import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
 @RestController
-public class DailyTodoController {
+public class DailyTodoControllerV1 {
 
     private final DailyTodoService dailyTodoService;
     private final DailyTodoHistoryService dailyTodoHistoryService;
 
-    @PostMapping("/api/challenge-groups/{groupId}/todos")
+    @PostMapping("/api/v1/challenge-groups/{groupId}/todos")
     public ResponseEntity<ApiResponse<Void>> createDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
@@ -42,7 +42,7 @@ public class DailyTodoController {
         return ResponseEntity.ok(success());
     }
 
-    @GetMapping("/api/challenge-groups/{groupId}/my-yesterday-todos")
+    @GetMapping("/api/v1/challenge-groups/{groupId}/my-yesterday-todos")
     public ResponseEntity<ApiResponse<GetYesterdayDailyTodosApiResponseV1>> getYesterdayDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId
@@ -52,7 +52,7 @@ public class DailyTodoController {
         return ResponseEntity.ok(success(response));
     }
 
-    @GetMapping("/api/challenge-groups/{groupId}/my-todos")
+    @GetMapping("/api/v1/challenge-groups/{groupId}/my-todos")
     public ResponseEntity<ApiResponse<GetMyDailyTodosApiResponseV1>> getMyDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
@@ -64,7 +64,7 @@ public class DailyTodoController {
         return ResponseEntity.ok(success(GetMyDailyTodosApiResponseV1.of(myDailyTodos)));
     }
 
-    @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{targetMemberId}/today-todo-history")
+    @GetMapping("/api/v1/challenge-groups/{groupId}/challenge-group-members/{targetMemberId}/today-todo-history")
     public ResponseEntity<ApiResponse<GetChallengeGroupMemberTodayTodoHistoryApiResponseV1>> getChallengeGroupMemberTodayTodoHistory(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
@@ -75,7 +75,7 @@ public class DailyTodoController {
         return ResponseEntity.ok(success(response));
     }
 
-    @PostMapping("/api/todo-history/{todoHistoryId}")
+    @PostMapping("/api/v1/todo-history/{todoHistoryId}")
     public ResponseEntity<ApiResponse<Void>> markTodoHistoryAsRead(
         @Authenticated final Long memberId,
         @PathVariable final Long todoHistoryId

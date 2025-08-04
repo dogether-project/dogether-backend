@@ -1,17 +1,17 @@
-package site.dogether.dailytodo.controller.response;
+package site.dogether.dailytodo.controller.v1.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHistoriesDto;
 import site.dogether.dailytodohistory.service.dto.TodoHistoryDto;
 
-public record GetChallengeGroupMemberTodayTodoHistoryResponse(
+public record GetChallengeGroupMemberTodayTodoHistoryApiResponseV1(
     int currentTodoHistoryToReadIndex,
     List<TodoData> todos
 ) {
-    public static GetChallengeGroupMemberTodayTodoHistoryResponse from(final FindTargetMemberTodayTodoHistoriesDto dto) {
+    public static GetChallengeGroupMemberTodayTodoHistoryApiResponseV1 from(final FindTargetMemberTodayTodoHistoriesDto dto) {
         final List<TodoData> todos = dto.todoHistories().stream().map(TodoData::from).toList();
-        return new GetChallengeGroupMemberTodayTodoHistoryResponse(dto.currentTodoHistoryToReadIndex(), todos);
+        return new GetChallengeGroupMemberTodayTodoHistoryApiResponseV1(dto.currentTodoHistoryToReadIndex(), todos);
     }
 
     public record TodoData(
