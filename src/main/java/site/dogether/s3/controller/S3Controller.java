@@ -14,6 +14,8 @@ import site.dogether.s3.service.S3Service;
 
 import java.util.List;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/s3")

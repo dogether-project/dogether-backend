@@ -9,6 +9,8 @@ import site.dogether.notification.controller.request.DeleteNotificationTokenRequ
 import site.dogether.notification.controller.request.SaveNotificationTokenRequest;
 import site.dogether.notification.service.NotificationService;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
 @RestController

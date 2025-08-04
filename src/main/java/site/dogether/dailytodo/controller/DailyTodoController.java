@@ -23,6 +23,8 @@ import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHisto
 import java.time.LocalDate;
 import java.util.List;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @RequiredArgsConstructor
 @RestController
 public class DailyTodoController {

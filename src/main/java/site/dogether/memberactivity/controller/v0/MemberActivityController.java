@@ -15,6 +15,8 @@ import site.dogether.memberactivity.controller.v0.dto.response.GetMyProfileRespo
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @RequiredArgsConstructor
 @RequestMapping("/api/my")
 @RestController

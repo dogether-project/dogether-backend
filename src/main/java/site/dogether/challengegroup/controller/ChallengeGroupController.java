@@ -26,6 +26,8 @@ import site.dogether.common.controller.dto.response.ApiResponse;
 
 import java.util.List;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
 @RestController

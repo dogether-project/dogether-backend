@@ -16,6 +16,8 @@ import site.dogether.auth.service.AuthService;
 import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

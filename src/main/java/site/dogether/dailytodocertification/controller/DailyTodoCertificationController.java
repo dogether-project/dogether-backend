@@ -18,6 +18,8 @@ import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDt
 
 import java.util.List;
 
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
+
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @RestController
