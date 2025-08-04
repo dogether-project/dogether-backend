@@ -123,3 +123,17 @@ bootJar {
         }
     }
 }
+
+tasks.register('cleanCopiedDocs', Delete) {
+    delete 'src/main/resources/static/docs'
+}
+
+tasks.register('copyDocument', Copy) {
+    dependsOn tasks.named('cleanCopiedDocs'), asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+tasks.build {
+    dependsOn tasks.named('copyDocument')
+}
