@@ -1,4 +1,4 @@
-package site.dogether.s3.controller;
+package site.dogether.s3.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +18,9 @@ import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/s3")
+@RequestMapping("/api/v1/s3")
 @RestController
-public class S3Controller {
+public class S3ControllerV1 {
 
     private final S3Service s3Service;
 

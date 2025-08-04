@@ -1,12 +1,12 @@
-package site.dogether.docs.s3;
+package site.dogether.docs.s3.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.s3.controller.S3Controller;
-import site.dogether.s3.controller.request.IssueS3PresignedUrlsRequest;
+import site.dogether.s3.controller.v1.S3ControllerV1;
+import site.dogether.s3.controller.v1.dto.request.IssueS3PresignedUrlsApiRequestV1;
 import site.dogether.s3.service.S3Service;
 
 import java.util.List;
@@ -19,19 +19,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("S3 API 문서화 테스트")
-public class S3ControllerDocsTest extends RestDocsSupport {
+public class S3ControllerV1DocsTest extends RestDocsSupport {
 
     private final S3Service s3Service = mock(S3Service.class);
 
     @Override
     protected Object initController() {
-        return new S3Controller(s3Service);
+        return new S3ControllerV1(s3Service);
     }
 
     @DisplayName("S3 Presigned Url 생성 API")
     @Test
     void issueS3PresignedUrls() throws Exception {
-        final IssueS3PresignedUrlsRequest request = new IssueS3PresignedUrlsRequest(
+        final IssueS3PresignedUrlsApiRequestV1 request = new IssueS3PresignedUrlsApiRequestV1(
             1L,
             List.of("IMAGE", "IMAGE", "IMAGE")
         );
@@ -45,7 +45,7 @@ public class S3ControllerDocsTest extends RestDocsSupport {
             .willReturn(s3PresignedUrls);
 
         mockMvc.perform(
-                post("/api/s3/presigned-urls")
+                post("/api/v1/s3/presigned-urls")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
