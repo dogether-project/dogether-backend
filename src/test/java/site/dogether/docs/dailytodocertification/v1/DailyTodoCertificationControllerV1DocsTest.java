@@ -1,12 +1,12 @@
-package site.dogether.docs.dailytodocertification;
+package site.dogether.docs.dailytodocertification.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.dailytodocertification.controller.DailyTodoCertificationController;
-import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
-import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
+import site.dogether.dailytodocertification.controller.v1.DailyTodoCertificationControllerV1;
+import site.dogether.dailytodocertification.controller.v1.dto.request.CertifyDailyTodoApiRequestV1;
+import site.dogether.dailytodocertification.controller.v1.dto.request.ReviewDailyTodoCertificationApiRequestV1;
 import site.dogether.dailytodocertification.service.DailyTodoCertificationService;
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 import site.dogether.docs.util.RestDocsSupport;
@@ -24,26 +24,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("데일리 투두 수행 인증 API 문서화 테스트")
-public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
+public class DailyTodoCertificationControllerV1DocsTest extends RestDocsSupport {
 
     private final DailyTodoCertificationService dailyTodoCertificationService = mock(DailyTodoCertificationService.class);
 
     @Override
     protected Object initController() {
-        return new DailyTodoCertificationController(dailyTodoCertificationService);
+        return new DailyTodoCertificationControllerV1(dailyTodoCertificationService);
     }
 
     @DisplayName("데일리 투두 수행 인증 생성 API")
     @Test
     void certifyDailyTodo() throws Exception {
         final long todoId = 1L;
-        final CertifyDailyTodoRequest request = new CertifyDailyTodoRequest(
+        final CertifyDailyTodoApiRequestV1 request = new CertifyDailyTodoApiRequestV1(
             "이 노력, 땀 그 모든것이 내 노력의 증거입니다. 양심 있으면 인정 누르시죠.",
             "https://dogether-bucket-dev.s3.ap-northeast-2.amazonaws.com/daily-todo-proof-media/mock/e1.png"
         );
 
         mockMvc.perform(
-                post("/api/todos/{todoId}/certify", todoId)
+                post("/api/v1/todos/{todoId}/certify", todoId)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -75,13 +75,13 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
     @Test
     void reviewDailyTodoCertification() throws Exception {
         final long todoCertificationId = 1L;
-        final ReviewDailyTodoCertificationRequest request = new ReviewDailyTodoCertificationRequest(
+        final ReviewDailyTodoCertificationApiRequestV1 request = new ReviewDailyTodoCertificationApiRequestV1(
             "REJECT",
             "그게 정말 최선이야?"
         );
 
         mockMvc.perform(
-                post("/api/todo-certifications/{todoCertificationId}/review", todoCertificationId)
+                post("/api/v1/todo-certifications/{todoCertificationId}/review", todoCertificationId)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -134,7 +134,7 @@ public class DailyTodoCertificationControllerDocsTest extends RestDocsSupport {
             .willReturn(dailyTodoCertificationDtos);
 
         mockMvc.perform(
-                get("/api/todo-certifications/pending-review")
+                get("/api/v1/todo-certifications/pending-review")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

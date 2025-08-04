@@ -1,12 +1,12 @@
-package site.dogether.dailytodocertification.controller.response;
+package site.dogether.dailytodocertification.controller.v1.dto.response;
 
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 
 import java.util.List;
 
-public record GetDailyTodoCertificationsForReviewResponse(List<Data> dailyTodoCertifications) {
+public record GetDailyTodoCertificationsForReviewApiResponseV1(List<Data> dailyTodoCertifications) {
 
-    public static GetDailyTodoCertificationsForReviewResponse from(final List<DailyTodoCertificationDto> dailyTodoCertificationDtos) {
+    public static GetDailyTodoCertificationsForReviewApiResponseV1 from(final List<DailyTodoCertificationDto> dailyTodoCertificationDtos) {
         final List<Data> responseData = dailyTodoCertificationDtos.stream()
             .map(dto -> new Data(
                 dto.id(),
@@ -16,7 +16,7 @@ public record GetDailyTodoCertificationsForReviewResponse(List<Data> dailyTodoCe
                 dto.doer()))
             .toList();
 
-        return new GetDailyTodoCertificationsForReviewResponse(responseData);
+        return new GetDailyTodoCertificationsForReviewApiResponseV1(responseData);
     }
 
     record Data(

@@ -1,4 +1,4 @@
-package site.dogether.dailytodocertification.controller;
+package site.dogether.dailytodocertification.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +21,9 @@ import java.util.List;
 import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @RestController
-public class DailyTodoCertificationController {
+public class DailyTodoCertificationControllerV1 {
 
     private final DailyTodoCertificationService dailyTodoCertificationService;
 
