@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.s3.controller.request.IssueS3PresignedUrlsRequest;
 import site.dogether.s3.controller.response.IssueS3PresignedUrlsResponse;
 import site.dogether.s3.service.S3Service;
 
 import java.util.List;
-
-import static site.dogether.common.controller.response.ApiResponse.*;
 
 @Slf4j
 @RequiredArgsConstructor

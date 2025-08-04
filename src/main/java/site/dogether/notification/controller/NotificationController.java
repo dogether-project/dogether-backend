@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.notification.controller.request.DeleteNotificationTokenRequest;
 import site.dogether.notification.controller.request.SaveNotificationTokenRequest;
 import site.dogether.notification.service.NotificationService;
-
-import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")

@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsResponseV1;
 import site.dogether.memberactivity.service.MemberActivityServiceV1;
 
-import static site.dogether.common.controller.response.ApiResponse.success;
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/my")

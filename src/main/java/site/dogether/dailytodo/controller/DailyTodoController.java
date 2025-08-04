@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
 import site.dogether.dailytodo.controller.response.GetChallengeGroupMemberTodayTodoHistoryResponse;
 import site.dogether.dailytodo.controller.response.GetMyDailyTodosResponse;
@@ -22,8 +22,6 @@ import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHisto
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RestController

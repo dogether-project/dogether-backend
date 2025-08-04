@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.appinfo.exception.AppInfoException;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 
 import static site.dogether.appinfo.exception.handler.AppInfoErrorCode.APP_INFO_ERROR;
-import static site.dogether.common.controller.response.ApiResponse.fail;
+import static site.dogether.common.controller.dto.response.ApiResponse.fail;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)

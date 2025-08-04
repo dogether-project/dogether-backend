@@ -8,14 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.memberactivity.controller.v0.dto.response.GetGroupActivityStatResponse;
 import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsResponse;
 import site.dogether.memberactivity.controller.v0.dto.response.GetMyProfileResponse;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
-
-import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/my")

@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 
-import static site.dogether.common.controller.response.ApiResponse.fail;
+import static site.dogether.common.controller.dto.response.ApiResponse.fail;
 import static site.dogether.common.exception.handler.CommonErrorCode.INTERNAL_SERVER_APPLICATION_ERROR;
 
 @Slf4j

@@ -6,10 +6,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.dailytodo.exception.DailyTodoException;
 
-import static site.dogether.common.controller.response.ApiResponse.fail;
+import static site.dogether.common.controller.dto.response.ApiResponse.fail;
 import static site.dogether.dailytodo.exception.handler.DailyTodoErrorCode.DAILY_TODO_ERROR;
 
 @Slf4j

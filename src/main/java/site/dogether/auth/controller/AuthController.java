@@ -13,10 +13,10 @@ import site.dogether.auth.controller.v1.dto.request.WithdrawApiRequestV1;
 import site.dogether.auth.controller.v1.dto.response.LoginApiResponseV1;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.auth.service.AuthService;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
-import static site.dogether.common.controller.response.ApiResponse.success;
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 //TODO: 향후 클라이언트에서 V1 api를 도입할 경우 해당 controller는 제거
 

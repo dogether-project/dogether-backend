@@ -6,10 +6,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.member.exception.MemberException;
 
-import static site.dogether.common.controller.response.ApiResponse.fail;
+import static site.dogether.common.controller.dto.response.ApiResponse.fail;
 import static site.dogether.member.exception.handler.MemberErrorCode.MEMBER_ERROR;
 
 @Slf4j

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.appinfo.controller.v1.dto.response.ForceUpdateCheckApiResponseV1;
 import site.dogether.appinfo.service.AppInfoService;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 
-import static site.dogether.common.controller.response.ApiResponse.success;
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 //TODO: 향후 클라이언트에서 V1 api를 도입할 경우 해당 controller는 제거
 

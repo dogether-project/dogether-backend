@@ -11,7 +11,7 @@ import site.dogether.challengegroup.exception.ChallengeGroupException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFinishedException;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 
 import static site.dogether.challengegroup.exception.handler.ChallengeGroupErrorCode.*;
 

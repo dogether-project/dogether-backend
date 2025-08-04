@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.dailytodocertification.controller.request.CertifyDailyTodoRequest;
 import site.dogether.dailytodocertification.controller.request.ReviewDailyTodoCertificationRequest;
 import site.dogether.dailytodocertification.controller.response.GetDailyTodoCertificationsForReviewResponse;
@@ -17,8 +17,6 @@ import site.dogether.dailytodocertification.service.DailyTodoCertificationServic
 import site.dogether.dailytodocertification.service.dto.DailyTodoCertificationDto;
 
 import java.util.List;
-
-import static site.dogether.common.controller.response.ApiResponse.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")

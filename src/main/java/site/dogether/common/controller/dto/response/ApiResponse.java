@@ -1,4 +1,4 @@
-package site.dogether.common.controller.response;
+package site.dogether.common.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
