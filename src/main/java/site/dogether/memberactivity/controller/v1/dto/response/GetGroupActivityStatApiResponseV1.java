@@ -1,8 +1,8 @@
-package site.dogether.memberactivity.controller.v0.dto.response;
+package site.dogether.memberactivity.controller.v1.dto.response;
 
 import java.util.List;
 
-public record GetGroupActivityStatResponse(
+public record GetGroupActivityStatApiResponseV1(
         ChallengeGroupInfoResponse groupInfo,
         List<CertificationPeriodResponse> certificationPeriods,
         RankingResponse ranking,

@@ -1,4 +1,4 @@
-package site.dogether.docs.memberactivity;
+package site.dogether.docs.memberactivity.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.memberactivity.controller.v0.MemberActivityController;
-import site.dogether.memberactivity.controller.v0.dto.response.GetGroupActivityStatResponse;
-import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsResponse;
+import site.dogether.memberactivity.controller.v1.MemberActivityControllerV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsApiResponseV1;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 
@@ -23,19 +23,19 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("사용자 활동 API 문서화 테스트")
-class MemberActivityControllerDocsTest extends RestDocsSupport {
+class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
     private final MemberActivityService memberActivityService = mock(MemberActivityService.class);
 
     @Override
     protected Object initController() {
-        return new MemberActivityController(memberActivityService);
+        return new MemberActivityControllerV1(memberActivityService);
     }
 
     @DisplayName("참여중인 특정 챌린지 그룹 활동 통계 조회 API")
     @Test
     void getGroupActivityStat() throws Exception {
-        GetGroupActivityStatResponse.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatResponse.ChallengeGroupInfoResponse(
+        GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse(
                 "그로밋과 함께하는 챌린지",
                 10,
                 6,
@@ -43,17 +43,17 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 "25.02.22"
         );
 
-        List<GetGroupActivityStatResponse.CertificationPeriodResponse> certificationPeriods = List.of(
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(1, 8, 2, 25),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(2, 6, 3, 50),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(3, 6, 3, 50),
-                new GetGroupActivityStatResponse.CertificationPeriodResponse(4, 3, 3, 100)
+        List<GetGroupActivityStatApiResponseV1.CertificationPeriodResponse> certificationPeriods = List.of(
+                new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(1, 8, 2, 25),
+                new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(2, 6, 3, 50),
+                new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(3, 6, 3, 50),
+                new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(4, 3, 3, 100)
         );
 
-        GetGroupActivityStatResponse.RankingResponse ranking = new GetGroupActivityStatResponse.RankingResponse(10, 3);
-        GetGroupActivityStatResponse.MemberStatsResponse stats = new GetGroupActivityStatResponse.MemberStatsResponse(123, 123, 123);
+        GetGroupActivityStatApiResponseV1.RankingResponse ranking = new GetGroupActivityStatApiResponseV1.RankingResponse(10, 3);
+        GetGroupActivityStatApiResponseV1.MemberStatsResponse stats = new GetGroupActivityStatApiResponseV1.MemberStatsResponse(123, 123, 123);
 
-        GetGroupActivityStatResponse response = new GetGroupActivityStatResponse(
+        GetGroupActivityStatApiResponseV1 response = new GetGroupActivityStatApiResponseV1(
                 groupInfo,
                 certificationPeriods,
                 ranking,
@@ -64,7 +64,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 .willReturn(response);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my//groups/{groupId}/activity", 1)
+                        MockMvcRequestBuilders.get("/api/v1/my//groups/{groupId}/activity", 1)
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -132,17 +132,17 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @Test
     void getMemberAllStatsSortedByTodoCompletedAt() throws Exception {
 
-        GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
+        GetMemberAllStatsApiResponseV1.DailyTodoStats stats = new GetMemberAllStatsApiResponseV1.DailyTodoStats(
                 5,
                 3,
                 2
         );
 
-        List<GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt = List.of(
-                new GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt(
+        List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt = List.of(
+                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt(
                         "2025.05.01",
                         List.of(
-                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
                                         1L,
                                         "운동 하기",
                                         "APPROVE",
@@ -152,10 +152,10 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsResponse.CertificationsGroupedByTodoCompletedAt(
+                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt(
                         "2025.05.02",
                         List.of(
-                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
                                         2L,
                                         "인강 듣기",
                                         "APPROVE",
@@ -168,13 +168,13 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
         );
 
 
-        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, certificationsGroupedByTodoCompletedAt, null);
+        GetMemberAllStatsApiResponseV1 response = new GetMemberAllStatsApiResponseV1(stats, certificationsGroupedByTodoCompletedAt, null);
 
         given(memberActivityService.getMemberAllStats(any(), any(), any()))
                 .willReturn(response);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my/activity")
+                        MockMvcRequestBuilders.get("/api/v1/my/activity")
                                 .param("sort", "TODO_COMPLETED_AT")
                                 .param("status", "APPROVE")
                                 .header("Authorization", "Bearer access_token")
@@ -242,17 +242,17 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
     @Test
     void getMemberAllStatsSortedByGroupCreatedAt() throws Exception {
 
-        GetMemberAllStatsResponse.DailyTodoStats stats = new GetMemberAllStatsResponse.DailyTodoStats(
+        GetMemberAllStatsApiResponseV1.DailyTodoStats stats = new GetMemberAllStatsApiResponseV1.DailyTodoStats(
                 5,
                 3,
                 2
         );
 
-        List<GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt = List.of(
-                new GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt(
+        List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt = List.of(
+                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt(
                         "스쿼트 챌린지",
                         List.of(
-                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
                                         1L,
                                         "운동 하기",
                                         "REJECT",
@@ -262,10 +262,10 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsResponse.CertificationsGroupedByGroupCreatedAt(
+                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt(
                         "TIL 챌린지",
                         List.of(
-                                new GetMemberAllStatsResponse.DailyTodoCertificationInfo(
+                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
                                         2L,
                                         "인강 듣기",
                                         "REJECT",
@@ -277,13 +277,13 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 )
         );
 
-        GetMemberAllStatsResponse response = new GetMemberAllStatsResponse(stats, null, certificationsGroupedByGroupCreatedAt);
+        GetMemberAllStatsApiResponseV1 response = new GetMemberAllStatsApiResponseV1(stats, null, certificationsGroupedByGroupCreatedAt);
 
         given(memberActivityService.getMemberAllStats(any(), any(), any()))
                 .willReturn(response);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my/activity")
+                        MockMvcRequestBuilders.get("/api/v1/my/activity")
                                 .param("sort", "GROUP_CREATED_AT")
                                 .param("status", "REJECT")
                                 .header("Authorization", "Bearer access_token")
@@ -360,7 +360,7 @@ class MemberActivityControllerDocsTest extends RestDocsSupport {
                 .willReturn(myProfileDto);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/my/profile")
+                        MockMvcRequestBuilders.get("/api/v1/my/profile")
                                 .header("Authorization", "Bearer access_token")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

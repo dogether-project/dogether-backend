@@ -16,7 +16,7 @@ import site.dogether.memberactivity.service.MemberActivityServiceV2;
 import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/my")
+@RequestMapping("/api/v2/my")
 @RestController
 public class MemberActivityControllerV2 {
 

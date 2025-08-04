@@ -1,10 +1,10 @@
-package site.dogether.memberactivity.controller.v0.dto.response;
+package site.dogether.memberactivity.controller.v1.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
-public record GetMemberAllStatsResponse(
+public record GetMemberAllStatsApiResponseV1(
         DailyTodoStats dailyTodoStats,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         List<CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt,
