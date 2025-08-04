@@ -1,13 +1,13 @@
-package site.dogether.challengegroup.controller.response;
+package site.dogether.challengegroup.controller.v1.dto.response;
 
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus;
 
 import java.util.List;
 
-public record GetChallengeGroupMembersRankResponse(List<Data> ranking) {
+public record GetChallengeGroupMembersRankApiResponseV1(List<Data> ranking) {
 
-    public static GetChallengeGroupMembersRankResponse from(List<ChallengeGroupMemberOverviewDto> challengeGroupMemberOverview) {
+    public static GetChallengeGroupMembersRankApiResponseV1 from(List<ChallengeGroupMemberOverviewDto> challengeGroupMemberOverview) {
         final List<Data> data = challengeGroupMemberOverview.stream()
             .map(overView -> new Data(
                 overView.memberId(),
@@ -18,7 +18,7 @@ public record GetChallengeGroupMembersRankResponse(List<Data> ranking) {
                 overView.achievementRate()
             ))
             .toList();
-        return new GetChallengeGroupMembersRankResponse(data);
+        return new GetChallengeGroupMembersRankApiResponseV1(data);
     }
 
     record Data(

@@ -1,9 +1,9 @@
-package site.dogether.challengegroup.controller.request;
+package site.dogether.challengegroup.controller.v1.dto.request;
 
 import site.dogether.challengegroup.entity.ChallengeGroupDurationOption;
 import site.dogether.challengegroup.entity.ChallengeGroupStartAtOption;
 
-public record CreateChallengeGroupRequest(
+public record CreateChallengeGroupApiRequestV1(
     String groupName,
     int maximumMemberCount,
     String startAt,

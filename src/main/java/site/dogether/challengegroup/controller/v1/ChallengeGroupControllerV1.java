@@ -1,4 +1,4 @@
-package site.dogether.challengegroup.controller;
+package site.dogether.challengegroup.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +26,12 @@ import site.dogether.common.controller.response.ApiResponse;
 
 import java.util.List;
 
-import static site.dogether.common.controller.response.ApiResponse.*;
+import static site.dogether.common.controller.response.ApiResponse.success;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/groups")
+@RequestMapping("/api/v1/groups")
 @RestController
-public class ChallengeGroupController {
+public class ChallengeGroupControllerV1 {
 
     private final ChallengeGroupService challengeGroupService;
 
@@ -80,7 +80,7 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/participating")
-    public ResponseEntity<ApiResponse<CheckParticipatingChallengeGroupApiResponseV1>> isParticipatingChallengeGroup(
+    public ResponseEntity<ApiResponse<CheckParticipatingChallengeGroupApiResponseV1>> checkParticipatingChallengeGroup(
             @Authenticated final Long memberId
     ) {
         CheckParticipatingChallengeGroupApiResponseV1 response = challengeGroupService.checkParticipatingChallengeGroup(memberId);

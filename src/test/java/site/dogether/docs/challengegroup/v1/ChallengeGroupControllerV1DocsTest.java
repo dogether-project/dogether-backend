@@ -1,14 +1,14 @@
-package site.dogether.docs.challengegroup;
+package site.dogether.docs.challengegroup.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.challengegroup.controller.ChallengeGroupController;
-import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
-import site.dogether.challengegroup.controller.request.JoinChallengeGroupRequest;
-import site.dogether.challengegroup.controller.request.SaveLastSelectedChallengeGroupInfoRequest;
-import site.dogether.challengegroup.controller.response.IsParticipatingChallengeGroupResponse;
+import site.dogether.challengegroup.controller.v1.ChallengeGroupControllerV1;
+import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.request.JoinChallengeGroupApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.request.SaveLastSelectedChallengeGroupInfoApiRequestV1;
+import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -29,30 +29,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static site.dogether.dailytodohistory.entity.DailyTodoHistoryReadStatus.*;
 
 @DisplayName("챌린지 그룹 API 문서화 테스트")
-public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
+public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
 
     private final ChallengeGroupService challengeGroupService = mock(ChallengeGroupService.class);
 
     @Override
     protected Object initController() {
-        return new ChallengeGroupController(challengeGroupService);
+        return new ChallengeGroupControllerV1(challengeGroupService);
     }
 
     @DisplayName("챌린지 그룹 생성 API")
     @Test
     void createChallengeGroup() throws Exception {
-        final CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        final CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
             "성욱이와 친구들",
             10,
             "TOMORROW",
             3
         );
 
-        given(challengeGroupService.createChallengeGroup(any(CreateChallengeGroupRequest.class), any()))
+        given(challengeGroupService.createChallengeGroup(any(CreateChallengeGroupApiRequestV1.class), any()))
                 .willReturn("A1Bc4dEf");
 
         mockMvc.perform(
-                post("/api/groups")
+                post("/api/v1/groups")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -93,7 +93,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("챌린지 그룹 참가 API")
     @Test
     void joinChallengeGroup() throws Exception {
-        final JoinChallengeGroupRequest request = new JoinChallengeGroupRequest("A1Bc4dEf");
+        final JoinChallengeGroupApiRequestV1 request = new JoinChallengeGroupApiRequestV1("A1Bc4dEf");
 
         given(challengeGroupService.joinChallengeGroup(any(), any()))
             .willReturn(new JoinChallengeGroupDto(
@@ -105,7 +105,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             ));
 
         mockMvc.perform(
-                post("/api/groups/join")
+                post("/api/v1/groups/join")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -173,7 +173,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
             .willReturn(joiningChallengeGroupsWithLastSelectedGroupIndexDto);
 
         mockMvc.perform(
-                get("/api/groups/my")
+                get("/api/v1/groups/my")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -230,10 +230,10 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
     @DisplayName("사용자가 가장 마지막에 선택한 챌린지 그룹 id 저장 API")
     @Test
     void saveLastSelectedChallengeGroupInfo() throws Exception {
-        final SaveLastSelectedChallengeGroupInfoRequest request = new SaveLastSelectedChallengeGroupInfoRequest(1L);
+        final SaveLastSelectedChallengeGroupInfoApiRequestV1 request = new SaveLastSelectedChallengeGroupInfoApiRequestV1(1L);
 
         mockMvc.perform(
-                post("/api/groups/last-selected")
+                post("/api/v1/groups/last-selected")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
@@ -259,7 +259,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
         final Long groupId = 1L;
 
         mockMvc.perform(
-                delete("/api/groups/{groupId}/leave", groupId)
+                delete("/api/v1/groups/{groupId}/leave", groupId)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -279,12 +279,12 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
 
     @DisplayName("챌린지 그룹 참여 여부 조회 API")
     @Test
-    void isParticipatingChallengeGroup() throws Exception {
-        given(challengeGroupService.isParticipatingChallengeGroup(any()))
-            .willReturn(new IsParticipatingChallengeGroupResponse(true));
+    void checkParticipatingChallengeGroup() throws Exception {
+        given(challengeGroupService.checkParticipatingChallengeGroup(any()))
+            .willReturn(new CheckParticipatingChallengeGroupApiResponseV1(true));
 
         mockMvc.perform(
-                get("/api/groups/participating")
+                get("/api/v1/groups/participating")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -296,8 +296,8 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("message")
                         .description("응답 메시지")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("data.isParticipating")
-                        .description("참여 여부")
+                    fieldWithPath("data.checkParticipating")
+                        .description("참여 필요 여부")
                         .type(JsonFieldType.BOOLEAN))));
     }
 
@@ -335,7 +335,7 @@ public class ChallengeGroupControllerDocsTest extends RestDocsSupport {
                 .willReturn(groupMemberRanks);
 
         mockMvc.perform(
-                get("/api/groups/{groupId}/ranking", 1)
+                get("/api/v1/groups/{groupId}/ranking", 1)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
