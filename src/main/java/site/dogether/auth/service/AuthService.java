@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.auth.controller.request.LoginRequest;
-import site.dogether.auth.controller.request.WithdrawRequest;
+import site.dogether.auth.controller.v1.dto.request.LoginApiRequestV1;
+import site.dogether.auth.controller.v1.dto.request.WithdrawApiRequestV1;
 import site.dogether.auth.oauth.AppleOAuthProvider;
 import site.dogether.auth.oauth.JwtHandler;
 import site.dogether.member.entity.Member;
@@ -24,7 +24,7 @@ public class AuthService {
     private final MemberService memberService;
 
     @Transactional
-    public AuthenticatedMember login(final LoginRequest request) {
+    public AuthenticatedMember login(final LoginApiRequestV1 request) {
         log.info("로그인 요청을 받습니다. ({})", request.name());
 
         final String subject = appleOAuthProvider.parseSubject(request.idToken());
@@ -39,7 +39,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void withdraw(final Long memberId, final WithdrawRequest request) {
+    public void withdraw(final Long memberId, final WithdrawApiRequestV1 request) {
         final boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
         if (isRevoked) {
             memberService.delete(memberId);

@@ -1,4 +1,4 @@
-package site.dogether.auth.controller;
+package site.dogether.auth.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,21 +16,19 @@ import site.dogether.auth.service.AuthService;
 import site.dogether.common.controller.response.ApiResponse;
 import site.dogether.member.service.dto.AuthenticatedMember;
 
-import static site.dogether.common.controller.response.ApiResponse.success;
-
-//TODO: 향후 클라이언트에서 V1 api를 도입할 경우 해당 controller는 제거
+import static site.dogether.common.controller.response.ApiResponse.*;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RestController
-public class AuthController {
+public class AuthControllerV1 {
 
     private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginApiResponseV1>> login(
-        @RequestBody final LoginApiRequestV1 request
+            @RequestBody final LoginApiRequestV1 request
     ) {
         final AuthenticatedMember authenticatedMember = authService.login(request);
         return ResponseEntity.ok(success(new LoginApiResponseV1(authenticatedMember)));
@@ -38,8 +36,8 @@ public class AuthController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
-        @Authenticated final Long memberId,
-        @RequestBody final WithdrawApiRequestV1 request
+            @Authenticated final Long memberId,
+            @RequestBody final WithdrawApiRequestV1 request
     ) {
         authService.withdraw(memberId, request);
         return ResponseEntity.ok(success());

@@ -1,51 +1,49 @@
-package site.dogether.docs.auth;
+package site.dogether.docs.auth.v1;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import site.dogether.auth.controller.v1.AuthControllerV1;
+import site.dogether.auth.controller.v1.dto.request.LoginApiRequestV1;
+import site.dogether.auth.controller.v1.dto.request.WithdrawApiRequestV1;
+import site.dogether.auth.service.AuthService;
+import site.dogether.docs.util.RestDocsSupport;
+import site.dogether.member.service.dto.AuthenticatedMember;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.auth.controller.AuthController;
-import site.dogether.auth.controller.request.LoginRequest;
-import site.dogether.auth.controller.request.WithdrawRequest;
-import site.dogether.auth.service.AuthService;
-import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.member.service.dto.AuthenticatedMember;
-
 @DisplayName("로그인 & 회원 탈퇴 API 문서화 테스트")
-public class AuthControllerDocsTest extends RestDocsSupport {
+public class AuthControllerV1DocsTest extends RestDocsSupport {
 
     private final AuthService authService = mock(AuthService.class);
 
     @Override
     protected Object initController() {
-        return new AuthController(authService);
+        return new AuthControllerV1(authService);
     }
 
     @DisplayName("애플 로그인 API")
     @Test
     void login() throws Exception {
-        final LoginRequest request = new LoginRequest(
+        final LoginApiRequestV1 request = new LoginApiRequestV1(
             "김영재",
             "idToken"
         );
 
-        given(authService.login(any(LoginRequest.class)))
+        given(authService.login(any(LoginApiRequestV1.class)))
                 .willReturn(new AuthenticatedMember("김영재", "idToken"));
 
         mockMvc.perform(
-                post("/api/auth/login")
+                post("/api/v1/auth/login")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
             .andExpect(status().isOk())
@@ -79,14 +77,14 @@ public class AuthControllerDocsTest extends RestDocsSupport {
     @DisplayName("회원 탈퇴 API")
     @Test
     void withdraw() throws Exception {
-        final WithdrawRequest request = new WithdrawRequest(
+        final WithdrawApiRequestV1 request = new WithdrawApiRequestV1(
             "authorizationCode"
         );
 
-        doNothing().when(authService).withdraw(anyLong(), any(WithdrawRequest.class));
+        doNothing().when(authService).withdraw(anyLong(), any(WithdrawApiRequestV1.class));
 
         mockMvc.perform(
-                delete("/api/auth/withdraw")
+                delete("/api/v1/auth/withdraw")
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(convertToJson(request)))
