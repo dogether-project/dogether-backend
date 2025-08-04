@@ -1,10 +1,10 @@
-package site.dogether.docs.appinfo;
+package site.dogether.docs.appinfo.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import site.dogether.appinfo.controller.AppInfoController;
+import site.dogether.appinfo.controller.v1.AppInfoControllerV1;
 import site.dogether.appinfo.service.AppInfoService;
 import site.dogether.docs.util.RestDocsSupport;
 
@@ -18,13 +18,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("앱 정보 API 문서화 테스트")
-public class AppInfoControllerDocsTest extends RestDocsSupport {
+public class AppInfoControllerV1DocsTest extends RestDocsSupport {
 
     private final AppInfoService appInfoService = mock(AppInfoService.class);
 
     @Override
     protected Object initController() {
-        return new AppInfoController(appInfoService);
+        return new AppInfoControllerV1(appInfoService);
     }
 
     @DisplayName("앱 강제 업데이트 필요 여부 조회 API")
@@ -35,7 +35,7 @@ public class AppInfoControllerDocsTest extends RestDocsSupport {
             .willReturn(true);
 
         mockMvc.perform(
-                get("/api/app-info/force-update-check")
+                get("/api/v1/app-info/force-update-check")
                     .param("app-version", requestAppVersion)
                     .header("Authorization", "Bearer access_token")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
