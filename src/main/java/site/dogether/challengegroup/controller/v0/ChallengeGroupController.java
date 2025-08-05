@@ -1,4 +1,4 @@
-package site.dogether.challengegroup.controller;
+package site.dogether.challengegroup.controller.v0;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
+import site.dogether.challengegroup.controller.v0.dto.response.IsParticipatingChallengeGroupApiResponseV0;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.request.JoinChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.request.SaveLastSelectedChallengeGroupInfoApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.response.CreateChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.controller.v1.dto.response.GetChallengeGroupMembersRankApiResponseV1;
 import site.dogether.challengegroup.controller.v1.dto.response.GetJoiningChallengeGroupsApiResponseV1;
-import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.controller.v1.dto.response.JoinChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
@@ -80,10 +80,10 @@ public class ChallengeGroupController {
     }
 
     @GetMapping("/participating")
-    public ResponseEntity<ApiResponse<CheckParticipatingChallengeGroupApiResponseV1>> isParticipatingChallengeGroup(
+    public ResponseEntity<ApiResponse<IsParticipatingChallengeGroupApiResponseV0>> isParticipatingChallengeGroup(
             @Authenticated final Long memberId
     ) {
-        CheckParticipatingChallengeGroupApiResponseV1 response = challengeGroupService.checkParticipatingChallengeGroup(memberId);
+        IsParticipatingChallengeGroupApiResponseV0 response = challengeGroupService.isParticipatingChallengeGroup(memberId);
         return ResponseEntity.ok(success(response));
     }
 

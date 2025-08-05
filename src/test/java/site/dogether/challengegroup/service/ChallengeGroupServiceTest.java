@@ -249,7 +249,7 @@ class ChallengeGroupServiceTest {
         challengeGroupService.createChallengeGroup(request, member.getId());
 
         //when
-        boolean isParticipating = challengeGroupService.checkParticipatingChallengeGroup(member.getId()).checkParticipating();
+        boolean isParticipating = challengeGroupService.isChallengeGroupParticipationRequired(member.getId()).checkParticipating();
 
         //then
         assertThat(isParticipating).isFalse();
@@ -261,7 +261,7 @@ class ChallengeGroupServiceTest {
         Member member = memberRepository.save(Member.create("providerId", "폰트"));
 
         //when
-        boolean isParticipating = challengeGroupService.checkParticipatingChallengeGroup(member.getId()).checkParticipating();
+        boolean isParticipating = challengeGroupService.isChallengeGroupParticipationRequired(member.getId()).checkParticipating();
 
         //then
         assertThat(isParticipating).isTrue();

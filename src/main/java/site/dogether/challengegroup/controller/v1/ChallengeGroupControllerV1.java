@@ -16,7 +16,7 @@ import site.dogether.challengegroup.controller.v1.dto.request.SaveLastSelectedCh
 import site.dogether.challengegroup.controller.v1.dto.response.CreateChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.controller.v1.dto.response.GetChallengeGroupMembersRankApiResponseV1;
 import site.dogether.challengegroup.controller.v1.dto.response.GetJoiningChallengeGroupsApiResponseV1;
-import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
 import site.dogether.challengegroup.controller.v1.dto.response.JoinChallengeGroupApiResponseV1;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
@@ -80,10 +80,10 @@ public class ChallengeGroupControllerV1 {
     }
 
     @GetMapping("/participating")
-    public ResponseEntity<ApiResponse<CheckParticipatingChallengeGroupApiResponseV1>> checkParticipatingChallengeGroup(
+    public ResponseEntity<ApiResponse<IsChallengeGroupParticipationRequiredApiResponseV1>> isChallengeGroupParticipationRequired(
             @Authenticated final Long memberId
     ) {
-        CheckParticipatingChallengeGroupApiResponseV1 response = challengeGroupService.checkParticipatingChallengeGroup(memberId);
+        IsChallengeGroupParticipationRequiredApiResponseV1 response = challengeGroupService.isChallengeGroupParticipationRequired(memberId);
         return ResponseEntity.ok(success(response));
     }
 
