@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {getTotalActivityInfoAndDailyTodoCertificationsV0} from "../../../../../common/api/api-call/api-call.js";
+import {getTotalActivityInfoAndDailyTodoCertificationsV1} from "../../../../../common/api/api-call/api-call.js";
 import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
@@ -28,8 +28,8 @@ export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
 
-    const res = getTotalActivityInfoAndDailyTodoCertificationsV0(token, "TODO_COMPLETED_AT"); // 투두 완료일 순
-    // const res = getTotalActivityInfoAndDailyTodoCertificationsV0(token, "GROUP_CREATED_AT");  // 그룹 생성일 순
+    // const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "TODO_COMPLETED_AT", 0);
+    const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "GROUP_CREATED_AT", 0);
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가
