@@ -99,7 +99,7 @@
     </appender>
 
     <!-- Logger 설정 -->
-    <root level="info">
+    <root level="trace">
         <appender-ref ref="TRACE_LOG_FILE" />
         <appender-ref ref="DEBUG_LOG_FILE" />
         <appender-ref ref="INFO_LOG_FILE" />

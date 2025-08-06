@@ -5,9 +5,6 @@ spring:
     open-in-view: false
 
 management:
-  endpoint:
-    prometheus:
-      enabled: true
   endpoints:
     web:
       exposure:
@@ -33,3 +30,8 @@ secret:
       team-id: ${APPLE_TEAM_ID}
       client-id: ${APPLE_CLIENT_ID}
       private-key: ${APPLE_PRIVATE_KEY}
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false

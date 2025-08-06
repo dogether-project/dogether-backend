@@ -11,4 +11,6 @@ spring:
 
 logging:
   config: classpath:logback/logback-prod.xml
-  level.site.dogether: info
+  level:
+    root: info
+    site.dogether: info
