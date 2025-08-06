@@ -14,8 +14,3 @@ logging:
   level:
     root: info
     site.dogether: trace
-
-decorator:
-  datasource:
-    p6spy:
-      enable-logging: true
