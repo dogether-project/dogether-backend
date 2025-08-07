@@ -1,6 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import { createDbConnection } from "../util/db-util.js";
+import {createLocalDbConnection, createSshTunnelDbConnection} from "../util/db-util.js";
 import { createDummyData } from "./data/dummy-data-1.js";
 import {
     insertDailyTodoStats,
@@ -22,8 +20,8 @@ import {
 } from "../query/daily-todo-certification-query.js";
 
 async function main() {
-    const dbConfig = JSON.parse(fs.readFileSync(path.join('../../../secret/db-secret.json'), 'utf-8'));
-    const connection = await createDbConnection(dbConfig);
+    const connection = await createLocalDbConnection(); // Local DB 커넥션
+    // const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
     const dummyData = createDummyData();
     const batchSize = dummyData.batch_size;
 

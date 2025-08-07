@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import {
-    createDbConnection, getConsecutiveNumbersByGroup,
+    createLocalDbConnection, createSshTunnelDbConnection, getConsecutiveNumbersByGroup,
     getCurrentDateInKst,
     getDateNDaysAgoInKst,
     getEndDateFromStartAgoAndDuration
@@ -30,8 +30,9 @@ import {
 } from "../../../../../common/db/query/daily-todo-certification-query.js";
 
 const TEMP_OUTPUT_PATH = path.join('./script/temp.json');
-const dbConfig = JSON.parse(fs.readFileSync(path.join('../../../../secret/db-secret.json'), 'utf-8'));
-const connection = await createDbConnection(dbConfig);
+const connection = await createLocalDbConnection(); // Local DB 커넥션
+// const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
+
 const batchSize = 100;
 
 const TEST_MEMBER_COUNT = 100;

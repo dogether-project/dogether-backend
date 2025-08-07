@@ -11,15 +11,15 @@ import {
     deleteAllLastSelectedChallengeGroupRecordByChallengeGroupId,
     getLastSelectedChallengeGroupIdsByMembers
 } from "../../../../../common/db/query/challenge-group-query.js";
-import {createDbConnection} from "../../../../../common/db/util/db-util.js";
+import {createLocalDbConnection, createSshTunnelDbConnection} from "../../../../../common/db/util/db-util.js";
 import {
     deleteAllDailyTodoByMember,
     deleteAllDailyTodoHistoryByMember
 } from "../../../../../common/db/query/daily-todo-query.js";
 
 const temp = JSON.parse(fs.readFileSync(path.join('./script/temp.json'), 'utf-8'));
-const dbConfig = JSON.parse(fs.readFileSync(path.join('../../../../secret/db-secret.json'), 'utf-8'));
-const connection = await createDbConnection(dbConfig);
+const connection = await createLocalDbConnection(); // Local DB 커넥션
+// const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
 
 async function tearDown() {
     const {
