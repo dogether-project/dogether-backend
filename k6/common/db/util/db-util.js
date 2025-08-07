@@ -1,10 +1,90 @@
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
+import { Client } from "ssh2";
 import mysql from "mysql2/promise";
 
-export async function createDbConnection(dbConfig) {
-    const connection = await mysql.createConnection(dbConfig);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dbConfig = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '../../../secret/db-secret.json'), 'utf-8')
+);
 
-    console.log(`✅ DB 커넥션 생성 완료.\n`);
+export async function createLocalDbConnection() {
+    const connection = await mysql.createConnection(dbConfig.local);
+
+    console.log(`✅ Local DB 커넥션 생성 완료.\n`);
     return connection;
+}
+
+export async function createSshTunnelDbConnection() {
+    const bastionConfig = dbConfig.bastion;
+    const forwardConfig = dbConfig.forward;
+    const awsDbConfig = dbConfig.aws;
+
+    return new Promise((resolve, reject) => {
+        const sshClient = new Client();
+
+        // SSH 연결 이벤트 감지용 로깅 추가
+        sshClient.on("close", () => {
+            console.warn("⚠️ SSH 터널 연결이 닫혔습니다.\n");
+        });
+
+        sshClient.on("end", () => {
+            console.warn("⚠️ SSH 터널 연결이 종료(end)되었습니다.");
+        });
+
+        sshClient.on("error", (err) => {
+            console.error("❌ SSH 터널 에러 발생:", err);
+        });
+
+        sshClient.on("ready", () => {
+            console.log("✅ Bastion server ssh 연결 성공.");
+
+            sshClient.forwardOut(
+                forwardConfig.srcHost,
+                forwardConfig.srcPort,
+                forwardConfig.dstHost,
+                forwardConfig.dstPort,
+                async (err, stream) => {
+                    if (err) {
+                        sshClient.end();
+                        return reject(err);
+                    }
+
+                    try {
+                        const connection = await mysql.createConnection({
+                            ...awsDbConfig,
+                            stream,
+                        });
+
+                        console.log("✅ SSH 터널링 DB 커넥션 생성 완료.\n");
+
+                        // 👇 DB 연결 종료 시 SSH 터널도 함께 닫도록 end 메서드 오버라이드
+                        const originalEnd = connection.end.bind(connection);
+                        connection.end = async function (...args) {
+                            console.log("\n🛑 DB 연결 종료 요청. SSH 터널도 함께 종료합니다.");
+                            sshClient.end();
+                            return originalEnd(...args);
+                        };
+
+                        resolve(connection); // ✅ connection만 반환
+                    } catch (dbErr) {
+                        sshClient.end();
+                        reject(dbErr);
+                    }
+                }
+            );
+        });
+
+        // 실제 SSH 연결 시작
+        sshClient.connect({
+            host: bastionConfig.host,
+            port: 22,
+            username: bastionConfig.username,
+            privateKey: fs.readFileSync(path.join(__dirname, bastionConfig.privateKeyPath)),
+        });
+    });
 }
 
 export async function batchInsert(connection, query, data, batchSize, targetTable) {
