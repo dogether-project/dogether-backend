@@ -5,11 +5,11 @@ import {
     deleteDailyTodoStatsByMemberId,
     deleteNotificationTokenByMemberId
 } from "../../../../../common/db/query/member-query.js";
-import {createDbConnection} from "../../../../../common/db/util/db-util.js";
+import {createLocalDbConnection, createSshTunnelDbConnection} from "../../../../../common/db/util/db-util.js";
 
 const temp = JSON.parse(fs.readFileSync(path.join('./script/temp.json'), 'utf-8'));
-const dbConfig = JSON.parse(fs.readFileSync(path.join('../../../../secret/db-secret.json'), 'utf-8'));
-const connection = await createDbConnection(dbConfig);
+const connection = await createLocalDbConnection(); // Local DB 커넥션
+// const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
 
 async function tearDown() {
     const {
