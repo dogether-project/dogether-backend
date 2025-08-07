@@ -25,15 +25,6 @@ export async function createSshTunnelDbConnection() {
     return new Promise((resolve, reject) => {
         const sshClient = new Client();
 
-        // SSH 연결 이벤트 감지용 로깅 추가
-        sshClient.on("close", () => {
-            console.warn("⚠️ SSH 터널 연결이 닫혔습니다.\n");
-        });
-
-        sshClient.on("end", () => {
-            console.warn("⚠️ SSH 터널 연결이 종료(end)되었습니다.");
-        });
-
         sshClient.on("error", (err) => {
             console.error("❌ SSH 터널 에러 발생:", err);
         });
@@ -63,7 +54,7 @@ export async function createSshTunnelDbConnection() {
                         // 👇 DB 연결 종료 시 SSH 터널도 함께 닫도록 end 메서드 오버라이드
                         const originalEnd = connection.end.bind(connection);
                         connection.end = async function (...args) {
-                            console.log("\n🛑 DB 연결 종료 요청. SSH 터널도 함께 종료합니다.");
+                            console.log("🛑 DB 연결 종료 요청. SSH 터널도 함께 종료합니다.\n");
                             sshClient.end();
                             return originalEnd(...args);
                         };
