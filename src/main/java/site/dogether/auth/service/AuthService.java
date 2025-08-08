@@ -4,13 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.auth.controller.v1.dto.request.LoginApiRequestV1;
+import site.dogether.auth.constant.LoginType;
 import site.dogether.auth.controller.v1.dto.request.WithdrawApiRequestV1;
 import site.dogether.auth.oauth.AppleOAuthProvider;
 import site.dogether.auth.oauth.JwtHandler;
+import site.dogether.auth.service.dto.request.LoginRequestDto;
+import site.dogether.auth.service.dto.response.LoginResponseDto;
 import site.dogether.member.entity.Member;
 import site.dogether.member.service.MemberService;
-import site.dogether.member.service.dto.AuthenticatedMember;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,18 +24,22 @@ public class AuthService {
     private final MemberService memberService;
 
     @Transactional
-    public AuthenticatedMember login(final LoginApiRequestV1 request) {
+    public LoginResponseDto login(final LoginRequestDto request) {
         log.info("로그인 요청을 받습니다. ({})", request.name());
 
-        final String subject = appleOAuthProvider.parseSubject(request.idToken());
-        log.info("subject of apple idToken 을 파싱합니다. ({})", request.name());
+        // TODO : 중복 코드를 없에도록 리팩토링
+        if (request.loginType() == LoginType.APPLE) {
+            final String subject = appleOAuthProvider.parseSubject(request.providerId());
+            final Member savedMember = memberService.save(subject, request.name());
+            final String authenticationToken = jwtHandler.createToken(savedMember.getId());
 
-        final Member savedMember = memberService.save(subject, request.name());
-        log.info("회원을 저장 or 조회합니다. ({})", savedMember);
+            return new LoginResponseDto(savedMember.getName(), authenticationToken);
+        }
 
+        final Member savedMember = memberService.save(request.providerId(), request.name());
         final String authenticationToken = jwtHandler.createToken(savedMember.getId());
 
-        return new AuthenticatedMember(savedMember.getName(), authenticationToken);
+        return new LoginResponseDto(savedMember.getName(), authenticationToken);
     }
 
     @Transactional
