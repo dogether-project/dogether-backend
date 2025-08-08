@@ -2,7 +2,7 @@
 == [V1] 사용자 활동 API
 
 [[get-group-activity-stat-v1]]
-=== [V1] 참여중인 특정 챌린지 그룹 활동 통계 조회
+=== 참여중인 특정 챌린지 그룹 활동 통계 조회
 
 ==== 개발 상태
 |===
@@ -24,7 +24,7 @@ include::{snippets}/member-activity-controller-v1-docs-test/get-group-activity-s
 include::{snippets}/member-activity-controller-v1-docs-test/get-group-activity-stat-v1/response-fields.adoc[]
 
 [[get-member-all-stats-sorted-by-todo-completed-at-v1]]
-=== [V1] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 (투두 완료일 순)
+=== 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 (투두 완료일 순)
 
 ==== 개발 상태
 |===
@@ -46,7 +46,7 @@ include::{snippets}/member-activity-controller-v1-docs-test/get-member-all-stats
 include::{snippets}/member-activity-controller-v1-docs-test/get-member-all-stats-sorted-by-todo-completed-at-v1/response-fields.adoc[]
 
 [[get-member-all-stats-sorted-by-group-created-at-v1]]
-=== [V1] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 (그룹 생성일 순)
+=== 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 (그룹 생성일 순)
 
 ==== 개발 상태
 |===
@@ -68,7 +68,7 @@ include::{snippets}/member-activity-controller-v1-docs-test/get-member-all-stats
 include::{snippets}/member-activity-controller-v1-docs-test/get-member-all-stats-sorted-by-group-created-at-v1/response-fields.adoc[]
 
 [[get-my-profile-v1]]
-=== [V1] 사용자 프로필 조회
+=== 사용자 프로필 조회
 
 ==== 개발 상태
 |===

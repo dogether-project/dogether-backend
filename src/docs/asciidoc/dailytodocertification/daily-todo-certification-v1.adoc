@@ -2,7 +2,7 @@
 == [V1] 데일리 투두 수행 인증 API
 
 [[certify-daily-todo-v1]]
-=== [V1] 데일리 투두 수행 인증 생성
+=== 데일리 투두 수행 인증 생성
 
 ==== 개발 상태
 |===
@@ -25,7 +25,7 @@ include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-dai
 include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-daily-todo-v1/response-fields.adoc[]
 
 [[review-daily-todo-certification-v1]]
-=== [V1] 데일리 투두 수행 인증 검사
+=== 데일리 투두 수행 인증 검사
 
 ==== 개발 상태
 |===
@@ -48,7 +48,7 @@ include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-dail
 include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-daily-todo-certification-v1/response-fields.adoc[]
 
 [[get-daily-todo-certifications-for-review-v1]]
-=== [V1] 본인이 검사해 줘야 하는 투두 수행 인증 전체 조회
+=== 본인이 검사해 줘야 하는 투두 수행 인증 전체 조회
 
 ==== 개발 상태
 |===
