@@ -8,8 +8,9 @@ import site.dogether.auth.controller.v1.AuthControllerV1;
 import site.dogether.auth.controller.v1.dto.request.LoginApiRequestV1;
 import site.dogether.auth.controller.v1.dto.request.WithdrawApiRequestV1;
 import site.dogether.auth.service.AuthService;
+import site.dogether.auth.service.dto.request.LoginRequestDto;
+import site.dogether.auth.service.dto.response.LoginResponseDto;
 import site.dogether.docs.util.RestDocsSupport;
-import site.dogether.member.service.dto.AuthenticatedMember;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -31,16 +32,17 @@ public class AuthControllerV1DocsTest extends RestDocsSupport {
         return new AuthControllerV1(authService);
     }
 
-    @DisplayName("[V1] 애플 로그인 API")
+    @DisplayName("[V1] 소셜 로그인 API")
     @Test
     void loginV1() throws Exception {
         final LoginApiRequestV1 request = new LoginApiRequestV1(
-            "김영재",
-            "idToken"
+            "APPLE",
+            "idToken",
+            "김영재"
         );
 
-        given(authService.login(any(LoginApiRequestV1.class)))
-                .willReturn(new AuthenticatedMember("김영재", "idToken"));
+        given(authService.login(any(LoginRequestDto.class)))
+                .willReturn(new LoginResponseDto("김영재", "idToken"));
 
         mockMvc.perform(
                 post("/api/v1/auth/login")
@@ -49,14 +51,20 @@ public class AuthControllerV1DocsTest extends RestDocsSupport {
             .andExpect(status().isOk())
             .andDo(createDocument(
                 requestFields(
-                    fieldWithPath("name")
-                        .description("사용자 이름")
+                    fieldWithPath("loginType")
+                        .description("소셜 로그인 유형")
                         .type(JsonFieldType.STRING)
                         .optional()
-                        .attributes(constraints("OAuth Provider(Apple)상의 사용자 이름")),
-                    fieldWithPath("idToken")
-                        .description("애플 유저 식별 토큰")
-                        .attributes(constraints("애플이 제공하는 id_token"))
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("APPLE(애플 로그인)", "KAKAO(카카오 로그인)")),
+                    fieldWithPath("providerId")
+                        .description("provider id")
+                        .type(JsonFieldType.STRING)
+                        .optional()
+                        .attributes(constraints("소셜 로그인 후 받은 provider id만 허용")),
+                    fieldWithPath("name")
+                        .description("사용자 이름")
+                        .attributes(constraints("애플은 사용자가 입력한 이름, 카카오는 프로필에 설정한 이름"))
                         .type(JsonFieldType.STRING)
                 ),
                 responseFields(

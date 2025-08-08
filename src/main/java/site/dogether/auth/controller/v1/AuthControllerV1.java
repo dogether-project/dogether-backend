@@ -13,8 +13,8 @@ import site.dogether.auth.controller.v1.dto.request.WithdrawApiRequestV1;
 import site.dogether.auth.controller.v1.dto.response.LoginApiResponseV1;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.auth.service.AuthService;
+import site.dogether.auth.service.dto.response.LoginResponseDto;
 import site.dogether.common.controller.dto.response.ApiResponse;
-import site.dogether.member.service.dto.AuthenticatedMember;
 
 import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
@@ -30,8 +30,8 @@ public class AuthControllerV1 {
     public ResponseEntity<ApiResponse<LoginApiResponseV1>> login(
             @RequestBody final LoginApiRequestV1 request
     ) {
-        final AuthenticatedMember authenticatedMember = authService.login(request);
-        return ResponseEntity.ok(success(new LoginApiResponseV1(authenticatedMember)));
+        final LoginResponseDto responseDto = authService.login(request.toLoginRequestDto());
+        return ResponseEntity.ok(success(new LoginApiResponseV1(responseDto)));
     }
 
     @DeleteMapping("/withdraw")
