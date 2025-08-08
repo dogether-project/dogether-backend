@@ -21,7 +21,7 @@ import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
 import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsApiResponseV1;
+import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsApiResponseV0;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
@@ -173,35 +173,35 @@ public class MemberActivityService {
     }
 
     //TODO: 추후 로직 개선을 위한 리팩토링 진행 예정
-    public GetMemberAllStatsApiResponseV1 getMemberAllStats(Long memberId, String sort, String status) {
+    public GetMemberAllStatsApiResponseV0 getMemberAllStats(Long memberId, String sort, String status) {
         final Member member = getMember(memberId);
 
-        GetMemberAllStatsApiResponseV1.DailyTodoStats stats = getStats(member);
+        GetMemberAllStatsApiResponseV0.DailyTodoStats stats = getStats(member);
         List<DailyTodoCertification> certifications = getCertificationsByStatus(member, status);
 
         if ("TODO_COMPLETED_AT".equals(sort)) {
-            List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> groupedCertifications =
+            List<GetMemberAllStatsApiResponseV0.CertificationsGroupedByTodoCompletedAt> groupedCertifications =
                     getCertificationsSortedByTodoCompletedAt(certifications);
-            return new GetMemberAllStatsApiResponseV1(stats, groupedCertifications, null);
+            return new GetMemberAllStatsApiResponseV0(stats, groupedCertifications, null);
         }
 
         if ("GROUP_CREATED_AT".equals(sort)) {
-            List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt> groupedCertifications =
+            List<GetMemberAllStatsApiResponseV0.CertificationsGroupedByGroupCreatedAt> groupedCertifications =
                     getCertificationsSortedByGroupCreatedAt(certifications);
-            return new GetMemberAllStatsApiResponseV1(stats, null, groupedCertifications);
+            return new GetMemberAllStatsApiResponseV0(stats, null, groupedCertifications);
         }
 
         throw new InvalidParameterException("유효하지 않은 sort 파라미터입니다.");
     }
 
-    private GetMemberAllStatsApiResponseV1.DailyTodoStats getStats(Member member) {
+    private GetMemberAllStatsApiResponseV0.DailyTodoStats getStats(Member member) {
         return dailyTodoStatsRepository.findByMember(member)
-                .map(stats -> new GetMemberAllStatsApiResponseV1.DailyTodoStats(
+                .map(stats -> new GetMemberAllStatsApiResponseV0.DailyTodoStats(
                         stats.getCertificatedCount(),
                         stats.getApprovedCount(),
                         stats.getRejectedCount()
                 ))
-                .orElseGet(() -> new GetMemberAllStatsApiResponseV1.DailyTodoStats(0, 0, 0));
+                .orElseGet(() -> new GetMemberAllStatsApiResponseV0.DailyTodoStats(0, 0, 0));
     }
 
     private List<DailyTodoCertification> getCertificationsByStatus(Member member, String status) {
@@ -213,12 +213,12 @@ public class MemberActivityService {
         return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member);
     }
 
-    private List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
+    private List<GetMemberAllStatsApiResponseV0.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(cert -> cert.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt(
+                .map(entry -> new GetMemberAllStatsApiResponseV0.CertificationsGroupedByTodoCompletedAt(
                         entry.getKey(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -228,12 +228,12 @@ public class MemberActivityService {
                 .collect(Collectors.toList());
     }
 
-    private List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
+    private List<GetMemberAllStatsApiResponseV0.CertificationsGroupedByGroupCreatedAt> getCertificationsSortedByGroupCreatedAt(List<DailyTodoCertification> certifications) {
         return certifications.stream()
                 .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
                 .entrySet().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
-                .map(entry -> new GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt(
+                .map(entry -> new GetMemberAllStatsApiResponseV0.CertificationsGroupedByGroupCreatedAt(
                         entry.getKey().getName(),
                         entry.getValue().stream()
                                 .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -243,10 +243,10 @@ public class MemberActivityService {
                 .collect(Collectors.toList());
     }
 
-    private GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
+    private GetMemberAllStatsApiResponseV0.DailyTodoCertificationInfo certificationInfo(DailyTodoCertification certification) {
         DailyTodo todo = certification.getDailyTodo();
 
-        return new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
+        return new GetMemberAllStatsApiResponseV0.DailyTodoCertificationInfo(
                 todo.getId(),
                 todo.getContent(),
                 certification.getReviewStatus().name(),
