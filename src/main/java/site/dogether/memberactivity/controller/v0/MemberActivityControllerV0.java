@@ -1,4 +1,4 @@
-package site.dogether.memberactivity.controller;
+package site.dogether.memberactivity.controller.v0;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsApiResponseV1;
+import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsApiResponseV0;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyProfileApiResponseV1;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
@@ -20,7 +20,7 @@ import static site.dogether.common.controller.dto.response.ApiResponse.success;
 @RequiredArgsConstructor
 @RequestMapping("/api/my")
 @RestController
-public class MemberActivityController {
+public class MemberActivityControllerV0 {
 
     private final MemberActivityService memberActivityService;
 
@@ -34,12 +34,12 @@ public class MemberActivityController {
     }
 
     @GetMapping("/activity")
-    public ResponseEntity<ApiResponse<GetMemberAllStatsApiResponseV1>> getMemberAllStats(
+    public ResponseEntity<ApiResponse<GetMemberAllStatsApiResponseV0>> getMemberAllStats(
             @Authenticated final Long memberId,
             @RequestParam final String sort,
             @RequestParam(required = false) final String status
     ) {
-        final GetMemberAllStatsApiResponseV1 memberAllStats = memberActivityService.getMemberAllStats(memberId, sort, status);
+        final GetMemberAllStatsApiResponseV0 memberAllStats = memberActivityService.getMemberAllStats(memberId, sort, status);
 
         return ResponseEntity.ok(success(memberAllStats));
     }

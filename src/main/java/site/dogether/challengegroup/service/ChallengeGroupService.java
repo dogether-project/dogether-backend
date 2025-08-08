@@ -4,20 +4,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.dogether.challengegroup.controller.v0.dto.response.IsParticipatingChallengeGroupApiResponseV0;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
-import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
 import site.dogether.challengegroup.entity.AchievementRateCalculator;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.entity.LastSelectedChallengeGroupRecord;
 import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFinishedException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
 import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
+import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
@@ -250,14 +251,25 @@ public class ChallengeGroupService {
             );
     }
 
-    public CheckParticipatingChallengeGroupApiResponseV1 checkParticipatingChallengeGroup(Long memberId) {
+    //TODO: V0 버저닝 사라진 이후 해당 메서드 제거 필요
+    public IsParticipatingChallengeGroupApiResponseV0 isParticipatingChallengeGroup(Long memberId) {
         final Member member = getMember(memberId);
         final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
 
         if (challengeGroupMembers.isEmpty()) {
-            return new CheckParticipatingChallengeGroupApiResponseV1(true);
+            return new IsParticipatingChallengeGroupApiResponseV0(false);
         }
-        return new CheckParticipatingChallengeGroupApiResponseV1(false);
+        return new IsParticipatingChallengeGroupApiResponseV0(true);
+    }
+
+    public IsChallengeGroupParticipationRequiredApiResponseV1 isChallengeGroupParticipationRequired(Long memberId) {
+        final Member member = getMember(memberId);
+        final List<ChallengeGroupMember> challengeGroupMembers = challengeGroupMemberRepository.findNotFinishedGroupByMember(member);
+
+        if (challengeGroupMembers.isEmpty()) {
+            return new IsChallengeGroupParticipationRequiredApiResponseV1(true);
+        }
+        return new IsChallengeGroupParticipationRequiredApiResponseV1(false);
     }
 
     public List<ChallengeGroupMemberOverviewDto> getChallengeGroupMemberOverview(final Long memberId, final Long groupId) {

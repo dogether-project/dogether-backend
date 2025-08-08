@@ -2,7 +2,7 @@
 == [V1] 인증 & 인가 API
 
 [[apple-login-v1]]
-=== [V1] 애플 로그인 API
+=== 애플 로그인 API
 
 ==== 개발 상태
 |===
@@ -24,7 +24,7 @@ include::{snippets}/auth-controller-v1-docs-test/login-v1/http-response.adoc[]
 include::{snippets}/auth-controller-v1-docs-test/login-v1/response-fields.adoc[]
 
 [[withdraw-v1]]
-=== [V1] 회원 탈퇴 API
+=== 회원 탈퇴 API
 
 ==== 개발 상태
 |===

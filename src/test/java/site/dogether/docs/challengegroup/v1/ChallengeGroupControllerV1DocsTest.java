@@ -8,7 +8,7 @@ import site.dogether.challengegroup.controller.v1.ChallengeGroupControllerV1;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.request.JoinChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.request.SaveLastSelectedChallengeGroupInfoApiRequestV1;
-import site.dogether.challengegroup.controller.v1.dto.response.CheckParticipatingChallengeGroupApiResponseV1;
+import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -277,11 +277,11 @@ public class ChallengeGroupControllerV1DocsTest extends RestDocsSupport {
                             .type(JsonFieldType.STRING))));
     }
 
-    @DisplayName("[V1] 챌린지 그룹 참여 여부 조회 API")
+    @DisplayName("[V1] 챌린지 그룹 참여 필요 여부 조회 API")
     @Test
-    void checkParticipatingChallengeGroupV1() throws Exception {
-        given(challengeGroupService.checkParticipatingChallengeGroup(any()))
-            .willReturn(new CheckParticipatingChallengeGroupApiResponseV1(true));
+    void isChallengeGroupParticipationRequiredV1() throws Exception {
+        given(challengeGroupService.isChallengeGroupParticipationRequired(any()))
+            .willReturn(new IsChallengeGroupParticipationRequiredApiResponseV1(true));
 
         mockMvc.perform(
                 get("/api/v1/groups/participating")
