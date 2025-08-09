@@ -19,9 +19,9 @@ export const options = {
 };
 
 export function setup() {
-    console.log("⏰ 10초 대기 시작.");
-    sleep(10);
-    console.log("✅ 10초 대기 완료.\n");
+    console.log("⏰ 5초 대기 시작.");
+    sleep(5);
+    console.log("✅ 5초 대기 완료.\n");
 }
 
 export default function () {
@@ -35,9 +35,4 @@ export default function () {
     check(res, {
         'API 응답 상태 코드 200': (r) => r.status === 200
     });
-}
-
-export function teardown() {
-    console.log("🧹 5초 후 테스트 데이터 정리 시작.");
-    sleep(5);
 }
