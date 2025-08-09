@@ -16,13 +16,17 @@ import {
     insertDailyTodoCertification,
     insertDailyTodoCertificationReviewer
 } from "../query/daily-todo-certification-query.js";
+import {createLocalDbConnection, createSshTunnelDbConnection} from "./db-util.js";
 
 function hasRows(rows) {
     return Array.isArray(rows) && rows.length > 0;
 }
 
-export async function insertData(connection, data) {
-    const batchSize = data.batch_size ?? 1000;
+export async function insertData(data) {
+    const connection = await createLocalDbConnection(); // Local DB 커넥션
+    // const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
+
+    const batchSize = data.batch_size ?? 100;
 
     // insert 순서 정의
     const steps = [
