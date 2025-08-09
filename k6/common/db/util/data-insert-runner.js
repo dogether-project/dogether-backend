@@ -22,10 +22,11 @@ function hasRows(rows) {
     return Array.isArray(rows) && rows.length > 0;
 }
 
-export async function insertData(data) {
+export async function insertData(dataGenerator) {
     const connection = await createLocalDbConnection(); // Local DB 커넥션
     // const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
 
+    const data = dataGenerator(connection);
     const batchSize = data.batch_size ?? 100;
 
     // insert 순서 정의

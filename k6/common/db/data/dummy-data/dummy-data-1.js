@@ -58,7 +58,7 @@ const TODOS_PER_MEMBER_IN_GROUP = 3;
 const TODO_CERTIFICATIONS_PER_MEMBER_IN_GROUP = 2;
 const TODO_CERTIFICATIONS_REVIEW_PER_MEMBER_IN_GROUP = 1;
 
-export function createDummyData() {
+export function createDummyData(connection) {
     const batch_size = 1000;
     const member_data = createMemberData();
     const notification_token_data = createNotificationTokenData();

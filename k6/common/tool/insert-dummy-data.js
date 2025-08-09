@@ -3,8 +3,7 @@ import { createDummyData } from "../db/data/dummy-data/dummy-data-2.js";
 import {insertData} from "../db/util/data-insert-runner.js";
 
 async function main() {
-    const dummyData = createDummyData();
-    await insertData(dummyData);
+    await insertData(createDummyData);
 }
 
 main();

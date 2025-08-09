@@ -24,7 +24,7 @@ const PAST_CERTIFICATION_COUNT_PER_MEMBER = PAST_TODO_COUNT_PER_MEMBER;  // 현�
 const PAST_APPROVE_COUNT_PER_MEMBER = Math.floor(PAST_CERTIFICATION_COUNT_PER_MEMBER / 2);  // 현재 참여 그룹 시작일 이전 사용자별 총 인정 받은 투두 인증 개수
 const PAST_REJECT_COUNT_PER_MEMBER = PAST_CERTIFICATION_COUNT_PER_MEMBER - PAST_APPROVE_COUNT_PER_MEMBER;   // 현재 참여 그룹 시작일 이전 사용자별 총 노인정 받은 투두 인증 개수
 
-export function createDummyData() {
+export function createDummyData(connection) {
     console.log('👷 더미 데이터 MK.2 생성 시작!\n');
 
     const batch_size = 1000;
