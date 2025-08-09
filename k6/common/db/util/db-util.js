@@ -104,6 +104,10 @@ export function getCurrentDateInKst() {
         .replace('T', ' ');
 }
 
+export function getCurrentDateInKstWithoutTime() {
+    return getCurrentDateInKst().slice(0, 10);
+}
+
 /**
  * n일 전 KST 날짜 계산 함수
  */
