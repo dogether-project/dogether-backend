@@ -1,5 +1,5 @@
 import {createLocalDbConnection, createSshTunnelDbConnection} from "../util/db-util.js";
-import { createDummyData } from "./data/dummy-data-1.js";
+import { createDummyData } from "./data/dummy-data-2.js";
 import {
     insertDailyTodoStats,
     insertMember,
