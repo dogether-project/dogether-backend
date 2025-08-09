@@ -32,7 +32,7 @@ export function createDummyData() {
     const notification_token_data = createNotificationTokenData();
     const daily_todo_stats_data = createDailyTodoStatsData();
     const challenge_group_data = createChallengeGroupData();
-    const { challenge_group_member_data, last_selected_challenge_group_record_data } = createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData();
+    const challenge_group_member_data = createChallengeGroupMemberData();
     const { daily_todo_data, daily_todo_history_data } = createDailyTodoAndDailyTodoHistoryData();
     const { daily_todo_certification_data, daily_todo_certification_reviewer_data } = createDailyTodoCertificationAndReviewerData(daily_todo_data);
 
@@ -44,7 +44,6 @@ export function createDummyData() {
         daily_todo_stats_data,
         challenge_group_data,
         challenge_group_member_data,
-        last_selected_challenge_group_record_data,
         daily_todo_data,
         daily_todo_history_data,
         daily_todo_certification_data,
@@ -154,11 +153,10 @@ const createChallengeGroupData = () => {
     return challenge_group_data;
 }
 
-const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = () => {
-    console.log("🗂️ challenge_group_member & last_selected_challenge_group_record 테이블 더미 데이터 생성중...");
+const createChallengeGroupMemberData = () => {
+    console.log("🗂️ challenge_group_member 테이블 더미 데이터 생성중...");
 
     const challenge_group_member_data = [];
-    const last_selected_challenge_group_record_data = [];
 
     const cycles = PAST_GROUP_CYCLE_COUNT;
     const blockSize = MEMBER_COUNT_PER_GROUP;
@@ -166,7 +164,6 @@ const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = () => 
     const groupCountPerCycle = blockCount * JOINING_GROUP_COUNT_PER_MEMBER;
 
     let challengeGroupMemberId = 1;
-    let lastSelectedChallengeGroupRecordId = 1;
 
     for (let ci = 0; ci < cycles; ci++) {
         const startAgo = USAGE_DAYS_BEFORE_CURRENT_GROUP - (ci * DURATION_PER_GROUP);
@@ -195,23 +192,12 @@ const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = () => 
                         rowInsertedAt,
                         rowUpdatedAt,
                     ]);
-
-                    // 사용자들이 마지막으로 참여한 그룹 정보 저장
-                    if (ci === cycles - 1 && k === JOINING_GROUP_COUNT_PER_MEMBER - 1) {
-                        last_selected_challenge_group_record_data.push([
-                            lastSelectedChallengeGroupRecordId++,
-                            challengeGroupId,
-                            memberId,
-                            rowInsertedAt,
-                            rowUpdatedAt,
-                        ]);
-                    }
                 }
             }
         }
     }
 
-    return { challenge_group_member_data, last_selected_challenge_group_record_data };
+    return challenge_group_member_data;
 }
 
 const createDailyTodoAndDailyTodoHistoryData = () => {

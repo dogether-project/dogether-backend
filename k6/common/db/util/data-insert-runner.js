@@ -53,7 +53,7 @@ export async function insertData(data) {
             if (hasRows(rows)) {
                 await step.fn(connection, rows, batchSize);
             } else {
-                console.log(`⏭️  ${step.label} 스킵 (데이터 없음)`);
+                console.log(`⏭️  ${step.label} 스킵 (데이터 없음)\n`);
             }
         }
 
