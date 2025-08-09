@@ -46,7 +46,7 @@ export async function insertData(dataGenerator) {
     try {
         await connection.beginTransaction();
 
-        const data = dataGenerator(connection);
+        const data = await dataGenerator(connection);
         const batchSize = data.batch_size ?? 100;
 
         for (const step of steps) {
