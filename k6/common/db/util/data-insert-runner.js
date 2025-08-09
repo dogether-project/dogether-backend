@@ -26,9 +26,6 @@ export async function insertData(dataGenerator) {
     const connection = await createLocalDbConnection(); // Local DB 커넥션
     // const connection = await createSshTunnelDbConnection(); // AWS DB 커넥션
 
-    const data = dataGenerator(connection);
-    const batchSize = data.batch_size ?? 100;
-
     // insert 순서 정의
     const steps = [
         { label: "member", fn: insertMember, key: "member_data" },
@@ -48,6 +45,9 @@ export async function insertData(dataGenerator) {
 
     try {
         await connection.beginTransaction();
+
+        const data = dataGenerator(connection);
+        const batchSize = data.batch_size ?? 100;
 
         for (const step of steps) {
             const rows = data[step.key];
