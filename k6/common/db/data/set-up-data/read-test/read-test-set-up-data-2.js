@@ -1,15 +1,11 @@
 /**
- * [ 데이터 셋 특정 ]
- * 현재 진행중인 그룹에 사용자들이 소속되어 이론상 진행할 수 있는 최대한의 활동을 진행했다고 가정
- *
- * # 해당 셋업 데이터를 사용하는 테스트 목록
- * - READ(4번을 제외한 모든 테스트)
- * - WRITE(X)
+ * # 최대치의 현재 활동 데이터 생성
+ * - 현재 진행중인 그룹에 사용자들이 최대치 소속되어 이론상 진행할 수 있는 최대한의 활동을 진행했다고 가정
  */
 
 // 데이터 생성 공통 옵션
-import {getCurrentDateInKst, getDateNDaysAgoInKst} from "../../util/db-util.js";
-import { getLastInsertedIds } from "../dummy-data/dummy-data-1.js";
+import {getCurrentDateInKst, getDateNDaysAgoInKst} from "../../../util/time-util.js";
+import { getLastInsertedIds } from "../../dummy-data/dummy-data-1.js";
 // import { getLastInsertedIds } from "../dummy-data/dummy-data-2.js";
 
 const MEMBER_COUNT = 100;   // 전체 회원수 (⭐️ 핵심), dummy-data-2의 MEMBER_COUNT와 일치해야함.
@@ -32,8 +28,8 @@ const FIRST_DAILY_TODO_CERTIFICATION_ID = lastInsertedIds.lastInsertedDummyDaily
 const FIRST_DAILY_TODO_CERTIFICATION_REVIEWER_ID = lastInsertedIds.lastInsertedDummyDailyTodoCertificationReviewerId + 1;
 const CURRENT_ROW_INSERTED_AT = getCurrentDateInKst();  // Set up 데이터를 손쉽게 지우기 위해서 스크립트를 실행하는 날짜로 통일
 
-export function createDummyData() {
-    console.log('👷 셋업 데이터 1 생성 시작!\n');
+export function createSetUpData() {
+    console.log('✏️ [Set up data] - 최대치의 현재 활동 데이터 생성 시작!\n');
 
     const batch_size = 2000;
     const challenge_group_data = createChallengeGroupData();
@@ -41,7 +37,7 @@ export function createDummyData() {
     const { daily_todo_data, daily_todo_history_data } = createDailyTodoAndDailyTodoHistoryData();
     const { daily_todo_certification_data, daily_todo_certification_reviewer_data } = createDailyTodoCertificationAndReviewerData(daily_todo_data);
 
-    console.log(`✅ 더미 데이터 생성 완료!\n`);
+    console.log(`✅ 데이터 생성 완료!\n`);
     return {
         batch_size,
         challenge_group_data,
