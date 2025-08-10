@@ -198,6 +198,7 @@ src/main/resources/firebase
 # k6
 /k6/secret
 /k6/common/node_modules
+/k6/**/data.json
 /k6/**/temp.json
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
