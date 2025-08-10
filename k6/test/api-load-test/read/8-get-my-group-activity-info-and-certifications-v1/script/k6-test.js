@@ -28,8 +28,8 @@ export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
 
-    // const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "TODO_COMPLETED_AT", 0);
-    const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "GROUP_CREATED_AT", 0);
+    const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "TODO_COMPLETED_AT", 0);
+    // const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "GROUP_CREATED_AT", 0);
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가
