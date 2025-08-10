@@ -1,18 +1,16 @@
 /**
  * [ 데이터 셋 특정 ]
  * 현재 진행중인 그룹에 사용자들이 소속되어 이론상 진행할 수 있는 최대한의 활동을 진행했다고 가정
+ *
+ * # 해당 셋업 데이터를 사용하는 테스트 목록
+ * - READ(4번을 제외한 모든 테스트)
+ * - WRITE(X)
  */
 
 // 데이터 생성 공통 옵션
 import {getCurrentDateInKst, getDateNDaysAgoInKst} from "../../util/db-util.js";
-import {
-    lastInsertedDummyChallengeGroupId,
-    lastInsertedDummyChallengeGroupMemberId,
-    lastInsertedDummyDailyTodoCertificationId,
-    lastInsertedDummyDailyTodoCertificationReviewerId,
-    lastInsertedDummyDailyTodoHistoryId,
-    lastInsertedDummyDailyTodoId
-} from "../dummy-data/dummy-data-2.js";
+import { getLastInsertedIds } from "../dummy-data/dummy-data-1.js";
+// import { getLastInsertedIds } from "../dummy-data/dummy-data-2.js";
 
 const MEMBER_COUNT = 100;   // 전체 회원수 (⭐️ 핵심), dummy-data-2의 MEMBER_COUNT와 일치해야함.
 const JOINING_GROUP_COUNT_PER_MEMBER = 5;   // 회원 한명당 참여한 그룹 개수 (최대 5개까지 가능)
@@ -24,13 +22,14 @@ const CERTIFICATION_COUNT_PER_MEMBER = TODO_COUNT_PER_MEMBER;  // 사용자별 �
 const APPROVE_COUNT_PER_MEMBER = Math.floor(CERTIFICATION_COUNT_PER_MEMBER / 2);  // 사용자별 총 인정 받은 투두 인증 개수
 const REJECT_COUNT_PER_MEMBER = CERTIFICATION_COUNT_PER_MEMBER - APPROVE_COUNT_PER_MEMBER;   // 사용자별 총 노인정 받은 투두 인증 개수
 
+const lastInsertedIds = getLastInsertedIds();
 const FIRST_MEMBER_ID = 1;  // 첫번째 회원의 id
-const FIRST_CHALLENGE_GROUP_ID = lastInsertedDummyChallengeGroupId + 1;
-const FIRST_CHALLENGE_GROUP_MEMBER_ID = lastInsertedDummyChallengeGroupMemberId + 1;
-const FIRST_DAILY_TODO_ID = lastInsertedDummyDailyTodoId + 1;
-const FIRST_DAILY_TODO_HISTORY_ID = lastInsertedDummyDailyTodoHistoryId + 1;
-const FIRST_DAILY_TODO_CERTIFICATION_ID = lastInsertedDummyDailyTodoCertificationId + 1;
-const FIRST_DAILY_TODO_CERTIFICATION_REVIEWER_ID = lastInsertedDummyDailyTodoCertificationReviewerId + 1;
+const FIRST_CHALLENGE_GROUP_ID = lastInsertedIds.lastInsertedDummyChallengeGroupId + 1;
+const FIRST_CHALLENGE_GROUP_MEMBER_ID = lastInsertedIds.lastInsertedDummyChallengeGroupMemberId + 1;
+const FIRST_DAILY_TODO_ID = lastInsertedIds.lastInsertedDummyDailyTodoId + 1;
+const FIRST_DAILY_TODO_HISTORY_ID = lastInsertedIds.lastInsertedDummyDailyTodoHistoryId + 1;
+const FIRST_DAILY_TODO_CERTIFICATION_ID = lastInsertedIds.lastInsertedDummyDailyTodoCertificationId + 1;
+const FIRST_DAILY_TODO_CERTIFICATION_REVIEWER_ID = lastInsertedIds.lastInsertedDummyDailyTodoCertificationReviewerId + 1;
 const CURRENT_ROW_INSERTED_AT = getCurrentDateInKst();  // Set up 데이터를 손쉽게 지우기 위해서 스크립트를 실행하는 날짜로 통일
 
 export function createDummyData() {
@@ -97,8 +96,8 @@ const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = () => 
     const challenge_group_member_data = [];
     const last_selected_challenge_group_record_data = [];
 
-    const blockSize = MEMBER_COUNT_PER_GROUP;                                // 20
-    const blockCount = Math.ceil(MEMBER_COUNT / blockSize);                  // 100/20=5
+    const blockSize = MEMBER_COUNT_PER_GROUP;
+    const blockCount = Math.ceil(MEMBER_COUNT / blockSize);
 
     // 그룹 id는 이전 insert의 마지막 id 다음부터 시작
     let challengeGroupMemberId = FIRST_CHALLENGE_GROUP_MEMBER_ID;
