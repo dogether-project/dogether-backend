@@ -19,9 +19,9 @@ export const options = {
 };
 
 export function setup() {
-    console.log("⏰ 10초 대기 시작.");
-    sleep(10);
-    console.log("✅ 10초 대기 완료.\n");
+    console.log("⏰ 5초 대기 시작.");
+    sleep(5);
+    console.log("✅ 5초 대기 완료.\n");
 }
 
 export default function () {
