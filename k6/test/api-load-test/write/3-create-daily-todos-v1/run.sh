@@ -1,3 +1,3 @@
 node ./script/set-up.js
 k6 run ./script/k6-test.js
-node ./script/tear-down.js
+node ../../../../common/tool/clear-set-up-data.js
