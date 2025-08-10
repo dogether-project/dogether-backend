@@ -2,10 +2,9 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import {reviewDailyTodoCertification} from "../../../../../common/api/api-call/api-call.js";
+import {getPendingCertificationIdsPerReviewer} from "../../../../../common/db/data/set-up-data/write-test/review-todo-certification-v1-set-up-data.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
-const temp = new SharedArray('temp', () => [JSON.parse(open('./temp.json'))])[0];
-const dailyTodoCertificationIds = temp.dailyTodoCertificationIds;
 
 export const options = {
     setupTimeout: '30m',
@@ -20,15 +19,19 @@ export const options = {
 }
 
 export function setup() {
+    const dailyTodoCertificationIds = getPendingCertificationIdsPerReviewer();
+
     console.log("⏰ 10초 대기 시작.");
     sleep(10);
     console.log("✅ 10초 대기 완료.");
+
+    return {dailyTodoCertificationIds};
 }
 
-export default function () {
+export default function (data) {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
-    const reviewPendingDailyTodoCertificationId = dailyTodoCertificationIds[vuIndex];
+    const reviewPendingDailyTodoCertificationId = data.dailyTodoCertificationIds[vuIndex][0];
     const reviewData = {
         result: "APPROVE",
         reviewFeedback: `굿좝 - ${vuIndex}`
