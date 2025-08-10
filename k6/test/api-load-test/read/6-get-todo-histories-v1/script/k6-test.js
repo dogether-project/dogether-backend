@@ -5,9 +5,9 @@ import {getTodayDailyTodoHistories} from "../../../../../common/api/api-call/api
 import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
-const temp = new SharedArray('temp', () => [JSON.parse(open('./temp.json'))])[0];
-const challengeGroupIds = temp.challengeGroupIds;
-const targetMemberIds = temp.targetMemberIds;
+const data = new SharedArray('data', () => [JSON.parse(open('./data.json'))])[0];
+const challengeGroupIds = data.groupIds;
+const otherGroupMemberIds = data.otherGroupMemberIds;
 
 export const options = {
     setupTimeout: '30m',
@@ -30,8 +30,8 @@ export function setup() {
 export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
-    const challengeGroupId = challengeGroupIds[vuIndex % 10];
-    const targetMemberId = targetMemberIds[vuIndex];
+    const challengeGroupId = challengeGroupIds[vuIndex][0];
+    const targetMemberId = otherGroupMemberIds[vuIndex][0];
 
     const res = getTodayDailyTodoHistories(token, challengeGroupId, targetMemberId);
     const responseData = parseResponseBody(res).data;

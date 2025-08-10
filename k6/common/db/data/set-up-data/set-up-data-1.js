@@ -320,3 +320,58 @@ export const getChallengeGroupIdsPerMember = () => {
 
     return result;
 };
+
+export const getChallengeGroupMembersPerMember = () => {
+    const result = Array.from({ length: MEMBER_COUNT }, () => []);
+
+    // 멤버별 그룹 ID 계산
+    const groupIdsPerMember = Array.from({ length: MEMBER_COUNT }, (_, idx) => {
+        const memberId = FIRST_MEMBER_ID + idx;
+        const blockIndex = Math.floor((memberId - FIRST_MEMBER_ID) / MEMBER_COUNT_PER_GROUP);
+
+        const groupIds = [];
+        for (let k = 0; k < JOINING_GROUP_COUNT_PER_MEMBER; k++) {
+            const gid = FIRST_CHALLENGE_GROUP_ID + (blockIndex * JOINING_GROUP_COUNT_PER_MEMBER) + k;
+            groupIds.push(gid);
+        }
+        return groupIds;
+    });
+
+    // 그룹별 멤버 목록 캐싱
+    const groupMembersMap = new Map();
+    for (let memberIdx = 0; memberIdx < MEMBER_COUNT; memberIdx++) {
+        const memberId = FIRST_MEMBER_ID + memberIdx;
+        const blockIndex = Math.floor((memberId - FIRST_MEMBER_ID) / MEMBER_COUNT_PER_GROUP);
+        const startId = blockIndex * MEMBER_COUNT_PER_GROUP + FIRST_MEMBER_ID;
+        const endId = Math.min((blockIndex + 1) * MEMBER_COUNT_PER_GROUP, MEMBER_COUNT);
+        for (const gid of groupIdsPerMember[memberIdx]) {
+            if (!groupMembersMap.has(gid)) {
+                const members = [];
+                for (let m = startId; m <= endId; m++) {
+                    members.push(m);
+                }
+                groupMembersMap.set(gid, members);
+            }
+        }
+    }
+
+    // 멤버별로 같은 그룹원 목록 구성 (자기 자신 제외)
+    for (let memberIdx = 0; memberIdx < MEMBER_COUNT; memberIdx++) {
+        const memberId = FIRST_MEMBER_ID + memberIdx;
+        const groupIds = groupIdsPerMember[memberIdx];
+        const memberSet = new Set();
+
+        for (const gid of groupIds) {
+            const members = groupMembersMap.get(gid) || [];
+            members.forEach(m => {
+                if (m !== memberId) { // 자기 자신 제외
+                    memberSet.add(m);
+                }
+            });
+        }
+
+        result[memberIdx] = Array.from(memberSet).sort((a, b) => a - b);
+    }
+
+    return result;
+};
