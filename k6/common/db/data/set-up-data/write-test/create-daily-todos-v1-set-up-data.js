@@ -6,7 +6,7 @@
  * - k6 헬퍼: 멤버별 투두 대상 그룹 id 배열 반환 (각 원소는 길이 1)
  */
 
-import {getCurrentDateInKst, getDateNDaysAgoInKst} from "../../../util/time-util.js";
+import {getCurrentDateInKst, getDateNDaysLaterInKst} from "../../../util/time-util.js";
 
 import {getLastInsertedIds} from "../../dummy-data/dummy-data-1.js";
 // import {getLastInsertedIds} from "../../dummy-data/dummy-data-2.js";
@@ -50,8 +50,8 @@ function membersOfGroup(groupId) {
 // ===== 1) challenge_group =====
 function createChallengeGroupData() {
     const status = "RUNNING";
-    const startAt = getDateNDaysAgoInKst(DURATION_PER_GROUP - 1);
-    const endAt = getCurrentDateInKst();
+    const startAt = getCurrentDateInKst();                         // 오늘 시작
+    const endAt = getDateNDaysLaterInKst(DURATION_PER_GROUP-1);  // 오늘 포함 28일
     const createdAt = startAt;
     const rowInsertedAt = CURRENT_ROW_INSERTED_AT;
     const rowUpdatedAt = null;
@@ -77,7 +77,7 @@ function createChallengeGroupData() {
 
 // ===== 2) challenge_group_member & last_selected_challenge_group_record =====
 function createChallengeGroupMemberAndLastSelected() {
-    const createdAt = getDateNDaysAgoInKst(DURATION_PER_GROUP - 1);
+    const createdAt = getCurrentDateInKst();
     const rowInsertedAt = CURRENT_ROW_INSERTED_AT;
     const rowUpdatedAt = null;
 
