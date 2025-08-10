@@ -1,7 +1,7 @@
 /**
  * # 회원 정보만 생성
  */
-import { getDateNDaysAgoInKst } from "../../util/db-util.js";
+import { getDateNDaysAgoInKst } from "../../util/time-util.js";
 
 // ===== 공통 옵션 =====
 const MEMBER_COUNT = 100;  // 전체 회원수 (⭐️ 핵심)
