@@ -4,8 +4,8 @@ import { SharedArray } from 'k6/data';
 import {getChallengeGroupActivityInfo} from "../../../common/api/api-call/api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
-import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/read-test-set-up-data-1.js";
-// import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/read-test-set-up-data-2.js";
+import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/variable-running-activity-data.js";
+// import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/maximum-running-activity-data.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../secret/tokens.json')));
 
