@@ -3,9 +3,9 @@ import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import {joinChallengeGroup} from "../../../../../common/api/api-call/api-call.js";
 import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
+import {getJoinCodesPerMember} from "../../../../../common/db/data/set-up-data/write-test/join-challenge-group-v1-set-up-data.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
-const { joinCodes } = new SharedArray('temp', () => [JSON.parse(open('./temp.json'))])[0];
 
 export const options = {
     setupTimeout: '30m',
@@ -20,15 +20,19 @@ export const options = {
 };
 
 export function setup() {
+    const joinCodes = getJoinCodesPerMember();
+
     console.log("⏰ 10초 대기 시작.");
     sleep(10);
     console.log("✅ 10초 대기 완료.");
+
+    return {joinCodes};
 }
 
-export default function () {
+export default function (data) {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
-    const joinCode = joinCodes[Math.floor(vuIndex / 10)];
+    const joinCode = data.joinCodes[vuIndex];
 
     const res = joinChallengeGroup(token, { joinCode });
     const responseData = parseResponseBody(res).data;
