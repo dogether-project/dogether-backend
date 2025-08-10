@@ -1,6 +1,6 @@
 /**
- * [ 데이터 셋 특정 ]
- * 사용자 ${MEMBER_COUNT}명이 과거 ${USAGE_DAYS_BEFORE_CURRENT_GROUP}일간 이론상 가능한 최대치의 활동을 진행했다고 가정
+ * # 최대치의 종료된 활동 데이터 생성
+ * - 사용자 ${MEMBER_COUNT}명이 과거 ${USAGE_DAYS_BEFORE_CURRENT_GROUP}일간 이론상 가능한 최대치의 활동을 진행했다고 가정
  */
 import { getDateNDaysAgoInKst, getEndDateFromStartAgoAndDuration } from "../../util/db-util.js";
 

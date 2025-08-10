@@ -1,6 +1,5 @@
 /**
- * [ 데이터 셋 특징 ]
- * 사용자 정보만 생성
+ * # 회원 정보만 생성
  */
 import { getDateNDaysAgoInKst } from "../../util/db-util.js";
 
@@ -8,10 +7,9 @@ import { getDateNDaysAgoInKst } from "../../util/db-util.js";
 const MEMBER_COUNT = 100;  // 전체 회원수 (⭐️ 핵심)
 const FIRST_MEMBER_ID = 1;
 
-const DEFAULT_CREATED_AT = getDateNDaysAgoInKst(3);
+const DEFAULT_CREATED_AT = getDateNDaysAgoInKst(30);
 
 // 삽입 데이터 없음
-
 export const getLastInsertedIds = () => {
     const lastInsertedDummyChallengeGroupId = 0;
     const lastInsertedDummyChallengeGroupMemberId = 0;
