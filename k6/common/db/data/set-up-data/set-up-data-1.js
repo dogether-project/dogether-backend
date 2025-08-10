@@ -36,7 +36,7 @@ const CURRENT_ROW_INSERTED_AT = getCurrentDateInKst();  // Set up 데이터를 �
 export function createDummyData() {
     console.log('👷 셋업 데이터 1 생성 시작!\n');
 
-    const batch_size = 100;
+    const batch_size = 2000;
     const challenge_group_data = createChallengeGroupData();
     const { challenge_group_member_data, last_selected_challenge_group_record_data } = createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData();
     const { daily_todo_data, daily_todo_history_data } = createDailyTodoAndDailyTodoHistoryData();
