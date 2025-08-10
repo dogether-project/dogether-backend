@@ -1,8 +1,5 @@
-import {
-    createLocalDbConnection,
-    createSshTunnelDbConnection,
-    getCurrentDateInKstWithoutTime
-} from "./db-util.js";
+import {createLocalDbConnection, createSshTunnelDbConnection,} from "./db-util.js";
+import {getCurrentDateInKstWithoutTime} from "./time-util.js"
 import {deleteAllByRowInsertedAt} from "../query/common-query.js";
 
 export async function removeAllTestDataCreateToday() {
