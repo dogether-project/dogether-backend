@@ -5,8 +5,8 @@ import {getChallengeGroupActivityInfo} from "../../../../../common/api/api-call/
 import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
-const temp = new SharedArray('temp', () => [JSON.parse(open('./temp.json'))])[0];
-const challengeGroupIds = temp.challengeGroupIds;
+const data = new SharedArray('data', () => [JSON.parse(open('./data.json'))])[0];
+const challengeGroupIds = data.groupIds;
 
 export const options = {
     setupTimeout: '30m',
@@ -29,7 +29,7 @@ export function setup() {
 export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
-    const challengeGroupId = challengeGroupIds[vuIndex % 10];
+    const challengeGroupId = challengeGroupIds[vuIndex][0];
 
     const res = getChallengeGroupActivityInfo(token, challengeGroupId);
     const responseData = parseResponseBody(res).data;
