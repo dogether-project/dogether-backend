@@ -1,10 +1,10 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {checkGroupParticipating} from "../../../../../common/api/api-call/api-call.js";
-import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
+import {getReviewPendingDailyTodoCertifications} from "../../../common/api/api-call/api-call.js";
+import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
@@ -16,7 +16,7 @@ export const options = {
             maxDuration: '30m',
         },
     },
-};
+}
 
 export function setup() {
     console.log("⏰ 5초 대기 시작.");
@@ -28,11 +28,11 @@ export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
 
-    const res = checkGroupParticipating(token);
+    const res = getReviewPendingDailyTodoCertifications(token);
     const responseData = parseResponseBody(res).data;
 
+    // TODO : 검증 로직 추가
     check(res, {
-        'API 응답 상태 코드 200': (r) => r.status === 200,
-        '응답 데이터 - checkParticipating 존재': () => responseData?.checkParticipating !== undefined
+        'API 응답 상태 코드 200': (r) => r.status === 200
     });
 }
