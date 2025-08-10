@@ -38,12 +38,18 @@ const PAST_GROUP_CYCLE_COUNT =
 const PAST_TODO_COUNT_PER_MEMBER =
     (ONE_DAY_TODO_COUNT_PER_GROUP_MEMBER * DURATION_PER_PAST_GROUP) *
     JOINING_GROUP_COUNT_PER_MEMBER * PAST_GROUP_CYCLE_COUNT;
-
 const PAST_CERTIFICATION_COUNT_PER_MEMBER = PAST_TODO_COUNT_PER_MEMBER;
 const PAST_APPROVE_COUNT_PER_MEMBER = Math.floor(PAST_CERTIFICATION_COUNT_PER_MEMBER / 2);
 const PAST_REJECT_COUNT_PER_MEMBER = PAST_CERTIFICATION_COUNT_PER_MEMBER - PAST_APPROVE_COUNT_PER_MEMBER;
 
-export function createDummyData(connection) {
+export const lastInsertedDummyChallengeGroupId = (MEMBER_COUNT / MEMBER_COUNT_PER_GROUP) * JOINING_GROUP_COUNT_PER_MEMBER * PAST_GROUP_CYCLE_COUNT;
+export const lastInsertedDummyChallengeGroupMemberId = MEMBER_COUNT * JOINING_GROUP_COUNT_PER_MEMBER * PAST_GROUP_CYCLE_COUNT;
+export const lastInsertedDummyDailyTodoId = PAST_TODO_COUNT_PER_MEMBER * MEMBER_COUNT;
+export const lastInsertedDummyDailyTodoHistoryId = PAST_TODO_COUNT_PER_MEMBER * MEMBER_COUNT;
+export const lastInsertedDummyDailyTodoCertificationId = PAST_CERTIFICATION_COUNT_PER_MEMBER * MEMBER_COUNT;
+export const lastInsertedDummyDailyTodoCertificationReviewerId = PAST_CERTIFICATION_COUNT_PER_MEMBER * MEMBER_COUNT;
+
+export function createDummyData() {
     console.log('👷 더미 데이터 MK.2 생성 시작!\n');
 
     const batch_size = 1000;

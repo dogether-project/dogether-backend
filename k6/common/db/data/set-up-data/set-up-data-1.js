@@ -6,14 +6,13 @@
 // 데이터 생성 공통 옵션
 import {getCurrentDateInKst, getDateNDaysAgoInKst} from "../../util/db-util.js";
 import {
-    getLastInsertedChallengeGroupId,
-    getLastInsertedChallengeGroupMemberId
-} from "../../query/challenge-group-query.js";
-import {getLastInsertedDailyTodoHistoryId, getLastInsertedDailyTodoId} from "../../query/daily-todo-query.js";
-import {
-    getLastInsertedDailyTodoCertificationId,
-    getLastInsertedDailyTodoCertificationReviewerId
-} from "../../query/daily-todo-certification-query.js";
+    lastInsertedDummyChallengeGroupId,
+    lastInsertedDummyChallengeGroupMemberId,
+    lastInsertedDummyDailyTodoCertificationId,
+    lastInsertedDummyDailyTodoCertificationReviewerId,
+    lastInsertedDummyDailyTodoHistoryId,
+    lastInsertedDummyDailyTodoId
+} from "../dummy-data/dummy-data-2.js";
 
 const MEMBER_COUNT = 100;   // 전체 회원수 (⭐️ 핵심), dummy-data-2의 MEMBER_COUNT와 일치해야함.
 const JOINING_GROUP_COUNT_PER_MEMBER = 5;   // 회원 한명당 참여한 그룹 개수 (최대 5개까지 가능)
@@ -26,16 +25,22 @@ const APPROVE_COUNT_PER_MEMBER = Math.floor(CERTIFICATION_COUNT_PER_MEMBER / 2);
 const REJECT_COUNT_PER_MEMBER = CERTIFICATION_COUNT_PER_MEMBER - APPROVE_COUNT_PER_MEMBER;   // 사용자별 총 노인정 받은 투두 인증 개수
 
 const FIRST_MEMBER_ID = 1;  // 첫번째 회원의 id
+const FIRST_CHALLENGE_GROUP_ID = lastInsertedDummyChallengeGroupId + 1;
+const FIRST_CHALLENGE_GROUP_MEMBER_ID = lastInsertedDummyChallengeGroupMemberId + 1;
+const FIRST_DAILY_TODO_ID = lastInsertedDummyDailyTodoId + 1;
+const FIRST_DAILY_TODO_HISTORY_ID = lastInsertedDummyDailyTodoHistoryId + 1;
+const FIRST_DAILY_TODO_CERTIFICATION_ID = lastInsertedDummyDailyTodoCertificationId + 1;
+const FIRST_DAILY_TODO_CERTIFICATION_REVIEWER_ID = lastInsertedDummyDailyTodoCertificationReviewerId + 1;
 const CURRENT_ROW_INSERTED_AT = getCurrentDateInKst();  // Set up 데이터를 손쉽게 지우기 위해서 스크립트를 실행하는 날짜로 통일
 
-export async function createDummyData(connection) {
+export function createDummyData() {
     console.log('👷 셋업 데이터 1 생성 시작!\n');
 
     const batch_size = 100;
-    const challenge_group_data = await createChallengeGroupData(connection);
-    const { challenge_group_member_data, last_selected_challenge_group_record_data } = await createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData(connection);
-    const { daily_todo_data, daily_todo_history_data } = await createDailyTodoAndDailyTodoHistoryData(connection);
-    const { daily_todo_certification_data, daily_todo_certification_reviewer_data } = await createDailyTodoCertificationAndReviewerData(connection, daily_todo_data);
+    const challenge_group_data = createChallengeGroupData();
+    const { challenge_group_member_data, last_selected_challenge_group_record_data } = createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData();
+    const { daily_todo_data, daily_todo_history_data } = createDailyTodoAndDailyTodoHistoryData();
+    const { daily_todo_certification_data, daily_todo_certification_reviewer_data } = createDailyTodoCertificationAndReviewerData(daily_todo_data);
 
     console.log(`✅ 더미 데이터 생성 완료!\n`);
     return {
@@ -50,7 +55,7 @@ export async function createDummyData(connection) {
     };
 }
 
-const createChallengeGroupData = async (connection) => {
+const createChallengeGroupData = () => {
     console.log("🗂️ challenge_group 테이블 셋업 데이터 생성중...");
 
     const challenge_group_data = [];
@@ -64,9 +69,8 @@ const createChallengeGroupData = async (connection) => {
     const rowUpdatedAt = null;
 
     const totalGroupCount = Math.ceil(MEMBER_COUNT / MEMBER_COUNT_PER_GROUP) * JOINING_GROUP_COUNT_PER_MEMBER;
-    let challengeGroupIdBase = await getLastInsertedChallengeGroupId(connection) + 1;
     for (let j = 0; j < totalGroupCount; j++) {
-        const currentChallengeGroupId = challengeGroupIdBase + j
+        const currentChallengeGroupId = FIRST_CHALLENGE_GROUP_ID + j
         const name = `g-${currentChallengeGroupId}`;
         const joinCode = `jc-${currentChallengeGroupId}`;
 
@@ -87,7 +91,7 @@ const createChallengeGroupData = async (connection) => {
     return challenge_group_data;
 }
 
-const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = async (connection) => {
+const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = () => {
     console.log("🗂️ challenge_group_member & last_selected_challenge_group_record 테이블 셋업 데이터 생성중...");
 
     const challenge_group_member_data = [];
@@ -97,9 +101,7 @@ const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = async 
     const blockCount = Math.ceil(MEMBER_COUNT / blockSize);                  // 100/20=5
 
     // 그룹 id는 이전 insert의 마지막 id 다음부터 시작
-    const challengeGroupIdBase = await getLastInsertedChallengeGroupId(connection) + 1;
-
-    let challengeGroupMemberId = await getLastInsertedChallengeGroupMemberId(connection) + 1;
+    let challengeGroupMemberId = FIRST_CHALLENGE_GROUP_MEMBER_ID;
     let lastSelId = 1;
 
     const createdAt = getDateNDaysAgoInKst(DURATION_PER_GROUP - 1);
@@ -112,7 +114,7 @@ const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = async 
 
         for (let k = 0; k < JOINING_GROUP_COUNT_PER_MEMBER; k++) {
             // ⚠️ 베이스 id 반영
-            const challengeGroupId = challengeGroupIdBase + (b * JOINING_GROUP_COUNT_PER_MEMBER) + k;
+            const challengeGroupId = FIRST_CHALLENGE_GROUP_ID + (b * JOINING_GROUP_COUNT_PER_MEMBER) + k;
 
             for (let memberId = blockStartMemberId; memberId <= blockEndMemberId; memberId++) {
                 // 참여 관계
@@ -142,18 +144,17 @@ const createChallengeGroupMemberAndLastSelectedChallengeGroupRecordData = async 
     return { challenge_group_member_data, last_selected_challenge_group_record_data };
 };
 
-const createDailyTodoAndDailyTodoHistoryData = async (connection) => {
+const createDailyTodoAndDailyTodoHistoryData = () => {
     console.log("🗂️ daily_todo & daily_todo_history 테이블 셋업 데이터 생성중...");
 
     const daily_todo_data = [];
     const daily_todo_history_data = [];
 
     // 멤버→그룹 매핑을 위해 새로 만든 그룹들의 시작 id
-    const blockSize = MEMBER_COUNT_PER_GROUP;                          // 20
-    const challengeGroupIdBase = await getLastInsertedChallengeGroupId(connection) + 1;
+    const blockSize = MEMBER_COUNT_PER_GROUP;
 
-    let dailyTodoId = await getLastInsertedDailyTodoId(connection) + 1;
-    let dailyTodoHistoryId = await getLastInsertedDailyTodoHistoryId(connection) + 1;
+    let dailyTodoId = FIRST_DAILY_TODO_ID;
+    let dailyTodoHistoryId = FIRST_DAILY_TODO_HISTORY_ID;
 
     // 날짜 범위: 오늘이 마지막 날, 시작일은 (DURATION_PER_GROUP - 1)일 전
     for (let memberId = FIRST_MEMBER_ID; memberId <= MEMBER_COUNT; memberId++) {
@@ -162,7 +163,7 @@ const createDailyTodoAndDailyTodoHistoryData = async (connection) => {
         // 이 멤버가 속한 이번 사이클의 그룹들
         const groupIds = [];
         for (let k = 0; k < JOINING_GROUP_COUNT_PER_MEMBER; k++) {
-            const gid = challengeGroupIdBase + (blockIndex * JOINING_GROUP_COUNT_PER_MEMBER) + k;
+            const gid = FIRST_CHALLENGE_GROUP_ID + (blockIndex * JOINING_GROUP_COUNT_PER_MEMBER) + k;
             groupIds.push(gid);
         }
 
@@ -188,9 +189,8 @@ const createDailyTodoAndDailyTodoHistoryData = async (connection) => {
                         rowUpdatedAt
                     ]);
 
-                    const currentHistoryId = dailyTodoHistoryId++
                     daily_todo_history_data.push([
-                        currentHistoryId,
+                        dailyTodoHistoryId++,
                         currentTodoId,
                         writtenAt,
                         rowInsertedAt,
@@ -204,7 +204,7 @@ const createDailyTodoAndDailyTodoHistoryData = async (connection) => {
     return { daily_todo_data, daily_todo_history_data };
 };
 
-const createDailyTodoCertificationAndReviewerData = async (connection, daily_todo_data) => {
+const createDailyTodoCertificationAndReviewerData = (daily_todo_data) => {
     console.log("🗂️ daily_todo_certification & daily_todo_certification_reviewer 테이블 셋업 데이터 생성중...");
 
     const daily_todo_certification_data = [];
@@ -214,13 +214,12 @@ const createDailyTodoCertificationAndReviewerData = async (connection, daily_tod
     const blockSize = MEMBER_COUNT_PER_GROUP;
     const blockCount = Math.ceil(MEMBER_COUNT / blockSize);
     const groupsPerCycle = blockCount * JOINING_GROUP_COUNT_PER_MEMBER;
-    const challengeGroupIdBase = await getLastInsertedChallengeGroupId(connection) + 1;
 
     // 특정 groupId의 소속 멤버 id 리스트 반환 (이번 셋업의 규칙 기반)
     const groupMembersCache = new Map();
     function getMembersOfGroup(groupId) {
         if (groupMembersCache.has(groupId)) return groupMembersCache.get(groupId);
-        const offset = groupId - challengeGroupIdBase;
+        const offset = groupId - FIRST_CHALLENGE_GROUP_ID;
         const indexInCycle = ((offset % groupsPerCycle) + groupsPerCycle) % groupsPerCycle;
         const b = Math.floor(indexInCycle / JOINING_GROUP_COUNT_PER_MEMBER);
         const startMemberId = b * blockSize + FIRST_MEMBER_ID;
@@ -240,8 +239,8 @@ const createDailyTodoCertificationAndReviewerData = async (connection, daily_tod
     }
 
     // ====== 본 생성 ======
-    let todoCertificationIdBase = await getLastInsertedDailyTodoCertificationId(connection) + 1;
-    let todoCertificationReviewerId = await getLastInsertedDailyTodoCertificationReviewerId(connection) + 1;
+    let todoCertificationIdBase = FIRST_DAILY_TODO_CERTIFICATION_ID;
+    let todoCertificationReviewerId = FIRST_DAILY_TODO_CERTIFICATION_REVIEWER_ID;
     for (let memberId = FIRST_MEMBER_ID; memberId <= MEMBER_COUNT; memberId++) {
         const todos = memberTodos.get(memberId) || [];
 
@@ -299,4 +298,25 @@ const createDailyTodoCertificationAndReviewerData = async (connection, daily_tod
     }
 
     return { daily_todo_certification_data, daily_todo_certification_reviewer_data };
+};
+
+export const getChallengeGroupIdsPerMember = () => {
+    // 멤버 수만큼의 배열을 만들고, 각 멤버의 그룹 ID 배열을 채워서 반환
+    const result = Array.from({ length: MEMBER_COUNT }, (_, idx) => {
+        const memberId = FIRST_MEMBER_ID + idx;
+
+        // 멤버가 속한 블록 인덱스 (0-based)
+        const blockIndex = Math.floor((memberId - FIRST_MEMBER_ID) / MEMBER_COUNT_PER_GROUP);
+
+        // 이 멤버가 속한 그룹들의 ID 계산 (현재 셋업 규칙과 동일)
+        const groupIds = [];
+        for (let k = 0; k < JOINING_GROUP_COUNT_PER_MEMBER; k++) {
+            const gid = FIRST_CHALLENGE_GROUP_ID + (blockIndex * JOINING_GROUP_COUNT_PER_MEMBER) + k;
+            groupIds.push(gid);
+        }
+
+        return groupIds;
+    });
+
+    return result;
 };
