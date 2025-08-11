@@ -1,5 +1,5 @@
 /**
- * # 데일리 투두 인증 V1 API - Set up 데이터
+ * # 데일리 투두 인증 검사 V1 API - Set up 데이터
  * - 각 사용자(VU)는 정확히 1개의 그룹에만 참여
  * - 회원당 10개의 투두 작성 + 전부 인증 생성 (review_status='REVIEW_PENDING', review_feedback=null)
  * - 리뷰어: 같은 그룹 내 '다음' 멤버(원형), 항상 1명 → 모든 회원이 최소 1건 이상 검사자로 배정됨
@@ -228,7 +228,7 @@ function createTodoAndCertificationAndReviewerData() {
 
 // ===== 메인: Set-up 데이터 =====
 export function createSetUpData() {
-    console.log("🧩 데일리 투두 인증 V1 API set up 데이터 생성 시작.");
+    console.log("🧩 데일리 투두 인증 검사 V1 API set up 데이터 생성 시작.");
 
     const batch_size = 2000;
     const challenge_group_data = createChallengeGroupData();
