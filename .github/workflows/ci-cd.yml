@@ -7,6 +7,7 @@ on:
     paths:
       - 'src/**'
       - '.github/**'
+      - 'k6/**'
 
 jobs:
   test:
