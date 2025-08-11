@@ -61,7 +61,7 @@ export const getLastInsertedIds = () => {
 };
 
 export function createDummyData() {
-    console.log('👷 더미 데이터 MK.2 생성 시작!\n');
+    console.log('👷 최대치의 종료된 활동 더미 데이터 생성 시작.\n');
 
     const batch_size = 1000;
     const member_data = createMemberData();

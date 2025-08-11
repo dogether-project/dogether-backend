@@ -29,7 +29,7 @@ export const getLastInsertedIds = () => {
 };
 
 export function createDummyData() {
-    console.log('👷 더미 데이터 MK.3 생성 시작!\n');
+    console.log('👷 회원 정보만 포함한 더미 데이터 생성 시작.\n');
 
     const batch_size = 100;
     const member_data = createMemberData();
