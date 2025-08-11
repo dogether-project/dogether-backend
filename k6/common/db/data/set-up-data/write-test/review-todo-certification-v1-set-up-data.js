@@ -12,8 +12,8 @@
 
 import { getCurrentDateInKst } from "../../../util/time-util.js";
 
-import { getLastInsertedIds } from "../../dummy-data/dummy-data-1.js";
-// import { getLastInsertedIds } from "../../dummy-data/dummy-data-2.js";
+import { getLastInsertedIds } from "../../dummy-data/only-member-info-data.js";
+// import { getLastInsertedIds } from "../../dummy-data/maximum-finished-activity-data.js";
 
 // ===== 파라미터 =====
 const MEMBER_COUNT = 100;   // k6 vus와 맞춰 사용

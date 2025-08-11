@@ -8,7 +8,7 @@
  * 주의: READ 전용 테스트 (WRITE X)
  */
 import { getCurrentDateInKst, getDateNDaysAgoInKst } from "../../../util/time-util.js";
-import { getLastInsertedIds } from "../../dummy-data/dummy-data-1.js";
+import { getLastInsertedIds } from "../../dummy-data/only-member-info-data.js";
 
 // ========= 파라미터 =========
 const MEMBER_COUNT = 100;

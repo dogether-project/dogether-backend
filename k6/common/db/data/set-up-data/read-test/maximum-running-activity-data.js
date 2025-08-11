@@ -5,8 +5,8 @@
 
 // 데이터 생성 공통 옵션
 import {getCurrentDateInKst, getDateNDaysAgoInKst} from "../../../util/time-util.js";
-import { getLastInsertedIds } from "../../dummy-data/dummy-data-1.js";
-// import { getLastInsertedIds } from "../dummy-data/dummy-data-2.js";
+import { getLastInsertedIds } from "../../dummy-data/only-member-info-data.js";
+// import { getLastInsertedIds } from "../dummy-data/maximum-finished-activity-data.js";
 
 const MEMBER_COUNT = 100;   // 전체 회원수 (⭐️ 핵심), dummy-data-2의 MEMBER_COUNT와 일치해야함.
 const JOINING_GROUP_COUNT_PER_MEMBER = 5;   // 회원 한명당 참여한 그룹 개수 (최대 5개까지 가능)
