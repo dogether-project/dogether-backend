@@ -30,6 +30,7 @@ export default function () {
 
     const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "TODO_COMPLETED_AT", 1);
     // const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "GROUP_CREATED_AT", 1);
+
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가
