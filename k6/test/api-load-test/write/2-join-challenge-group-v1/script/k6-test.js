@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {joinChallengeGroup} from "../../../../../common/api/api-call/api-call.js";
+import {joinChallengeGroupV1} from "../../../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
 import {getJoinCodesPerMember} from "../../../../../common/db/data/set-up-data/write-test/join-challenge-group-v1-set-up-data.js";
 
@@ -34,7 +34,7 @@ export default function (data) {
     const token = tokens[vuIndex];
     const joinCode = data.joinCodes[vuIndex];
 
-    const res = joinChallengeGroup(token, { joinCode });
+    const res = joinChallengeGroupV1(token, { joinCode });
     const responseData = parseResponseBody(res).data;
 
     check(res, {

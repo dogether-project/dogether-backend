@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {certifyDailyTodo} from "../../../../../common/api/api-call/api-call.js";
+import {certifyDailyTodoV1} from "../../../../../common/api/api-call/v1-api-call.js";
 import {getOneCertifiableTodoIdPerMember} from "../../../../../common/db/data/set-up-data/write-test/certify-daily-todo-v1-set-up-data.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
@@ -37,7 +37,7 @@ export default function (data) {
         mediaUrl: `http://인증-이미지-${vuIndex}.site`
     };
 
-    const res = certifyDailyTodo(
+    const res = certifyDailyTodoV1(
         token,
         dailyTodoId,
         certifyData

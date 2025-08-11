@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {createDailyTodos} from "../../../../../common/api/api-call/api-call.js";
+import {createDailyTodosV1} from "../../../../../common/api/api-call/v1-api-call.js";
 import {getTodoTargetGroupIdsPerMember} from "../../../../../common/db/data/set-up-data/write-test/create-daily-todos-v1-set-up-data.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
@@ -45,7 +45,7 @@ export default function (data) {
         `${vuIndex}번 사용자 투두 J`,
     ];
 
-    const res = createDailyTodos(token, challengeGroupId, { todos });
+    const res = createDailyTodosV1(token, challengeGroupId, { todos });
 
     check(res, {
         'API 응답 상태 코드 200': (r) => r.status === 200

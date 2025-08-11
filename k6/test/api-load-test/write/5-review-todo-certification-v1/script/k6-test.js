@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {reviewDailyTodoCertification} from "../../../../../common/api/api-call/api-call.js";
+import {reviewDailyTodoCertificationV1} from "../../../../../common/api/api-call/v1-api-call.js";
 import {getPendingCertificationIdsPerReviewer} from "../../../../../common/db/data/set-up-data/write-test/review-todo-certification-v1-set-up-data.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
@@ -37,7 +37,7 @@ export default function (data) {
         reviewFeedback: `굿좝 - ${vuIndex}`
     };
 
-    const res = reviewDailyTodoCertification(token, reviewPendingDailyTodoCertificationId, reviewData);
+    const res = reviewDailyTodoCertificationV1(token, reviewPendingDailyTodoCertificationId, reviewData);
 
     check(res, {
         'API 응답 상태 코드 200': (r) => r.status === 200,

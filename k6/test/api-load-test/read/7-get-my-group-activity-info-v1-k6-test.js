@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {getChallengeGroupActivityInfo} from "../../../common/api/api-call/api-call.js";
+import {getChallengeGroupActivityInfoV1} from "../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
 import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/variable-running-activity-data.js";
@@ -36,7 +36,7 @@ export default function (data) {
     const token = tokens[vuIndex];
     const challengeGroupId = data.challengeGroupIds[vuIndex][0];
 
-    const res = getChallengeGroupActivityInfo(token, challengeGroupId);
+    const res = getChallengeGroupActivityInfoV1(token, challengeGroupId);
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가

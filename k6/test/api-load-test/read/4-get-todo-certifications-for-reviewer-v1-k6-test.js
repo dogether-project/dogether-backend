@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {getReviewPendingDailyTodoCertifications} from "../../../common/api/api-call/api-call.js";
+import {getReviewPendingDailyTodoCertificationsV1} from "../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../secret/tokens.json')));
@@ -28,7 +28,7 @@ export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
 
-    const res = getReviewPendingDailyTodoCertifications(token);
+    const res = getReviewPendingDailyTodoCertificationsV1(token);
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가

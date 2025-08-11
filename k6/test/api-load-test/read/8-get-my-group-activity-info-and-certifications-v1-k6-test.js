@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {getTotalActivityInfoAndDailyTodoCertificationsV1} from "../../../common/api/api-call/api-call.js";
+import {getTotalActivityInfoAndDailyTodoCertificationsV1} from "../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../secret/tokens.json')));

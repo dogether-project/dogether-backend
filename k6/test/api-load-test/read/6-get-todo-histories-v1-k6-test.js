@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {getTodayDailyTodoHistories} from "../../../common/api/api-call/api-call.js";
+import {getTodayDailyTodoHistoriesV1} from "../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
 import {getChallengeGroupIdsPerMember, getChallengeGroupMembersPerMember} from "../../../common/db/data/set-up-data/read-test/variable-running-activity-data.js";
@@ -38,7 +38,7 @@ export default function (data) {
     const challengeGroupId = data.challengeGroupIds[vuIndex][0];
     const otherChallengeGroupMemberId = data.otherChallengeGroupMemberIds[vuIndex][0];
 
-    const res = getTodayDailyTodoHistories(token, challengeGroupId, otherChallengeGroupMemberId);
+    const res = getTodayDailyTodoHistoriesV1(token, challengeGroupId, otherChallengeGroupMemberId);
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가

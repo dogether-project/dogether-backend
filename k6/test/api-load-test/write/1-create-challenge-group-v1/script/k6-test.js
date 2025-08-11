@@ -1,7 +1,7 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import { createChallengeGroup } from '../../../../../common/api/api-call/api-call.js';
+import { createChallengeGroupV1 } from '../../../../../common/api/api-call/v1-api-call.js';
 import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
@@ -34,7 +34,7 @@ export default function () {
         duration: 28
     };
 
-    const res = createChallengeGroup(token, requestData);
+    const res = createChallengeGroupV1(token, requestData);
     const responseData = parseResponseBody(res).data;
 
     check(res, {
