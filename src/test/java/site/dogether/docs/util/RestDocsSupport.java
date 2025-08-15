@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -39,7 +40,10 @@ public abstract class RestDocsSupport {
 
     @BeforeEach
     void setUp(final RestDocumentationContextProvider provider) {
+        PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
+
         this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
+                .setCustomArgumentResolvers(pageableResolver)
                 .apply(documentationConfiguration(provider)
                     .operationPreprocessors()
                     .withRequestDefaults(

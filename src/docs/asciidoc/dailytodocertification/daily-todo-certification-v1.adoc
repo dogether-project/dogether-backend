@@ -1,0 +1,69 @@
+[[daily-todo-certification-v1-api]]
+== [V1] 데일리 투두 수행 인증 API
+
+[[certify-daily-todo-v1]]
+=== 데일리 투두 수행 인증 생성
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-daily-todo-v1/http-request.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-daily-todo-v1/path-parameters.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-daily-todo-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-daily-todo-v1/http-response.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/certify-daily-todo-v1/response-fields.adoc[]
+
+[[review-daily-todo-certification-v1]]
+=== 데일리 투두 수행 인증 검사
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-daily-todo-certification-v1/http-request.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-daily-todo-certification-v1/path-parameters.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-daily-todo-certification-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-daily-todo-certification-v1/http-response.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/review-daily-todo-certification-v1/response-fields.adoc[]
+
+[[get-daily-todo-certifications-for-review-v1]]
+=== 본인이 검사해 줘야 하는 투두 수행 인증 전체 조회
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/get-daily-todo-certifications-for-review-v1/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/get-daily-todo-certifications-for-review-v1/http-response.adoc[]
+include::{snippets}/daily-todo-certification-controller-v1-docs-test/get-daily-todo-certifications-for-review-v1/response-fields.adoc[]

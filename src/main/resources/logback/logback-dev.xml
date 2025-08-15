@@ -1,6 +1,6 @@
 <configuration>
     <!-- 공통 변수 지정 -->
-    <property name="FILE_LOG_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss,Asia/Seoul}] [dev] [%thread] %-5level [%C.%M:%L] - %msg%n"/>
+    <property name="FILE_LOG_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss,Asia/Seoul}] [dev] [%thread] [traceId : %X{traceId}] %-5level [%C.%M:%L] - %msg%n"/>
     <property name="LOGS_ROOT_PATH" value="/logs"/>
 
     <!-- TRACE 로그 설정 -->
@@ -99,7 +99,7 @@
     </appender>
 
     <!-- Logger 설정 -->
-    <root level="info">
+    <root level="trace">
         <appender-ref ref="TRACE_LOG_FILE" />
         <appender-ref ref="DEBUG_LOG_FILE" />
         <appender-ref ref="INFO_LOG_FILE" />

@@ -179,8 +179,9 @@ gradle-app.setting
 # env file
 local.env
 
-# docker data
-/docker/data/mysql/mysql
+# docker
+/docker/local_mysql/data/mysql/mysql
+/docker/performance_test/
 
 # custom sh
 /sh
@@ -188,7 +189,16 @@ local.env
 # secret resources
 /src/main/resources/secret/
 
+# rest docs local file
+/src/main/resources/static/docs/
+
 # firebase
 src/main/resources/firebase
+
+# k6
+/k6/secret
+/k6/common/node_modules
+/k6/**/data.json
+/k6/**/temp.json
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos

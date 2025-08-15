@@ -9,7 +9,7 @@ import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
 import site.dogether.notification.entity.NotificationToken;
 import site.dogether.notification.exception.InvalidNotificationTokenException;
-import site.dogether.notification.firebase.sender.SimpleFcmNotificationRequest;
+import site.dogether.notification.sender.firebase.SimpleFcmNotificationRequest;
 import site.dogether.notification.repository.NotificationTokenRepository;
 import site.dogether.notification.sender.NotificationSender;
 

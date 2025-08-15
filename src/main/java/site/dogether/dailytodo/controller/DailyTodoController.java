@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
-import site.dogether.common.controller.response.ApiResponse;
-import site.dogether.dailytodo.controller.request.CreateDailyTodosRequest;
-import site.dogether.dailytodo.controller.response.GetChallengeGroupMemberTodayTodoHistoryResponse;
-import site.dogether.dailytodo.controller.response.GetMyDailyTodosResponse;
-import site.dogether.dailytodo.controller.response.GetYesterdayDailyTodosResponse;
+import site.dogether.common.controller.dto.response.ApiResponse;
+import site.dogether.dailytodo.controller.v1.dto.request.CreateDailyTodosApiRequestV1;
+import site.dogether.dailytodo.controller.v1.dto.response.GetChallengeGroupMemberTodayTodoHistoryApiResponseV1;
+import site.dogether.dailytodo.controller.v1.dto.response.GetMyDailyTodosApiResponseV1;
+import site.dogether.dailytodo.controller.v1.dto.response.GetYesterdayDailyTodosApiResponseV1;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodo.service.dto.DailyTodoDto;
 import site.dogether.dailytodo.service.dto.FindMyDailyTodosConditionDto;
@@ -23,7 +23,7 @@ import site.dogether.dailytodohistory.service.dto.FindTargetMemberTodayTodoHisto
 import java.time.LocalDate;
 import java.util.List;
 
-import static site.dogether.common.controller.response.ApiResponse.*;
+import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,24 +36,24 @@ public class DailyTodoController {
     public ResponseEntity<ApiResponse<Void>> createDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
-        @RequestBody final CreateDailyTodosRequest request
+        @RequestBody final CreateDailyTodosApiRequestV1 request
     ) {
         dailyTodoService.saveDailyTodos(memberId, groupId, request.todos());
         return ResponseEntity.ok(success());
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/my-yesterday-todos")
-    public ResponseEntity<ApiResponse<GetYesterdayDailyTodosResponse>> getYesterdayDailyTodos(
+    public ResponseEntity<ApiResponse<GetYesterdayDailyTodosApiResponseV1>> getYesterdayDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId
     ) {
         final List<String> yesterdayDailyTodos = dailyTodoService.findYesterdayDailyTodos(memberId, groupId);
-        final GetYesterdayDailyTodosResponse response = new GetYesterdayDailyTodosResponse(yesterdayDailyTodos);
+        final GetYesterdayDailyTodosApiResponseV1 response = new GetYesterdayDailyTodosApiResponseV1(yesterdayDailyTodos);
         return ResponseEntity.ok(success(response));
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/my-todos")
-    public ResponseEntity<ApiResponse<GetMyDailyTodosResponse>> getMyDailyTodos(
+    public ResponseEntity<ApiResponse<GetMyDailyTodosApiResponseV1>> getMyDailyTodos(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @RequestParam final LocalDate date,
@@ -61,17 +61,17 @@ public class DailyTodoController {
     ) {
         final FindMyDailyTodosConditionDto findMyDailyTodosConditionDto = new FindMyDailyTodosConditionDto(memberId, groupId, date, status);
         final List<DailyTodoDto> myDailyTodos = dailyTodoService.findMyDailyTodos(findMyDailyTodosConditionDto);
-        return ResponseEntity.ok(success(GetMyDailyTodosResponse.of(myDailyTodos)));
+        return ResponseEntity.ok(success(GetMyDailyTodosApiResponseV1.of(myDailyTodos)));
     }
 
     @GetMapping("/api/challenge-groups/{groupId}/challenge-group-members/{targetMemberId}/today-todo-history")
-    public ResponseEntity<ApiResponse<GetChallengeGroupMemberTodayTodoHistoryResponse>> getChallengeGroupMemberTodayTodoHistory(
+    public ResponseEntity<ApiResponse<GetChallengeGroupMemberTodayTodoHistoryApiResponseV1>> getChallengeGroupMemberTodayTodoHistory(
         @Authenticated final Long memberId,
         @PathVariable final Long groupId,
         @PathVariable final Long targetMemberId
     ) {
         final FindTargetMemberTodayTodoHistoriesDto targetMemberTodayTodoHistories = dailyTodoHistoryService.findAllTodayTodoHistories(memberId, groupId, targetMemberId);
-        final GetChallengeGroupMemberTodayTodoHistoryResponse response = GetChallengeGroupMemberTodayTodoHistoryResponse.from(targetMemberTodayTodoHistories);
+        final GetChallengeGroupMemberTodayTodoHistoryApiResponseV1 response = GetChallengeGroupMemberTodayTodoHistoryApiResponseV1.from(targetMemberTodayTodoHistories);
         return ResponseEntity.ok(success(response));
     }
 

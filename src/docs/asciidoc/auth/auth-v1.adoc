@@ -1,0 +1,46 @@
+[[auth-v1-api]]
+== [V1] 인증 & 인가 API
+
+[[apple-login-v1]]
+=== 소셜 로그인 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/auth-controller-v1-docs-test/login-v1/http-request.adoc[]
+include::{snippets}/auth-controller-v1-docs-test/login-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-v1-docs-test/login-v1/http-response.adoc[]
+include::{snippets}/auth-controller-v1-docs-test/login-v1/response-fields.adoc[]
+
+[[withdraw-v1]]
+=== 회원 탈퇴 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| O
+|===
+
+==== HTTP Request
+include::{snippets}/auth-controller-v1-docs-test/withdraw-v1/http-request.adoc[]
+include::{snippets}/auth-controller-v1-docs-test/withdraw-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-v1-docs-test/withdraw-v1/http-response.adoc[]
+include::{snippets}/auth-controller-v1-docs-test/withdraw-v1/response-fields.adoc[]

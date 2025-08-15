@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.transaction.annotation.Transactional;
-import site.dogether.challengegroup.controller.request.CreateChallengeGroupRequest;
+import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
@@ -38,7 +38,7 @@ class ChallengeGroupServiceTest {
     @Test
     void 챌린지_그룹을_생성한다() {
         //given
-        CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 10,
                 "TODAY",
@@ -56,7 +56,7 @@ class ChallengeGroupServiceTest {
     @Test
     void 참여중인_그룹이_5개_이상인_경우_챌린지_그룹을_생성하면_예외가_발생한다() {
         //given
-        CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 10,
                 "TODAY",
@@ -75,7 +75,7 @@ class ChallengeGroupServiceTest {
     @Test
     void 챌린지_그룹에_참여한다() {
         //given
-        CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 10,
                 "TODAY",
@@ -112,7 +112,7 @@ class ChallengeGroupServiceTest {
     @Test
     void 이미_참여중인_그룹에_참여하면_예외가_발생한다() {
         //given
-        CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 10,
                 "TODAY",
@@ -130,7 +130,7 @@ class ChallengeGroupServiceTest {
     void 정원이_초과된_그룹에_참여하면_예외가_발생한다() {
         //given
         int maximumMemberCount = 2;
-        CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 maximumMemberCount,
                 "TODAY",
@@ -150,13 +150,13 @@ class ChallengeGroupServiceTest {
     @Test
     void 참여중인_챌린지_그룹을_모두_조회한다() {
         //given
-        CreateChallengeGroupRequest request1 = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request1 = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 10,
                 "TODAY",
                 7
         );
-        CreateChallengeGroupRequest request2 = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request2 = new CreateChallengeGroupApiRequestV1(
                 "공부 같이 하자",
                 11,
                 "TOMORROW",
@@ -239,7 +239,7 @@ class ChallengeGroupServiceTest {
     @Test
     void 참여중인_그룹이_있는지_조회한다__있는_경우() {
         //given
-        CreateChallengeGroupRequest request = new CreateChallengeGroupRequest(
+        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
                 "운동 같이 하자",
                 10,
                 "TODAY",
@@ -249,10 +249,10 @@ class ChallengeGroupServiceTest {
         challengeGroupService.createChallengeGroup(request, member.getId());
 
         //when
-        boolean isParticipating = challengeGroupService.isParticipatingChallengeGroup(member.getId()).isParticipating();
+        boolean isParticipating = challengeGroupService.isChallengeGroupParticipationRequired(member.getId()).checkParticipating();
 
         //then
-        assertThat(isParticipating).isTrue();
+        assertThat(isParticipating).isFalse();
     }
 
     @Test
@@ -261,9 +261,9 @@ class ChallengeGroupServiceTest {
         Member member = memberRepository.save(Member.create("providerId", "폰트"));
 
         //when
-        boolean isParticipating = challengeGroupService.isParticipatingChallengeGroup(member.getId()).isParticipating();
+        boolean isParticipating = challengeGroupService.isChallengeGroupParticipationRequired(member.getId()).checkParticipating();
 
         //then
-        assertThat(isParticipating).isFalse();
+        assertThat(isParticipating).isTrue();
     }
 }
