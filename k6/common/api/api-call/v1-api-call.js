@@ -122,9 +122,9 @@ export function getChallengeGroupActivityInfoV1(token, challengeGroupId) {
 }
 
 // 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API V1
-export function getTotalActivityInfoAndDailyTodoCertificationsV1(token, sort, page) {
+export function getTotalActivityInfoAndDailyTodoCertificationsV1(token, sort, page, timeout) {
     const headers = setRequestHeader(token);
-    return http.get(`${API_URL_PREFIX}/my/activity?sort=${sort}&page=${page}`, { headers });
+    return http.get(`${API_URL_PREFIX}/my/activity?sort=${sort}&page=${page}`, { headers, timeout});
 }
 
 // 사용자 프로필 조회
