@@ -11,9 +11,10 @@ const dbConfig = JSON.parse(
 );
 
 export async function createLocalDbConnection() {
+    console.log(`🏃 Local DB 커넥션 생성중...`);
     const connection = await mysql.createConnection(dbConfig.local);
+    console.log(`✅ Local DB 커넥션 생성 완료!\n`);
 
-    console.log(`✅ Local DB 커넥션 생성 완료.\n`);
     return connection;
 }
 
