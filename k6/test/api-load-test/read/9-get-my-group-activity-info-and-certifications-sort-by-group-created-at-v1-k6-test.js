@@ -11,7 +11,7 @@ export const options = {
     scenarios: {
         default: {
             executor: 'per-vu-iterations',
-            vus: 100,
+            vus: 400,
             iterations: 1,
             maxDuration: '30m',
         },
@@ -28,8 +28,7 @@ export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
 
-    const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "TODO_COMPLETED_AT", 1);
-    // const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "GROUP_CREATED_AT", 1);
+    const res = getTotalActivityInfoAndDailyTodoCertificationsV1(token, "GROUP_CREATED_AT", 1, '1800s');
 
     const responseData = parseResponseBody(res).data;
 
