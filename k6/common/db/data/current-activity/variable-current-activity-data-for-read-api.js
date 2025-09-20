@@ -64,7 +64,7 @@ function pickReviewer(groupMembers, writerId) {
 
 // ========= 메인 데이터 생성 =========
 export function createCurrentActivityData() {
-    console.log("👷 [Current] 현재 활동 데이터 생성 시작.");
+    console.log("👷 [Current for read api] 읽기 API 테스트를 위한 현재 활동 데이터 생성 시작.");
 
     const batch_size = 2000;
     const challenge_group_data = [];
