@@ -1,12 +1,16 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {getRankingInChallengeGroupV1} from "../../../common/api/api-call/v1-api-call.js";
+import {getMemberProfileV1} from "../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
-import {getChallengeGroupIdsPerMember} from "../../../common/db/data/current-activity/variable-current-activity-data-for-read-api.js";
-
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../secret/tokens.json')));
+
+export function setup() {
+    console.log("⏰ 5초 대기 시작.");
+    sleep(5);
+    console.log("✅ 5초 대기 완료.\n");
+}
 
 export const options = {
     setupTimeout: '30m',
@@ -20,22 +24,11 @@ export const options = {
     },
 };
 
-export function setup() {
-    const challengeGroupIds = getChallengeGroupIdsPerMember();
-
-    console.log("⏰ 5초 대기 시작.");
-    sleep(5);
-    console.log("✅ 5초 대기 완료.\n");
-
-    return { challengeGroupIds };
-}
-
-export default function (data) {
+export default function () {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
-    const challengeGroupId = data.challengeGroupIds[vuIndex][0];
 
-    const res = getRankingInChallengeGroupV1(token, challengeGroupId);
+    const res = getMemberProfileV1(token);
     const responseData = parseResponseBody(res).data;
 
     // TODO : 검증 로직 추가

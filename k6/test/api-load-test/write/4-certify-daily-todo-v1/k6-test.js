@@ -1,17 +1,17 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {certifyDailyTodoV1} from "../../../../../common/api/api-call/v1-api-call.js";
-import {getOneCertifiableTodoIdPerMember} from "../../../../../common/db/data/set-up-data/write-test/certify-daily-todo-v1-set-up-data.js";
+import {certifyDailyTodoV1} from "../../../../common/api/api-call/v1-api-call.js";
+import {getOneCertifiableTodoIdPerMember} from "../../../../common/db/data/current-activity/variable-current-activity-data-for-write-api.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
     scenarios: {
         default: {
             executor: 'per-vu-iterations',
-            vus: 100,
+            vus: 400,
             iterations: 1,
             maxDuration: '30m',
         },
