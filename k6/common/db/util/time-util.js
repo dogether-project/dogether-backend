@@ -49,6 +49,24 @@ export function getEndDateFromStartAgoAndDuration(startAgoDays, durationDays) {
 }
 
 /**
+ * startDate에서 cycle * duration일 이후 날짜를 구하는 계산 함수
+ */
+export function calculateNextDate(startDate, cycle, duration) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + (cycle * duration));
+    return d; // Date 객체 반환
+}
+
+/**
+ * startAt 날짜에 시작해 duration일 만큼 진행하는 활동의 마지막 활동 일을 구하는 계산 함수
+ */
+export function calculateEndAt(startAt, duration) {
+    const d = new Date(startAt);
+    d.setDate(d.getDate() + (duration - 1));
+    return d; // Date 객체 반환
+}
+
+/**
  * 주어진 그룹 번호(n)와 그룹 크기(groupSize)에 따라 해당 그룹에 속하는 연속된 정수 배열을 반환
  * ex) n = 2, groupSize = 3 → [4, 5, 6]
  */
