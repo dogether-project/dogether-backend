@@ -152,3 +152,21 @@ export function createPastActivityData() {
         last_selected_challenge_group_record_data: []
     };
 }
+
+// ================ 헬퍼 함수 ================
+export function getLastInsertedIds() {
+    return {
+        lastInsertedDummyMemberId: TOTAL_MEMBER_COUNT,
+        lastInsertedDummyNotificationTokenId: TOTAL_NOTIFICATION_TOKEN_COUNT,
+        lastInsertedDummyDailyTodoStatsId: TOTAL_DAILY_TODO_STATS_COUNT,
+
+        lastInsertedDummyChallengeGroupId: TOTAL_CHALLENGE_GROUP_COUNT,
+        lastInsertedDummyChallengeGroupMemberId: TOTAL_CHALLENGE_GROUP_MEMBER_COUNT,
+        lastInsertedDummyLastSelectedChallengeGroupRecordId: 0, // Past는 기록 안함
+
+        lastInsertedDummyDailyTodoId: TOTAL_DAILY_TODO_COUNT,
+        lastInsertedDummyDailyTodoHistoryId: TOTAL_DAILY_TODO_HISTORY_COUNT,
+        lastInsertedDummyDailyTodoCertificationId: TOTAL_DAILY_TODO_CERTIFICATION_COUNT,
+        lastInsertedDummyDailyTodoCertificationReviewerId: TOTAL_DAILY_TODO_CERTIFICATION_REVIEWER_COUNT,
+    };
+}
