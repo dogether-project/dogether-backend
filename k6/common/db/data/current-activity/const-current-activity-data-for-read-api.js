@@ -21,6 +21,13 @@ const TOTAL_DAILY_TODO_HISTORY_COUNT = TOTAL_DAILY_TODO_COUNT;
 const TOTAL_DAILY_TODO_CERTIFICATION_COUNT = MEMBER_COUNT * CURRENT_GROUP_RUNNING_DAY * DAY_TODO_CERTIFICATION_PER_MEMBER_COUNT * GROUP_PER_MEMBER_COUNT;
 const TOTAL_DAILY_TODO_CERTIFICATION_REVIEWER_COUNT = TOTAL_DAILY_TODO_CERTIFICATION_COUNT;
 
+// =========== 데이터 PK ===========
+const lastIds = getLastInsertedIds();
+let challengeGroupId = lastIds.lastInsertedDummyChallengeGroupId + 1;
+let challengeGroupMemberId = lastIds.lastInsertedDummyChallengeGroupMemberId + 1;
+let dailyTodoId = lastIds.lastInsertedDummyDailyTodoId + 1;  // daily_todo & daily_todo_history
+let dailyTodoCertificationId = lastIds.lastInsertedDummyDailyTodoCertificationId + 1;
+
 // =========== 메인 로직 ===========
 export function createCurrentActivityData() {
     const batch_size = 100000;
@@ -34,12 +41,6 @@ export function createCurrentActivityData() {
     const daily_todo_history_data = [];
     const daily_todo_certification_data = [];
     const daily_todo_certification_reviewer_data = [];
-
-    const lastIds = getLastInsertedIds();
-    let challengeGroupId = lastIds.lastInsertedDummyChallengeGroupId + 1;
-    let challengeGroupMemberId = lastIds.lastInsertedDummyChallengeGroupMemberId + 1;
-    let dailyTodoId = lastIds.lastInsertedDummyDailyTodoId + 1;  // daily_todo & daily_todo_history
-    let dailyTodoCertificationId = lastIds.lastInsertedDummyDailyTodoCertificationId + 1;
 
     // 캐싱
     const groupIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
@@ -109,21 +110,6 @@ export function createCurrentActivityData() {
         }
     }
 
-    function getReviewerId(memberId) {
-        // 그룹의 시작과 끝 ID를 구함
-        const groupIndex = Math.floor((memberId - 1) / MEMBER_PER_GROUP_COUNT);
-        const startId = groupIndex * MEMBER_PER_GROUP_COUNT + 1;         // 예: 1, 21, 41, ...
-        const endId = startId + MEMBER_PER_GROUP_COUNT - 1;              // 예: 20, 40, 60, ...
-
-        // 그룹 내 offset (0~19)
-        const offset = memberId - startId;
-
-        // 매칭 규칙: 0 <-> 19, 1 <-> 18, ...
-        const reviewerOffset = MEMBER_PER_GROUP_COUNT - 1 - offset;
-
-        return startId + reviewerOffset;
-    }
-
     console.log(`✅ 데이터 생성 완료!\n`);
 
     return {
@@ -139,4 +125,46 @@ export function createCurrentActivityData() {
         daily_todo_certification_reviewer_data,
         last_selected_challenge_group_record_data
     };
+}
+
+// ================== 헬퍼 함수 ==================
+export function getChallengeGroupIdsPerMember() {
+    const groupIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
+
+    let joiningGroupId = challengeGroupId;
+    for (let i = 0; i < GROUP_PER_MEMBER_COUNT; i++) {
+        for (let j = 0; j < MEMBER_COUNT / MEMBER_PER_GROUP_COUNT; j++) {
+            let memberId = 1 + j * MEMBER_PER_GROUP_COUNT;
+            for (let k = 0; k < MEMBER_PER_GROUP_COUNT; k++) {
+                let currentMemberId = memberId++;
+                groupIdsByMember[currentMemberId - 1].push(joiningGroupId);
+            }
+            joiningGroupId++;
+        }
+    }
+
+    return groupIdsByMember;
+}
+
+export function getChallengeGroupMembersPerMember() {
+    const groupMemberIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
+    for (let i = 1; i <= MEMBER_COUNT; i++) {
+        groupMemberIdsByMember[i - 1].push(getReviewerId(i));
+    }
+
+    return groupMemberIdsByMember;
+}
+
+function getReviewerId(memberId) {
+    // 그룹의 시작과 끝 ID를 구함
+    const groupIndex = Math.floor((memberId - 1) / MEMBER_PER_GROUP_COUNT);
+    const startId = groupIndex * MEMBER_PER_GROUP_COUNT + 1;         // 예: 1, 21, 41, ...
+
+    // 그룹 내 offset (0~19)
+    const offset = memberId - startId;
+
+    // 매칭 규칙: 0 <-> 19, 1 <-> 18, ...
+    const reviewerOffset = MEMBER_PER_GROUP_COUNT - 1 - offset;
+
+    return startId + reviewerOffset;
 }

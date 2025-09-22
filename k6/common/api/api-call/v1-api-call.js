@@ -44,9 +44,9 @@ export function getJoiningChallengeGroupsInfoV1(token) {
 }
 
 // 참여중인 특정 챌린지 그룹의 그룹원 전체 순위 조회 API
-export function getRankingInChallengeGroupV1(token, challengeGroupId) {
+export function getRankingInChallengeGroupV1(token, challengeGroupId, timeout) {
     const headers = setRequestHeader(token);
-    return http.get(`${API_URL_PREFIX}/groups/${challengeGroupId}/ranking`, { headers });
+    return http.get(`${API_URL_PREFIX}/groups/${challengeGroupId}/ranking`, { headers, timeout });
 }
 
 
@@ -116,9 +116,9 @@ export function getTodayDailyTodoHistoriesV1(token, challengeGroupId, memberId) 
  * 사용자 활동 통계
  */
 // 참여중인 특정 챌린지 그룹의 활동 통계 조회 API
-export function getChallengeGroupActivityInfoV1(token, challengeGroupId) {
+export function getChallengeGroupActivityInfoV1(token, challengeGroupId, timeout) {
     const headers = setRequestHeader(token);
-    return http.get(`${API_URL_PREFIX}/my/groups/${challengeGroupId}/activity`, { headers });
+    return http.get(`${API_URL_PREFIX}/my/groups/${challengeGroupId}/activity`, { headers, timeout });
 }
 
 // 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API V1
