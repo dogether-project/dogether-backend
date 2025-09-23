@@ -65,7 +65,7 @@ export function createPastActivityData() {
     for (let cycle = 0; cycle < TOTAL_ACTIVITY_CYCLE; cycle++) {
         const groupStartAtInCycle = calculateNextDate(PAST_GROUP_ACTIVITY_START_AT, cycle, PAST_GROUP_RUNNING_DAY);
         groupStartAtInCycle.setHours(7, 0, 0, 0);
-        const groupEndAtInCycle = calculateEndAt(groupStartAtInCycle, PAST_GROUP_RUNNING_DAY);
+        const groupEndAtInCycle = calculateEndAt(groupStartAtInCycle, PAST_GROUP_RUNNING_DAY + 1);
         const firstGroupIdInCycle = 1 + cycle * ONE_CYCLE_PER_GROUP_COUNT;
 
         // 2. challenge_group & challenge_group_member 데이터 생성
