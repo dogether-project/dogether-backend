@@ -53,7 +53,7 @@ export function createCurrentActivityData() {
     // 1. challenge_group & challenge_group_member 데이터 생성
     const currentGroupStartAt = new Date(CURRENT_GROUP_ACTIVITY_START_AT);
     currentGroupStartAt.setHours(7, 0, 0, 0);
-    const currentGroupEndAt = calculateEndAt(currentGroupStartAt, CURRENT_GROUP_RUNNING_DAY);
+    const currentGroupEndAt = calculateEndAt(currentGroupStartAt, CURRENT_GROUP_RUNNING_DAY + 1);
     let joiningGroupId = challengeGroupId;
 
     for (let i = 0; i < TOTAL_CHALLENGE_GROUP_COUNT; i++) {
