@@ -3,7 +3,7 @@ import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import {joinChallengeGroupV1} from "../../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../../common/api/util/api-util.js";
-import {getJoinCodesPerMember} from "../../../../common/db/data/current-activity/variable-current-activity-data-for-write-api.js";
+import {getJoinCodesPerMember} from "../../../../common/db/data/current-activity/const-current-activity-data-for-write-api.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../secret/tokens.json')));
 
