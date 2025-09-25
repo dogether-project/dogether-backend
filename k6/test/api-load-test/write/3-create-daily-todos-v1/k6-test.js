@@ -2,7 +2,7 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import {createDailyTodosV1} from "../../../../common/api/api-call/v1-api-call.js";
-import {getTodoTargetGroupIdsPerMember} from "../../../../common/db/data/current-activity/variable-current-activity-data-for-write-api.js";
+import {getTodoTargetGroupIdsPerMember} from "../../../../common/db/data/current-activity/const-current-activity-data-for-write-api.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../secret/tokens.json')));
 

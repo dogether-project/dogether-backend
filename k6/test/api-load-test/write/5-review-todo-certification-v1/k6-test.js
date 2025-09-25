@@ -2,7 +2,7 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import {reviewDailyTodoCertificationV1} from "../../../../common/api/api-call/v1-api-call.js";
-import {getPendingCertificationIdsPerReviewer} from "../../../../common/db/data/current-activity/variable-current-activity-data-for-write-api.js";
+import {getPendingCertificationIdsPerReviewer} from "../../../../common/db/data/current-activity/const-current-activity-data-for-write-api.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../secret/tokens.json')));
 
@@ -31,7 +31,7 @@ export function setup() {
 export default function (data) {
     const vuIndex = __VU - 1;
     const token = tokens[vuIndex];
-    const reviewPendingDailyTodoCertificationId = data.dailyTodoCertificationIds[vuIndex][0];
+    const reviewPendingDailyTodoCertificationId = data.dailyTodoCertificationIds[vuIndex];
     const reviewData = {
         result: "APPROVE",
         reviewFeedback: `굿좝 - ${vuIndex}`
