@@ -1,13 +1,6 @@
 package site.dogether.challengegroup.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,18 +58,19 @@ public class ChallengeGroup extends BaseEntity {
         final String name,
         final int maximumMemberCount,
         final LocalDate startAt,
-        final LocalDate endAt
+        final LocalDate endAt,
+        final LocalDateTime createdAt
     ) {
         validateEndAtIsAfterStartAt(startAt, endAt);
         return new ChallengeGroup(
             null,
-            validateGroupName(name),
-            validateMaximumMemberCount(maximumMemberCount),
+            name,
+            maximumMemberCount,
             startAt,
             endAt,
             generateJoinCode(),
             initStatus(startAt),
-            LocalDateTime.now()
+            createdAt
         );
     }
 
@@ -140,7 +134,7 @@ public class ChallengeGroup extends BaseEntity {
         final LocalDateTime createdAt
     ) {
         this.id = id;
-        this.name = name;
+        this.name = validateGroupName(name);
         this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
         this.startAt = startAt;
         this.endAt = endAt;

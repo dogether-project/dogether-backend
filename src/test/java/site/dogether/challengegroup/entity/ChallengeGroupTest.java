@@ -21,8 +21,9 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final LocalDateTime createdAt = LocalDateTime.now();
 
-        final ChallengeGroup created = ChallengeGroup.create(name, maximumMemberCount, startAt, endAt);
+        final ChallengeGroup created = ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt);
 
         assertSoftly(softly -> {
             assertThat(created.getId()).isNull();
@@ -32,6 +33,7 @@ class ChallengeGroupTest {
             assertThat(created.getEndAt()).isEqualTo(endAt);
             assertThat(created.getJoinCode()).isNotNull();
             assertThat(created.getStatus()).isEqualTo(ChallengeGroupStatus.RUNNING);
+            assertThat(created.getCreatedAt()).isEqualTo(createdAt);
         });
     }
 
@@ -44,6 +46,7 @@ class ChallengeGroupTest {
         final LocalDate endAt = startAt.plusDays(7);
         final String joinCode = "join_code";
         final ChallengeGroupStatus status = ChallengeGroupStatus.RUNNING;
+        final LocalDateTime createdAt = LocalDateTime.now();
 
         assertThatCode(() -> new ChallengeGroup(
                 id,
@@ -53,7 +56,7 @@ class ChallengeGroupTest {
                 endAt,
                 joinCode,
                 status,
-            LocalDateTime.now()
+                createdAt
         )).doesNotThrowAnyException();
     }
 
@@ -63,8 +66,9 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(String.format("챌린지 그룹 이름으로 null 혹은 공백을 입력할 수 없습니다. (name : %s)", name));
     }
@@ -75,8 +79,9 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(String.format("챌린지 그룹 이름은 1자 이상, 200자 이하만 가능합니다. (name : %s)", name));
     }
@@ -87,8 +92,9 @@ class ChallengeGroupTest {
         final String name = "매일 러닝 모임";
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(String.format(
                         "챌린지 그룹 최대 인원은 2명 이상, 20명 이하만 가능합니다. (input : %d)", maximumMemberCount)
@@ -101,8 +107,9 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.minusDays(1);
+        final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(
                         String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
@@ -112,6 +119,7 @@ class ChallengeGroupTest {
     @Test
     void 챌린지_그룹의_진행일을_계산한다__READY이면_진행일은_0이다() {
         final LocalDate startAt = LocalDate.now().plusDays(1);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -120,7 +128,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.READY,
-            LocalDateTime.now()
+                createdAt
         );
 
         final int progressDay = challengeGroup.getProgressDay();
@@ -132,6 +140,7 @@ class ChallengeGroupTest {
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7})
     void 챌린지_그룹의_진행일을_계산한다__RUNNING이면_하루씩_증가한다(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -140,7 +149,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.RUNNING,
-            LocalDateTime.now()
+                createdAt
         );
 
         final int progressDay = challengeGroup.getProgressDay();
@@ -153,6 +162,7 @@ class ChallengeGroupTest {
     void 챌린지_그룹의_진행일을_계산한다__FINISHED(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
         int duration = 7;
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -161,7 +171,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(duration),
                 "join_code",
                 ChallengeGroupStatus.FINISHED,
-            LocalDateTime.now()
+                createdAt
         );
 
         final int progressDay = challengeGroup.getProgressDay();
@@ -172,6 +182,7 @@ class ChallengeGroupTest {
     @Test
     void 챌린지_그룹의_진행률을_계산한다__READY이면_진행률은_0이다() {
         final LocalDate startAt = LocalDate.now().plusDays(1);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -180,7 +191,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.READY,
-            LocalDateTime.now()
+                createdAt
         );
 
         final double progressRate = challengeGroup.getProgressRate();
@@ -201,6 +212,7 @@ class ChallengeGroupTest {
     })
     void 챌린지_그룹의_진행률을_계산한다__RUNNING이면_진행일_나누기_종료일_포함한_기간(final int daysSinceStart, final double expected) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -209,7 +221,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.RUNNING,
-            LocalDateTime.now()
+                createdAt
         );
 
         final double progressRate = challengeGroup.getProgressRate();
@@ -221,6 +233,7 @@ class ChallengeGroupTest {
     @ValueSource(ints = {8, 9})
     void 챌린지_그룹의_진행률을_계산한다__FINISHED이면_1이다(final int daysSinceStart) {
         final LocalDate startAt = LocalDate.now().minusDays(daysSinceStart);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -229,7 +242,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.FINISHED,
-            LocalDateTime.now()
+                createdAt
         );
 
         final double progressRate = challengeGroup.getProgressRate();
@@ -240,6 +253,7 @@ class ChallengeGroupTest {
     @Test
     void 챌린지_그룹의_상태를_갱신한다__READY에서_RUNNING으로() {
         final LocalDate startAt = LocalDate.now();
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -248,7 +262,7 @@ class ChallengeGroupTest {
                 startAt.plusDays(7),
                 "join_code",
                 ChallengeGroupStatus.READY,
-            LocalDateTime.now()
+                createdAt
         );
 
         challengeGroup.updateStatus();
@@ -259,6 +273,7 @@ class ChallengeGroupTest {
     @Test
     void 챌린지_그룹의_상태를_갱신한다__RUNNING에서_D_DAY로() {
         final LocalDate endAt = LocalDate.now();
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -267,7 +282,7 @@ class ChallengeGroupTest {
                 endAt,
                 "join_code",
                 ChallengeGroupStatus.RUNNING,
-            LocalDateTime.now()
+                createdAt
         );
 
         challengeGroup.updateStatus();
@@ -278,6 +293,7 @@ class ChallengeGroupTest {
     @Test
     void 챌린지_그룹의_상태를_갱신한다__D_DAY에서_FINISHED으로() {
         final LocalDate endAt = LocalDate.now().minusDays(1);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final ChallengeGroup challengeGroup = new ChallengeGroup(
                 1L,
                 "매일 러닝 모임",
@@ -286,7 +302,7 @@ class ChallengeGroupTest {
                 endAt,
                 "join_code",
                 ChallengeGroupStatus.D_DAY,
-            LocalDateTime.now()
+                createdAt
         );
 
         challengeGroup.updateStatus();

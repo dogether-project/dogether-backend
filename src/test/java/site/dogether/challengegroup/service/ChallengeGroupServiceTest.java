@@ -21,6 +21,7 @@ import site.dogether.member.entity.Member;
 import site.dogether.member.repository.MemberRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -193,11 +194,13 @@ class ChallengeGroupServiceTest {
     void 챌린지_그룹을_탈퇴한다() {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
+        LocalDateTime createdAt = LocalDateTime.now();
         ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
                 "운동 같이 하자",
                 10,
                 LocalDate.now(),
-                LocalDate.now().plusDays(7)
+                LocalDate.now().plusDays(7),
+                createdAt
         ));
         ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.save(
                 new ChallengeGroupMember(challengeGroup, member1));
@@ -224,11 +227,13 @@ class ChallengeGroupServiceTest {
     void 속해있지_않은_챌린지_그룹을_탈퇴하면_예외가_발생한다() {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
+        LocalDateTime createdAt = LocalDateTime.now();
         ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
                 "운동 같이 하자",
                 10,
                 LocalDate.now(),
-                LocalDate.now().plusDays(7)
+                LocalDate.now().plusDays(7),
+                createdAt
         ));
 
         //when & then

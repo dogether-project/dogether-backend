@@ -11,6 +11,7 @@ import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.member.entity.Member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,8 +56,10 @@ class MemberServiceTest {
         String providerId = "providerId";
         String name = "폰트";
         Member member = memberService.save(providerId, name);
+        LocalDateTime createdAt = LocalDateTime.now();
         ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
-                "그룹", 10, LocalDate.now(), LocalDate.now().plusDays(3)
+                "그룹", 10,
+                LocalDate.now(), LocalDate.now().plusDays(3), createdAt
         ));
         ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.save(
                 new ChallengeGroupMember(challengeGroup, member));
