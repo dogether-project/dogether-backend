@@ -69,6 +69,18 @@ class ChallengeGroupTest {
                 .hasMessage(String.format("챌린지 그룹 이름으로 null 혹은 공백을 입력할 수 없습니다. (name : %s)", name));
     }
 
+    @Test
+    void 챌린지_그룹_이름이_200자를_초과하면_예외가_발생한다() {
+        final String name = "a".repeat(201);
+        final int maximumMemberCount = 10;
+        final LocalDate startAt = LocalDate.now();
+        final LocalDate endAt = startAt.plusDays(7);
+
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt))
+                .isInstanceOf(InvalidChallengeGroupException.class)
+                .hasMessage(String.format("챌린지 그룹 이름은 1자 이상, 200자 이하만 가능합니다. (name : %s)", name));
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {1, 21})
     void 유효하지_않은_챌린지_그룹_최대_참여_인원을_입력하면_예외가_발생한다(final int maximumMemberCount) {
