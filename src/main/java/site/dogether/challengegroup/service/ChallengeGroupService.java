@@ -7,7 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.v0.dto.response.IsParticipatingChallengeGroupApiResponseV0;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
-import site.dogether.challengegroup.entity.*;
+import site.dogether.challengegroup.entity.AchievementRateCalculator;
+import site.dogether.challengegroup.entity.ChallengeGroup;
+import site.dogether.challengegroup.entity.ChallengeGroupMember;
+import site.dogether.challengegroup.entity.LastSelectedChallengeGroupRecord;
 import site.dogether.challengegroup.exception.*;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
@@ -338,17 +341,5 @@ public class ChallengeGroupService {
             .orElseThrow(() -> new MemberNotInChallengeGroupException(String.format("ChallengeGroup에서 해당하는 멤버를 찾을 수 없습니다. member={}, challengeGroup={}", target, groupMembers.get(0).getChallengeGroup())));
 
         return challengeGroupMemberWithAchievementRate.indexOf(myAchievementRate) + 1;
-    }
-
-    @Transactional
-    public void updateChallengeGroupStatus() {
-        List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
-
-        for (ChallengeGroup notFinishedGroup : notFinishedGroups) {
-            notFinishedGroup.updateStatus();
-            log.info("챌린지 그룹 상태 업데이트: groupId={}, status={}", notFinishedGroup.getId(), notFinishedGroup.getStatus());
-        }
-
-        challengeGroupRepository.saveAll(notFinishedGroups);
     }
 }
