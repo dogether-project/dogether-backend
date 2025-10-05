@@ -21,9 +21,10 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final JoinCode joinCode = JoinCode.generate();
         final LocalDateTime createdAt = LocalDateTime.now();
 
-        final ChallengeGroup created = ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt);
+        final ChallengeGroup created = ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, joinCode, createdAt);
 
         assertSoftly(softly -> {
             assertThat(created.getId()).isNull();
@@ -44,7 +45,7 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
-        final String joinCode = "join_code";
+        final JoinCode joinCode = JoinCode.generate();
         final ChallengeGroupStatus status = ChallengeGroupStatus.RUNNING;
         final LocalDateTime createdAt = LocalDateTime.now();
 
@@ -66,9 +67,10 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final JoinCode joinCode = JoinCode.generate();
         final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, joinCode, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(String.format("챌린지 그룹 이름으로 null 혹은 공백을 입력할 수 없습니다. (name : %s)", name));
     }
@@ -79,9 +81,10 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final JoinCode joinCode = JoinCode.generate();
         final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, joinCode, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(String.format("챌린지 그룹 이름은 1자 이상, 200자 이하만 가능합니다. (name : %s)", name));
     }
@@ -92,9 +95,10 @@ class ChallengeGroupTest {
         final String name = "매일 러닝 모임";
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.plusDays(7);
+        final JoinCode joinCode = JoinCode.generate();
         final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, joinCode, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(String.format(
                         "챌린지 그룹 최대 인원은 2명 이상, 20명 이하만 가능합니다. (input : %d)", maximumMemberCount)
@@ -107,9 +111,10 @@ class ChallengeGroupTest {
         final int maximumMemberCount = 10;
         final LocalDate startAt = LocalDate.now();
         final LocalDate endAt = startAt.minusDays(1);
+        final JoinCode joinCode = JoinCode.generate();
         final LocalDateTime createdAt = LocalDateTime.now();
 
-        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, createdAt))
+        assertThatThrownBy(() -> ChallengeGroup.create(name, maximumMemberCount, startAt, endAt, joinCode, createdAt))
                 .isInstanceOf(InvalidChallengeGroupException.class)
                 .hasMessage(
                         String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
@@ -126,7 +131,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(7),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.READY,
                 createdAt
         );
@@ -147,7 +152,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(7),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.RUNNING,
                 createdAt
         );
@@ -169,7 +174,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(duration),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.FINISHED,
                 createdAt
         );
@@ -189,7 +194,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(7),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.READY,
                 createdAt
         );
@@ -219,7 +224,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(7),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.RUNNING,
                 createdAt
         );
@@ -240,7 +245,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(7),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.FINISHED,
                 createdAt
         );
@@ -260,7 +265,7 @@ class ChallengeGroupTest {
                 10,
                 startAt,
                 startAt.plusDays(7),
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.READY,
                 createdAt
         );
@@ -280,7 +285,7 @@ class ChallengeGroupTest {
                 10,
                 endAt.minusDays(7),
                 endAt,
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.RUNNING,
                 createdAt
         );
@@ -300,7 +305,7 @@ class ChallengeGroupTest {
                 10,
                 endAt.minusDays(7),
                 endAt,
-                "join_code",
+                JoinCode.generate(),
                 ChallengeGroupStatus.D_DAY,
                 createdAt
         );

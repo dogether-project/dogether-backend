@@ -8,7 +8,6 @@ import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.common.audit.entity.BaseEntity;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -26,7 +25,6 @@ public class ChallengeGroup extends BaseEntity {
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 200;
     private static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
     private static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
-    private static final int JOIN_CODE_LENGTH = 8;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +42,8 @@ public class ChallengeGroup extends BaseEntity {
     @Column(name = "end_at", nullable = false)
     private LocalDate endAt;
 
-    @Column(name = "join_code", length = 20, nullable = false, unique = true)
-    private String joinCode;
+    @Embedded
+    private JoinCode joinCode;
 
     @Column(name = "status", length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -59,6 +57,7 @@ public class ChallengeGroup extends BaseEntity {
         final int maximumMemberCount,
         final LocalDate startAt,
         final LocalDate endAt,
+        final JoinCode joinCode,
         final LocalDateTime createdAt
     ) {
         validateEndAtIsAfterStartAt(startAt, endAt);
@@ -68,7 +67,7 @@ public class ChallengeGroup extends BaseEntity {
             maximumMemberCount,
             startAt,
             endAt,
-            generateJoinCode(),
+            joinCode,
             initStatus(startAt),
             createdAt
         );
@@ -104,18 +103,6 @@ public class ChallengeGroup extends BaseEntity {
         }
     }
 
-    private static String generateJoinCode() {
-        String charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        SecureRandom random = new SecureRandom();
-        StringBuilder codeBuilder = new StringBuilder(JOIN_CODE_LENGTH);
-
-        for (int i = 0; i < JOIN_CODE_LENGTH; i++) {
-            int index = random.nextInt(charSet.length());
-            codeBuilder.append(charSet.charAt(index));
-        }
-        return codeBuilder.toString();
-    }
-
     private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
         if (startAt.equals(LocalDate.now())) {
             return RUNNING;
@@ -129,7 +116,7 @@ public class ChallengeGroup extends BaseEntity {
         final int maximumMemberCount,
         final LocalDate startAt,
         final LocalDate endAt,
-        final String joinCode,
+        final JoinCode joinCode,
         final ChallengeGroupStatus status,
         final LocalDateTime createdAt
     ) {

@@ -7,10 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.v0.dto.response.IsParticipatingChallengeGroupApiResponseV0;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
-import site.dogether.challengegroup.entity.AchievementRateCalculator;
-import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.entity.LastSelectedChallengeGroupRecord;
+import site.dogether.challengegroup.entity.*;
 import site.dogether.challengegroup.exception.*;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
@@ -60,6 +57,7 @@ public class ChallengeGroupService {
             request.maximumMemberCount(),
             startAt,
             endAt,
+            JoinCode.generate(),
             createdAt
         );
 
@@ -67,7 +65,7 @@ public class ChallengeGroupService {
         challengeGroupMemberRepository.save(new ChallengeGroupMember(savedChallengeGroup, member));
         saveLastSelectedChallengeGroupRecord(member, savedChallengeGroup);
 
-        return challengeGroup.getJoinCode();
+        return challengeGroup.getJoinCode().toString();
     }
 
     private Member getMember(final Long memberId) {
@@ -112,7 +110,7 @@ public class ChallengeGroupService {
     }
 
     private ChallengeGroup getJoiningChallengeGroup(final String joinCode) {
-        return challengeGroupRepository.findByJoinCode(joinCode)
+        return challengeGroupRepository.findByJoinCode_Value(joinCode)
             .orElseThrow(() -> new JoiningChallengeGroupNotFoundException(String.format("참여 하려는 챌린지 그룹이 존재하지 않습니다. (%s)", joinCode)));
     }
 

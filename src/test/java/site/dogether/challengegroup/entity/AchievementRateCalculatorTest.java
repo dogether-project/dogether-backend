@@ -33,7 +33,7 @@ class AchievementRateCalculatorTest {
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
-            "join_code",
+            JoinCode.generate(),
             ChallengeGroupStatus.RUNNING,
             LocalDateTime.now().plusHours(1)
         );

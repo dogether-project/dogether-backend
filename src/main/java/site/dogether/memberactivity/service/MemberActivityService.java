@@ -20,8 +20,8 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
 import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsApiResponseV0;
+import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
@@ -96,7 +96,7 @@ public class MemberActivityService {
                 challengeGroup.getName(),
                 challengeGroup.getMaximumMemberCount(),
                 currentMemberCount,
-                challengeGroup.getJoinCode(),
+                challengeGroup.getJoinCode().getValue(),
                 endAt
         );
     }

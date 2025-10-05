@@ -8,12 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
-import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
+import site.dogether.challengegroup.entity.JoinCode;
+import site.dogether.challengegroup.exception.*;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -200,6 +196,7 @@ class ChallengeGroupServiceTest {
                 10,
                 LocalDate.now(),
                 LocalDate.now().plusDays(7),
+                JoinCode.generate(),
                 createdAt
         ));
         ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.save(
@@ -233,6 +230,7 @@ class ChallengeGroupServiceTest {
                 10,
                 LocalDate.now(),
                 LocalDate.now().plusDays(7),
+                JoinCode.generate(),
                 createdAt
         ));
 

@@ -1,12 +1,6 @@
 package site.dogether.dailytodo.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
@@ -24,6 +19,13 @@ import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -51,7 +53,7 @@ class DailyTodoServiceTest {
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
-            "join_code",
+            JoinCode.generate(),
             ChallengeGroupStatus.RUNNING,
             LocalDateTime.now().plusHours(1)
         );
@@ -64,7 +66,7 @@ class DailyTodoServiceTest {
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
-            "join_code",
+            JoinCode.generate(),
             status,
             LocalDateTime.now().plusHours(1)
         );

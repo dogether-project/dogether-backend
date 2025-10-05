@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
 import site.dogether.member.entity.Member;
 
@@ -29,7 +30,7 @@ class DailyTodosTest {
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
-            "join_code",
+            JoinCode.generate(),
             ChallengeGroupStatus.RUNNING,
             LocalDateTime.now().plusHours(1)
         );
