@@ -52,25 +52,22 @@ public class ChallengeGroup extends BaseEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public static ChallengeGroup create(
-        final String name,
-        final int maximumMemberCount,
-        final LocalDate startAt,
-        final LocalDate endAt,
-        final JoinCode joinCode,
-        final LocalDateTime createdAt
+    public ChallengeGroup(
+            final String name,
+            final int maximumMemberCount,
+            final LocalDate startAt,
+            final LocalDate endAt,
+            final JoinCode joinCode,
+            final LocalDateTime createdAt
     ) {
         validateEndAtIsAfterStartAt(startAt, endAt);
-        return new ChallengeGroup(
-            null,
-            name,
-            maximumMemberCount,
-            startAt,
-            endAt,
-            joinCode,
-            initStatus(startAt),
-            createdAt
-        );
+        this.name = validateGroupName(name);
+        this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.joinCode = joinCode;
+        this.status = initStatus(startAt);
+        this.createdAt = createdAt;
     }
 
     private static String validateGroupName(String name) {
@@ -110,30 +107,6 @@ public class ChallengeGroup extends BaseEntity {
         return READY;
     }
 
-    public ChallengeGroup(
-        final Long id,
-        final String name,
-        final int maximumMemberCount,
-        final LocalDate startAt,
-        final LocalDate endAt,
-        final JoinCode joinCode,
-        final ChallengeGroupStatus status,
-        final LocalDateTime createdAt
-    ) {
-        this.id = id;
-        this.name = validateGroupName(name);
-        this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
-        this.startAt = startAt;
-        this.endAt = endAt;
-        this.joinCode = joinCode;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    private boolean isReady() {
-        return status == READY;
-    }
-
     public boolean isRunning() {
         return status == RUNNING || status == D_DAY;
     }
@@ -144,10 +117,10 @@ public class ChallengeGroup extends BaseEntity {
 
     public int getProgressDay() {
         LocalDate today = LocalDate.now();
-        if (isReady()) {
+        if (today.isBefore(startAt)) {
             return 0;
         }
-        if (isFinished()) {
+        if (today.isAfter(endAt)) {
             return (int) ChronoUnit.DAYS.between(startAt, endAt) + 1;
         }
         return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
@@ -168,26 +141,16 @@ public class ChallengeGroup extends BaseEntity {
     }
 
     public void updateStatus() {
-        LocalDate now = LocalDate.now();
-        if (status == READY && isStart(now)) {
+        final LocalDate now = LocalDate.now();
+        if (now.isBefore(startAt)) {
+            status = READY;
+        } else if (now.isBefore(endAt)) {
             status = RUNNING;
-            return;
-        }
-        if (status == RUNNING && isEnd(now)) {
+        } else if (now.equals(endAt)) {
             status = D_DAY;
-            return;
-        }
-        if (status == D_DAY && now.isAfter(endAt)) {
+        } else {
             status = FINISHED;
         }
-    }
-
-    private boolean isStart(LocalDate now) {
-        return startAt.isEqual(now);
-    }
-
-    private boolean isEnd(LocalDate now) {
-        return endAt.isEqual(now);
     }
 
     @Override

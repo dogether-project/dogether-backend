@@ -21,9 +21,9 @@ public class ChallengeGroupStatusUpdateService {
     @Transactional
     @Scheduled(cron = "0 0 * * * *")
     public void updateChallengeGroupStatus() {
-        List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
+        final List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
 
-        for (ChallengeGroup notFinishedGroup : notFinishedGroups) {
+        for (final ChallengeGroup notFinishedGroup : notFinishedGroups) {
             notFinishedGroup.updateStatus();
             log.info("챌린지 그룹 상태 업데이트: groupId={}, status={}", notFinishedGroup.getId(), notFinishedGroup.getStatus());
         }

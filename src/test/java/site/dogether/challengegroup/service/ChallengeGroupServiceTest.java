@@ -191,7 +191,7 @@ class ChallengeGroupServiceTest {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
         LocalDateTime createdAt = LocalDateTime.now();
-        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(new ChallengeGroup(
                 "운동 같이 하자",
                 10,
                 LocalDate.now(),
@@ -225,7 +225,7 @@ class ChallengeGroupServiceTest {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
         LocalDateTime createdAt = LocalDateTime.now();
-        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(new ChallengeGroup(
                 "운동 같이 하자",
                 10,
                 LocalDate.now(),

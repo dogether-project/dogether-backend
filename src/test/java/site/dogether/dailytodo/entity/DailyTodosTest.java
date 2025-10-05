@@ -25,13 +25,11 @@ class DailyTodosTest {
 
     private static ChallengeGroup createChallengeGroup() {
         return new ChallengeGroup(
-            1L,
             "성욱이와 친구들",
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
             JoinCode.generate(),
-            ChallengeGroupStatus.RUNNING,
             LocalDateTime.now().plusHours(1)
         );
     }

@@ -28,13 +28,11 @@ class AchievementRateCalculatorTest {
 
     private static ChallengeGroup createChallengeGroup() {
         return new ChallengeGroup(
-            1L,
             "그로밋의 일상생활",
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
             JoinCode.generate(),
-            ChallengeGroupStatus.RUNNING,
             LocalDateTime.now().plusHours(1)
         );
     }

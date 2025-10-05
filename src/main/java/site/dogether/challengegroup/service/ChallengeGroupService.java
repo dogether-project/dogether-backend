@@ -52,7 +52,7 @@ public class ChallengeGroupService {
         final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
         final LocalDate endAt = request.challengeGroupDurationOption().calculateEndAt(startAt);
         final LocalDateTime createdAt = LocalDateTime.now();
-        final ChallengeGroup challengeGroup = ChallengeGroup.create(
+        final ChallengeGroup challengeGroup = new ChallengeGroup(
             request.groupName(),
             request.maximumMemberCount(),
             startAt,
