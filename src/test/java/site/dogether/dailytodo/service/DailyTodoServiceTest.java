@@ -10,17 +10,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -178,7 +177,7 @@ class DailyTodoServiceTest {
             challengeGroupId,
             dailyTodoContents))
             .isInstanceOf(NotRunningChallengeGroupException.class)
-            .hasMessage(String.format("현재 진행중인 챌린지 그룹이 아닙니다. (%s)", challengeGroup));
+            .hasMessage(String.format("현재 진행중인 챌린지 그룹이 아닙니다. (groupId: %d)", challengeGroupId));
     }
 
     @DisplayName("데일리 투두를 생성하려는 챌린지 그룹에 참여하고 있지 않은 사용자가 요청하면 예외가 발생한다.")
@@ -212,6 +211,6 @@ class DailyTodoServiceTest {
             challengeGroupId,
             dailyTodoContents))
             .isInstanceOf(MemberNotInChallengeGroupException.class)
-            .hasMessage(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (%s) (%s)", challengeGroup, otherMember));
+            .hasMessage(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (groupId: %d, memberId: %d)", challengeGroupId, memberId));
     }
 }
