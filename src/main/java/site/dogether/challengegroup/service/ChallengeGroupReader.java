@@ -1,7 +1,7 @@
 package site.dogether.challengegroup.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Component
+@Service
 public class ChallengeGroupReader {
 
     private final ChallengeGroupRepository challengeGroupRepository;
