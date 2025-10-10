@@ -25,7 +25,7 @@ public class ChallengeGroupPolicy {
         }
     }
 
-    public void validateChallengeGroupHasMaximumMember(ChallengeGroup challengeGroup) {
+    public void validateChallengeGroupHasMaximumMember(final ChallengeGroup challengeGroup) {
         final int maximumMemberCount = challengeGroup.getMaximumMemberCount();
         final int currentMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
         if (currentMemberCount >= maximumMemberCount) {
@@ -35,7 +35,7 @@ public class ChallengeGroupPolicy {
         }
     }
 
-    public void validateMemberInSameChallengeGroup(ChallengeGroup challengeGroup, Member joinMember) {
+    public void validateMemberInSameChallengeGroup(final ChallengeGroup challengeGroup, final Member joinMember) {
         if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
             throw new AlreadyJoinChallengeGroupException(
                     String.format("이미 참여 중인 그룹입니다. (memberId: %d), groupId : %d)",
