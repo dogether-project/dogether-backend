@@ -38,7 +38,7 @@ public class ChallengeGroupPolicy {
     public void validateMemberInSameChallengeGroup(final ChallengeGroup challengeGroup, final Member joinMember) {
         if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
             throw new AlreadyJoinChallengeGroupException(
-                    String.format("이미 참여 중인 그룹입니다. (memberId: %d), groupId : %d)",
+                    String.format("이미 참여 중인 그룹입니다. (memberId: %d, groupId : %d)",
                             joinMember.getId(), challengeGroup.getId()));
         }
     }
