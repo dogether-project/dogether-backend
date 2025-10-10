@@ -2,6 +2,7 @@ package site.dogether.challengegroup.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
@@ -18,22 +19,11 @@ class AchievementRateCalculatorTest {
     private static DailyTodo createDailyTodo(LocalDateTime writtenAt) {
         return new DailyTodo(
             1L,
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("그로밋의 일상생활"),
             createMember(),
             "월레스와 인사하기",
             DailyTodoStatus.CERTIFY_PENDING,
             writtenAt
-        );
-    }
-
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-            "그로밋의 일상생활",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            JoinCode.generate(),
-            LocalDateTime.now().plusHours(1)
         );
     }
 

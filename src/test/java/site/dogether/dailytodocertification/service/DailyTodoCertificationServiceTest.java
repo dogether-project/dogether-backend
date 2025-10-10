@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.challengegroup.entity.JoinCode;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
@@ -45,24 +44,13 @@ class DailyTodoCertificationServiceTest {
     @Autowired private DailyTodoHistoryRepository dailyTodoHistoryRepository;
     @Autowired private DailyTodoCertificationService dailyTodoCertificationService;
 
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-            "성욱이와 친구들",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            JoinCode.generate(),
-            LocalDateTime.now().plusHours(1)
-        );
-    }
-
     private static Member createMember(final String name) {
         return new Member(
             null,
             "provider_id " + name,
             name,
             "profile_image_url " + name,
-            LocalDateTime.now().plusHours(0)
+            LocalDateTime.now()
         );
     }
 
@@ -117,7 +105,7 @@ class DailyTodoCertificationServiceTest {
     @Test
     void reviewDailyTodoCertificationSuccessInputApprove() {
         // Given
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create("성욱이와 친구들"));
         final Member writer = memberRepository.save(createMember("투두 작성자"));
         final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(challengeGroup, writer, CERTIFY_COMPLETED, LocalDateTime.now()));
         final Member reviewer = memberRepository.save(createMember("인증 검사자"));
@@ -144,7 +132,7 @@ class DailyTodoCertificationServiceTest {
     @Test
     void reviewDailyTodoCertificationSuccessReject() {
         // Given
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create("성욱이와 친구들"));
         final Member writer = memberRepository.save(createMember("투두 작성자"));
         final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(challengeGroup, writer, CERTIFY_COMPLETED, LocalDateTime.now()));
         final Member reviewer = memberRepository.save(createMember("인증 검사자"));
@@ -170,7 +158,7 @@ class DailyTodoCertificationServiceTest {
     @Test
     void throwExceptionWhenInputNotFoundReviewerId() {
         // Given
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create("성욱이와 친구들"));
         final Member writer = memberRepository.save(createMember("투두 작성자"));
         final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(challengeGroup, writer, CERTIFY_COMPLETED, LocalDateTime.now()));
         final Member reviewer = memberRepository.save(createMember("인증 검사자"));
@@ -196,7 +184,7 @@ class DailyTodoCertificationServiceTest {
     @Test
     void throwExceptionWhenInputNotFoundDailyTodoCertificationId() {
         // Given
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create("성욱이와 친구들"));
         final Member writer = memberRepository.save(createMember("투두 작성자"));
         final DailyTodo dailyTodo = dailyTodoRepository.save(createDailyTodo(challengeGroup, writer, CERTIFY_COMPLETED, LocalDateTime.now()));
         final Member reviewer = memberRepository.save(createMember("인증 검사자"));
