@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
@@ -29,8 +30,8 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static site.dogether.dailytodo.entity.DailyTodoStatus.*;
-import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.*;
+import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REVIEW_PENDING;
 
 @Transactional
 @SpringBootTest
@@ -46,13 +47,11 @@ class DailyTodoCertificationServiceTest {
 
     private static ChallengeGroup createChallengeGroup() {
         return new ChallengeGroup(
-            null,
             "성욱이와 친구들",
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
-            "join_code",
-            ChallengeGroupStatus.RUNNING,
+            JoinCode.generate(),
             LocalDateTime.now().plusHours(1)
         );
     }

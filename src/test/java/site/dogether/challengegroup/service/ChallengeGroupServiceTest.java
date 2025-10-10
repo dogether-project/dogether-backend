@@ -8,12 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
-import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
+import site.dogether.challengegroup.entity.JoinCode;
+import site.dogether.challengegroup.exception.*;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
@@ -21,6 +17,7 @@ import site.dogether.member.entity.Member;
 import site.dogether.member.repository.MemberRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -193,11 +190,14 @@ class ChallengeGroupServiceTest {
     void 챌린지_그룹을_탈퇴한다() {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
-        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
+        LocalDateTime createdAt = LocalDateTime.now();
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(new ChallengeGroup(
                 "운동 같이 하자",
                 10,
                 LocalDate.now(),
-                LocalDate.now().plusDays(7)
+                LocalDate.now().plusDays(7),
+                JoinCode.generate(),
+                createdAt
         ));
         ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.save(
                 new ChallengeGroupMember(challengeGroup, member1));
@@ -224,11 +224,14 @@ class ChallengeGroupServiceTest {
     void 속해있지_않은_챌린지_그룹을_탈퇴하면_예외가_발생한다() {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
-        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroup.create(
+        LocalDateTime createdAt = LocalDateTime.now();
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(new ChallengeGroup(
                 "운동 같이 하자",
                 10,
                 LocalDate.now(),
-                LocalDate.now().plusDays(7)
+                LocalDate.now().plusDays(7),
+                JoinCode.generate(),
+                createdAt
         ));
 
         //when & then

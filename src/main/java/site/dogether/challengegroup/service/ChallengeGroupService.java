@@ -7,27 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.v0.dto.response.IsParticipatingChallengeGroupApiResponseV0;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
-import site.dogether.challengegroup.entity.AchievementRateCalculator;
-import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.challengegroup.entity.LastSelectedChallengeGroupRecord;
-import site.dogether.challengegroup.exception.AlreadyJoinChallengeGroupException;
-import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.FinishedChallengeGroupException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFinishedException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupAlreadyFullMemberException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupMaxCountException;
-import site.dogether.challengegroup.exception.JoiningChallengeGroupNotFoundException;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
+import site.dogether.challengegroup.entity.*;
+import site.dogether.challengegroup.exception.*;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.repository.LastSelectedChallengeGroupRecordRepository;
-import site.dogether.challengegroup.service.dto.ChallengeGroupMemberOverviewDto;
-import site.dogether.challengegroup.service.dto.ChallengeGroupMemberWithAchievementRateDto;
-import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupDto;
-import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
+import site.dogether.challengegroup.service.dto.*;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.service.DailyTodoService;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
@@ -39,6 +24,7 @@ import site.dogether.member.repository.MemberRepository;
 import site.dogether.notification.service.NotificationService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -65,18 +51,21 @@ public class ChallengeGroupService {
 
         final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
         final LocalDate endAt = request.challengeGroupDurationOption().calculateEndAt(startAt);
-        final ChallengeGroup challengeGroup = ChallengeGroup.create(
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final ChallengeGroup challengeGroup = new ChallengeGroup(
             request.groupName(),
             request.maximumMemberCount(),
             startAt,
-            endAt
+            endAt,
+            JoinCode.generate(),
+            createdAt
         );
 
         final ChallengeGroup savedChallengeGroup = challengeGroupRepository.save(challengeGroup);
         challengeGroupMemberRepository.save(new ChallengeGroupMember(savedChallengeGroup, member));
         saveLastSelectedChallengeGroupRecord(member, savedChallengeGroup);
 
-        return challengeGroup.getJoinCode();
+        return challengeGroup.getJoinCode().toString();
     }
 
     private Member getMember(final Long memberId) {
@@ -121,7 +110,7 @@ public class ChallengeGroupService {
     }
 
     private ChallengeGroup getJoiningChallengeGroup(final String joinCode) {
-        return challengeGroupRepository.findByJoinCode(joinCode)
+        return challengeGroupRepository.findByJoinCode_Value(joinCode)
             .orElseThrow(() -> new JoiningChallengeGroupNotFoundException(String.format("참여 하려는 챌린지 그룹이 존재하지 않습니다. (%s)", joinCode)));
     }
 
@@ -350,17 +339,5 @@ public class ChallengeGroupService {
             .orElseThrow(() -> new MemberNotInChallengeGroupException(String.format("ChallengeGroup에서 해당하는 멤버를 찾을 수 없습니다. member={}, challengeGroup={}", target, groupMembers.get(0).getChallengeGroup())));
 
         return challengeGroupMemberWithAchievementRate.indexOf(myAchievementRate) + 1;
-    }
-
-    @Transactional
-    public void updateChallengeGroupStatus() {
-        List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
-
-        for (ChallengeGroup notFinishedGroup : notFinishedGroups) {
-            notFinishedGroup.updateStatus();
-            log.info("챌린지 그룹 상태 업데이트: groupId={}, status={}", notFinishedGroup.getId(), notFinishedGroup.getStatus());
-        }
-
-        challengeGroupRepository.saveAll(notFinishedGroups);
     }
 }

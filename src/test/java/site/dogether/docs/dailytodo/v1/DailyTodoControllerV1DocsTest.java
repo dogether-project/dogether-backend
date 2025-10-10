@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.dailytodo.controller.v1.DailyTodoControllerV1;
 import site.dogether.dailytodo.controller.v1.dto.request.CreateDailyTodosApiRequestV1;
 import site.dogether.dailytodo.entity.DailyTodo;
@@ -122,7 +123,7 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
     @Test
     void getMyDailyTodosWithCertificationInputDateV1() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
+        final ChallengeGroup challengeGroup = new ChallengeGroup("켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), JoinCode.generate(), LocalDateTime.now().plusHours(1));
         final List<DailyTodo> dailyTodos = List.of(
             new DailyTodo(1L, challengeGroup, doer, "운동 하기", CERTIFY_COMPLETED, LocalDateTime.now()),
             new DailyTodo(2L, challengeGroup, doer, "인강 듣기", CERTIFY_COMPLETED, LocalDateTime.now()),
@@ -195,7 +196,7 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
     void getMyDailyTodosWithCertificationInputDateAndTodoStatusV1() throws Exception {
         final Member doer = new Member(1L, "kelly-id", "kelly", "https://영재님_얼짱_각도.png", LocalDateTime.now());
         final Member reviewer = new Member(2L, "elmo-id", "elmo", "https://영재님_얼짱_각도.png", LocalDateTime.now());
-        final ChallengeGroup challengeGroup = new ChallengeGroup(1L, "켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), "CODE", ChallengeGroupStatus.RUNNING, LocalDateTime.now().plusHours(1));
+        final ChallengeGroup challengeGroup = new ChallengeGroup("켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7), JoinCode.generate(), LocalDateTime.now().plusHours(1));
         final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", CERTIFY_COMPLETED, LocalDateTime.now().plusHours(2));
         final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", REVIEW_PENDING, null, LocalDateTime.now().plusHours(3));
         final List<DailyTodoDto> dailyTodoDtos = List.of(new DailyTodoDto(dailyTodo, dailyTodoCertification));

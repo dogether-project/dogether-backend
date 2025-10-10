@@ -1,11 +1,5 @@
 package site.dogether.dailyTodoHistory.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodos;
@@ -29,6 +24,13 @@ import site.dogether.member.repository.MemberRepository;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 @Transactional
 @SpringBootTest
 public class DailyTodoHistoryServiceTest {
@@ -43,13 +45,11 @@ public class DailyTodoHistoryServiceTest {
 
     private static ChallengeGroup createChallengeGroup() {
         return new ChallengeGroup(
-                null,
                 "성욱이와 친구들",
                 8,
                 LocalDate.now(),
                 LocalDate.now().plusDays(7),
-                "join_code",
-                ChallengeGroupStatus.RUNNING,
+                JoinCode.generate(),
                 LocalDateTime.now().plusHours(1)
         );
     }

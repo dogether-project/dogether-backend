@@ -1,11 +1,12 @@
 package site.dogether.challengegroup.entity;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupDurationException;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.function.Function;
 
 @Getter
 @RequiredArgsConstructor

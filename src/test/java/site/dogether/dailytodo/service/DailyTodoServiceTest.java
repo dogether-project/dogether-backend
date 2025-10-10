@@ -1,12 +1,6 @@
 package site.dogether.dailytodo.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
@@ -24,6 +19,13 @@ import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -46,28 +48,46 @@ class DailyTodoServiceTest {
 
     private static ChallengeGroup createChallengeGroup() {
         return new ChallengeGroup(
-            null,
             "성욱이와 친구들",
             8,
             LocalDate.now(),
             LocalDate.now().plusDays(7),
-            "join_code",
-            ChallengeGroupStatus.RUNNING,
+            JoinCode.generate(),
             LocalDateTime.now().plusHours(1)
         );
     }
 
     private static ChallengeGroup createChallengeGroup(final ChallengeGroupStatus status) {
-        return new ChallengeGroup(
-            null,
+        final LocalDate startAt;
+        final LocalDate endAt;
+        switch (status) {
+            case READY -> {
+                startAt = LocalDate.now().plusDays(1);
+                endAt = startAt.plusDays(7);
+            }
+            case D_DAY -> {
+                endAt = LocalDate.now();
+                startAt = endAt.minusDays(7);
+            }
+            case FINISHED -> {
+                endAt = LocalDate.now().minusDays(1);
+                startAt = endAt.minusDays(7);
+            }
+            default -> {
+                startAt = LocalDate.now();
+                endAt = startAt.plusDays(7);
+            }
+        }
+        final ChallengeGroup challengeGroup = new ChallengeGroup(
             "성욱이와 친구들",
             8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            "join_code",
-            status,
+            startAt,
+            endAt,
+            JoinCode.generate(),
             LocalDateTime.now().plusHours(1)
         );
+        challengeGroup.updateStatus();
+        return challengeGroup;
     }
 
     private static ChallengeGroupMember createChallengeGroupMember(final ChallengeGroup challengeGroup, final Member member) {

@@ -1,7 +1,8 @@
 package site.dogether.challengegroup.service.dto;
 
-import java.time.format.DateTimeFormatter;
 import site.dogether.challengegroup.entity.ChallengeGroup;
+
+import java.time.format.DateTimeFormatter;
 
 public record JoiningChallengeGroupDto(
     Long groupId,
@@ -26,7 +27,7 @@ public record JoiningChallengeGroupDto(
             joiningGroup.getName(),
             currentMemberCount,
             joiningGroup.getMaximumMemberCount(),
-            joiningGroup.getJoinCode(),
+            joiningGroup.getJoinCode().getValue(),
             joiningGroup.getStatus().name(),
             joiningGroup.getStartAt().format(formatter),
             joiningGroup.getEndAt().format(formatter),
