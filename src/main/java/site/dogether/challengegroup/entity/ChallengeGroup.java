@@ -60,14 +60,14 @@ public class ChallengeGroup extends BaseEntity {
             final JoinCode joinCode,
             final LocalDateTime createdAt
     ) {
-        validateEndAtIsAfterStartAt(startAt, endAt);
         this.name = validateGroupName(name);
         this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
+        validateDates(startAt, endAt);
         this.startAt = startAt;
         this.endAt = endAt;
-        this.joinCode = joinCode;
+        this.joinCode = validateJoinCode(joinCode);
         this.status = initStatus(startAt);
-        this.createdAt = createdAt;
+        this.createdAt = validateCreatedAt(createdAt);
     }
 
     private static String validateGroupName(String name) {
@@ -92,12 +92,32 @@ public class ChallengeGroup extends BaseEntity {
         return maximumMemberCount;
     }
 
-    private static void validateEndAtIsAfterStartAt(LocalDate startAt, LocalDate endAt) {
+    private static void validateDates(LocalDate startAt, LocalDate endAt) {
+        if (startAt == null) {
+            throw new InvalidChallengeGroupException("시작일은 null일 수 없습니다.");
+        }
+        if (endAt == null) {
+            throw new InvalidChallengeGroupException("종료일은 null일 수 없습니다.");
+        }
         if (startAt.isAfter(endAt)) {
             throw new InvalidChallengeGroupException(
                     String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
             );
         }
+    }
+
+    private static JoinCode validateJoinCode(JoinCode joinCode) {
+        if (joinCode == null) {
+            throw new InvalidChallengeGroupException("참여 코드는 null일 수 없습니다.");
+        }
+        return joinCode;
+    }
+
+    private static LocalDateTime validateCreatedAt(LocalDateTime createdAt) {
+        if (createdAt == null) {
+            throw new InvalidChallengeGroupException("생성일은 null일 수 없습니다.");
+        }
+        return createdAt;
     }
 
     private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
