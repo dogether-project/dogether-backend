@@ -5,11 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
-import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodos;
 import site.dogether.dailytodo.repository.DailyTodoAndDailyTodoCertification;
@@ -36,7 +35,7 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 @Service
 public class DailyTodoService {
 
-    private final ChallengeGroupRepository challengeGroupRepository;
+    private final ChallengeGroupReader challengeGroupReader;
     private final MemberRepository memberRepository;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
@@ -66,8 +65,7 @@ public class DailyTodoService {
     }
 
     private ChallengeGroup getChallengeGroup(final Long challengeGroupId) {
-        return challengeGroupRepository.findById(challengeGroupId)
-            .orElseThrow(() -> new ChallengeGroupNotFoundException(String.format("존재하지 않는 챌린지 그룹 id입니다. (%d)", challengeGroupId)));
+        return challengeGroupReader.getById(challengeGroupId);
     }
 
     private void validateChallengeGroupIsRunning(final ChallengeGroup challengeGroup) {

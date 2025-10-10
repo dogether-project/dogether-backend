@@ -37,6 +37,7 @@ public class ChallengeGroupService {
 
     private final MemberRepository memberRepository;
     private final ChallengeGroupRepository challengeGroupRepository;
+    private final ChallengeGroupReader challengeGroupReader;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final LastSelectedChallengeGroupRecordRepository lastSelectedChallengeGroupRecordRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
@@ -94,7 +95,7 @@ public class ChallengeGroupService {
         final Member joinMember = getMember(memberId);
         validateJoiningGroupMaxCount(joinMember);
 
-        final ChallengeGroup challengeGroup = getJoiningChallengeGroup(joinCode);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getByJoinCode(joinCode);
 
         validateJoiningGroupIsNotFinished(challengeGroup);
         memberAlreadyInSameGroup(challengeGroup, joinMember);
@@ -107,11 +108,6 @@ public class ChallengeGroupService {
         sendJoinNotification(challengeGroup, joinMember);
 
         return JoinChallengeGroupDto.from(challengeGroup);
-    }
-
-    private ChallengeGroup getJoiningChallengeGroup(final String joinCode) {
-        return challengeGroupRepository.findByJoinCode_Value(joinCode)
-            .orElseThrow(() -> new JoiningChallengeGroupNotFoundException(String.format("참여 하려는 챌린지 그룹이 존재하지 않습니다. (%s)", joinCode)));
     }
 
     private void validateJoiningGroupIsNotFinished(final ChallengeGroup challengeGroup) {
@@ -201,7 +197,7 @@ public class ChallengeGroupService {
     @Transactional
     public void saveLastSelectedChallengeGroupRecord(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
-        final ChallengeGroup challengeGroup = getJoiningChallengeGroup(groupId);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
         lastSelectedChallengeGroupRecordRepository.findByMember(member)
             .ifPresentOrElse(
@@ -212,7 +208,7 @@ public class ChallengeGroupService {
     @Transactional
     public void leaveChallengeGroup(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
-        final ChallengeGroup challengeGroup = getJoiningChallengeGroup(groupId);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
         final ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.findByMemberAndChallengeGroup(member, challengeGroup)
             .orElseThrow(() -> new MemberNotInChallengeGroupException(
@@ -263,18 +259,13 @@ public class ChallengeGroupService {
 
     public List<ChallengeGroupMemberOverviewDto> getChallengeGroupMemberOverview(final Long memberId, final Long groupId) {
         final Member viewer = getMember(memberId);
-        final ChallengeGroup challengeGroup = getJoiningChallengeGroup(groupId);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
         validateChallengeGroupNotFinished(challengeGroup);
 
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
         final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates = calculateChallengeGroupMemberAchievementRateSortedDesc(groupMembers);
 
         return buildChallengeGroupOverview(viewer, challengeGroupMemberWithAchievementRates);
-    }
-
-    private ChallengeGroup getJoiningChallengeGroup(final Long challengeGroupId) {
-        return challengeGroupRepository.findById(challengeGroupId)
-            .orElseThrow(() -> new ChallengeGroupNotFoundException(String.format("존재하지 않는 챌린지 그룹 id입니다. (%d)", challengeGroupId)));
     }
 
     private void validateChallengeGroupNotFinished(final ChallengeGroup joiningGroup) {

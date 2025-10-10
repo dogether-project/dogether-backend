@@ -9,7 +9,7 @@ import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
-import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Service
 public class MemberActivityService {
 
-    private final ChallengeGroupRepository challengeGroupRepository;
+    private final ChallengeGroupReader challengeGroupReader;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
@@ -62,8 +62,7 @@ public class MemberActivityService {
     public GetGroupActivityStatApiResponseV1 getGroupActivityStat(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
 
-        final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
-                .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다"));
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
         if (challengeGroup.isFinished()) {
             throw new InvalidChallengeGroupException(String.format("이미 종료된 그룹입니다. (%s)", challengeGroup.getName()));

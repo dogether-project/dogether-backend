@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.challengegroup.service.ChallengeGroupReader;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ import java.util.List;
 @Service
 public class ChallengeGroupStatusUpdateService {
 
-    private final ChallengeGroupRepository challengeGroupRepository;
+    private final ChallengeGroupReader challengeGroupReader;
 
     @Transactional
     public void updateChallengeGroupStatus() {
-        final List<ChallengeGroup> notFinishedGroups = challengeGroupRepository.findByStatusNot(ChallengeGroupStatus.FINISHED);
+        final List<ChallengeGroup> notFinishedGroups = challengeGroupReader.findByStatusNot(ChallengeGroupStatus.FINISHED);
 
         for (final ChallengeGroup notFinishedGroup : notFinishedGroups) {
             notFinishedGroup.updateStatus();
