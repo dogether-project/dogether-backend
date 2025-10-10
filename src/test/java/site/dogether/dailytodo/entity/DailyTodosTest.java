@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.challengegroup.entity.JoinCode;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
 import site.dogether.member.entity.Member;
 
@@ -23,17 +22,6 @@ import static site.dogether.dailytodo.entity.DailyTodos.MAXIMUM_ALLOWED_VALUE_CO
 
 class DailyTodosTest {
 
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-            "성욱이와 친구들",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            JoinCode.generate(),
-            LocalDateTime.now().plusHours(1)
-        );
-    }
-
     private static Member createMember() {
         return new Member(
             1L,
@@ -48,7 +36,7 @@ class DailyTodosTest {
     @Test
     void createDailyTodos() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final LocalDateTime writtenAt = LocalDateTime.now();
         final List<DailyTodo> input = List.of(
@@ -76,7 +64,7 @@ class DailyTodosTest {
     @DisplayName("생성자에 유효하지 않은 길이의 리스트를 입력하면 예외가 발생한다.")
     void throwExceptionWhenInputInvalidSizeList() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final LocalDateTime writtenAt = LocalDateTime.now();
         final List<DailyTodo> input = IntStream.rangeClosed(1, 11)

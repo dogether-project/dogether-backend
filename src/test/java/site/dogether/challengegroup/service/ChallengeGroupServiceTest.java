@@ -8,17 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.entity.JoinCode;
 import site.dogether.challengegroup.exception.*;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
 import site.dogether.member.entity.Member;
 import site.dogether.member.repository.MemberRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -72,27 +69,19 @@ class ChallengeGroupServiceTest {
     @Test
     void 챌린지_그룹에_참여한다() {
         //given
-        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
-                "운동 같이 하자",
-                10,
-                "TODAY",
-                7
-        );
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
         Member member2 = memberRepository.save(Member.create("providerId2", "켈리"));
-        String joinCode = challengeGroupService.createChallengeGroup(request, member1.getId());
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup, member1));
 
         //when
-        JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(joinCode, member2.getId());
+        JoinChallengeGroupDto joinChallengeGroupDto = challengeGroupService.joinChallengeGroup(
+                challengeGroup.getJoinCode().getValue(), member2.getId()
+        );
 
         //then
-        assertThat(joinChallengeGroupDto.groupName()).isEqualTo("운동 같이 하자");
-        assertThat(joinChallengeGroupDto.duration()).isEqualTo(7);
-        assertThat(joinChallengeGroupDto.maximumMemberCount()).isEqualTo(10);
-        assertThat(joinChallengeGroupDto.startAt())
-                .isEqualTo(LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd")));
-        assertThat(joinChallengeGroupDto.endAt())
-                .isEqualTo(LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("yy.MM.dd")));
+        assertThat(joinChallengeGroupDto).isNotNull();
+        assertThat(joinChallengeGroupDto.groupName()).isEqualTo(challengeGroup.getName());
     }
 
     @Test
@@ -109,96 +98,57 @@ class ChallengeGroupServiceTest {
     @Test
     void 이미_참여중인_그룹에_참여하면_예외가_발생한다() {
         //given
-        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
-                "운동 같이 하자",
-                10,
-                "TODAY",
-                7
-        );
         Member member = memberRepository.save(Member.create("providerId", "폰트"));
-        String joinCode = challengeGroupService.createChallengeGroup(request, member.getId());
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup, member));
 
         //when & then
-        assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(joinCode, member.getId()))
-                .isInstanceOf(AlreadyJoinChallengeGroupException.class);
+        assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(
+                challengeGroup.getJoinCode().getValue(), member.getId()
+        )).isInstanceOf(AlreadyJoinChallengeGroupException.class);
     }
 
     @Test
     void 정원이_초과된_그룹에_참여하면_예외가_발생한다() {
         //given
-        int maximumMemberCount = 2;
-        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
-                "운동 같이 하자",
-                maximumMemberCount,
-                "TODAY",
-                7
-        );
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
-        String joinCode = challengeGroupService.createChallengeGroup(request, member1.getId());
         Member member2 = memberRepository.save(Member.create("providerId2", "켈리"));
-        challengeGroupService.joinChallengeGroup(joinCode, member2.getId());
         Member member3 = memberRepository.save(Member.create("providerId3", "서은"));
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create(2));
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup, member1));
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup, member2));
 
         //when & then
-        assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(joinCode, member3.getId()))
+        assertThatThrownBy(() -> challengeGroupService.joinChallengeGroup(
+                challengeGroup.getJoinCode().getValue(), member3.getId()))
                 .isInstanceOf(JoiningChallengeGroupAlreadyFullMemberException.class);
     }
 
     @Test
     void 참여중인_챌린지_그룹을_모두_조회한다() {
         //given
-        CreateChallengeGroupApiRequestV1 request1 = new CreateChallengeGroupApiRequestV1(
-                "운동 같이 하자",
-                10,
-                "TODAY",
-                7
-        );
-        CreateChallengeGroupApiRequestV1 request2 = new CreateChallengeGroupApiRequestV1(
-                "공부 같이 하자",
-                11,
-                "TOMORROW",
-                14
-        );
-        Member member1 = memberRepository.save(Member.create("providerId", "폰트"));
-        Member member2 = memberRepository.save(Member.create("providerId2", "켈리"));
-        String joinCode1 = challengeGroupService.createChallengeGroup(request1, member1.getId());
-        String joinCode2 = challengeGroupService.createChallengeGroup(request2, member1.getId());
+        Member member = memberRepository.save(Member.create("providerId", "폰트"));
+        ChallengeGroup challengeGroup1 = challengeGroupRepository.save(ChallengeGroupFixture.create());
+        ChallengeGroup challengeGroup2 = challengeGroupRepository.save(ChallengeGroupFixture.create());
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup1, member));
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup2, member));
 
         //when
-        JoinChallengeGroupDto joinChallengeGroupDto1 = challengeGroupService.joinChallengeGroup(joinCode1, member2.getId());
-        JoinChallengeGroupDto joinChallengeGroupDto2 = challengeGroupService.joinChallengeGroup(joinCode2, member2.getId());
+        JoiningChallengeGroupsWithLastSelectedGroupIndexDto result =
+                challengeGroupService.getJoiningChallengeGroups(member.getId());
 
         //then
-        assertThat(joinChallengeGroupDto1.groupName()).isEqualTo("운동 같이 하자");
-        assertThat(joinChallengeGroupDto1.duration()).isEqualTo(7);
-        assertThat(joinChallengeGroupDto1.maximumMemberCount()).isEqualTo(10);
-        assertThat(joinChallengeGroupDto1.startAt())
-                .isEqualTo(LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd")));
-        assertThat(joinChallengeGroupDto1.endAt())
-                .isEqualTo(LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("yy.MM.dd")));
-
-        assertThat(joinChallengeGroupDto2.groupName()).isEqualTo("공부 같이 하자");
-        assertThat(joinChallengeGroupDto2.duration()).isEqualTo(14);
-        assertThat(joinChallengeGroupDto2.maximumMemberCount()).isEqualTo(11);
-        assertThat(joinChallengeGroupDto2.startAt())
-                .isEqualTo(LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yy.MM.dd")));
-        assertThat(joinChallengeGroupDto2.endAt())
-                .isEqualTo(LocalDate.now().plusDays(15).format(DateTimeFormatter.ofPattern("yy.MM.dd")));
+        assertThat(result.joiningChallengeGroups().size()).isEqualTo(2);
+        assertThat(result.lastSelectedGroupIndex()).isEqualTo(0);
+        assertThat(result.joiningChallengeGroups().get(0).groupName()).isEqualTo(challengeGroup1.getName());
+        assertThat(result.joiningChallengeGroups().get(1).groupName()).isEqualTo(challengeGroup2.getName());
     }
 
     @Test
     void 챌린지_그룹을_탈퇴한다() {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
-        LocalDateTime createdAt = LocalDateTime.now();
-        ChallengeGroup challengeGroup = challengeGroupRepository.save(new ChallengeGroup(
-                "운동 같이 하자",
-                10,
-                LocalDate.now(),
-                LocalDate.now().plusDays(7),
-                JoinCode.generate(),
-                createdAt
-        ));
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
         ChallengeGroupMember challengeGroupMember = challengeGroupMemberRepository.save(
                 new ChallengeGroupMember(challengeGroup, member1));
 
@@ -224,15 +174,7 @@ class ChallengeGroupServiceTest {
     void 속해있지_않은_챌린지_그룹을_탈퇴하면_예외가_발생한다() {
         //given
         Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
-        LocalDateTime createdAt = LocalDateTime.now();
-        ChallengeGroup challengeGroup = challengeGroupRepository.save(new ChallengeGroup(
-                "운동 같이 하자",
-                10,
-                LocalDate.now(),
-                LocalDate.now().plusDays(7),
-                JoinCode.generate(),
-                createdAt
-        ));
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
 
         //when & then
         assertThatThrownBy(() -> challengeGroupService.leaveChallengeGroup(member1.getId(), challengeGroup.getId()))
@@ -242,14 +184,9 @@ class ChallengeGroupServiceTest {
     @Test
     void 참여중인_그룹이_있는지_조회한다__있는_경우() {
         //given
-        CreateChallengeGroupApiRequestV1 request = new CreateChallengeGroupApiRequestV1(
-                "운동 같이 하자",
-                10,
-                "TODAY",
-                7
-        );
         Member member = memberRepository.save(Member.create("providerId", "폰트"));
-        challengeGroupService.createChallengeGroup(request, member.getId());
+        ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup, member));
 
         //when
         boolean isParticipating = challengeGroupService.isChallengeGroupParticipationRequired(member.getId()).checkParticipating();

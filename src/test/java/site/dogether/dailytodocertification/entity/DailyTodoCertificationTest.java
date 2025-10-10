@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
-import site.dogether.challengegroup.entity.JoinCode;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodoStatus;
 import site.dogether.dailytodocertification.exception.InvalidDailyTodoCertificationException;
@@ -21,24 +20,13 @@ import static site.dogether.dailytodocertification.entity.DailyTodoCertification
 
 class DailyTodoCertificationTest {
 
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-            "성욱이와 친구들",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            JoinCode.generate(),
-            LocalDateTime.now().plusHours(1)
-        );
-    }
-
     private static Member createMember(final Long id, final String name) {
         return new Member(
             id,
             "provider_id",
             name,
             "profile_image_url",
-            LocalDateTime.now().plusHours(0)
+            LocalDateTime.now()
         );
     }
 
@@ -63,7 +51,7 @@ class DailyTodoCertificationTest {
     void createSuccess() {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("성욱이와 친구들"),
             createMember(1L, "투두 작성자"),
             DailyTodoStatus.CERTIFY_PENDING,
             LocalDateTime.now()
@@ -105,7 +93,7 @@ class DailyTodoCertificationTest {
     void throwExceptionWhenInputContentNullOrEmpty(final String certifyContent) {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("성욱이와 친구들"),
             createMember(2L, "투두 검사자"),
             DailyTodoStatus.CERTIFY_PENDING,
             LocalDateTime.now()
@@ -127,7 +115,7 @@ class DailyTodoCertificationTest {
     void throwExceptionWhenInputInvalidLengthContent() {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("성욱이와 친구들"),
             createMember(2L, "투두 검사자"),
             DailyTodoStatus.CERTIFY_PENDING,
             LocalDateTime.now()
@@ -151,7 +139,7 @@ class DailyTodoCertificationTest {
     void throwExceptionWhenInputMediaUrlNullOrEmpty(final String certifyMediaUrl) {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("성욱이와 친구들"),
             createMember(2L, "투두 검사자"),
             DailyTodoStatus.CERTIFY_PENDING,
             LocalDateTime.now()
