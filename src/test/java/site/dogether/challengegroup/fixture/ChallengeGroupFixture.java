@@ -35,6 +35,17 @@ public class ChallengeGroupFixture {
         );
     }
 
+    public static ChallengeGroup create(final int maximumMemberCount) {
+        return new ChallengeGroup(
+                DEFAULT_NAME,
+                maximumMemberCount,
+                LocalDate.now(),
+                LocalDate.now().plusDays(DEFAULT_DURATION_DAYS),
+                JoinCode.generate(),
+                LocalDateTime.now()
+        );
+    }
+
     public static ChallengeGroup create(final ChallengeGroupStatus status) {
         final LocalDate startAt;
         final LocalDate endAt;
