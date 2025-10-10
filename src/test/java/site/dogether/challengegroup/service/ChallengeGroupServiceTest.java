@@ -13,6 +13,7 @@ import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.service.dto.JoinChallengeGroupDto;
+import site.dogether.challengegroup.service.dto.JoiningChallengeGroupsWithLastSelectedGroupIndexDto;
 import site.dogether.member.entity.Member;
 import site.dogether.member.repository.MemberRepository;
 
@@ -80,6 +81,7 @@ class ChallengeGroupServiceTest {
 
         //then
         assertThat(joinChallengeGroupDto).isNotNull();
+        assertThat(joinChallengeGroupDto.groupName()).isEqualTo(challengeGroup.getName());
     }
 
     @Test
@@ -125,22 +127,21 @@ class ChallengeGroupServiceTest {
     @Test
     void 참여중인_챌린지_그룹을_모두_조회한다() {
         //given
-        Member member1 = memberRepository.save(Member.create("providerId1", "폰트"));
-        Member member2 = memberRepository.save(Member.create("providerId2", "켈리"));
+        Member member = memberRepository.save(Member.create("providerId", "폰트"));
         ChallengeGroup challengeGroup1 = challengeGroupRepository.save(ChallengeGroupFixture.create());
         ChallengeGroup challengeGroup2 = challengeGroupRepository.save(ChallengeGroupFixture.create());
-        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup1, member1));
-        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup2, member1));
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup1, member));
+        challengeGroupMemberRepository.save(new ChallengeGroupMember(challengeGroup2, member));
 
         //when
-        JoinChallengeGroupDto joinChallengeGroupDto1 = challengeGroupService.joinChallengeGroup(
-                challengeGroup1.getJoinCode().getValue(), member2.getId());
-        JoinChallengeGroupDto joinChallengeGroupDto2 = challengeGroupService.joinChallengeGroup(
-                challengeGroup2.getJoinCode().getValue(), member2.getId());
+        JoiningChallengeGroupsWithLastSelectedGroupIndexDto result =
+                challengeGroupService.getJoiningChallengeGroups(member.getId());
 
         //then
-        assertThat(joinChallengeGroupDto1).isNotNull();
-        assertThat(joinChallengeGroupDto2).isNotNull();
+        assertThat(result.joiningChallengeGroups().size()).isEqualTo(2);
+        assertThat(result.lastSelectedGroupIndex()).isEqualTo(0);
+        assertThat(result.joiningChallengeGroups().get(0).groupName()).isEqualTo(challengeGroup1.getName());
+        assertThat(result.joiningChallengeGroups().get(1).groupName()).isEqualTo(challengeGroup2.getName());
     }
 
     @Test
