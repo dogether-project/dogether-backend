@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
-import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
-import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
+import site.dogether.challengegroup.service.ChallengeGroupPolicy;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
@@ -39,7 +37,6 @@ import java.util.Optional;
 public class DailyTodoCertificationService {
 
     private final MemberRepository memberRepository;
-    private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
@@ -47,6 +44,7 @@ public class DailyTodoCertificationService {
     private final ReviewerPicker reviewerPicker;
     private final DailyTodoHistoryService dailyTodoHistoryService;
     private final NotificationService notificationService;
+    private final ChallengeGroupPolicy challengeGroupPolicy;
 
     @Transactional
     public void certifyDailyTodo(
@@ -60,8 +58,8 @@ public class DailyTodoCertificationService {
         final ChallengeGroup challengeGroup = dailyTodo.getChallengeGroup();
         final DailyTodoStats dailyTodoStats = getDailyTodoStats(writer);
 
-        validateMemberIsInChallengeGroup(challengeGroup, writer);
-        validateChallengeGroupIsRunning(challengeGroup);
+        challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, writer);
+        challengeGroupPolicy.validateChallengeGroupIsRunning(challengeGroup);
 
         final DailyTodoCertification dailyTodoCertification = createDailyTodoCertification(dailyTodo, writer, certifyContent, certifyMediaUrl, dailyTodoStats);
         final Optional<Member> reviewer = pickDailyTodoCertificationReviewer(challengeGroup, writer, dailyTodoCertification);
@@ -83,18 +81,6 @@ public class DailyTodoCertificationService {
     private DailyTodoStats getDailyTodoStats(final Member dailyTodoWriter) {
         return dailyTodoStatsRepository.findByMember(dailyTodoWriter)
             .orElseThrow(() -> new DailyTodoStatsNotFoundException(String.format("사용자의 데일리 투두 통계가 존재하지 않습니다. (%s)", dailyTodoWriter)));
-    }
-
-    private void validateMemberIsInChallengeGroup(final ChallengeGroup challengeGroup, final Member member) {
-        if (!challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, member)) {
-            throw new MemberNotInChallengeGroupException(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (%s) (%s)", challengeGroup, member));
-        }
-    }
-
-    private void validateChallengeGroupIsRunning(final ChallengeGroup challengeGroup) {
-        if (!challengeGroup.isRunning()) {
-            throw new NotRunningChallengeGroupException(String.format("현재 진행중인 챌린지 그룹이 아닙니다. (%s)", challengeGroup));
-        }
     }
 
     private DailyTodoCertification createDailyTodoCertification(

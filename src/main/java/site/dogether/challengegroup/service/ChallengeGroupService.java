@@ -8,7 +8,7 @@ import site.dogether.challengegroup.controller.v0.dto.response.IsParticipatingCh
 import site.dogether.challengegroup.controller.v1.dto.request.CreateChallengeGroupApiRequestV1;
 import site.dogether.challengegroup.controller.v1.dto.response.IsChallengeGroupParticipationRequiredApiResponseV1;
 import site.dogether.challengegroup.entity.*;
-import site.dogether.challengegroup.exception.*;
+import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.challengegroup.repository.LastSelectedChallengeGroupRecordRepository;
@@ -38,6 +38,7 @@ public class ChallengeGroupService {
     private final MemberRepository memberRepository;
     private final ChallengeGroupRepository challengeGroupRepository;
     private final ChallengeGroupReader challengeGroupReader;
+    private final ChallengeGroupPolicy challengeGroupPolicy;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final LastSelectedChallengeGroupRecordRepository lastSelectedChallengeGroupRecordRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
@@ -48,7 +49,7 @@ public class ChallengeGroupService {
     @Transactional
     public String createChallengeGroup(final CreateChallengeGroupApiRequestV1 request, final Long memberId) {
         final Member member = getMember(memberId);
-        validateJoiningGroupMaxCount(member);
+        challengeGroupPolicy.validateChallengeGroupMaxCount(member);
 
         final LocalDate startAt = request.challengeGroupStartAtOption().calculateStartAt();
         final LocalDate endAt = request.challengeGroupDurationOption().calculateEndAt(startAt);
@@ -74,15 +75,6 @@ public class ChallengeGroupService {
             .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
     }
 
-    private void validateJoiningGroupMaxCount(final Member member) {
-        final int joiningGroupCount = challengeGroupMemberRepository.countNotFinishedGroupByMemberId(member.getId());
-        if (joiningGroupCount >= 5) {
-            throw new JoiningChallengeGroupMaxCountException(
-                String.format("참여할 수 있는 그룹은 최대 5개입니다. (memberId: %d), (joiningGroupCount %d): "
-                    , member.getId(), joiningGroupCount));
-        }
-    }
-
     private void saveLastSelectedChallengeGroupRecord(final Member member, final ChallengeGroup challengeGroup) {
         lastSelectedChallengeGroupRecordRepository.findByMember(member)
             .ifPresentOrElse(
@@ -93,13 +85,13 @@ public class ChallengeGroupService {
     @Transactional
     public JoinChallengeGroupDto joinChallengeGroup(final String joinCode, final Long memberId) {
         final Member joinMember = getMember(memberId);
-        validateJoiningGroupMaxCount(joinMember);
+        challengeGroupPolicy.validateChallengeGroupMaxCount(joinMember);
 
         final ChallengeGroup challengeGroup = challengeGroupReader.getByJoinCode(joinCode);
 
-        validateJoiningGroupIsNotFinished(challengeGroup);
-        memberAlreadyInSameGroup(challengeGroup, joinMember);
-        validateJoiningChallengeGroupAlreadyFullMember(challengeGroup);
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateMemberInSameChallengeGroup(challengeGroup, joinMember);
+        challengeGroupPolicy.validateChallengeGroupHasMaximumMember(challengeGroup);
 
         final ChallengeGroupMember challengeGroupMember = new ChallengeGroupMember(challengeGroup, joinMember);
         challengeGroupMemberRepository.save(challengeGroupMember);
@@ -108,31 +100,6 @@ public class ChallengeGroupService {
         sendJoinNotification(challengeGroup, joinMember);
 
         return JoinChallengeGroupDto.from(challengeGroup);
-    }
-
-    private void validateJoiningGroupIsNotFinished(final ChallengeGroup challengeGroup) {
-        if (challengeGroup.isFinished()) {
-            throw new JoiningChallengeGroupAlreadyFinishedException(
-                String.format("이미 종료된 그룹의 초대 코드입니다. (%s)", challengeGroup));
-        }
-    }
-
-    private void validateJoiningChallengeGroupAlreadyFullMember(ChallengeGroup challengeGroup) {
-        final int maximumMemberCount = challengeGroup.getMaximumMemberCount();
-        final int currentMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
-        if (currentMemberCount >= maximumMemberCount) {
-            throw new JoiningChallengeGroupAlreadyFullMemberException(
-                String.format("그룹 정원 초과입니다. (currentMemberCount : %d, maximumMemberCount : %d)",
-                    currentMemberCount, maximumMemberCount));
-        }
-    }
-
-    private void memberAlreadyInSameGroup(ChallengeGroup challengeGroup, Member joinMember) {
-        if (challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, joinMember)) {
-            throw new AlreadyJoinChallengeGroupException(
-                    String.format("이미 참여 중인 그룹입니다. (memberId: %d), groupId : %d)",
-                            joinMember.getId(), challengeGroup.getId()));
-        }
     }
 
     private void sendJoinNotification(final ChallengeGroup challengeGroup, final Member joinMember) {
@@ -260,19 +227,12 @@ public class ChallengeGroupService {
     public List<ChallengeGroupMemberOverviewDto> getChallengeGroupMemberOverview(final Long memberId, final Long groupId) {
         final Member viewer = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
-        validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
 
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
         final List<ChallengeGroupMemberWithAchievementRateDto> challengeGroupMemberWithAchievementRates = calculateChallengeGroupMemberAchievementRateSortedDesc(groupMembers);
 
         return buildChallengeGroupOverview(viewer, challengeGroupMemberWithAchievementRates);
-    }
-
-    private void validateChallengeGroupNotFinished(final ChallengeGroup joiningGroup) {
-        if (joiningGroup.isFinished()) {
-            throw new FinishedChallengeGroupException(
-                String.format("이미 종료된 그룹입니다. (groupId: %d)", joiningGroup.getId()));
-        }
     }
 
     private List<ChallengeGroupMemberWithAchievementRateDto> calculateChallengeGroupMemberAchievementRateSortedDesc(final List<ChallengeGroupMember> groupMembers) {

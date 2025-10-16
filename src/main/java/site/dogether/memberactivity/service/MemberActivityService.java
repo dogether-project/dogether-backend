@@ -6,11 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.ChallengeGroupPolicy;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
@@ -51,6 +50,7 @@ public class MemberActivityService {
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final MemberRepository memberRepository;
     private final ChallengeGroupService challengeGroupService;
+    private final ChallengeGroupPolicy challengeGroupPolicy;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
@@ -64,13 +64,8 @@ public class MemberActivityService {
 
         final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
-        if (challengeGroup.isFinished()) {
-            throw new InvalidChallengeGroupException(String.format("이미 종료된 그룹입니다. (%s)", challengeGroup.getName()));
-        }
-
-        if (!challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, member)) {
-            throw new MemberNotInChallengeGroupException("그룹에 속해있지 않은 유저입니다.");
-        }
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, member);
 
         return new GetGroupActivityStatApiResponseV1(
                 getChallengeGroupInfo(challengeGroup),
