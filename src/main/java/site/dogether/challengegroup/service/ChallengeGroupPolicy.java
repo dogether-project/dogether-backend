@@ -7,8 +7,8 @@ import site.dogether.challengegroup.exception.*;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.member.entity.Member;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class ChallengeGroupPolicy {
 
     private static final int MAX_CHALLENGE_GROUP_COUNT = 5;
