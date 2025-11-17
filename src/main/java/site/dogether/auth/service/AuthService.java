@@ -63,10 +63,18 @@ public class AuthService {
 
     @Transactional
     public void withdraw(final Long memberId, final WithdrawApiRequestV1 request) {
-        final boolean isRevoked = appleOAuthProvider.revoke(request.authorizationCode());
+        final boolean isRevoked = revokeAppleLogin(request.getLoginType(), request.authorizationCode());
         if (isRevoked) {
             memberService.delete(memberId);
             log.info("회원 탈퇴 처리 완료. memberId: {}", memberId);
         }
+    }
+
+    private boolean revokeAppleLogin(final LoginType loginType, final String authorizationCode) {
+        if (loginType == LoginType.APPLE) {
+            return appleOAuthProvider.revoke(authorizationCode);
+        }
+
+        return true;
     }
 }
