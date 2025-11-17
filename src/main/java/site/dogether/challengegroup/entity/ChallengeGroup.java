@@ -1,13 +1,6 @@
 package site.dogether.challengegroup.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +8,6 @@ import lombok.ToString;
 import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
 import site.dogether.common.audit.entity.BaseEntity;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -33,7 +25,6 @@ public class ChallengeGroup extends BaseEntity {
     private static final int MAXIMUM_GROUP_NAME_LENGTH = 200;
     private static final int MIN_MAXIMUM_MEMBER_COUNT = 2;
     private static final int MAX_MAXIMUM_MEMBER_COUNT = 20;
-    private static final int JOIN_CODE_LENGTH = 8;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +42,8 @@ public class ChallengeGroup extends BaseEntity {
     @Column(name = "end_at", nullable = false)
     private LocalDate endAt;
 
-    @Column(name = "join_code", length = 20, nullable = false, unique = true)
-    private String joinCode;
+    @Embedded
+    private JoinCode joinCode;
 
     @Column(name = "status", length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -61,23 +52,22 @@ public class ChallengeGroup extends BaseEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public static ChallengeGroup create(
-        final String name,
-        final int maximumMemberCount,
-        final LocalDate startAt,
-        final LocalDate endAt
+    public ChallengeGroup(
+            final String name,
+            final int maximumMemberCount,
+            final LocalDate startAt,
+            final LocalDate endAt,
+            final JoinCode joinCode,
+            final LocalDateTime createdAt
     ) {
-        validateEndAtIsAfterStartAt(startAt, endAt);
-        return new ChallengeGroup(
-            null,
-            validateGroupName(name),
-            validateMaximumMemberCount(maximumMemberCount),
-            startAt,
-            endAt,
-            generateJoinCode(),
-            initStatus(startAt),
-            LocalDateTime.now()
-        );
+        this.name = validateGroupName(name);
+        this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
+        validateDates(startAt, endAt);
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.joinCode = validateJoinCode(joinCode);
+        this.status = initStatus(startAt);
+        this.createdAt = validateCreatedAt(createdAt);
     }
 
     private static String validateGroupName(String name) {
@@ -102,7 +92,13 @@ public class ChallengeGroup extends BaseEntity {
         return maximumMemberCount;
     }
 
-    private static void validateEndAtIsAfterStartAt(LocalDate startAt, LocalDate endAt) {
+    private static void validateDates(LocalDate startAt, LocalDate endAt) {
+        if (startAt == null) {
+            throw new InvalidChallengeGroupException("시작일은 null일 수 없습니다.");
+        }
+        if (endAt == null) {
+            throw new InvalidChallengeGroupException("종료일은 null일 수 없습니다.");
+        }
         if (startAt.isAfter(endAt)) {
             throw new InvalidChallengeGroupException(
                     String.format("시작일은 종료일보다 늦을 수 없습니다. (startAt : %s, endAt : %s)", startAt, endAt)
@@ -110,16 +106,18 @@ public class ChallengeGroup extends BaseEntity {
         }
     }
 
-    private static String generateJoinCode() {
-        String charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        SecureRandom random = new SecureRandom();
-        StringBuilder codeBuilder = new StringBuilder(JOIN_CODE_LENGTH);
-
-        for (int i = 0; i < JOIN_CODE_LENGTH; i++) {
-            int index = random.nextInt(charSet.length());
-            codeBuilder.append(charSet.charAt(index));
+    private static JoinCode validateJoinCode(JoinCode joinCode) {
+        if (joinCode == null) {
+            throw new InvalidChallengeGroupException("참여 코드는 null일 수 없습니다.");
         }
-        return codeBuilder.toString();
+        return joinCode;
+    }
+
+    private static LocalDateTime validateCreatedAt(LocalDateTime createdAt) {
+        if (createdAt == null) {
+            throw new InvalidChallengeGroupException("생성일은 null일 수 없습니다.");
+        }
+        return createdAt;
     }
 
     private static ChallengeGroupStatus initStatus(final LocalDate startAt) {
@@ -127,30 +125,6 @@ public class ChallengeGroup extends BaseEntity {
             return RUNNING;
         }
         return READY;
-    }
-
-    public ChallengeGroup(
-        final Long id,
-        final String name,
-        final int maximumMemberCount,
-        final LocalDate startAt,
-        final LocalDate endAt,
-        final String joinCode,
-        final ChallengeGroupStatus status,
-        final LocalDateTime createdAt
-    ) {
-        this.id = id;
-        this.name = name;
-        this.maximumMemberCount = validateMaximumMemberCount(maximumMemberCount);
-        this.startAt = startAt;
-        this.endAt = endAt;
-        this.joinCode = joinCode;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    private boolean isReady() {
-        return status == READY;
     }
 
     public boolean isRunning() {
@@ -163,10 +137,10 @@ public class ChallengeGroup extends BaseEntity {
 
     public int getProgressDay() {
         LocalDate today = LocalDate.now();
-        if (isReady()) {
+        if (today.isBefore(startAt)) {
             return 0;
         }
-        if (isFinished()) {
+        if (today.isAfter(endAt)) {
             return (int) ChronoUnit.DAYS.between(startAt, endAt) + 1;
         }
         return (int) ChronoUnit.DAYS.between(startAt, today) + 1;
@@ -187,26 +161,16 @@ public class ChallengeGroup extends BaseEntity {
     }
 
     public void updateStatus() {
-        LocalDate now = LocalDate.now();
-        if (status == READY && isStart(now)) {
+        final LocalDate now = LocalDate.now();
+        if (now.isBefore(startAt)) {
+            status = READY;
+        } else if (now.isBefore(endAt)) {
             status = RUNNING;
-            return;
-        }
-        if (status == RUNNING && isEnd(now)) {
+        } else if (now.equals(endAt)) {
             status = D_DAY;
-            return;
-        }
-        if (status == D_DAY && now.isAfter(endAt)) {
+        } else {
             status = FINISHED;
         }
-    }
-
-    private boolean isStart(LocalDate now) {
-        return startAt.isEqual(now);
-    }
-
-    private boolean isEnd(LocalDate now) {
-        return endAt.isEqual(now);
     }
 
     @Override

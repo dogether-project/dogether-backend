@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
-import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.dailytodohistory.entity.DailyTodoHistory;
@@ -29,7 +28,7 @@ import site.dogether.member.repository.MemberRepository;
 @Service
 public class DailyTodoHistoryService {
 
-    private final ChallengeGroupRepository challengeGroupRepository;
+    private final ChallengeGroupReader challengeGroupReader;
     private final MemberRepository memberRepository;
     private final DailyTodoHistoryRepository dailyTodoHistoryRepository;
     private final DailyTodoHistoryReadRepository dailyTodoHistoryReadRepository;
@@ -69,8 +68,7 @@ public class DailyTodoHistoryService {
     }
 
     private ChallengeGroup getChallengeGroup(final Long challengeGroupId) {
-        return challengeGroupRepository.findById(challengeGroupId)
-            .orElseThrow(() -> new ChallengeGroupNotFoundException(String.format("존재하지 않는 챌린지 그룹 id입니다. (%d)", challengeGroupId)));
+        return challengeGroupReader.getById(challengeGroupId);
     }
 
     private Member getMember(final Long memberId) {

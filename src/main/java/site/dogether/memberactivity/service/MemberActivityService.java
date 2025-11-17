@@ -6,11 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
-import site.dogether.challengegroup.exception.InvalidChallengeGroupException;
-import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
-import site.dogether.challengegroup.repository.ChallengeGroupRepository;
+import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.challengegroup.service.ChallengeGroupService;
+import site.dogether.challengegroup.service.ChallengeGroupPolicy;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
@@ -20,8 +19,8 @@ import site.dogether.dailytodocertification.repository.DailyTodoCertificationRep
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
-import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
 import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsApiResponseV0;
+import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
@@ -44,13 +43,14 @@ import java.util.stream.Collectors;
 @Service
 public class MemberActivityService {
 
-    private final ChallengeGroupRepository challengeGroupRepository;
+    private final ChallengeGroupReader challengeGroupReader;
     private final ChallengeGroupMemberRepository challengeGroupMemberRepository;
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final MemberRepository memberRepository;
     private final ChallengeGroupService challengeGroupService;
+    private final ChallengeGroupPolicy challengeGroupPolicy;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
@@ -62,16 +62,10 @@ public class MemberActivityService {
     public GetGroupActivityStatApiResponseV1 getGroupActivityStat(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
 
-        final ChallengeGroup challengeGroup = challengeGroupRepository.findById(groupId)
-                .orElseThrow(() -> new InvalidChallengeGroupException("해당 그룹이 존재하지 않습니다"));
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
-        if (challengeGroup.isFinished()) {
-            throw new InvalidChallengeGroupException(String.format("이미 종료된 그룹입니다. (%s)", challengeGroup.getName()));
-        }
-
-        if (!challengeGroupMemberRepository.existsByChallengeGroupAndMember(challengeGroup, member)) {
-            throw new MemberNotInChallengeGroupException("그룹에 속해있지 않은 유저입니다.");
-        }
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, member);
 
         return new GetGroupActivityStatApiResponseV1(
                 getChallengeGroupInfo(challengeGroup),
@@ -96,7 +90,7 @@ public class MemberActivityService {
                 challengeGroup.getName(),
                 challengeGroup.getMaximumMemberCount(),
                 currentMemberCount,
-                challengeGroup.getJoinCode(),
+                challengeGroup.getJoinCode().getValue(),
                 endAt
         );
     }
