@@ -31,10 +31,10 @@ public class NotificationService {
         final String type
     ) {
         notificationTokenRepository.findAllByMember_Id(recipientId).forEach(
-            notificationToken -> sndNotification(notificationToken, title, body, type));
+            notificationToken -> sendNotification(notificationToken, title, body, type));
     }
 
-    private void sndNotification(final NotificationToken notificationToken, String title, String body, String type) {
+    private void sendNotification(final NotificationToken notificationToken, String title, String body, String type) {
         try {
             final SimpleFcmNotificationRequest simpleFcmNotificationRequest = new SimpleFcmNotificationRequest(notificationToken.getValue(), title, body, type);
             notificationSender.send(simpleFcmNotificationRequest);
@@ -49,14 +49,14 @@ public class NotificationService {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
         final Member member = getMember(memberId);
-        if (notificationTokenRepository.existsByMember(member)) {
-            log.info("회원의 기존 토큰 제거 ({})", memberId);
-            notificationTokenRepository.deleteAllByMember(member);
+        if (notificationTokenRepository.existsByValue(notificationToken)) {
+            log.trace("이미 존재하는 푸시 알림 토큰이므로 저장 X");
+            return;
         }
 
         final NotificationToken notificationTokenJpaEntity = new NotificationToken(member, notificationToken);
         notificationTokenRepository.save(notificationTokenJpaEntity);
-        log.info("푸시 알림 토큰 저장 - {}", notificationToken);
+        log.trace("푸시 알림 토큰 저장 - {}", notificationToken);
     }
 
     private void validateNotificationTokenIsNullOrEmpty(final String token) {

@@ -86,6 +86,7 @@ public class AuthControllerV1DocsTest extends RestDocsSupport {
     @Test
     void withdrawV1() throws Exception {
         final WithdrawApiRequestV1 request = new WithdrawApiRequestV1(
+            "APPLE",
             "authorizationCode"
         );
 
@@ -99,7 +100,13 @@ public class AuthControllerV1DocsTest extends RestDocsSupport {
             .andExpect(status().isOk())
             .andDo(createDocument(
                 requestFields(
+                    fieldWithPath("loginType")
+                        .description("소셜 로그인 유형")
+                        .type(JsonFieldType.STRING)
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("APPLE(애플 로그인)", "KAKAO(카카오 로그인)")),
                     fieldWithPath("authorizationCode")
+                        .optional()
                         .description("인가 코드")
                         .type(JsonFieldType.STRING)
                         .attributes(constraints("애플이 제공하는 인가 코드"))

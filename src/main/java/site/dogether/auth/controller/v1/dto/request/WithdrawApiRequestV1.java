@@ -1,4 +1,10 @@
 package site.dogether.auth.controller.v1.dto.request;
 
-public record WithdrawApiRequestV1(String authorizationCode) {
+import site.dogether.auth.constant.LoginType;
+
+public record WithdrawApiRequestV1(String loginType, String authorizationCode) {
+
+    public LoginType getLoginType() {
+        return LoginType.valueOf(loginType);
+    }
 }
