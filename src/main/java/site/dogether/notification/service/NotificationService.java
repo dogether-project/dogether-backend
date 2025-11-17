@@ -31,10 +31,10 @@ public class NotificationService {
         final String type
     ) {
         notificationTokenRepository.findAllByMember_Id(recipientId).forEach(
-            notificationToken -> sndNotification(notificationToken, title, body, type));
+            notificationToken -> sendNotification(notificationToken, title, body, type));
     }
 
-    private void sndNotification(final NotificationToken notificationToken, String title, String body, String type) {
+    private void sendNotification(final NotificationToken notificationToken, String title, String body, String type) {
         try {
             final SimpleFcmNotificationRequest simpleFcmNotificationRequest = new SimpleFcmNotificationRequest(notificationToken.getValue(), title, body, type);
             notificationSender.send(simpleFcmNotificationRequest);
