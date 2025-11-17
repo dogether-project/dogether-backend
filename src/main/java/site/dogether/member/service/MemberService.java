@@ -20,16 +20,8 @@ public class MemberService {
 
     @Transactional
     public Member save(final String providerId, final String name) {
-        return memberRepository.findByProviderId(providerId)
-            .map(member -> {
-                log.info("가입된 회원을 조회합니다. memberId: {}", member.getId());
-                return member;
-            })
-            .orElseGet(() -> createMember(providerId, name));
-    }
-
-    private Member createMember(String providerId, String name) {
         log.info("신규 가입 회원을 저장합니다. providerId: {}", providerId);
+
         Member newMember = Member.create(providerId, name);
         final Member createdMember = memberRepository.save(newMember);
         memberActivityService.initDailyTodoStats(createdMember);
