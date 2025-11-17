@@ -49,14 +49,14 @@ public class NotificationService {
         validateNotificationTokenIsNullOrEmpty(notificationToken);
 
         final Member member = getMember(memberId);
-        if (notificationTokenRepository.existsByMember(member)) {
-            log.info("회원의 기존 토큰 제거 ({})", memberId);
-            notificationTokenRepository.deleteAllByMember(member);
+        if (notificationTokenRepository.existsByValue(notificationToken)) {
+            log.trace("이미 존재하는 푸시 알림 토큰이므로 저장 X");
+            return;
         }
 
         final NotificationToken notificationTokenJpaEntity = new NotificationToken(member, notificationToken);
         notificationTokenRepository.save(notificationTokenJpaEntity);
-        log.info("푸시 알림 토큰 저장 - {}", notificationToken);
+        log.trace("푸시 알림 토큰 저장 - {}", notificationToken);
     }
 
     private void validateNotificationTokenIsNullOrEmpty(final String token) {

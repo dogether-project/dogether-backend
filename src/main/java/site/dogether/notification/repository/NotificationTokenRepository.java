@@ -9,13 +9,11 @@ import java.util.Optional;
 
 public interface NotificationTokenRepository extends JpaRepository<NotificationToken, Long> {
 
+    boolean existsByValue(String token);
+
     List<NotificationToken> findAllByMember_Id(Long memberId);
 
     void deleteAllByValue(String value);
 
     Optional<NotificationToken> findByMemberAndValue(Member member, String value);
-
-    boolean existsByMember(Member member);
-
-    void deleteAllByMember(Member member);
 }
