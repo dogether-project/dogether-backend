@@ -1,8 +1,10 @@
 package site.dogether.auth.exception.handler;
 
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,6 +13,7 @@ import site.dogether.auth.exception.NeedAppleLoginRevokeException;
 import site.dogether.common.controller.dto.response.ApiResponse;
 
 import static site.dogether.auth.exception.handler.AuthErrorCode.AUTH_ERROR;
+import static site.dogether.auth.exception.handler.AuthErrorCode.INVALID_AUTHENTICATION_TOKEN;
 import static site.dogether.auth.exception.handler.AuthErrorCode.NEED_APPLE_LOGIN_REVOKE;
 import static site.dogether.common.controller.dto.response.ApiResponse.fail;
 
@@ -31,5 +34,13 @@ public class AuthExceptionHandler {
         log.error("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
             .body(fail(NEED_APPLE_LOGIN_REVOKE));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleSignatureException(final SignatureException e) {
+        log.error("{} 발생!", e.getClass().getSimpleName(), e);
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(fail(INVALID_AUTHENTICATION_TOKEN));
     }
 }
