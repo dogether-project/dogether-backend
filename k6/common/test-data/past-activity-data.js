@@ -1,20 +1,14 @@
 import fs from 'fs';
 import {format} from "fast-csv";
 import {
-    CURRENT_GROUP_RUNNING_DAY, DAY_TODO_CERTIFICATION_PER_MEMBER_COUNT, DAY_TODO_PER_MEMBER_COUNT,
-    getDateNDaysAgo, GROUP_PER_MEMBER_COUNT, MEMBER_COUNT, MEMBER_PER_GROUP_COUNT,
+    DAY_TODO_PER_MEMBER_COUNT,
+    GROUP_PER_MEMBER_COUNT, MEMBER_COUNT, MEMBER_PER_GROUP_COUNT,
     PAST_GROUP_RUNNING_DAY,
-    TOTAL_PAST_ACTIVITY_DAY, waitForStreamFinish,
-    calculateNextDate, calculateEndAt, convertDateTimeFormatString, PAST_ACTIVITY_DATA_BASE_PATH, toDateOnly
+    waitForStreamFinish,
+    calculateNextDate, calculateEndAt, convertDateTimeFormatString, PAST_ACTIVITY_DATA_BASE_PATH, toDateOnly,
+    PAST_TOTAL_ACTIVITY_CYCLE, PAST_GROUP_ACTIVITY_START_AT, PAST_ONE_CYCLE_PER_GROUP_COUNT,
+    PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT
 } from "./test-data-common.js";
-
-// =========== 상수 ===========
-export const TOTAL_ACTIVITY_CYCLE = Math.ceil(TOTAL_PAST_ACTIVITY_DAY / PAST_GROUP_RUNNING_DAY);
-export const ONE_CYCLE_PER_GROUP_COUNT = MEMBER_COUNT / MEMBER_PER_GROUP_COUNT * GROUP_PER_MEMBER_COUNT;   // 한 사이클에 존재하는 그룹 개수
-export const PAST_GROUP_ACTIVITY_START_AT = getDateNDaysAgo(TOTAL_ACTIVITY_CYCLE * PAST_GROUP_RUNNING_DAY + CURRENT_GROUP_RUNNING_DAY);
-
-// =========== 최종 데이터 개수 ===========
-const TOTAL_DAILY_TODO_CERTIFICATION_COUNT = MEMBER_COUNT * DAY_TODO_CERTIFICATION_PER_MEMBER_COUNT * PAST_GROUP_RUNNING_DAY * GROUP_PER_MEMBER_COUNT * TOTAL_ACTIVITY_CYCLE;
 
 // =========== CSV Stream ===========
 const member_stream = format({ headers: true });
@@ -56,7 +50,7 @@ let dailyTodoId = 1;  // daily_todo & daily_todo_history
 let dailyTodoCertificationId = 1;
 
 async function createTestData() {
-    console.log(`👷[Const Past Activity Data] 과거 활동 테스트 데이터 생성중... (총 과거 진행일 수 : ${TOTAL_ACTIVITY_CYCLE * PAST_GROUP_RUNNING_DAY}일)\n`);
+    console.log(`👷[Const Past Activity Data] 과거 활동 테스트 데이터 생성중... (총 과거 진행일 수 : ${PAST_TOTAL_ACTIVITY_CYCLE * PAST_GROUP_RUNNING_DAY}일)\n`);
 
     await createMemberInfoData();
     await createChallengeAndTodoData();
@@ -71,7 +65,7 @@ async function createMemberInfoData() {
     let memberCreatedAt = PAST_GROUP_ACTIVITY_START_AT;
     memberCreatedAt = memberCreatedAt.substring(0, 10) + " 06:00:00";
 
-    const dailyTodoCertificationCountPerMember = TOTAL_DAILY_TODO_CERTIFICATION_COUNT / MEMBER_COUNT;
+    const dailyTodoCertificationCountPerMember = PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT / MEMBER_COUNT;
     const approvedDailyTodoCertificationCountPerMember = Math.ceil(dailyTodoCertificationCountPerMember / 2);
     const rejectedDailyTodoCertificationCountPerMember = dailyTodoCertificationCountPerMember - approvedDailyTodoCertificationCountPerMember;
 
@@ -124,16 +118,16 @@ async function createMemberInfoData() {
 async function createChallengeAndTodoData() {
     console.log("🧑‍🍳 챌린지 그룹 & 투두 & 투두 인증 관련 테스트 데이터 생성중...");
 
-    for (let cycle = 0; cycle < TOTAL_ACTIVITY_CYCLE; cycle++) {
+    for (let cycle = 0; cycle < PAST_TOTAL_ACTIVITY_CYCLE; cycle++) {
         let groupStartAtInCycle = calculateNextDate(PAST_GROUP_ACTIVITY_START_AT, cycle, PAST_GROUP_RUNNING_DAY);
         groupStartAtInCycle = groupStartAtInCycle.substring(0, 10) + " 07:00:00";
         const groupStartAtInCycleOnlyDate = toDateOnly(groupStartAtInCycle);
 
         const groupEndAtInCycle = toDateOnly(calculateEndAt(groupStartAtInCycle, PAST_GROUP_RUNNING_DAY + 1));
-        const firstGroupIdInCycle = 1 + cycle * ONE_CYCLE_PER_GROUP_COUNT;
+        const firstGroupIdInCycle = 1 + cycle * PAST_ONE_CYCLE_PER_GROUP_COUNT;
 
         // 2. challenge_group & challenge_group_member 데이터 생성
-        for (let i = 0; i < ONE_CYCLE_PER_GROUP_COUNT; i++) {
+        for (let i = 0; i < PAST_ONE_CYCLE_PER_GROUP_COUNT; i++) {
             const currentChallengeGroupId = challengeGroupId++;
             challenge_group_stream.write({
                 id: currentChallengeGroupId,
