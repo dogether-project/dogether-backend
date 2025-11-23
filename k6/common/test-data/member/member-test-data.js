@@ -78,7 +78,7 @@ async function generateData() {
 }
 
 /**
- * CSV 파일 Stream Flush 대기 체크
+ * CSV 파일 Stream Flush 체크
  */
 function waitForStreamFinish(stream) {
     return new Promise((resolve, reject) => {

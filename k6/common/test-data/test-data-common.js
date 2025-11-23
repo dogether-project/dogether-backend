@@ -7,7 +7,7 @@ export const DAY_TODO_CERTIFICATION_PER_MEMBER_COUNT = DAY_TODO_PER_MEMBER_COUNT
 
 // 과거 & 현재 활동 데이터 옵션
 export const PAST_GROUP_PER_MEMBER_COUNT = 5;  // 회원당 과거 활동 참여 그룹 수
-export const CURRENT_GROUP_PER_MEMBER_COUNT = 4;  // 회원당 현재 활동 참여 그룹 수 (사실상 고정 값...)
+export const CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT = 5;  // 회원당 현재 활동 참여 그룹 수 (사실상 고정 값...)
 
 export const PAST_GROUP_RUNNING_DAY = 3;  // 과거 그룹 진행일 수
 export const CURRENT_GROUP_RUNNING_DAY = 28;  // 현재 그룹 진행일 수
@@ -21,22 +21,21 @@ export const PAST_GROUP_ACTIVITY_START_AT = getDateNDaysAgo(PAST_TOTAL_ACTIVITY_
 export const PAST_TOTAL_CHALLENGE_GROUP_COUNT = PAST_TOTAL_ACTIVITY_CYCLE * PAST_ONE_CYCLE_PER_GROUP_COUNT;
 export const PAST_TOTAL_CHALLENGE_GROUP_MEMBER_COUNT = PAST_TOTAL_CHALLENGE_GROUP_COUNT * MEMBER_PER_GROUP_COUNT;
 export const PAST_TOTAL_DAILY_TODO_COUNT = MEMBER_COUNT * DAY_TODO_PER_MEMBER_COUNT * PAST_GROUP_RUNNING_DAY * PAST_GROUP_PER_MEMBER_COUNT * PAST_TOTAL_ACTIVITY_CYCLE;
-export const PAST_TOTAL_DAILY_TODO_HISTORY_COUNT = PAST_TOTAL_DAILY_TODO_COUNT;
 export const PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT = MEMBER_COUNT * DAY_TODO_CERTIFICATION_PER_MEMBER_COUNT * PAST_GROUP_RUNNING_DAY * PAST_GROUP_PER_MEMBER_COUNT * PAST_TOTAL_ACTIVITY_CYCLE;
-export const PAST_TOTAL_DAILY_TODO_CERTIFICATION_REVIEWER_COUNT = PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT;
-
-// 현재 활동 데이터 마지막날 활동 옵션
-export const CURRENT_LAST_DAY_NO_ACTIVITY_GROUP_INDEX = 1;
-export const CURRENT_LAST_DAY_ONLY_TODO_GROUP_INDEX = 1;
-export const CURRENT_LAST_DAY_ONLY_TODO_AND_CERTIFICATION_GROUP_INDEX = 2;
-
-
 
 // CSV 파일 옵션
 export const CSV_SAVED_BASE_PATH = './csv'
 
 
-// =========== 유틸 함수 ===========
+// =========== 테스트 데이터 생성 유틸 함수 ===========
+/**
+ * 현재 날짜 반환
+ */
+export function getCurrentDate() {
+    const now = new Date();
+    return convertDateTimeFormatString(now);
+}
+
 /**
  * n일전 날짜 계산
  */
@@ -47,7 +46,7 @@ export function getDateNDaysAgo(n) {
 }
 
 /**
- * Date 객체를 문자열로 변경
+ * Date 객체를 문자열로 변환
  */
 export function convertDateTimeFormatString(date = new Date()) {
     // MySQL DATETIME 형식으로 포맷 (YYYY-MM-DD HH:mm:ss)
@@ -56,7 +55,7 @@ export function convertDateTimeFormatString(date = new Date()) {
 }
 
 /**
- * 날짜 정보만 파싱
+ * 날짜 문자열에서 년/일/월 문자열만 파싱
  */
 export function toDateOnly(dateTimeString) {
     if (typeof dateTimeString !== 'string') return dateTimeString;
@@ -81,4 +80,63 @@ export function calculateEndAt(startAt, duration) {
     const d = new Date(startAt);
     d.setDate(d.getDate() + (duration - 1));
     return convertDateTimeFormatString(d);
+}
+
+/**
+ * 리뷰어 ID 계산
+ */
+export function getReviewerId(memberId) {
+    // 그룹의 시작과 끝 ID를 구함
+    const groupIndex = Math.floor((memberId - 1) / MEMBER_PER_GROUP_COUNT);
+    const startId = groupIndex * MEMBER_PER_GROUP_COUNT + 1;         // 예: 1, 21, 41, ...
+
+    // 그룹 내 offset (0~19)
+    const offset = memberId - startId;
+
+    // 매칭 규칙: 0 <-> 19, 1 <-> 18, ...
+    const reviewerOffset = MEMBER_PER_GROUP_COUNT - 1 - offset;
+
+    return startId + reviewerOffset;
+}
+
+/**
+ * 과거 활동 데이터 중 테이블별 마지막 데이터들의 PK를 계산해서 반환
+ */
+export function getLastIdsOfPastActivityData() {
+    return {
+        lastChallengeGroupId: PAST_TOTAL_CHALLENGE_GROUP_COUNT,
+        lastChallengeGroupMemberId: PAST_TOTAL_CHALLENGE_GROUP_MEMBER_COUNT,
+        lastDailyTodoId: PAST_TOTAL_DAILY_TODO_COUNT,
+        lastDailyTodoCertificationId: PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT
+    };
+}
+
+
+// ================== K6 조회 API 성능 테스트 헬퍼 함수 (for Read) ==================
+export function getChallengeGroupIdsPerMember() {
+    let challengeGroupId = getLastIdsOfPastActivityData().lastChallengeGroupId + 1;
+    const groupIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
+
+    let joiningGroupId = challengeGroupId;
+    for (let i = 0; i < CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT; i++) {
+        for (let j = 0; j < MEMBER_COUNT / MEMBER_PER_GROUP_COUNT; j++) {
+            let memberId = 1 + j * MEMBER_PER_GROUP_COUNT;
+            for (let k = 0; k < MEMBER_PER_GROUP_COUNT; k++) {
+                let currentMemberId = memberId++;
+                groupIdsByMember[currentMemberId - 1].push(joiningGroupId);
+            }
+            joiningGroupId++;
+        }
+    }
+
+    return groupIdsByMember;
+}
+
+export function getChallengeGroupMembersPerMember() {
+    const groupMemberIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
+    for (let i = 1; i <= MEMBER_COUNT; i++) {
+        groupMemberIdsByMember[i - 1].push(getReviewerId(i));
+    }
+
+    return groupMemberIdsByMember;
 }

@@ -2,10 +2,19 @@ import fs from 'fs';
 import {format} from "fast-csv";
 import {
     DAY_TODO_PER_MEMBER_COUNT,
-    PAST_GROUP_PER_MEMBER_COUNT, MEMBER_COUNT, MEMBER_PER_GROUP_COUNT,
+    PAST_GROUP_PER_MEMBER_COUNT,
+    MEMBER_COUNT,
+    MEMBER_PER_GROUP_COUNT,
     PAST_GROUP_RUNNING_DAY,
-    calculateNextDate, calculateEndAt, convertDateTimeFormatString, toDateOnly,
-    PAST_TOTAL_ACTIVITY_CYCLE, PAST_GROUP_ACTIVITY_START_AT, PAST_ONE_CYCLE_PER_GROUP_COUNT, CSV_SAVED_BASE_PATH,
+    calculateNextDate,
+    calculateEndAt,
+    convertDateTimeFormatString,
+    toDateOnly,
+    getReviewerId,
+    PAST_TOTAL_ACTIVITY_CYCLE,
+    PAST_GROUP_ACTIVITY_START_AT,
+    PAST_ONE_CYCLE_PER_GROUP_COUNT,
+    CSV_SAVED_BASE_PATH,
 } from "../test-data-common.js";
 
 // =========== CSV Stream ===========
@@ -175,22 +184,8 @@ async function generateData() {
     ]);
 }
 
-function getReviewerId(memberId) {
-    // 그룹의 시작과 끝 ID를 구함
-    const groupIndex = Math.floor((memberId - 1) / MEMBER_PER_GROUP_COUNT);
-    const startId = groupIndex * MEMBER_PER_GROUP_COUNT + 1;         // 예: 1, 21, 41, ...
-
-    // 그룹 내 offset (0~19)
-    const offset = memberId - startId;
-
-    // 매칭 규칙: 0 <-> 19, 1 <-> 18, ...
-    const reviewerOffset = MEMBER_PER_GROUP_COUNT - 1 - offset;
-
-    return startId + reviewerOffset;
-}
-
 /**
- * CSV 파일 Stream Flush 대기 체크
+ * CSV 파일 Stream Flush 체크
  */
 function waitForStreamFinish(stream) {
     return new Promise((resolve, reject) => {

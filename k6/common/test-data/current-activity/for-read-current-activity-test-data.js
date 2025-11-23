@@ -1,0 +1,212 @@
+import fs from 'fs';
+import {format} from "fast-csv";
+import {
+    CSV_SAVED_BASE_PATH,
+    calculateEndAt,
+    getReviewerId,
+    getCurrentDate,
+    CURRENT_GROUP_RUNNING_DAY,
+    DAY_TODO_PER_MEMBER_COUNT,
+    MEMBER_COUNT,
+    MEMBER_PER_GROUP_COUNT,
+    CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT,
+    toDateOnly,
+    getLastIdsOfPastActivityData,
+    getDateNDaysAgo,
+    convertDateTimeFormatString,
+} from "../test-data-common.js";
+
+// =========== CSV Stream ===========
+const challenge_group_stream = format({ headers: true });
+challenge_group_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_challenge_group.csv`));
+
+const challenge_group_member_stream = format({ headers: true });
+challenge_group_member_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_challenge_group_member.csv`));
+
+const last_selected_challenge_group_record_stream = format({ headers: true });
+last_selected_challenge_group_record_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_last_selected_challenge_group_record.csv`));
+
+const daily_todo_stream = format({ headers: true });
+daily_todo_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo.csv`));
+
+const daily_todo_history_stream = format({ headers: true });
+daily_todo_history_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_history.csv`));
+
+const daily_todo_certification_stream = format({ headers: true });
+daily_todo_certification_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_certification.csv`));
+
+const daily_todo_certification_reviewer_stream = format({ headers: true });
+daily_todo_certification_reviewer_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_certification_reviewer.csv`));
+
+// 캐싱
+const groupIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
+const todoIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
+
+// =========== 메인 로직 ===========
+const lastIds = getLastIdsOfPastActivityData();
+let challengeGroupId = lastIds.lastChallengeGroupId + 1;
+let challengeGroupMemberId = lastIds.lastChallengeGroupMemberId + 1;
+let dailyTodoId = lastIds.lastDailyTodoId + 1;  // daily_todo & daily_todo_history
+let dailyTodoCertificationId = lastIds.lastDailyTodoCertificationId + 1;
+
+async function createCurrentActivityTestData() {
+    console.log(`🧑‍🍳 [Const Current Activity Data For Read] 현재 활동 테스트 데이터 생성중...`);
+    await generateData();
+    console.log(`✅ 현재 활동 테스트 데이터 생성 완료!`);
+}
+
+async function generateData() {
+    let todayDate = getCurrentDate();
+    todayDate = todayDate.substring(0, 10) + " 00:00:00";
+
+    // 1. challenge_group & challenge_group_member 데이터 생성
+    const totalChallengeGroupCount = MEMBER_COUNT / MEMBER_PER_GROUP_COUNT * CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT;
+    let joiningGroupId = challengeGroupId;
+
+    let currentGroupStartAt = getDateNDaysAgo(CURRENT_GROUP_RUNNING_DAY - 1);
+    currentGroupStartAt = currentGroupStartAt.substring(0, 10) + " 07:00:00";
+    const currentGroupStartAtOnlyDate = toDateOnly(currentGroupStartAt);
+
+    const currentGroupEndAt = calculateEndAt(currentGroupStartAt, CURRENT_GROUP_RUNNING_DAY + 1);
+    const currentGroupEndAtOnlyDate = toDateOnly(currentGroupEndAt);
+
+    for (let i = 0; i < totalChallengeGroupCount; i++) {
+        const currentChallengeGroupId = challengeGroupId++;
+        challenge_group_stream.write({
+            id: currentChallengeGroupId,
+            name: `g-${currentChallengeGroupId}`,
+            maximum_member_count: MEMBER_PER_GROUP_COUNT,
+            join_code: `jc-${currentChallengeGroupId}`,
+            status: "RUNNING",
+            start_at: currentGroupStartAtOnlyDate,
+            end_at: currentGroupEndAtOnlyDate,
+            created_at: currentGroupStartAt,
+            row_inserted_at: todayDate,
+            row_updated_at: null
+        });
+    }
+
+    for (let i = 0; i < CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT; i++) {
+        for (let j = 0; j < MEMBER_COUNT / MEMBER_PER_GROUP_COUNT; j++) {
+            let memberId = 1 + j * MEMBER_PER_GROUP_COUNT;
+            for (let k = 0; k < MEMBER_PER_GROUP_COUNT; k++) {
+                let currentMemberId = memberId++;
+                challenge_group_member_stream.write({
+                    id: challengeGroupMemberId++,
+                    challenge_group_id: joiningGroupId,
+                    member_id: currentMemberId,
+                    created_at: currentGroupStartAt,
+                    row_inserted_at: todayDate,
+                    row_updated_at: null
+                });
+                groupIdsByMember[currentMemberId - 1].push(joiningGroupId);
+
+                if (i === CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT - 1) {
+                    last_selected_challenge_group_record_stream.write({
+                        id: currentMemberId,
+                        challenge_group_id: joiningGroupId,
+                        member_id: currentMemberId,
+                        row_inserted_at: todayDate,
+                        row_updated_at: null
+                    });
+                }
+            }
+            joiningGroupId++;
+        }
+    }
+
+    for (let day = 0; day < CURRENT_GROUP_RUNNING_DAY; day++) {
+        let currentTodoWrittenAt = new Date(currentGroupStartAt);
+        currentTodoWrittenAt.setDate(currentTodoWrittenAt.getDate() + day);
+        currentTodoWrittenAt.setHours(8, 0, 0, 0);
+        currentTodoWrittenAt = convertDateTimeFormatString(currentTodoWrittenAt);
+
+        let currentTodoCertifyAt = new Date(currentTodoWrittenAt);
+        currentTodoCertifyAt.setHours(17, 0, 0, 0);
+        currentTodoCertifyAt = convertDateTimeFormatString(currentTodoCertifyAt);
+
+        for (let memberId = 1; memberId <= MEMBER_COUNT; memberId++) {
+            const reviewerId = getReviewerId(memberId);
+            for (let i = 0; i < CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT; i++) {
+                let reviewStatusToggle = true;
+                for (let j = 0; j < DAY_TODO_PER_MEMBER_COUNT; j++) {
+                    // 2. daily_todo & daily_todo_history 데이터 생성
+                    const currentTodoId = dailyTodoId++;
+                    daily_todo_stream.write({
+                        id: currentTodoId,
+                        challenge_group_id: groupIdsByMember[memberId - 1][i],
+                        writer_id: memberId,
+                        content: `td=${currentTodoId}`,
+                        status: "CERTIFY_COMPLETED",
+                        written_at: currentTodoWrittenAt,
+                        row_inserted_at: todayDate,
+                        row_updated_at: null
+                    });
+                    daily_todo_history_stream.write({
+                        id: currentTodoId,
+                        daily_todo_id: currentTodoId,
+                        event_time: currentTodoWrittenAt,
+                        row_inserted_at: todayDate,
+                        row_updated_at: null
+                    });
+                    todoIdsByMember[memberId - 1].push(currentTodoId);
+
+                    // 3. daily_todo_certification & daily_todo_certification_reviewer 데이터 생성
+                    // 현재는 투두 개수 == 인증 개수로 고정했지만 인증 개수만 다르게 하고 싶다면 아래 로직을 별도 루프로 분리해야함.
+                    const currentTodoCertificationId = dailyTodoCertificationId++;
+                    const reviewStatus = reviewStatusToggle ? "APPROVE" : "REJECT";
+                    const reviewFeedBack = reviewStatusToggle ? `와 미쳤다 ㄷㄷ - ${currentTodoCertificationId}` : `그게 최선인가? ㅎ - ${currentTodoCertificationId}`;
+                    reviewStatusToggle = !reviewStatusToggle;
+
+                    daily_todo_certification_stream.write({
+                        id: currentTodoCertificationId,
+                        daily_todo_id: currentTodoId,
+                        content: `tc-${currentTodoId}`,
+                        media_url: `http://certification-media.site/m${memberId}/t${currentTodoId}`,
+                        review_status: reviewStatus,
+                        review_feedback: reviewFeedBack,
+                        created_at: currentTodoCertifyAt,
+                        row_inserted_at: todayDate,
+                        row_updated_at: null
+                    });
+
+                    daily_todo_certification_reviewer_stream.write({
+                        id: currentTodoCertificationId,
+                        daily_todo_certification_id: currentTodoCertificationId,
+                        reviewer_id: reviewerId,
+                        row_inserted_at: todayDate,
+                        row_updated_at: null
+                    });
+                }
+            }
+        }
+    }
+
+    challenge_group_stream.end();
+    challenge_group_member_stream.end();
+    daily_todo_stream.end();
+    daily_todo_history_stream.end();
+    daily_todo_certification_stream.end();
+    daily_todo_certification_reviewer_stream.end();
+
+    await Promise.all([
+        waitForStreamFinish(challenge_group_stream),
+        waitForStreamFinish(challenge_group_member_stream),
+        waitForStreamFinish(daily_todo_stream),
+        waitForStreamFinish(daily_todo_history_stream),
+        waitForStreamFinish(daily_todo_certification_stream),
+        waitForStreamFinish(daily_todo_certification_reviewer_stream),
+    ]);
+}
+
+/**
+ * CSV 파일 Stream Flush 체크
+ */
+function waitForStreamFinish(stream) {
+    return new Promise((resolve, reject) => {
+        stream.on('finish', resolve);
+        stream.on('error', reject);
+    });
+}
+
+createCurrentActivityTestData().then(() => {});
