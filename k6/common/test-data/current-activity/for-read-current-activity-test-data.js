@@ -32,6 +32,9 @@ daily_todo_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_cur
 const daily_todo_history_stream = format({ headers: true });
 daily_todo_history_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_history.csv`));
 
+const daily_todo_history_read_stream = format({ headers: true });
+daily_todo_history_read_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_history_read.csv`));
+
 const daily_todo_certification_stream = format({ headers: true });
 daily_todo_certification_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_certification.csv`));
 
@@ -39,6 +42,7 @@ const daily_todo_certification_reviewer_stream = format({ headers: true });
 daily_todo_certification_reviewer_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/for_read_current_daily_todo_certification_reviewer.csv`));
 
 // 캐싱
+const groupMembersByGroup = {};
 const groupIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
 const todoIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);
 
@@ -47,6 +51,7 @@ const lastIds = getLastIdsOfPastActivityData();
 let challengeGroupId = lastIds.lastChallengeGroupId + 1;
 let challengeGroupMemberId = lastIds.lastChallengeGroupMemberId + 1;
 let dailyTodoId = lastIds.lastDailyTodoId + 1;  // daily_todo & daily_todo_history
+let dailyTodoHistoryReadId = 1;
 let dailyTodoCertificationId = lastIds.lastDailyTodoCertificationId + 1;
 
 async function createCurrentActivityTestData() {
@@ -99,6 +104,12 @@ async function generateData() {
                     row_inserted_at: todayDate,
                     row_updated_at: null
                 });
+
+                // 그룹별 멤버 캐싱
+                if (!groupMembersByGroup[joiningGroupId]) {
+                    groupMembersByGroup[joiningGroupId] = [];
+                }
+                groupMembersByGroup[joiningGroupId].push(currentMemberId);
                 groupIdsByMember[currentMemberId - 1].push(joiningGroupId);
 
                 if (i === CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT - 1) {
@@ -149,6 +160,19 @@ async function generateData() {
                         row_inserted_at: todayDate,
                         row_updated_at: null
                     });
+
+                    if (day === CURRENT_GROUP_RUNNING_DAY - 1) {
+                        const membersInGroup = groupMembersByGroup[groupIdsByMember[memberId - 1][i]];
+                        for (const groupMemberId of membersInGroup) {
+                            daily_todo_history_read_stream.write({
+                                id: dailyTodoHistoryReadId++,
+                                member_id: groupMemberId,
+                                daily_todo_history_id: currentTodoId,
+                                row_inserted_at: todayDate,
+                                row_updated_at: null
+                            });
+                        }
+                    }
                     todoIdsByMember[memberId - 1].push(currentTodoId);
 
                     // 3. daily_todo_certification & daily_todo_certification_reviewer 데이터 생성
@@ -186,6 +210,7 @@ async function generateData() {
     challenge_group_member_stream.end();
     daily_todo_stream.end();
     daily_todo_history_stream.end();
+    daily_todo_history_read_stream.end();
     daily_todo_certification_stream.end();
     daily_todo_certification_reviewer_stream.end();
 
@@ -194,6 +219,7 @@ async function generateData() {
         waitForStreamFinish(challenge_group_member_stream),
         waitForStreamFinish(daily_todo_stream),
         waitForStreamFinish(daily_todo_history_stream),
+        waitForStreamFinish(daily_todo_history_read_stream),
         waitForStreamFinish(daily_todo_certification_stream),
         waitForStreamFinish(daily_todo_certification_reviewer_stream),
     ]);
