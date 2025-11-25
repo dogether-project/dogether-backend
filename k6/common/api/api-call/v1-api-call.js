@@ -22,13 +22,13 @@ export const createChallengeGroupV1 = (token, requestData) => {
 }
 
 // 챌린지 그룹 참여 API
-export const joinChallengeGroupV1 = (token, requestData) => {
+export const joinChallengeGroupV1 = (token, requestData, timeout) => {
     const headers = setRequestHeader(token);
     const payload = JSON.stringify({
         joinCode: requestData.joinCode,
     });
 
-    return http.post(`${API_URL_PREFIX}/groups/join`, payload, { headers });
+    return http.post(`${API_URL_PREFIX}/groups/join`, payload, { headers, timeout });
 }
 
 // 챌린지 그룹 참여 여부 조회 API
@@ -44,9 +44,9 @@ export function getJoiningChallengeGroupsInfoV1(token) {
 }
 
 // 참여중인 특정 챌린지 그룹의 그룹원 전체 순위 조회 API
-export function getRankingInChallengeGroupV1(token, challengeGroupId) {
+export function getRankingInChallengeGroupV1(token, challengeGroupId, timeout) {
     const headers = setRequestHeader(token);
-    return http.get(`${API_URL_PREFIX}/groups/${challengeGroupId}/ranking`, { headers });
+    return http.get(`${API_URL_PREFIX}/groups/${challengeGroupId}/ranking`, { headers, timeout });
 }
 
 
@@ -116,15 +116,15 @@ export function getTodayDailyTodoHistoriesV1(token, challengeGroupId, memberId) 
  * 사용자 활동 통계
  */
 // 참여중인 특정 챌린지 그룹의 활동 통계 조회 API
-export function getChallengeGroupActivityInfoV1(token, challengeGroupId) {
+export function getChallengeGroupActivityInfoV1(token, challengeGroupId, timeout) {
     const headers = setRequestHeader(token);
-    return http.get(`${API_URL_PREFIX}/my/groups/${challengeGroupId}/activity`, { headers });
+    return http.get(`${API_URL_PREFIX}/my/groups/${challengeGroupId}/activity`, { headers, timeout });
 }
 
 // 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API V1
-export function getTotalActivityInfoAndDailyTodoCertificationsV1(token, sort, page) {
+export function getTotalActivityInfoAndDailyTodoCertificationsV1(token, sort, page, timeout) {
     const headers = setRequestHeader(token);
-    return http.get(`${API_URL_PREFIX}/my/activity?sort=${sort}&page=${page}`, { headers });
+    return http.get(`${API_URL_PREFIX}/my/activity?sort=${sort}&page=${page}`, { headers, timeout});
 }
 
 // 사용자 프로필 조회

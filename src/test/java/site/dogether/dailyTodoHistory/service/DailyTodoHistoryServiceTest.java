@@ -1,18 +1,12 @@
 package site.dogether.dailyTodoHistory.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.entity.DailyTodos;
@@ -29,6 +23,13 @@ import site.dogether.member.repository.MemberRepository;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 @Transactional
 @SpringBootTest
 public class DailyTodoHistoryServiceTest {
@@ -41,26 +42,13 @@ public class DailyTodoHistoryServiceTest {
     @Autowired private DailyTodoStatsRepository dailyTodoStatsRepository;
     @Autowired private DailyTodoHistoryService dailyTodoHistoryService;
 
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-                null,
-                "성욱이와 친구들",
-                8,
-                LocalDate.now(),
-                LocalDate.now().plusDays(7),
-                "join_code",
-                ChallengeGroupStatus.RUNNING,
-                LocalDateTime.now().plusHours(1)
-        );
-    }
-
     private static Member createMember(final String name) {
         return new Member(
                 null,
                 "provider_id" + name,
                 name,
                 "profile_image_url " + name,
-                LocalDateTime.now().plusHours(0)
+                LocalDateTime.now()
         );
     }
 
@@ -100,7 +88,7 @@ public class DailyTodoHistoryServiceTest {
     @Test
     void findAllTodayTodoHistories() {
         // Given
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create("성욱이와 친구들"));
         final Member viewer = memberRepository.save(createMember("히스토리_조회자"));
         final Member targetMember = memberRepository.save(createMember("히스토리_조회_대상자"));
         DailyTodoStats dailyTodoStats = dailyTodoStatsRepository.save(createDailyTodoStats(targetMember));

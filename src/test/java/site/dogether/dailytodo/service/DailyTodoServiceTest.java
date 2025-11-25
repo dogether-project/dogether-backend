@@ -1,12 +1,6 @@
 package site.dogether.dailytodo.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,11 +13,18 @@ import site.dogether.challengegroup.entity.ChallengeGroupStatus;
 import site.dogether.challengegroup.exception.ChallengeGroupNotFoundException;
 import site.dogether.challengegroup.exception.MemberNotInChallengeGroupException;
 import site.dogether.challengegroup.exception.NotRunningChallengeGroupException;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
 import site.dogether.challengegroup.repository.ChallengeGroupRepository;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -44,32 +45,6 @@ class DailyTodoServiceTest {
         );
     }
 
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-            null,
-            "성욱이와 친구들",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            "join_code",
-            ChallengeGroupStatus.RUNNING,
-            LocalDateTime.now().plusHours(1)
-        );
-    }
-
-    private static ChallengeGroup createChallengeGroup(final ChallengeGroupStatus status) {
-        return new ChallengeGroup(
-            null,
-            "성욱이와 친구들",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            "join_code",
-            status,
-            LocalDateTime.now().plusHours(1)
-        );
-    }
-
     private static ChallengeGroupMember createChallengeGroupMember(final ChallengeGroup challengeGroup, final Member member) {
         return new ChallengeGroupMember(null, challengeGroup, member, LocalDateTime.now().plusDays(1));
     }
@@ -79,7 +54,7 @@ class DailyTodoServiceTest {
     void saveDailyTodos() {
         // Given
         final Member member = memberRepository.save(createMember());
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
         challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
@@ -103,7 +78,7 @@ class DailyTodoServiceTest {
     void addDailyTodos() {
         // Given
         final Member member = memberRepository.save(createMember());
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
         challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
@@ -134,7 +109,7 @@ class DailyTodoServiceTest {
     void throwExceptionWhenSaveDailyTodosWithNotFoundMemberId() {
         // Given
         final Member member = memberRepository.save(createMember());
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
         challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = 11324L;
@@ -159,7 +134,7 @@ class DailyTodoServiceTest {
     void throwExceptionWhenSaveDailyTodosWithNotFoundChallengeGroupId() {
         // Given
         final Member member = memberRepository.save(createMember());
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
         challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
@@ -185,7 +160,7 @@ class DailyTodoServiceTest {
     void throwExceptionWhenSaveDailyTodosWithNotRunningChallengeGroup(final ChallengeGroupStatus status) {
         // Given
         final Member member = memberRepository.save(createMember());
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup(status));
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create(status));
         challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Long memberId = member.getId();
@@ -202,7 +177,7 @@ class DailyTodoServiceTest {
             challengeGroupId,
             dailyTodoContents))
             .isInstanceOf(NotRunningChallengeGroupException.class)
-            .hasMessage(String.format("현재 진행중인 챌린지 그룹이 아닙니다. (%s)", challengeGroup));
+            .hasMessage(String.format("현재 진행중인 챌린지 그룹이 아닙니다. (groupId: %d)", challengeGroupId));
     }
 
     @DisplayName("데일리 투두를 생성하려는 챌린지 그룹에 참여하고 있지 않은 사용자가 요청하면 예외가 발생한다.")
@@ -210,7 +185,7 @@ class DailyTodoServiceTest {
     void throwExceptionWhenSaveDailyTodosWhoNotInChallengeGroupMember() {
         // Given
         final Member member = memberRepository.save(createMember());
-        final ChallengeGroup challengeGroup = challengeGroupRepository.save(createChallengeGroup());
+        final ChallengeGroup challengeGroup = challengeGroupRepository.save(ChallengeGroupFixture.create());
         challengeGroupMemberRepository.save(createChallengeGroupMember(challengeGroup, member));
 
         final Member otherMember = new Member(
@@ -236,6 +211,6 @@ class DailyTodoServiceTest {
             challengeGroupId,
             dailyTodoContents))
             .isInstanceOf(MemberNotInChallengeGroupException.class)
-            .hasMessage(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (%s) (%s)", challengeGroup, otherMember));
+            .hasMessage(String.format("사용자가 요청한 챌린지 그룹에 참여중이지 않습니다. (groupId: %d, memberId: %d)", challengeGroupId, memberId));
     }
 }

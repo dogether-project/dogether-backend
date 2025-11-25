@@ -1,18 +1,18 @@
 import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
-import {joinChallengeGroupV1} from "../../../../../common/api/api-call/v1-api-call.js";
-import {parseResponseBody} from "../../../../../common/api/util/api-util.js";
-import {getJoinCodesPerMember} from "../../../../../common/db/data/set-up-data/write-test/join-challenge-group-v1-set-up-data.js";
+import {joinChallengeGroupV1} from "../../../../common/api/api-call/v1-api-call.js";
+import {parseResponseBody} from "../../../../common/api/util/api-util.js";
+import {getJoinCodesPerMember} from "../../../../common/db/data/current-activity/const-current-activity-data-for-write-api.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../../secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
     scenarios: {
         default: {
             executor: 'per-vu-iterations',
-            vus: 100,
+            vus: 400,
             iterations: 1,
             maxDuration: '30m',
         },
@@ -34,7 +34,7 @@ export default function (data) {
     const token = tokens[vuIndex];
     const joinCode = data.joinCodes[vuIndex];
 
-    const res = joinChallengeGroupV1(token, { joinCode });
+    const res = joinChallengeGroupV1(token, { joinCode }, '1800s');
     const responseData = parseResponseBody(res).data;
 
     check(res, {

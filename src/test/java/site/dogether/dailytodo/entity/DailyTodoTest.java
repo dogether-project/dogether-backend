@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import site.dogether.challengegroup.entity.ChallengeGroup;
-import site.dogether.challengegroup.entity.ChallengeGroupStatus;
+import site.dogether.challengegroup.fixture.ChallengeGroupFixture;
 import site.dogether.dailytodo.exception.InvalidDailyTodoException;
 import site.dogether.dailytodo.exception.NotCertifyPendingDailyTodoException;
 import site.dogether.dailytodo.exception.NotCreatedTodayDailyTodoException;
@@ -25,19 +25,6 @@ import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
 import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
 
 class DailyTodoTest {
-
-    private static ChallengeGroup createChallengeGroup() {
-        return new ChallengeGroup(
-            1L,
-            "성욱이와 친구들",
-            8,
-            LocalDate.now(),
-            LocalDate.now().plusDays(7),
-            "join_code",
-            ChallengeGroupStatus.RUNNING,
-            LocalDateTime.now().plusHours(1)
-        );
-    }
 
     private static Member createMember() {
         return new Member(
@@ -105,7 +92,7 @@ class DailyTodoTest {
     @Test
     void createDailyTodoSuccess() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final String content = "치킨 먹기";
         final DailyTodoStatus status = CERTIFY_PENDING;
@@ -126,7 +113,7 @@ class DailyTodoTest {
     @Test
     void createDailyTodoWithDefaultValue() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final String content = "치킨 먹기";
 
@@ -157,7 +144,7 @@ class DailyTodoTest {
     @Test
     void throwExceptionWhenInputMemberNull() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final String content = "치킨 먹기";
 
         // When & Then
@@ -171,7 +158,7 @@ class DailyTodoTest {
     @ParameterizedTest()
     void throwExceptionWhenInputContentNullOrEmpty(final String content) {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
 
         // When & Then
@@ -184,7 +171,7 @@ class DailyTodoTest {
     @Test()
     void throwExceptionWhenInputInvalidLengthContent() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final String content = "A".repeat(MAXIMUM_ALLOWED_CONTENT_LENGTH + 1);
 
@@ -198,7 +185,7 @@ class DailyTodoTest {
     @Test()
     void throwExceptionWhenInputStatusNull() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final String content = "치킨 먹기";
         final LocalDateTime writtenAt = LocalDateTime.now();
@@ -213,7 +200,7 @@ class DailyTodoTest {
     @Test()
     void throwExceptionWhenInputWrittenAtNull() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member member = createMember();
         final String content = "치킨 먹기";
         final DailyTodoStatus status = CERTIFY_PENDING;
@@ -229,7 +216,7 @@ class DailyTodoTest {
     void returnTrueWhenStatusIsCertifyPending() {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("성욱이와 친구들"),
             createMember(),
             CERTIFY_PENDING,
             LocalDateTime.now()
@@ -247,7 +234,7 @@ class DailyTodoTest {
     void returnFalseWhenStatusIsNotCertifyPending() {
         // Given
         final DailyTodo dailyTodo = createDailyTodo(
-            createChallengeGroup(),
+            ChallengeGroupFixture.create("성욱이와 친구들"),
             createMember(),
             CERTIFY_COMPLETED,
             LocalDateTime.now()
@@ -264,7 +251,7 @@ class DailyTodoTest {
     @Test
     void certifySuccess() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member writer = createMember(1L, "투두 작성자");
         final DailyTodo dailyTodo = createDailyTodo(
             challengeGroup,
@@ -289,7 +276,7 @@ class DailyTodoTest {
     @Test
     void throwExceptionWhenCertifyNotWriter() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member writer = createMember(1L, "투두 작성자");
         final DailyTodo dailyTodo = createDailyTodo(
             challengeGroup,
@@ -314,7 +301,7 @@ class DailyTodoTest {
     @Test
     void throwExceptionWhenCertifyNotCertifyPendingStatus() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member writer = createMember(1L, "투두 작성자");
         final DailyTodo dailyTodo = createDailyTodo(
             challengeGroup,
@@ -337,7 +324,7 @@ class DailyTodoTest {
     @Test
     void throwExceptionWhenNotCreatedToday() {
         // Given
-        final ChallengeGroup challengeGroup = createChallengeGroup();
+        final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("성욱이와 친구들");
         final Member writer = createMember(1L, "투두 작성자");
         final DailyTodo dailyTodo = createDailyTodo(
             challengeGroup,

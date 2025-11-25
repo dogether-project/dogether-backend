@@ -4,8 +4,7 @@ import { SharedArray } from 'k6/data';
 import {getMyDailyTodosV1} from "../../../common/api/api-call/v1-api-call.js";
 import {parseResponseBody} from "../../../common/api/util/api-util.js";
 
-import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/variable-running-activity-data.js";
-// import {getChallengeGroupIdsPerMember} from "../../../common/db/data/set-up-data/read-test/maximum-running-activity-data.js";
+import {getChallengeGroupIdsPerMember} from "../../../common/db/data/current-activity/const-current-activity-data-for-read-api.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../secret/tokens.json')));
 
@@ -14,7 +13,7 @@ export const options = {
     scenarios: {
         default: {
             executor: 'per-vu-iterations',
-            vus: 100,
+            vus: 400,
             iterations: 1,
             maxDuration: '30m',
         },
