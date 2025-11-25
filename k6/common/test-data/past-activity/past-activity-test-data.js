@@ -1,21 +1,23 @@
 import fs from 'fs';
 import {format} from "fast-csv";
 import {
+    CSV_SAVED_BASE_PATH,
     DAY_TODO_PER_MEMBER_COUNT,
-    PAST_GROUP_PER_MEMBER_COUNT,
+    getReviewerId,
     MEMBER_COUNT,
     MEMBER_PER_GROUP_COUNT,
-    PAST_GROUP_RUNNING_DAY,
-    calculateNextDate,
-    calculateEndAt,
-    convertDateTimeFormatString,
-    toDateOnly,
-    getReviewerId,
-    PAST_TOTAL_ACTIVITY_CYCLE,
     PAST_GROUP_ACTIVITY_START_AT,
+    PAST_GROUP_PER_MEMBER_COUNT,
+    PAST_GROUP_RUNNING_DAY,
     PAST_ONE_CYCLE_PER_GROUP_COUNT,
-    CSV_SAVED_BASE_PATH,
+    PAST_TOTAL_ACTIVITY_CYCLE,
 } from "../test-data-common.js";
+import {
+    getDateNDaysLater,
+    getGroupStartAtInCycle,
+    convertDateObjectToMySqlDateFormat,
+    convertDateObjectToMySqlDatetimeFormat
+} from "../../util/time-util.js";
 
 // =========== CSV Stream ===========
 const challenge_group_stream = format({ headers: true });
@@ -54,14 +56,14 @@ async function createPastActivityTestData() {
 
 async function generateData() {
     for (let cycle = 0; cycle < PAST_TOTAL_ACTIVITY_CYCLE; cycle++) {
-        let groupStartAtInCycle = calculateNextDate(PAST_GROUP_ACTIVITY_START_AT, cycle, PAST_GROUP_RUNNING_DAY);
-        groupStartAtInCycle = groupStartAtInCycle.substring(0, 10) + " 07:00:00";
-        const groupStartAtInCycleOnlyDate = toDateOnly(groupStartAtInCycle);
-
-        const groupEndAtInCycle = toDateOnly(calculateEndAt(groupStartAtInCycle, PAST_GROUP_RUNNING_DAY + 1));
-        const firstGroupIdInCycle = 1 + cycle * PAST_ONE_CYCLE_PER_GROUP_COUNT;
+        const groupStartAtInCycle = getGroupStartAtInCycle(PAST_GROUP_ACTIVITY_START_AT, cycle, PAST_GROUP_RUNNING_DAY);
+        groupStartAtInCycle.setHours(7, 0, 0, 0);
+        const groupEndAtInCycle = getDateNDaysLater(groupStartAtInCycle, PAST_GROUP_RUNNING_DAY);
 
         // 1. challenge_group & challenge_group_member 데이터 생성
+        const groupStartAtInCycleMySqlDateTimeString = convertDateObjectToMySqlDatetimeFormat(groupStartAtInCycle);
+        const groupStartAtInCycleMySqlDateString = convertDateObjectToMySqlDateFormat(groupStartAtInCycle);
+        const groupEndAtInCycleMySqlDateString = convertDateObjectToMySqlDateFormat(groupEndAtInCycle);
         for (let i = 0; i < PAST_ONE_CYCLE_PER_GROUP_COUNT; i++) {
             const currentChallengeGroupId = challengeGroupId++;
             challenge_group_stream.write({
@@ -70,15 +72,15 @@ async function generateData() {
                 maximum_member_count: MEMBER_PER_GROUP_COUNT,
                 join_code: `jc-${currentChallengeGroupId}`,
                 status: "FINISHED",
-                start_at: groupStartAtInCycleOnlyDate,
-                end_at: groupEndAtInCycle,
-                created_at: groupStartAtInCycle,
-                row_inserted_at: groupStartAtInCycle,
+                start_at: groupStartAtInCycleMySqlDateString,
+                end_at: groupEndAtInCycleMySqlDateString,
+                created_at: groupStartAtInCycleMySqlDateTimeString,
+                row_inserted_at: groupStartAtInCycleMySqlDateTimeString,
                 row_updated_at: null
             });
         }
 
-        let groupId = firstGroupIdInCycle;
+        let groupId = 1 + cycle * PAST_ONE_CYCLE_PER_GROUP_COUNT;
         for (let i = 0; i < PAST_GROUP_PER_MEMBER_COUNT; i++) {
             for (let j = 0; j < MEMBER_COUNT / MEMBER_PER_GROUP_COUNT; j++) {
                 let memberId = 1 + j * MEMBER_PER_GROUP_COUNT;
@@ -88,8 +90,8 @@ async function generateData() {
                         id: challengeGroupMemberId++,
                         challenge_group_id: groupId,
                         member_id: currentMemberId,
-                        created_at: groupStartAtInCycle,
-                        row_inserted_at: groupStartAtInCycle,
+                        created_at: groupStartAtInCycleMySqlDateTimeString,
+                        row_inserted_at: groupStartAtInCycleMySqlDateTimeString,
                         row_updated_at: null
                     });
                     groupIdsByMember[currentMemberId - 1].push(groupId);
@@ -99,15 +101,12 @@ async function generateData() {
         }
 
         for (let day = 0; day < PAST_GROUP_RUNNING_DAY; day++) {
-            let currentTodoWrittenAt = new Date(groupStartAtInCycle);
-            currentTodoWrittenAt.setDate(currentTodoWrittenAt.getDate() + day);
+            const currentTodoWrittenAt = getDateNDaysLater(groupStartAtInCycle, day);
             currentTodoWrittenAt.setHours(8, 0, 0, 0);
-            currentTodoWrittenAt = convertDateTimeFormatString(currentTodoWrittenAt);
-
-            let currentTodoCertifyAt = new Date(currentTodoWrittenAt);
+            const currentTodoCertifyAt = currentTodoWrittenAt;
             currentTodoCertifyAt.setHours(17, 0, 0, 0);
-            currentTodoCertifyAt = convertDateTimeFormatString(currentTodoCertifyAt);
 
+            const currentTodoWrittenAtMySqlDateTimeString = convertDateObjectToMySqlDatetimeFormat(currentTodoWrittenAt);
             for (let memberId = 1; memberId <= MEMBER_COUNT; memberId++) {
                 const reviewerId = getReviewerId(memberId);
                 for (let i = 0; i < PAST_GROUP_PER_MEMBER_COUNT; i++) {
@@ -121,16 +120,16 @@ async function generateData() {
                             writer_id: memberId,
                             content: `td=${currentTodoId}`,
                             status: "CERTIFY_COMPLETED",
-                            written_at: currentTodoWrittenAt,
-                            row_inserted_at: currentTodoWrittenAt,
+                            written_at: currentTodoWrittenAtMySqlDateTimeString,
+                            row_inserted_at: currentTodoWrittenAtMySqlDateTimeString,
                             row_updated_at: null
                         });
 
                         daily_todo_history_stream.write({
                             id: currentTodoId,
                             daily_todo_id: currentTodoId,
-                            event_time: currentTodoWrittenAt,
-                            row_inserted_at: currentTodoWrittenAt,
+                            event_time: currentTodoWrittenAtMySqlDateTimeString,
+                            row_inserted_at: currentTodoWrittenAtMySqlDateTimeString,
                             row_updated_at: null
                         });
                         todoIdsByMember[memberId - 1].push(currentTodoId);
@@ -141,6 +140,7 @@ async function generateData() {
                         const reviewStatus = reviewStatusToggle ? "APPROVE" : "REJECT";
                         const reviewFeedBack = reviewStatusToggle ? `와 미쳤다 ㄷㄷ - ${currentTodoCertificationId}` : `그게 최선인가? ㅎ - ${currentTodoCertificationId}`;
                         reviewStatusToggle = !reviewStatusToggle;
+                        const currentTodoCertifyAtMySqlDateTimeString = convertDateObjectToMySqlDatetimeFormat(currentTodoCertifyAt);
 
                         daily_todo_certification_stream.write({
                             id: currentTodoCertificationId,
@@ -149,8 +149,8 @@ async function generateData() {
                             media_url: `http://certification-media.site/m${memberId}/t${currentTodoId}`,
                             review_status: reviewStatus,
                             review_feedback: reviewFeedBack,
-                            created_at: currentTodoCertifyAt,
-                            row_inserted_at: currentTodoCertifyAt,
+                            created_at: currentTodoCertifyAtMySqlDateTimeString,
+                            row_inserted_at: currentTodoCertifyAtMySqlDateTimeString,
                             row_updated_at: null
                         });
 
@@ -158,7 +158,7 @@ async function generateData() {
                             id: currentTodoCertificationId,
                             daily_todo_certification_id: currentTodoCertificationId,
                             reviewer_id: reviewerId,
-                            row_inserted_at: currentTodoCertifyAt,
+                            row_inserted_at: currentTodoCertifyAtMySqlDateTimeString,
                             row_updated_at: null
                         });
                     }

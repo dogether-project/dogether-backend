@@ -47,14 +47,14 @@ export function getEndDateFromStartAgoAndDuration(startAgoDays, durationDays) {
     return endDate.toLocaleString('sv-SE', { timeZone: 'Asia/Seoul' });
 }
 
-/**
- * startDate에서 cycle * duration일 이후 날짜를 구하는 계산 함수
- */
-export function calculateNextDate(startDate, cycle, duration) {
-    const d = new Date(startDate);
-    d.setDate(d.getDate() + (cycle * duration));
-    return d; // Date 객체 반환
-}
+// /**
+//  * startDate에서 cycle * duration일 이후 날짜를 구하는 계산 함수
+//  */
+// export function calculateNextDate(startDate, cycle, duration) {
+//     const d = new Date(startDate);
+//     d.setDate(d.getDate() + (cycle * duration));
+//     return d; // Date 객체 반환
+// }
 
 /**
  * startAt 날짜에 시작해 duration일 만큼 진행하는 활동의 마지막 활동 일을 구하는 계산 함수
