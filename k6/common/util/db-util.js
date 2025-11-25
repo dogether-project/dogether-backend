@@ -30,6 +30,7 @@ async function createAwsDbConnection() {
     const forwardConfig = dbConfig.forward;
 
     return new Promise((resolve, reject) => {
+        console.log("🏃 Bastion server ssh 연결중...");
         const sshClient = new Client();
 
         sshClient.on("error", (err) => {
@@ -37,7 +38,8 @@ async function createAwsDbConnection() {
         });
 
         sshClient.on("ready", () => {
-            console.log("✅ Bastion server ssh 연결 성공.");
+            console.log("✅ Bastion server ssh 연결 성공!\n");
+            console.log("🏃 AWS DB 커넥션 생성중...");
 
             sshClient.forwardOut(
                 forwardConfig.srcHost,
