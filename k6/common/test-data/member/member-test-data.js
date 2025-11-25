@@ -6,6 +6,7 @@ import {
     PAST_GROUP_ACTIVITY_START_AT,
     PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT,
 } from "../test-data-common.js";
+import {convertDateObjectToMySqlDatetimeFormat} from "../../util/time-util.js";
 
 // =========== CSV Stream ===========
 const member_stream = format({ headers: true });
@@ -28,7 +29,8 @@ async function createMemberTestData() {
 
 async function generateData() {
     let memberCreatedAt = PAST_GROUP_ACTIVITY_START_AT;
-    memberCreatedAt = memberCreatedAt.substring(0, 10) + " 06:00:00";
+    memberCreatedAt.setHours(6, 0, 0, 0);
+    memberCreatedAt = convertDateObjectToMySqlDatetimeFormat(memberCreatedAt);
 
     const dailyTodoCertificationCountPerMember = PAST_TOTAL_DAILY_TODO_CERTIFICATION_COUNT / MEMBER_COUNT;
     const approvedDailyTodoCertificationCountPerMember = Math.ceil(dailyTodoCertificationCountPerMember / 2);
