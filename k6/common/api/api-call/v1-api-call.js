@@ -1,6 +1,6 @@
 import http from 'k6/http';
 import {setRequestHeader} from "../util/api-util.js";
-import { API_BASE_URL } from "../../../secret/secret.js";
+import { API_BASE_URL } from "../../secret/secret.js";
 
 const API_URL_PREFIX = `${API_BASE_URL}/api/v1`;
 

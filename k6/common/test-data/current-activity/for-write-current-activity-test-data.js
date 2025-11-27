@@ -1,5 +1,5 @@
 import {
-    CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT,
+    CURRENT_FOR_WRITE_GROUP_PER_MEMBER_COUNT,
     CURRENT_GROUP_ACTIVITY_START_AT,
     CURRENT_GROUP_RUNNING_DAY,
     DAY_TODO_PER_MEMBER_COUNT,
@@ -12,7 +12,7 @@ import {
 import {getDateNDaysLater, getTodayDate} from "../../util/time-util.js";
 
 // =========== 데이터 배열 ===========
-const data_type = "Read";
+const data_type = "Write";
 const member_data = [];
 const notification_token_data = [];
 const daily_todo_stats_data = [];
@@ -38,15 +38,15 @@ let dailyTodoId = lastIds.lastDailyTodoId + 1;  // daily_todo & daily_todo_histo
 let dailyTodoHistoryReadId = 1;
 let dailyTodoCertificationId = lastIds.lastDailyTodoCertificationId + 1;
 
-export async function createCurrentActivityForReadTestData() {
-    console.log(`🧑‍🍳 [Const Current Activity Data For Read] 현재 활동 테스트 데이터 생성중...`);
-    const testData = await generateTestData();
+export function createCurrentActivityForWriteTestData() {
+    console.log(`🧑‍🍳 [Const Current Activity Data For Write] 현재 활동 테스트 데이터 생성중...`);
+    const testData = generateTestData();
     console.log(`✅ 현재 활동 테스트 데이터 생성 완료!\n`);
 
     return testData;
 }
 
-async function generateTestData() {
+function generateTestData() {
     const todayDate = getTodayDate();
 
     // 1. challenge_group & challenge_group_member 데이터 생성
@@ -54,9 +54,10 @@ async function generateTestData() {
     groupStartAt.setHours(7, 0, 0, 0);
     const groupEndAt = getDateNDaysLater(groupStartAt, CURRENT_GROUP_RUNNING_DAY);
     let joiningGroupId = challengeGroupId;
-    const totalChallengeGroupCount = MEMBER_COUNT / MEMBER_PER_GROUP_COUNT * CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT;
+    const totalChallengeGroupCount = MEMBER_COUNT / MEMBER_PER_GROUP_COUNT * CURRENT_FOR_WRITE_GROUP_PER_MEMBER_COUNT;
 
-    for (let i = 0; i < totalChallengeGroupCount; i++) {
+    // a. 그룹 참여 테스트에 사용할 그룹을 포함해 생성
+    for (let i = 0; i < totalChallengeGroupCount + (MEMBER_COUNT / MEMBER_PER_GROUP_COUNT); i++) {
         const currentChallengeGroupId = challengeGroupId++;
         challenge_group_data.push([
             currentChallengeGroupId,
@@ -72,7 +73,7 @@ async function generateTestData() {
         ]);
     }
 
-    for (let i = 0; i < CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT; i++) {
+    for (let i = 0; i < CURRENT_FOR_WRITE_GROUP_PER_MEMBER_COUNT; i++) {
         for (let j = 0; j < MEMBER_COUNT / MEMBER_PER_GROUP_COUNT; j++) {
             let memberId = 1 + j * MEMBER_PER_GROUP_COUNT;
             for (let k = 0; k < MEMBER_PER_GROUP_COUNT; k++) {
@@ -93,7 +94,8 @@ async function generateTestData() {
                 groupMembersByGroup[joiningGroupId].push(currentMemberId);
                 groupIdsByMember[currentMemberId - 1].push(joiningGroupId);
 
-                if (i === CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT - 1) {
+                // 마지막 그룹 정보를 last_selected_challenge_group_record에 저장
+                if (i === CURRENT_FOR_WRITE_GROUP_PER_MEMBER_COUNT - 1) {
                     last_selected_challenge_group_record_data.push([
                         currentMemberId,
                         joiningGroupId,
@@ -116,11 +118,40 @@ async function generateTestData() {
 
         for (let memberId = 1; memberId <= MEMBER_COUNT; memberId++) {
             const reviewerId = getReviewerId(memberId);
-            for (let i = 0; i < CURRENT_FOR_READ_GROUP_PER_MEMBER_COUNT; i++) {
+            for (let i = 0; i < CURRENT_FOR_WRITE_GROUP_PER_MEMBER_COUNT; i++) {
+                // b. 투두 작성 테스트를 위한 처리
+                if (day === CURRENT_GROUP_RUNNING_DAY - 1 && i === 0) {
+                    continue;
+                }
+
                 let reviewStatusToggle = true;
                 for (let j = 0; j < DAY_TODO_PER_MEMBER_COUNT; j++) {
-                    // 2. daily_todo & daily_todo_history 데이터 생성
+                    // 2. daily_todo & daily_todo_history & daily_todo_history_read 데이터 생성
                     const currentTodoId = dailyTodoId++;
+
+                    // c. 투두 인증 테스트를 위한 처리
+                    if (day === CURRENT_GROUP_RUNNING_DAY - 1 && i === 1) {
+                        daily_todo_data.push([
+                            currentTodoId,
+                            groupIdsByMember[memberId - 1][i],
+                            memberId, `td=${currentTodoId}`,
+                            "CERTIFY_PENDING",
+                            currentTodoWrittenAt,
+                            todayDate,
+                            null
+                        ]);
+                        daily_todo_history_data.push([
+                            currentTodoId,
+                            currentTodoId,
+                            currentTodoWrittenAt,
+                            todayDate,
+                            null
+                        ]);
+
+                        todoIdsByMember[memberId - 1].push(currentTodoId);
+                        continue;
+                    }
+
                     daily_todo_data.push([
                         currentTodoId,
                         groupIdsByMember[memberId - 1][i],
@@ -161,6 +192,29 @@ async function generateTestData() {
                     const reviewFeedBack = reviewStatusToggle ? `와 미쳤다 ㄷㄷ - ${currentTodoCertificationId}` : `그게 최선인가? ㅎ - ${currentTodoCertificationId}`;
                     reviewStatusToggle = !reviewStatusToggle;
 
+                    // d. 투두 인증 검사 테스트를 위한 처리
+                    if (day === CURRENT_GROUP_RUNNING_DAY - 1 && i === 2) {
+                        daily_todo_certification_data.push([
+                            currentTodoCertificationId,
+                            currentTodoId,
+                            `tc-${currentTodoId}`,
+                            `http://certification-media.site/m${memberId}/t${currentTodoId}`,
+                            'REVIEW_PENDING',
+                            null,
+                            currentTodoCertifyAt,
+                            todayDate,
+                            null
+                        ]);
+                        daily_todo_certification_reviewer_data.push([
+                            currentTodoCertificationId,
+                            currentTodoCertificationId,
+                            reviewerId,
+                            todayDate,
+                            null
+                        ]);
+                        continue;
+                    }
+
                     daily_todo_certification_data.push([
                         currentTodoCertificationId,
                         currentTodoId,
@@ -194,7 +248,6 @@ async function generateTestData() {
         challenge_group_member_data,
         daily_todo_data,
         daily_todo_history_data,
-        daily_todo_history_read_data,
         daily_todo_certification_data,
         daily_todo_certification_reviewer_data,
         last_selected_challenge_group_record_data

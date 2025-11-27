@@ -33,15 +33,6 @@ export function getGroupStartAtInCycle(groupStartAtInCycle, cycle, groupRunningD
 }
 
 /**
- * startAt에서 duration일 만큼 진행하는 그룹 활동의 마지막 활동 날짜를 반환
- */
-export function calculateLastActivityDate(startAt, duration) {
-    const date = new Date(startAt);
-    date.setDate(date.getDate() + (duration - 1));
-    return date;
-}
-
-/**
  * Date 객체를 MySql Datetime 문자열로 변환
  */
 export function convertDateObjectToMySqlDatetimeFormat(date) {
@@ -55,4 +46,15 @@ export function convertDateObjectToMySqlDatetimeFormat(date) {
 export function convertDateObjectToMySqlDateFormat(date) {
     const pad = (n) => n.toString().padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+export function getDateNDaysAgoMySqlDateFormatString(n) {
+    const dateNDaysAgo = getDateNDaysAgo(n);
+    const pad = (n) => n.toString().padStart(2, "0");
+
+    const year = dateNDaysAgo.getFullYear();
+    const month = pad(dateNDaysAgo.getMonth() + 1);
+    const day = pad(dateNDaysAgo.getDate());
+
+    return `${year}-${month}-${day}`;
 }
