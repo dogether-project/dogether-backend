@@ -27,6 +27,14 @@ async function createLocalDbConnection() {
     return connection;
 }
 
+async function createAwsDbConnection() {
+    console.log(`🏃 AWS DB 커넥션 생성중...`);
+    const connection = await mysql.createConnection(dbConfig.aws);
+    console.log(`✅ AWS DB 커넥션 생성 완료!\n`);
+
+    return connection;
+}
+
 export async function batchInsert(connection, query, data, batchSize, targetTable) {
     const totalInsertDataCount = data.length;
     let totalInsertedCount = 0;
