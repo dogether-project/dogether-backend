@@ -15,7 +15,7 @@ export const CURRENT_FOR_WRITE_GROUP_PER_MEMBER_COUNT = 3;  // 회원당 현재 
 export const PAST_GROUP_RUNNING_DAY = 3;  // 과거 그룹 진행일 수
 export const CURRENT_GROUP_RUNNING_DAY = 28;  // 현재 그룹 진행일 수
 
-export const PAST_TOTAL_ACTIVITY_DAY = 365;  // 총 과거 진행일 수
+export const PAST_TOTAL_ACTIVITY_DAY = 120;  // 총 과거 진행일 수
 export const PAST_TOTAL_ACTIVITY_CYCLE = Math.ceil(PAST_TOTAL_ACTIVITY_DAY / PAST_GROUP_RUNNING_DAY);
 export const PAST_ONE_CYCLE_PER_GROUP_COUNT = MEMBER_COUNT / MEMBER_PER_GROUP_COUNT * PAST_GROUP_PER_MEMBER_COUNT;   // 한 사이클에 존재하는 그룹 개수
 
