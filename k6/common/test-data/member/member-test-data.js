@@ -10,13 +10,13 @@ import {convertDateObjectToMySqlDatetimeFormat} from "../../util/time-util.js";
 
 // =========== CSV Stream ===========
 const member_stream = format({ headers: true });
-member_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/member.csv`));
+member_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/1_member.csv`));
 
 const notification_token_stream = format({ headers: true });
-notification_token_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/notification_token.csv`));
+notification_token_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/2_notification_token.csv`));
 
 const daily_todo_stats_stream = format({ headers: true });
-daily_todo_stats_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/daily_todo_stats.csv`));
+daily_todo_stats_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/3_daily_todo_stats.csv`));
 
 // =========== 메인 로직 ===========
 let memberId = 1;  // member & notification_token & daily_todo_stats

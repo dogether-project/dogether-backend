@@ -21,22 +21,22 @@ import {
 
 // =========== CSV Stream ===========
 const challenge_group_stream = format({ headers: true });
-challenge_group_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/past_challenge_group.csv`));
+challenge_group_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/1_past_challenge_group.csv`));
 
 const challenge_group_member_stream = format({ headers: true });
-challenge_group_member_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/past_challenge_group_member.csv`));
+challenge_group_member_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/2_past_challenge_group_member.csv`));
 
 const daily_todo_stream = format({ headers: true });
-daily_todo_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/past_daily_todo.csv`));
+daily_todo_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/3_past_daily_todo.csv`));
 
 const daily_todo_history_stream = format({ headers: true });
-daily_todo_history_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/past_daily_todo_history.csv`));
+daily_todo_history_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/4_past_daily_todo_history.csv`));
 
 const daily_todo_certification_stream = format({ headers: true });
-daily_todo_certification_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/past_daily_todo_certification.csv`));
+daily_todo_certification_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/5_past_daily_todo_certification.csv`));
 
 const daily_todo_certification_reviewer_stream = format({ headers: true });
-daily_todo_certification_reviewer_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/past_daily_todo_certification_reviewer.csv`));
+daily_todo_certification_reviewer_stream.pipe(fs.createWriteStream(`${CSV_SAVED_BASE_PATH}/6_past_daily_todo_certification_reviewer.csv`));
 
 // =========== 캐싱 ===========
 const groupIdsByMember = Array.from({ length: MEMBER_COUNT }, () => []);

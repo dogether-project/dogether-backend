@@ -10,11 +10,11 @@ import {
     insertDailyTodoCertificationReviewer
 } from "../../util/db-query.js";
 import {
-    createCurrentActivityForReadTestData
-} from "./for-read-current-activity-test-data.js";
-import {
     createCurrentActivityForWriteTestData}
-    from "./for-write-current-activity-test-data.js";
+    from "./for-write/for-write-current-activity-test-data.js";
+import {
+    createCurrentActivityForReadTestData
+} from "./for-read/for-read-current-activity-test-data.js";
 
 async function insertCurrentActivityData() {
     /**

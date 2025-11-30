@@ -8,8 +8,8 @@ import {
     getReviewerId,
     MEMBER_COUNT,
     MEMBER_PER_GROUP_COUNT
-} from "../test-data-common.js";
-import {getDateNDaysLater, getTodayDate} from "../../util/time-util.js";
+} from "../../test-data-common.js";
+import {getDateNDaysLater, getTodayDate} from "../../../util/time-util.js";
 
 // =========== 데이터 배열 ===========
 const data_type = "Write";
