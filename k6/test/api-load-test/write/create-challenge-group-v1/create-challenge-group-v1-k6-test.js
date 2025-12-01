@@ -33,14 +33,15 @@ export default function () {
     const responseData = responseBody.data;
 
     check(null, {
-        'API Http 상태 코드 200': () => response?.status === 200,
+        'API HTTP 상태 코드 200': () => response?.status === 200,
         'API 응답 코드 success': () => responseBody?.code === 'success',
         '응답 데이터 - joinCode 존재': () => responseData?.joinCode !== undefined
     });
 }
 
 function requestApi(vuIndex) {
-    const header = setRequestHeader(tokens[vuIndex]);
+    const timeout = '1800s';
+    const headers = setRequestHeader(tokens[vuIndex]);
     const body = JSON.stringify({
         groupName: `예쁘니 그룹 - ${vuIndex}`,
         maximumMemberCount: 20,
@@ -48,7 +49,7 @@ function requestApi(vuIndex) {
         duration: 28
     });
 
-    return http.post(`${API_BASE_URL}/groups`, body, {headers: header, timeout: '1800s'});
+    return http.post(`${API_BASE_URL}/groups`, body, { headers, timeout });
 }
 
 export function teardown() {
