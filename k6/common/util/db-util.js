@@ -49,8 +49,8 @@ async function createAwsDbConnection() {
  * 현재 활동 데이터 삽입
  */
 export async function insertCurrentActivityData(currentActivityData) {
-    console.log(`👷 [Const Current Activity Data] 현재 활동 테스트 데이터 DB 삽입중...\n`);
     const connection = await createDbConnection();
+    console.log(`👷 [Const Current Activity Data] 현재 활동 테스트 데이터 DB 삽입중...\n`);
 
     // insert 순서 정의
     const steps = [
