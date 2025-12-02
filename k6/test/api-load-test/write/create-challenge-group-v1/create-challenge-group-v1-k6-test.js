@@ -12,7 +12,8 @@ export const options = {
     scenarios: {
         default: {
             executor: 'per-vu-iterations',
-            vus: 100,
+            vus: 1,
+            // vus: 100,
             // vus: 400,
             iterations: 1,
             maxDuration: '30m',
