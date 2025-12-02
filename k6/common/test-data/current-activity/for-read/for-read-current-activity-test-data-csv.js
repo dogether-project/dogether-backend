@@ -179,8 +179,8 @@ async function generateTestData() {
                     // 3. daily_todo_certification & daily_todo_certification_reviewer 데이터 생성
                     // 현재는 투두 개수 == 인증 개수로 고정했지만 인증 개수만 다르게 하고 싶다면 아래 로직을 별도 루프로 분리해야함.
                     const currentTodoCertificationId = dailyTodoCertificationId++;
-                    const reviewStatus = reviewStatusToggle ? "APPROVE" : "REJECT";
-                    const reviewFeedBack = reviewStatusToggle ? `와 미쳤다 ㄷㄷ - ${currentTodoCertificationId}` : `그게 최선인가? ㅎ - ${currentTodoCertificationId}`;
+                    const reviewStatus = (j < 6) ? (reviewStatusToggle ? "APPROVE" : "REJECT") : "REVIEW_PENDING";
+                    const reviewFeedBack = (j < 6) ? (reviewStatusToggle ? `와 미쳤다 ㄷㄷ - ${currentTodoCertificationId}` : `그게 최선인가? ㅎ - ${currentTodoCertificationId}`) : null;
                     reviewStatusToggle = !reviewStatusToggle;
 
                     daily_todo_certification_stream.write({
