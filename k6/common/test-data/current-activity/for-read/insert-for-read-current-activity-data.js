@@ -2,7 +2,7 @@ import {createCurrentActivityForReadTestData} from "./for-read-current-activity-
 import {insertCurrentActivityData} from "../../../util/db-util.js";
 
 async function insertForReadCurrentActivityData() {
-    await insertCurrentActivityData(createCurrentActivityForReadTestData());
+    await insertCurrentActivityData(await createCurrentActivityForReadTestData());
 }
 
 insertForReadCurrentActivityData().then(() => {});
