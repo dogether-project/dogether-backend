@@ -32,23 +32,22 @@ export default function () {
     const response = requestApi(vuIndex);
     const responseBody = parseResponseBody(response);
     const responseData = responseBody.data;
-    const joiningChallengeGroupsFirstData = responseData.joiningChallengeGroups[0];
 
     check(null, {
         'API HTTP 상태 코드 200': () => response?.status === 200,
         'API 응답 코드 success': () => responseBody?.code === 'success',
         '응답 데이터 - lastSelectedGroupIndex 존재': () => responseData?.lastSelectedGroupIndex !== undefined,
         '응답 데이터 - joiningChallengeGroups 빈 배열 X': () => responseData?.joiningChallengeGroups.length > 0,
-        '응답 데이터 - joiningChallengeGroups[groupId] 존재': () => joiningChallengeGroupsFirstData?.groupId !== undefined,
-        '응답 데이터 - joiningChallengeGroups[groupName] 존재': () => joiningChallengeGroupsFirstData?.groupName !== undefined,
-        '응답 데이터 - joiningChallengeGroups[currentMemberCount] 존재': () => joiningChallengeGroupsFirstData?.currentMemberCount !== undefined,
-        '응답 데이터 - joiningChallengeGroups[maximumMemberCount] 존재': () => joiningChallengeGroupsFirstData?.maximumMemberCount !== undefined,
-        '응답 데이터 - joiningChallengeGroups[joinCode] 존재': () => joiningChallengeGroupsFirstData?.joinCode !== undefined,
-        '응답 데이터 - joiningChallengeGroups[status] 존재': () => joiningChallengeGroupsFirstData?.status !== undefined,
-        '응답 데이터 - joiningChallengeGroups[startAt] 존재': () => joiningChallengeGroupsFirstData?.startAt !== undefined,
-        '응답 데이터 - joiningChallengeGroups[endAt] 존재': () => joiningChallengeGroupsFirstData?.endAt !== undefined,
-        '응답 데이터 - joiningChallengeGroups[progressDay] 존재': () => joiningChallengeGroupsFirstData?.progressDay !== undefined,
-        '응답 데이터 - joiningChallengeGroups[progressRate] 존재': () => joiningChallengeGroupsFirstData?.progressRate !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].groupId 존재': () => responseData.joiningChallengeGroups[0]?.groupId !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].groupName 존재': () => responseData.joiningChallengeGroups[0]?.groupName !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].currentMemberCount 존재': () => responseData.joiningChallengeGroups[0]?.currentMemberCount !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].maximumMemberCount 존재': () => responseData.joiningChallengeGroups[0]?.maximumMemberCount !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].joinCode 존재': () => responseData.joiningChallengeGroups[0]?.joinCode !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].status 존재': () => responseData.joiningChallengeGroups[0]?.status !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].startAt 존재': () => responseData.joiningChallengeGroups[0]?.startAt !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].endAt 존재': () => responseData.joiningChallengeGroups[0]?.endAt !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].progressDay 존재': () => responseData.joiningChallengeGroups[0]?.progressDay !== undefined,
+        '응답 데이터 - joiningChallengeGroups[0].progressRate 존재': () => responseData.joiningChallengeGroups[0]?.progressRate !== undefined,
     });
 }
 
