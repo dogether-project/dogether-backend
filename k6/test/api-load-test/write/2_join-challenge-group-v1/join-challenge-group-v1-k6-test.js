@@ -2,7 +2,7 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import http from 'k6/http';
-import {getTodoTargetGroupIdsPerMember} from "../../../../common/test-data/test-data-common.js";
+import {getJoinCodesPerMember} from "../../../../common/test-data/test-data-common.js";
 import {parseResponseBody, setRequestHeader} from "../../../../common/util/api-util.js";
 import {API_BASE_URL} from "../../../../common/secret/secret.js";
 
@@ -23,45 +23,40 @@ export const options = {
 };
 
 export function setup() {
-    const challengeGroupIds = getTodoTargetGroupIdsPerMember();
+    const joinCodes = getJoinCodesPerMember();
 
     console.log("⏰ 10초 대기 시작.");
     sleep(10);
     console.log("✅ 10초 대기 완료.");
 
-    return {challengeGroupIds};
+    return {joinCodes};
 }
 
 export default function (data) {
     const vuIndex = __VU - 1;
-    const response = requestApi(vuIndex, data.challengeGroupIds[vuIndex]);
+    const response = requestApi(vuIndex, data.joinCodes[vuIndex]);
     const responseBody = parseResponseBody(response);
+    const responseData = responseBody.data;
 
     check(null, {
-        'API HTTP 상태 코드 200': () => response?.status === 200,
-        'API 응답 코드 success': () => responseBody?.code === 'success',
+        'API HTTP 상태 코드 200': () => response.status === 200,
+        'API 응답 코드 success': () => responseBody.code === 'success',
+        '응답 데이터 - groupName 존재': () => responseData?.groupName !== undefined,
+        '응답 데이터 - duration 존재': () => responseData?.duration !== undefined,
+        '응답 데이터 - maximumMemberCount 존재': () => responseData?.maximumMemberCount !== undefined,
+        '응답 데이터 - startAt 존재': () => responseData?.startAt !== undefined,
+        '응답 데이터 - endAt 존재': () => responseData?.endAt !== undefined,
     });
 }
 
-function requestApi(vuIndex, challengeGroupId) {
+function requestApi(vuIndex, joinCode) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
     const body = JSON.stringify({
-        todos: [
-            `${vuIndex}번 사용자 투두 A`,
-            `${vuIndex}번 사용자 투두 B`,
-            `${vuIndex}번 사용자 투두 C`,
-            `${vuIndex}번 사용자 투두 D`,
-            `${vuIndex}번 사용자 투두 E`,
-            `${vuIndex}번 사용자 투두 F`,
-            `${vuIndex}번 사용자 투두 G`,
-            `${vuIndex}번 사용자 투두 H`,
-            `${vuIndex}번 사용자 투두 I`,
-            `${vuIndex}번 사용자 투두 J`,
-        ]
+        joinCode: joinCode
     });
 
-    return http.post(`${API_BASE_URL}/challenge-groups/${challengeGroupId}/todos`, body, { headers, timeout });
+    return http.post(`${API_BASE_URL}/api/v1/groups/join`, body, { headers, timeout });
 }
 
 export function teardown() {

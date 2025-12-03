@@ -2,8 +2,7 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import http from 'k6/http';
-import {getPendingCertificationIdsPerReviewer} from "../../../../common/test-data/test-data-common.js";
-import {parseResponseBody, setRequestHeader} from "../../../../common/util/api-util.js";
+import {setRequestHeader, parseResponseBody} from "../../../../common/util/api-util.js";
 import {API_BASE_URL} from "../../../../common/secret/secret.js";
 
 const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../common/secret/tokens.json')));
@@ -20,41 +19,41 @@ export const options = {
             maxDuration: '30m',
         },
     },
-}
+};
 
 export function setup() {
-    const dailyTodoCertificationIds = getPendingCertificationIdsPerReviewer();
-
     console.log("⏰ 10초 대기 시작.");
     sleep(10);
     console.log("✅ 10초 대기 완료.");
-
-    return {dailyTodoCertificationIds};
 }
 
-export default function (data) {
+export default function () {
     const vuIndex = __VU - 1;
-    const response = requestApi(vuIndex, data.dailyTodoCertificationIds[vuIndex]);
+    const response = requestApi(vuIndex);
     const responseBody = parseResponseBody(response);
+    const responseData = responseBody.data;
 
     check(null, {
-        'API HTTP 상태 코드 200': () => response.status === 200,
-        'API 응답 코드 success': () => responseBody.code === 'success',
+        'API HTTP 상태 코드 200': () => response?.status === 200,
+        'API 응답 코드 success': () => responseBody?.code === 'success',
+        '응답 데이터 - joinCode 존재': () => responseData?.joinCode !== undefined
     });
 }
 
-function requestApi(vuIndex, dailyTodoCertificationId) {
+function requestApi(vuIndex) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
     const body = JSON.stringify({
-        result: "APPROVE",
-        reviewFeedback: `굿좝 - ${vuIndex}`
+        groupName: `예쁘니 그룹 - ${vuIndex}`,
+        maximumMemberCount: 20,
+        startAt: "TODAY",
+        duration: 28
     });
 
-    return http.post(`${API_BASE_URL}/todo-certifications/${dailyTodoCertificationId}/review`, body, { headers, timeout });
+    return http.post(`${API_BASE_URL}/api/v1/groups`, body, { headers, timeout });
 }
 
 export function teardown() {
-    console.log("🧹 5초 후 테스트 데이터 정리 시작.");
+    console.log("🧹 5초 후 테스트 데이터 정리 시작.\n");
     sleep(5);
 }
