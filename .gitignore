@@ -200,5 +200,12 @@ src/main/resources/firebase
 /k6/common/node_modules
 /k6/**/data.json
 /k6/**/temp.json
+/k6/common/test-data/member/csv/
+/k6/common/test-data/past-activity/csv/
+/k6/common/test-data/current-activity/csv/
+/k6/common/secret/
+
+/k6/common/test-data/current-activity/for-write/csv/
+/k6/common/test-data/current-activity/for-read/csv/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
