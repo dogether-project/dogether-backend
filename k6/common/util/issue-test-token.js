@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { API_BASE_URL } from '../secret/secret.js';
 
-const TOKEN_OUTPUT_PATH = path.join('../../secret/tokens.json');
-const TEST_MEMBER_COUNT = 100;
+const TOKEN_OUTPUT_PATH = path.join('../secret/tokens.json');
+const TEST_MEMBER_COUNT = 400;
 
 async function issueTestTokens() {
     const testMemberIds = [];
