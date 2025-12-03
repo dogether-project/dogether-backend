@@ -55,5 +55,5 @@ function requestApi(vuIndex) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
 
-    return http.get(`${API_BASE_URL}/groups/my`, { headers, timeout });
+    return http.get(`${API_BASE_URL}/api/v1/groups/my`, { headers, timeout });
 }

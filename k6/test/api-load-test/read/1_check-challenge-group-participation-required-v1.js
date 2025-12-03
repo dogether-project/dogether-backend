@@ -36,7 +36,7 @@ export default function () {
     check(null, {
         'API HTTP 상태 코드 200': () => response?.status === 200,
         'API 응답 코드 success': () => responseBody?.code === 'success',
-        '응답 데이터 - isParticipating 존재': () => responseData?.isParticipating !== undefined
+        '응답 데이터 - checkParticipating 존재': () => responseData?.checkParticipating !== undefined
     });
 }
 
@@ -44,5 +44,5 @@ function requestApi(vuIndex) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
 
-    return http.get(`${API_BASE_URL}/groups/participating`, { headers, timeout });
+    return http.get(`${API_BASE_URL}/api/v1/groups/participating`, { headers, timeout });
 }

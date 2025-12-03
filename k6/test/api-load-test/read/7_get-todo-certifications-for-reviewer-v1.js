@@ -49,5 +49,5 @@ function requestApi(vuIndex) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
 
-    return http.get(`${API_BASE_URL}/todo-certifications/pending-review`, { headers, timeout });
+    return http.get(`${API_BASE_URL}/api/v1/todo-certifications/pending-review`, { headers, timeout });
 }

@@ -58,5 +58,5 @@ function requestApi(vuIndex, challengeGroupId, otherMemberId) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
 
-    return http.get(`${API_BASE_URL}/challenge-groups/${challengeGroupId}/challenge-group-members/${otherMemberId}/today-todo-history`, { headers, timeout });
+    return http.get(`${API_BASE_URL}/api/v1/challenge-groups/${challengeGroupId}/challenge-group-members/${otherMemberId}/today-todo-history`, { headers, timeout });
 }

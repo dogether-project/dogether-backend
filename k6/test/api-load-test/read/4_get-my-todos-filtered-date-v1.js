@@ -54,5 +54,5 @@ function requestApi(vuIndex, challengeGroupId) {
     const headers = setRequestHeader(tokens[vuIndex]);
     const todayDate = getDateNDaysAgoMySqlDateFormatString(0);
 
-    return http.get(`${API_BASE_URL}/challenge-groups/${challengeGroupId}/my-todos?date=${todayDate}`, { headers, timeout });
+    return http.get(`${API_BASE_URL}/api/v1/challenge-groups/${challengeGroupId}/my-todos?date=${todayDate}`, { headers, timeout });
 }
