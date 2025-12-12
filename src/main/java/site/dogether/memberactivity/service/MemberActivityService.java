@@ -201,10 +201,10 @@ public class MemberActivityService {
     private List<DailyTodoCertification> getCertificationsByStatus(Member member, String status) {
         if (status != null && !status.isBlank()) {
             final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(status);
-            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndReviewStatus(member, dailyTodoCertificationReviewStatus);
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(member, dailyTodoCertificationReviewStatus);
         }
 
-        return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member);
+        return dailyTodoCertificationRepository.findAllByDailyTodo_MemberOrderByCreatedAtDesc(member);
     }
 
     private List<GetMemberAllStatsApiResponseV0.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
