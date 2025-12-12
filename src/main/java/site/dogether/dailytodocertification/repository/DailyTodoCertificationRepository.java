@@ -18,13 +18,13 @@ public interface DailyTodoCertificationRepository extends JpaRepository<DailyTod
 
     Optional<DailyTodoCertification> findByDailyTodo(final DailyTodo dailyTodo);
 
-    List<DailyTodoCertification> findAllByDailyTodo_Member(Member member);
+    List<DailyTodoCertification> findAllByDailyTodo_MemberOrderByCreatedAtDesc(Member member);
 
-    List<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatus(Member member, DailyTodoCertificationReviewStatus reviewStatus);
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(Member member, DailyTodoCertificationReviewStatus reviewStatus);
 
-    Slice<DailyTodoCertification> findAllByDailyTodo_Member(Member member, Pageable pageable);
+    Slice<DailyTodoCertification> findAllByDailyTodo_MemberOrderByCreatedAtDesc(Member member, Pageable pageable);
 
-    Slice<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatus(Member member, DailyTodoCertificationReviewStatus status, Pageable pageable);
+    Slice<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(Member member, DailyTodoCertificationReviewStatus status, Pageable pageable);
 
     @Query("""
     SELECT dtc
