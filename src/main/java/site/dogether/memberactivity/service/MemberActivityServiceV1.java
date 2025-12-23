@@ -43,6 +43,7 @@ public class MemberActivityServiceV1 {
         GetMemberAllStatsApiResponseV1.DailyTodoStats stats = getStats(member);
         Slice<DailyTodoCertification> certificationsBySlice = getCertificationsByStatus(member, status, pageable);
         List<DailyTodoCertification> certifications = certificationsBySlice.getContent();
+        GetMemberAllStatsApiResponseV1.from(certificationsBySlice);
 
         if ("TODO_COMPLETED_AT".equals(sort)) {
             List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> groupedCertifications = getCertificationsSortedByTodoCompletedAt(certifications);
@@ -75,10 +76,10 @@ public class MemberActivityServiceV1 {
     private Slice<DailyTodoCertification> getCertificationsByStatus(Member member, String status, Pageable pageable) {
         if (status != null && !status.isBlank()) {
             final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(status);
-            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndReviewStatus(member, dailyTodoCertificationReviewStatus, pageable);
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(member, dailyTodoCertificationReviewStatus, pageable);
         }
 
-        return dailyTodoCertificationRepository.findAllByDailyTodo_Member(member, pageable);
+        return dailyTodoCertificationRepository.findAllByDailyTodo_MemberOrderByCreatedAtDesc(member, pageable);
     }
 
     private List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> getCertificationsSortedByTodoCompletedAt(List<DailyTodoCertification> certifications) {
