@@ -12,7 +12,7 @@ class AppInfoServiceTest {
     void forceUpdateCheckReturnTrue() {
         // Given
         final AppInfoService appInfoService = new AppInfoService();
-        final String request = "1.0.3";
+        final String request = "1.1.3";
 
         // When
         final boolean result = appInfoService.forceUpdateCheck(request);
