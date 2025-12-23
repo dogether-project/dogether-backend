@@ -7,7 +7,7 @@ import site.dogether.appinfo.exception.InvalidAppVersionException;
 public class AppInfoService {
 
     private static final int MINIMUM_REQUIRED_APP_MAJOR_VERSION = 1;
-    private static final int MINIMUM_REQUIRED_APP_MINOR_VERSION = 0;
+    private static final int MINIMUM_REQUIRED_APP_MINOR_VERSION = 1;
     private static final int APP_MAJOR_VERSION_INDEX = 0;
     private static final int APP_MINOR_VERSION_INDEX = 1;
 
