@@ -19,6 +19,7 @@ import site.dogether.dailytodohistory.service.DailyTodoHistoryService;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.reminder.service.TodoActivityReminderService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ public class DailyTodoService {
     private final DailyTodoRepository dailyTodoRepository;
     private final DailyTodoHistoryService dailyTodoHistoryService;
     private final ChallengeGroupPolicy challengeGroupPolicy;
+    private final TodoActivityReminderService todoActivityReminderService;
 
     @Transactional
     public void saveDailyTodos(
@@ -134,7 +136,8 @@ public class DailyTodoService {
             .map(dailyTodoAndDailyTodoCertification -> {
                 final DailyTodo dailyTodo = dailyTodoAndDailyTodoCertification.dailyTodo();
                 final DailyTodoCertification dailyTodoCertification = dailyTodoAndDailyTodoCertification.dailyTodoCertification();
-                return new DailyTodoDto(dailyTodo, dailyTodoCertification);
+                final boolean canRequestCertificationReview = todoActivityReminderService.canRequestCertificationReview(member, dailyTodoCertification);
+                return new DailyTodoDto(dailyTodo, dailyTodoCertification, canRequestCertificationReview);
             })
             .toList();
     }
@@ -164,7 +167,8 @@ public class DailyTodoService {
             .map(dailyTodoAndDailyTodoCertification -> {
                 final DailyTodo dailyTodo = dailyTodoAndDailyTodoCertification.dailyTodo();
                 final DailyTodoCertification dailyTodoCertification = dailyTodoAndDailyTodoCertification.dailyTodoCertification();
-                return new DailyTodoDto(dailyTodo, dailyTodoCertification);
+                final boolean canRequestCertificationReview = todoActivityReminderService.canRequestCertificationReview(member, dailyTodoCertification);
+                return new DailyTodoDto(dailyTodo, dailyTodoCertification, canRequestCertificationReview);
             })
             .toList();
 

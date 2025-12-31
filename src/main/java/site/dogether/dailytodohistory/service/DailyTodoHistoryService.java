@@ -1,8 +1,5 @@
 package site.dogether.dailytodohistory.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +19,11 @@ import site.dogether.dailytodohistory.service.dto.TodoHistoryDto;
 import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
+import site.dogether.reminder.service.TodoActivityReminderService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -33,6 +35,7 @@ public class DailyTodoHistoryService {
     private final DailyTodoHistoryRepository dailyTodoHistoryRepository;
     private final DailyTodoHistoryReadRepository dailyTodoHistoryReadRepository;
     private final DailyTodoCertificationRepository dailyTodoCertificationRepository;
+    private final TodoActivityReminderService todoActivityReminderService;
 
     @Transactional
     public void initDailyTodoHistories(final List<DailyTodo> dailyTodos) {
@@ -92,16 +95,22 @@ public class DailyTodoHistoryService {
         return dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)
             .map(dailyTodoCertification -> new TodoHistoryDto(
                 history.getId(),
+                dailyTodo.getId(),
                 dailyTodo.getContent(),
                 dailyTodoCertification.getReviewStatus().name(),
+                todoActivityReminderService.canRequestCertification(viewer, dailyTodo),
+                todoActivityReminderService.canRequestCertificationReview(viewer, dailyTodoCertification),
                 dailyTodoCertification.getContent(),
                 dailyTodoCertification.getMediaUrl(),
                 isHistoryRead,
                 dailyTodoCertification.findReviewFeedback().orElse(null)))
             .orElse(new TodoHistoryDto(
                 history.getId(),
+                dailyTodo.getId(),
                 dailyTodo.getContent(),
                 dailyTodo.getStatus().name(),
+                todoActivityReminderService.canRequestCertification(viewer, dailyTodo),
+                false,
                 null,
                 null,
                 isHistoryRead,
