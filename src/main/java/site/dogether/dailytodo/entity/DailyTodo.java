@@ -179,10 +179,13 @@ public class DailyTodo extends BaseEntity {
     }
 
     private void validateWrittenToday() {
-        final boolean writtenToday = writtenAt.toLocalDate().isEqual(LocalDate.now());
-        if (!writtenToday) {
+        if (!isWrittenToday()) {
             throw new NotCreatedTodayDailyTodoException(String.format("데일리 투두가 작성된 당일에만 투두 인증을 생성할 수 있습니다. (%s)", this));
         }
+    }
+
+    public boolean isWrittenToday() {
+        return writtenAt.toLocalDate().isEqual(LocalDate.now());
     }
 
     public boolean isWriter(final Member target) {

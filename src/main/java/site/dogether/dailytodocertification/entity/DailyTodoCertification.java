@@ -158,6 +158,10 @@ public class DailyTodoCertification extends BaseEntity {
         }
     }
 
+    public boolean isReviewPending() {
+        return reviewStatus == REVIEW_PENDING;
+    }
+
     public Long getId() {
         return id;
     }

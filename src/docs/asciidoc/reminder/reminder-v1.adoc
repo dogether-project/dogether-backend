@@ -1,0 +1,25 @@
+[[reminder-v1-api]]
+== [V1] 투두 활동 재촉 API
+
+[[send-todo-activity-reminder-v1]]
+=== 투두 활동 재촉 알림 전송
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/todo-activity-reminder-controller-v1-docs-test/send-todo-activity-reminder-v1/http-request.adoc[]
+include::{snippets}/todo-activity-reminder-controller-v1-docs-test/send-todo-activity-reminder-v1/path-parameters.adoc[]
+include::{snippets}/todo-activity-reminder-controller-v1-docs-test/send-todo-activity-reminder-v1/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/todo-activity-reminder-controller-v1-docs-test/send-todo-activity-reminder-v1/http-response.adoc[]
+include::{snippets}/todo-activity-reminder-controller-v1-docs-test/send-todo-activity-reminder-v1/response-fields.adoc[]
