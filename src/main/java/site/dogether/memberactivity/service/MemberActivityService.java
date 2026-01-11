@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import site.dogether.challengegroup.entity.ChallengeGroup;
 import site.dogether.challengegroup.entity.ChallengeGroupMember;
 import site.dogether.challengegroup.repository.ChallengeGroupMemberRepository;
+import site.dogether.challengegroup.service.ChallengeGroupPolicy;
 import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.challengegroup.service.ChallengeGroupService;
-import site.dogether.challengegroup.service.ChallengeGroupPolicy;
 import site.dogether.dailytodo.entity.DailyTodo;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
@@ -20,11 +20,14 @@ import site.dogether.member.entity.Member;
 import site.dogether.member.exception.MemberNotFoundException;
 import site.dogether.member.repository.MemberRepository;
 import site.dogether.memberactivity.controller.v0.dto.response.GetMemberAllStatsApiResponseV0;
-import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.exception.InvalidParameterException;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
+import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
+import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
+import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,41 +55,38 @@ public class MemberActivityService {
     private final ChallengeGroupService challengeGroupService;
     private final ChallengeGroupPolicy challengeGroupPolicy;
 
+    private static final int CERTIFICATION_PERIOD_DAYS = 4;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-    public void initDailyTodoStats(Member member) {
-        DailyTodoStats stats = new DailyTodoStats(member);
+    public void initDailyTodoStats(final Member member) {
+        final DailyTodoStats stats = new DailyTodoStats(member);
         dailyTodoStatsRepository.save(stats);
     }
 
-    public GetGroupActivityStatApiResponseV1 getGroupActivityStat(final Long memberId, final Long groupId) {
-        final Member member = getMember(memberId);
+    // TODO: 리팩토링 후 제거 예정
+    // 검증
+    /*
+    final Member member = getMember(memberId);
 
+    final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
+
+    challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+    challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, member);
+    */
+
+    public ChallengeGroupInfoDto getChallengeGroupInfo(final Long memberId, final Long groupId) {
+        final Member member = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
         challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
         challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, member);
 
-        return new GetGroupActivityStatApiResponseV1(
-                getChallengeGroupInfo(challengeGroup),
-                getCertificationPeriods(member, challengeGroup),
-                getMyRank(member, challengeGroup),
-                getMemberGroupStats(member, challengeGroup)
-        );
-    }
-
-    private Member getMember(final Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
-    }
-
-    public GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse getChallengeGroupInfo(final ChallengeGroup challengeGroup) {
         final int currentMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
 
         final String endAt = challengeGroup.getEndAt()
                 .format(DateTimeFormatter.ofPattern("yy.MM.dd"));
 
-        return new GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse(
+        return new ChallengeGroupInfoDto(
                 challengeGroup.getName(),
                 challengeGroup.getMaximumMemberCount(),
                 currentMemberCount,
@@ -95,25 +95,48 @@ public class MemberActivityService {
         );
     }
 
-    public List<GetGroupActivityStatApiResponseV1.CertificationPeriodResponse> getCertificationPeriods(final Member member, final ChallengeGroup challengeGroup) {
-        List<GetGroupActivityStatApiResponseV1.CertificationPeriodResponse> result = new ArrayList<>();
-        final LocalDate today = LocalDate.now();
-        final LocalDate groupStartAt = challengeGroup.getStartAt();
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new MemberNotFoundException(String.format("존재하지 않는 회원 id입니다. (%d)", memberId)));
+    }
 
-        for (int i = 3; i >= 0; i--) {
+    public List<CertificationPeriodDto> getCertificationPeriods(final Long memberId, final Long groupId) {
+        final Member member = getMember(memberId);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
+
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, member);
+
+        final List<CertificationPeriodDto> result = new ArrayList<>();
+        final LocalDate today = LocalDate.now();
+        final LocalDate groupStartedAt = challengeGroup.getStartAt();
+
+        for (int i = CERTIFICATION_PERIOD_DAYS - 1; i >= 0; i--) {
             final LocalDate targetDate = today.minusDays(i);
 
-            final int day = (int) ChronoUnit.DAYS.between(groupStartAt, targetDate) + 1;
-
-            if (!targetDate.isBefore(groupStartAt) && !targetDate.isAfter(challengeGroup.getEndAt())) {
-                result.add(certificationPeriod(day, targetDate, member, challengeGroup));
+            if (targetDate.isBefore(groupStartedAt) || targetDate.isAfter(challengeGroup.getEndAt())) {
+                continue;
             }
+
+            final int day = (int) ChronoUnit.DAYS.between(groupStartedAt, targetDate) + 1;
+
+            result.add(getCertificationPeriodInfo(
+                day,
+                targetDate,
+                member,
+                challengeGroup
+            ));
         }
 
         return result;
     }
 
-    public GetGroupActivityStatApiResponseV1.CertificationPeriodResponse certificationPeriod(final int day, final LocalDate date, final Member member, final ChallengeGroup challengeGroup) {
+    private CertificationPeriodDto getCertificationPeriodInfo(
+        final int day,
+        final LocalDate date,
+        final Member member,
+        final ChallengeGroup challengeGroup
+    ) {
         final LocalDateTime startOfDay = date.atStartOfDay();
         final LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
@@ -125,19 +148,21 @@ public class MemberActivityService {
         );
 
         final int createdCount = todos.size();
-
-        final int certificatedCount = (int) todos.stream()
-                .filter(DailyTodo::isCertifyCompleted)
-                .count();
-
+        final int certificatedCount = calculateCertificatedCount(todos);
         final int certificationRate = calculateCertificationRate(createdCount, certificatedCount);
 
-        return new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(
+        return new CertificationPeriodDto(
                 day,
                 createdCount,
                 certificatedCount,
                 certificationRate
         );
+    }
+
+    private int calculateCertificatedCount(final List<DailyTodo> todos) {
+        return (int) todos.stream()
+            .filter(DailyTodo::isCertifyCompleted)
+            .count();
     }
 
     private int calculateCertificationRate(final int createdCount, final int certificatedCount) {
@@ -147,19 +172,31 @@ public class MemberActivityService {
         return (int) (((double) certificatedCount / createdCount) * 100);
     }
 
-    public GetGroupActivityStatApiResponseV1.RankingResponse getMyRank(final Member target, final ChallengeGroup challengeGroup) {
+    public MyRankInChallengeGroupDto getMyRankInChallengeGroup(final Long memberId, final Long groupId) {
+        final Member target = getMember(memberId);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
+
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, target);
+
         final List<ChallengeGroupMember> groupMembers = challengeGroupMemberRepository.findAllByChallengeGroup(challengeGroup);
 
         final int totalMemberCount = challengeGroupMemberRepository.countByChallengeGroup(challengeGroup);
         final int myRank = challengeGroupService.getMyRank(target, groupMembers);
 
-        return new GetGroupActivityStatApiResponseV1.RankingResponse(totalMemberCount, myRank);
+        return new MyRankInChallengeGroupDto(totalMemberCount, myRank);
     }
 
-    public GetGroupActivityStatApiResponseV1.MemberStatsResponse getMemberGroupStats(final Member member, final ChallengeGroup challengeGroup) {
+    public MyCertificationStatsInChallengeGroupDto getMyChallengeGroupStats(final Long memberId, final Long groupId) {
+        final Member member = getMember(memberId);
+        final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
+
+        challengeGroupPolicy.validateChallengeGroupNotFinished(challengeGroup);
+        challengeGroupPolicy.validateMemberIsInChallengeGroup(challengeGroup, member);
+
         final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
 
-        return new GetGroupActivityStatApiResponseV1.MemberStatsResponse(
+        return new MyCertificationStatsInChallengeGroupDto(
             dailyTodoCertificationCount.getTotalCount(),
             dailyTodoCertificationCount.getApprovedCount(),
             dailyTodoCertificationCount.getRejectedCount()
