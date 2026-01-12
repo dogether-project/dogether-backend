@@ -181,7 +181,7 @@ class MemberActivityServiceTest {
         challengeGroupMemberRepository.save(challengeGroupMember);
 
         //When
-        final MyCertificationStatsInChallengeGroupDto myCertificationStats = memberActivityService.getMyChallengeGroupStats(member.getId(), challengeGroup.getId());
+        final MyCertificationStatsInChallengeGroupDto myCertificationStats = memberActivityService.getMyCertificationStatsInChallengeGroup(member.getId(), challengeGroup.getId());
 
         //Then
         final MyCertificationStatsInChallengeGroupDto expectedMyCertificationStats = new MyCertificationStatsInChallengeGroupDto(0, 0, 0);
