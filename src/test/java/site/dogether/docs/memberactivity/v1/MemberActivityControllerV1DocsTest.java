@@ -16,6 +16,7 @@ import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
 import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
+import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
@@ -402,6 +403,86 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                     .description("현재 페이지 내 인증 목록 개수")
                                     .type(JsonFieldType.NUMBER)
                         )));
+    }
+
+    @DisplayName("[V1] 사용자의 인증 목록 전체 조회 API (페이징 X)")
+    @Test
+    void getMyGroupCertificationsV1() throws Exception {
+        final List<DailyTodoCertificationActivityDto> certifications = List.of(
+            new DailyTodoCertificationActivityDto(
+                1L,
+                "운동 하기",
+                "REJECT",
+                false,
+                "운동 개조짐 ㅋㅋㅋㅋ",
+                "운동 조지는 짤.png",
+                "에이 이건 운동 아니지"
+            ),
+            new DailyTodoCertificationActivityDto(
+                2L,
+                "인강 듣기",
+                "REJECT",
+                false,
+                "인강 진짜 열심히 들었습니다. ㅎ",
+                "인강 달리는 짤.png",
+                "우리 오늘 인강 듣는날 아닌데?"
+            )
+        );
+
+        given(memberActivityService.getMyGroupCertificationsByCertificatedAt(any(), any(), any()))
+            .willReturn(certifications);
+
+        given(memberActivityService.getMyGroupCertificationsByGroupCreatedAt(any(), any(), any()))
+            .willReturn(certifications);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/v1/my/activity/todos/{todoId}/group-certifications", 1)
+                    .param("sortBy", "GROUP_CREATED_AT")
+                    .param("status", "REJECT")
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                queryParameters(
+                    parameterWithName("sortBy")
+                        .description("정렬 방식")
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("TODO_COMPLETED_AT(투두 완료일 순)", "GROUP_CREATED_AT(그룹 생성일 순)")),
+                    parameterWithName("status")
+                        .optional()
+                        .description("데일리 투두 상태")
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)"))
+                ),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].id")
+                        .description("데일리 투두 id")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.certifications[].content")
+                        .description("데일리 투두 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].status")
+                        .description("데일리 투두 상태")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].canRequestCertificationReview")
+                        .description("데일리 투두 인증 검사 요청 가능 여부")
+                        .type(JsonFieldType.BOOLEAN),
+                    fieldWithPath("data.certifications[].certificationContent")
+                        .description("데일리 투두 인증글 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].certificationMediaUrl")
+                        .description("데일리 투두 인증글 이미지 URL")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].reviewFeedback")
+                        .description("데일리 투두 인증 검사 피드백")
+                        .type(JsonFieldType.STRING)
+                )));
     }
 
     @DisplayName("[V1] 사용자 프로필 조회 API")

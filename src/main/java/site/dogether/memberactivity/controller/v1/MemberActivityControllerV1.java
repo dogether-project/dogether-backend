@@ -15,12 +15,14 @@ import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyActivityStatsAndCertificationsApiResponseV1;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyChallengeGroupActivityStatsApiResponseV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetMyGroupCertificationsApiResponseV1;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyProfileApiResponseV1;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
 import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
+import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
@@ -85,6 +87,26 @@ public class MemberActivityControllerV1 {
             GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByGroupCreatedAt.fromList(groupedCertifications),
             GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(certifications)
         )));
+    }
+
+    @GetMapping("/activity/todos/{todoId}/group-certifications")
+    public ResponseEntity<ApiResponse<GetMyGroupCertificationsApiResponseV1>> getMyGroupCertifications(
+        @Authenticated final Long memberId,
+        @PathVariable final Long todoId,
+        @RequestParam final String sortBy,
+        @RequestParam(required = false) final String status
+    ) {
+        // TODO: 추후 v2 올릴 때 'TODO_COMPLETED_AT'가 아닌 'CERTIFICATED_AT'으로 변경 필요
+        if (sortBy.equals("TODO_COMPLETED_AT")) {
+            final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByCertificatedAt(memberId, todoId, status);
+
+            return ResponseEntity.ok(success(new GetMyGroupCertificationsApiResponseV1(GetMyGroupCertificationsApiResponseV1.Certification.fromList(dailyTodoCertificationActivity))));
+        }
+
+        // sortBy = GROUP_CREATED_AT
+        final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByGroupCreatedAt(memberId, todoId, status);
+
+        return ResponseEntity.ok(success(new GetMyGroupCertificationsApiResponseV1(GetMyGroupCertificationsApiResponseV1.Certification.fromList(dailyTodoCertificationActivity))));
     }
 
     @GetMapping("/profile")
