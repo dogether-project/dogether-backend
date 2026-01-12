@@ -23,9 +23,14 @@ public interface DailyTodoCertificationRepository extends JpaRepository<DailyTod
 
     Slice<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(final Member member, final DailyTodoCertificationReviewStatus status, final Pageable pageable);
 
-    List<DailyTodoCertification> findAllByDailyTodo_MemberAndCreatedAtOrderByCreatedAtDesc(final Member member, final LocalDateTime certificatedAt);
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtDesc(final Member member, final LocalDateTime start, final LocalDateTime end);
 
-    List<DailyTodoCertification> findAllByDailyTodo_MemberAndCreatedAtAndReviewStatusOrderByCreatedAtDesc(final Member member, final LocalDateTime certificatedAt, final DailyTodoCertificationReviewStatus reviewStatus);
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanAndReviewStatusOrderByCreatedAtDesc(
+        final Member member,
+        final LocalDateTime start,
+        final LocalDateTime end,
+        final DailyTodoCertificationReviewStatus reviewStatus
+    );
 
     List<DailyTodoCertification> findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameOrderByCreatedAtDesc(final Member member, final String groupName);
 

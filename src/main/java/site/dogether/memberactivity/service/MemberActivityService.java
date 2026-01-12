@@ -272,9 +272,11 @@ public class MemberActivityService {
         final DailyTodo dailyTodo = getDailyTodo(todoId);
         final DailyTodoCertification dailyTodoCertification = getDailyTodoCertification(dailyTodo);
 
-        final LocalDateTime date = dailyTodoCertification.getCreatedAt();
+        final LocalDate date = dailyTodoCertification.getCreatedAt().toLocalDate();
+        final LocalDateTime dateStartAt = date.atStartOfDay();
+        final LocalDateTime dateEndAt = date.plusDays(1).atStartOfDay();
 
-        final List<DailyTodoCertification> certifications = getCertificationsByCertificatedAtAndStatus(member, date, status);
+        final List<DailyTodoCertification> certifications = getCertificationsByCertificatedAtAndStatus(member, dateStartAt, dateEndAt, status);
 
         return certifications.stream()
             .map(certification -> new DailyTodoCertificationActivityDto(
@@ -299,13 +301,13 @@ public class MemberActivityService {
             .orElseThrow(() -> new DailyTodoCertificationNotFoundException(String.format("존재하지 않는 데일리 투두 인증입니다. 투두 id : (%d)", dailyTodo.getId())));
     }
 
-    private List<DailyTodoCertification> getCertificationsByCertificatedAtAndStatus(final Member member, final LocalDateTime date, final String status) {
+    private List<DailyTodoCertification> getCertificationsByCertificatedAtAndStatus(final Member member, final LocalDateTime dateStartAt, final LocalDateTime dateEndAt, final String status) {
         if (status != null && !status.isBlank()) {
             final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(status);
-            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndCreatedAtAndReviewStatusOrderByCreatedAtDesc(member, date, dailyTodoCertificationReviewStatus);
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanAndReviewStatusOrderByCreatedAtDesc(member, dateStartAt, dateEndAt, dailyTodoCertificationReviewStatus);
         }
 
-        return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndCreatedAtOrderByCreatedAtDesc(member, date);
+        return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtDesc(member, dateStartAt, dateEndAt);
     }
 
     public List<DailyTodoCertificationActivityDto> getMyGroupCertificationsByGroupCreatedAt(final Long memberId, final Long todoId, final String status) {
