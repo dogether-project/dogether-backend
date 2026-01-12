@@ -92,8 +92,7 @@ public class MemberActivityControllerV1 {
         @Authenticated final Long memberId
     ) {
         final FindMyProfileDto myProfile = memberActivityService.getMyProfile(memberId);
-        final GetMyProfileApiResponseV1 response = GetMyProfileApiResponseV1.from(myProfile);
 
-        return ResponseEntity.ok(success(response));
+        return ResponseEntity.ok(success(GetMyProfileApiResponseV1.from(myProfile)));
     }
 }
