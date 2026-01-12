@@ -281,7 +281,7 @@ public class MemberActivityService {
         return certifications.stream()
             .map(certification -> new DailyTodoCertificationActivityDto(
                 certification.getDailyTodo().getId(),
-                certification.getContent(),
+                certification.getDailyTodo().getContent(),
                 certification.getReviewStatus().name(),
                 todoActivityReminderService.canRequestCertificationReview(member, certification),
                 certification.getContent(),
@@ -321,7 +321,7 @@ public class MemberActivityService {
         return certifications.stream()
             .map(certification -> new DailyTodoCertificationActivityDto(
                 certification.getDailyTodo().getId(),
-                certification.getContent(),
+                certification.getDailyTodo().getContent(),
                 certification.getReviewStatus().name(),
                 todoActivityReminderService.canRequestCertificationReview(member, certification),
                 certification.getContent(),
