@@ -13,9 +13,11 @@ import site.dogether.challengegroup.service.ChallengeGroupPolicy;
 import site.dogether.challengegroup.service.ChallengeGroupReader;
 import site.dogether.challengegroup.service.ChallengeGroupService;
 import site.dogether.dailytodo.entity.DailyTodo;
+import site.dogether.dailytodo.exception.DailyTodoNotFoundException;
 import site.dogether.dailytodo.repository.DailyTodoRepository;
 import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
+import site.dogether.dailytodocertification.exception.DailyTodoCertificationNotFoundException;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationCount;
 import site.dogether.dailytodocertification.repository.DailyTodoCertificationRepository;
 import site.dogether.member.entity.Member;
@@ -27,11 +29,13 @@ import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
 import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
+import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
+import site.dogether.reminder.service.TodoActivityReminderService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,6 +61,7 @@ public class MemberActivityService {
     private final DailyTodoStatsRepository dailyTodoStatsRepository;
     private final MemberRepository memberRepository;
     private final ChallengeGroupService challengeGroupService;
+    private final TodoActivityReminderService todoActivityReminderService;
     private final ChallengeGroupPolicy challengeGroupPolicy;
 
     private static final int CERTIFICATION_PERIOD_DAYS = 4;
@@ -260,6 +265,79 @@ public class MemberActivityService {
                     .collect(Collectors.toList())
             ))
             .collect(Collectors.toList());
+    }
+
+    public List<DailyTodoCertificationActivityDto> getMyGroupCertificationsByCertificatedAt(final Long memberId, final Long todoId, final String status) {
+        final Member member = getMember(memberId);
+        final DailyTodo dailyTodo = getDailyTodo(todoId);
+        final DailyTodoCertification dailyTodoCertification = getDailyTodoCertification(dailyTodo);
+
+        final LocalDate date = dailyTodoCertification.getCreatedAt().toLocalDate();
+        final LocalDateTime dateStartAt = date.atStartOfDay();
+        final LocalDateTime dateEndAt = date.plusDays(1).atStartOfDay();
+
+        final List<DailyTodoCertification> certifications = getCertificationsByCertificatedAtAndStatus(member, dateStartAt, dateEndAt, status);
+
+        return certifications.stream()
+            .map(certification -> new DailyTodoCertificationActivityDto(
+                certification.getDailyTodo().getId(),
+                certification.getDailyTodo().getContent(),
+                certification.getReviewStatus().name(),
+                todoActivityReminderService.canRequestCertificationReview(member, certification),
+                certification.getContent(),
+                certification.getMediaUrl(),
+                certification.findReviewFeedback().orElse(null)
+            ))
+            .toList();
+    }
+
+    private DailyTodo getDailyTodo(final Long todoId) {
+        return dailyTodoRepository.findById(todoId)
+            .orElseThrow(() -> new DailyTodoNotFoundException(String.format("존재하지 않는 투두 id입니다. (%d)", todoId)));
+    }
+
+    private DailyTodoCertification getDailyTodoCertification(final DailyTodo dailyTodo) {
+        return dailyTodoCertificationRepository.findByDailyTodo(dailyTodo)
+            .orElseThrow(() -> new DailyTodoCertificationNotFoundException(String.format("존재하지 않는 데일리 투두 인증입니다. 투두 id : (%d)", dailyTodo.getId())));
+    }
+
+    private List<DailyTodoCertification> getCertificationsByCertificatedAtAndStatus(final Member member, final LocalDateTime dateStartAt, final LocalDateTime dateEndAt, final String status) {
+        if (status != null && !status.isBlank()) {
+            final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(status);
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanAndReviewStatusOrderByCreatedAtDesc(member, dateStartAt, dateEndAt, dailyTodoCertificationReviewStatus);
+        }
+
+        return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtDesc(member, dateStartAt, dateEndAt);
+    }
+
+    public List<DailyTodoCertificationActivityDto> getMyGroupCertificationsByGroupCreatedAt(final Long memberId, final Long todoId, final String status) {
+        final Member member = getMember(memberId);
+        final DailyTodo dailyTodo = getDailyTodo(todoId);
+
+        final String groupName = dailyTodo.getChallengeGroup().getName();
+
+        final List<DailyTodoCertification> certifications = getCertificationsByGroupNameAndStatus(member, groupName, status);
+
+        return certifications.stream()
+            .map(certification -> new DailyTodoCertificationActivityDto(
+                certification.getDailyTodo().getId(),
+                certification.getDailyTodo().getContent(),
+                certification.getReviewStatus().name(),
+                todoActivityReminderService.canRequestCertificationReview(member, certification),
+                certification.getContent(),
+                certification.getMediaUrl(),
+                certification.findReviewFeedback().orElse(null)
+            ))
+            .toList();
+    }
+
+    private List<DailyTodoCertification> getCertificationsByGroupNameAndStatus(final Member member, final String groupName, final String status) {
+        if (status != null && !status.isBlank()) {
+            final DailyTodoCertificationReviewStatus dailyTodoCertificationReviewStatus = DailyTodoCertificationReviewStatus.convertByValue(status);
+            return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameAndReviewStatusOrderByCreatedAtDesc(member, groupName, dailyTodoCertificationReviewStatus);
+        }
+
+        return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameOrderByCreatedAtDesc(member, groupName);
     }
 
     public FindMyProfileDto getMyProfile(final Long memberId) {

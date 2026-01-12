@@ -6,7 +6,7 @@ public record GetMyProfileApiResponseV1(
         String name,
         String profileImageUrl
 ) {
-    public static GetMyProfileApiResponseV1 from(FindMyProfileDto findMyProfileDto) {
-        return new GetMyProfileApiResponseV1(findMyProfileDto.getName(), findMyProfileDto.getProfileImageUrl());
+    public static GetMyProfileApiResponseV1 from(final FindMyProfileDto dto) {
+        return new GetMyProfileApiResponseV1(dto.name(), dto.profileImageUrl());
     }
 }
