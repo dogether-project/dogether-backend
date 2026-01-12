@@ -187,7 +187,7 @@ public class MemberActivityService {
         return new MyRankInChallengeGroupDto(totalMemberCount, myRank);
     }
 
-    public MyCertificationStatsInChallengeGroupDto getMyChallengeGroupStats(final Long memberId, final Long groupId) {
+    public MyCertificationStatsInChallengeGroupDto getMyCertificationStatsInChallengeGroup(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
