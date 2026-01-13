@@ -443,6 +443,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("todoId")
+                        .description("데일리 투두 id")
+                        .attributes(constraints("존재하는 데일리 투두 id만 입력 가능"), pathVariableExample(1))),
                 queryParameters(
                     parameterWithName("sortBy")
                         .description("정렬 방식")
