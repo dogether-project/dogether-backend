@@ -83,6 +83,7 @@ include::{snippets}/member-activity-controller-v1-docs-test/get-member-all-stats
 
 ==== HTTP Request
 include::{snippets}/member-activity-controller-v1-docs-test/get-my-group-certifications-v1/http-request.adoc[]
+include::{snippets}/member-activity-controller-v1-docs-test/get-my-group-certifications-v1/path-parameters.adoc[]
 include::{snippets}/member-activity-controller-v1-docs-test/get-my-group-certifications-v1/query-parameters.adoc[]
 
 ==== HTTP Response
