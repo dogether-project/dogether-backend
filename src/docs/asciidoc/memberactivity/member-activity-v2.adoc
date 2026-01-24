@@ -1,0 +1,46 @@
+[[member-activity-v2-api]]
+== [V2] 사용자 활동 API
+
+[[get-my-challenge-group-activity-summary-v2]]
+=== 참여중인 특정 챌린지 그룹 활동 요약 조회 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-challenge-group-activity-summary-v2/http-request.adoc[]
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-challenge-group-activity-summary-v2/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-challenge-group-activity-summary-v2/http-response.adoc[]
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-challenge-group-activity-summary-v2/response-fields.adoc[]
+
+[[get-my-certifications-v2]]
+=== 사용자 인증 목록 전체 조회 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certifications-v2/http-request.adoc[]
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certifications-v2/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certifications-v2/http-response.adoc[]
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certifications-v2/response-fields.adoc[]
