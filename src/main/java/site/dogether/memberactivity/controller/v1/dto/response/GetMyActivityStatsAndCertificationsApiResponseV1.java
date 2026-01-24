@@ -27,9 +27,9 @@ public record GetMyActivityStatsAndCertificationsApiResponseV1(
     ) {
         public static MyCertificationStats from(final MyCertificationStatsDto dto) {
             return new MyCertificationStats(
-                dto.totalCertificatedCount(),
-                dto.totalApprovedCount(),
-                dto.totalRejectedCount()
+                dto.certificatedCount(),
+                dto.approvedCount(),
+                dto.rejectedCount()
             );
         }
     }

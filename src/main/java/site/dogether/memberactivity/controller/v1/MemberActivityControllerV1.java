@@ -24,7 +24,6 @@ import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDt
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public class MemberActivityControllerV1 {
         final ChallengeGroupInfoDto challengeGroupInfo = memberActivityService.getChallengeGroupInfo(memberId, groupId);
         final List<CertificationPeriodDto> certificationPeriods = memberActivityService.getCertificationPeriods(memberId, groupId);
         final MyRankInChallengeGroupDto myRankInChallengeGroup = memberActivityService.getMyRankInChallengeGroup(memberId, groupId);
-        final MyCertificationStatsInChallengeGroupDto myCertificationStatsInChallengeGroup = memberActivityService.getMyCertificationStatsInChallengeGroup(memberId, groupId);
+        final MyCertificationStatsDto myCertificationStatsInChallengeGroup = memberActivityService.getMyCertificationStatsInChallengeGroup(memberId, groupId);
 
         return ResponseEntity.ok(success(new GetMyChallengeGroupActivityStatsApiResponseV1(
             GetMyChallengeGroupActivityStatsApiResponseV1.ChallengeGroupInfo.from(challengeGroupInfo),
@@ -62,7 +61,7 @@ public class MemberActivityControllerV1 {
             @RequestParam(required = false) final String status,
             @PageableDefault(size = 50) final Pageable pageable
     ) {
-        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyCertificationStats(memberId);
+        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyTotalCertificationStats(memberId);
         final Slice<DailyTodoCertification> certifications = memberActivityService.getCertificationsByStatus(memberId, status, pageable);
 
         if (sortBy.equals("TODO_COMPLETED_AT")) {

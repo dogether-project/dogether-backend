@@ -1,5 +1,6 @@
 package site.dogether.memberactivity.service;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,6 @@ import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsResultDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 import site.dogether.reminder.service.TodoActivityReminderService;
 
@@ -185,7 +185,7 @@ public class MemberActivityService {
         return new MyRankInChallengeGroupDto(totalMemberCount, myRank);
     }
 
-    public MyCertificationStatsInChallengeGroupDto getMyCertificationStatsInChallengeGroup(final Long memberId, final Long groupId) {
+    public MyCertificationStatsDto getMyCertificationStatsInChallengeGroup(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
@@ -194,14 +194,14 @@ public class MemberActivityService {
 
         final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
 
-        return new MyCertificationStatsInChallengeGroupDto(
+        return new MyCertificationStatsDto(
             dailyTodoCertificationCount.getTotalCount(),
             dailyTodoCertificationCount.getApprovedCount(),
             dailyTodoCertificationCount.getRejectedCount()
         );
     }
 
-    public MyCertificationStatsDto getMyCertificationStats(final Long memberId) {
+    public MyCertificationStatsDto getMyTotalCertificationStats(final Long memberId) {
         final Member member = getMember(memberId);
 
         return dailyTodoStatsRepository.findByMember(member)
@@ -363,5 +363,13 @@ public class MemberActivityService {
                 member.getName(),
                 member.getProfileImageUrl()
         );
+    }
+
+    public MyCertificationStatsDto getMyCertificationStats(final Long memberId, @Nullable final Long groupId) {
+        if (groupId != null) {
+            return getMyCertificationStatsInChallengeGroup(memberId, groupId);
+        }
+
+        return getMyTotalCertificationStats(memberId);
     }
 }

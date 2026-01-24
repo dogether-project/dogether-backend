@@ -1,8 +1,8 @@
 package site.dogether.memberactivity.service.dto;
 
 public record MyCertificationStatsDto(
-    int totalCertificatedCount,
-    int totalApprovedCount,
-    int totalRejectedCount
+    int certificatedCount,
+    int approvedCount,
+    int rejectedCount
 ) {
 }

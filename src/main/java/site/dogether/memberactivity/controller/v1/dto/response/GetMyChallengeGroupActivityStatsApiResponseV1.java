@@ -2,7 +2,7 @@ package site.dogether.memberactivity.controller.v1.dto.response;
 
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
+import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -67,7 +67,7 @@ public record GetMyChallengeGroupActivityStatsApiResponseV1(
         int approvedCount,
         int rejectedCount
     ) {
-        public static MyCertificationStatsInChallengeGroup from(final MyCertificationStatsInChallengeGroupDto dto) {
+        public static MyCertificationStatsInChallengeGroup from(final MyCertificationStatsDto dto) {
             return new MyCertificationStatsInChallengeGroup(
                 dto.certificatedCount(),
                 dto.approvedCount(),
