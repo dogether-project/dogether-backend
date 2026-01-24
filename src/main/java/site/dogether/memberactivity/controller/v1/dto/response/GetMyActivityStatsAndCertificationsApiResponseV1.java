@@ -2,9 +2,8 @@ package site.dogether.memberactivity.controller.v1.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.domain.Slice;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
 public record GetMyActivityStatsAndCertificationsApiResponseV1(
     MyCertificationStats dailyTodoStats,
 
-    // TODO: 추후 v2 올릴 때 'TodoCompletedAt'가 아닌 'CertificatedAt'으로 변경 필요
     @JsonInclude(JsonInclude.Include.NON_NULL)
     List<CertificationsGroupedByCertificatedAt> certificationsGroupedByTodoCompletedAt,
 
@@ -40,15 +38,15 @@ public record GetMyActivityStatsAndCertificationsApiResponseV1(
         String createdAt,
         List<DailyTodoCertificationInfo> certificationInfo
     ) {
-        public static List<CertificationsGroupedByCertificatedAt> fromList(final List<CertificationsGroupedByCertificatedAtDto> dtoList) {
+        public static List<CertificationsGroupedByCertificatedAt> fromList(final List<GroupedCertificationsDto> dtoList) {
             return dtoList.stream()
                 .map(CertificationsGroupedByCertificatedAt::from)
                 .toList();
         }
 
-        private static CertificationsGroupedByCertificatedAt from(final CertificationsGroupedByCertificatedAtDto dto) {
+        private static CertificationsGroupedByCertificatedAt from(final GroupedCertificationsDto dto) {
             return new CertificationsGroupedByCertificatedAt(
-                dto.createdAt(),
+                dto.groupedBy(),
                 dto.certificationInfo().stream()
                     .map(DailyTodoCertificationInfo::from)
                     .toList()
@@ -60,15 +58,15 @@ public record GetMyActivityStatsAndCertificationsApiResponseV1(
         String groupName,
         List<DailyTodoCertificationInfo> certificationInfo
     ) {
-        public static List<CertificationsGroupedByGroupCreatedAt> fromList(final List<CertificationsGroupedByGroupCreatedAtDto> dtoList) {
+        public static List<CertificationsGroupedByGroupCreatedAt> fromList(final List<GroupedCertificationsDto> dtoList) {
             return dtoList.stream()
                 .map(CertificationsGroupedByGroupCreatedAt::from)
                 .toList();
         }
 
-        private static CertificationsGroupedByGroupCreatedAt from(final CertificationsGroupedByGroupCreatedAtDto dto) {
+        private static CertificationsGroupedByGroupCreatedAt from(final GroupedCertificationsDto dto) {
             return new CertificationsGroupedByGroupCreatedAt(
-                dto.groupName(),
+                dto.groupedBy(),
                 dto.certificationInfo().stream()
                     .map(DailyTodoCertificationInfo::from)
                     .toList()

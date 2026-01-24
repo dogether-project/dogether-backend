@@ -26,12 +26,12 @@ import site.dogether.member.repository.MemberRepository;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsResultDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
@@ -224,12 +224,12 @@ public class MemberActivityService {
         return dailyTodoCertificationRepository.findAllByDailyTodo_MemberOrderByCreatedAtDesc(member, pageable);
     }
 
-    public List<CertificationsGroupedByCertificatedAtDto> certificationsGroupedByCertificatedAt(final List<DailyTodoCertification> certifications) {
+    public List<GroupedCertificationsDto> certificationsGroupedByCertificatedAt(final List<DailyTodoCertification> certifications) {
         return certifications.stream()
             .collect(Collectors.groupingBy(certification -> certification.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
             .entrySet().stream()
             .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-            .map(entry -> new CertificationsGroupedByCertificatedAtDto(
+            .map(entry -> new GroupedCertificationsDto(
                 entry.getKey(),
                 entry.getValue().stream()
                     .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -252,12 +252,12 @@ public class MemberActivityService {
         );
     }
 
-    public List<CertificationsGroupedByGroupCreatedAtDto> certificationsGroupedByGroupCreatedAt(final List<DailyTodoCertification> certifications) {
+    public List<GroupedCertificationsDto> certificationsGroupedByGroupCreatedAt(final List<DailyTodoCertification> certifications) {
         return certifications.stream()
             .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
             .entrySet().stream()
             .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
-            .map(entry -> new CertificationsGroupedByGroupCreatedAtDto(
+            .map(entry -> new GroupedCertificationsDto(
                 entry.getKey().getName(),
                 entry.getValue().stream()
                     .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -338,6 +338,22 @@ public class MemberActivityService {
         }
 
         return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameOrderByCreatedAtDesc(member, groupName);
+    }
+
+    public GroupedCertificationsResultDto getCertifications(final Long memberId, final String sortBy, final String status, final Pageable pageable) {
+        final Slice<DailyTodoCertification> certifications = getCertificationsByStatus(memberId, status, pageable);
+
+        List<GroupedCertificationsDto> groupedCertifications = new ArrayList<>();
+
+        if (sortBy.equals("CERTIFICATED_AT")) {
+            groupedCertifications = certificationsGroupedByCertificatedAt(certifications.getContent());
+        }
+
+        if (sortBy.equals("GROUP_CREATED_AT")) {
+            groupedCertifications = certificationsGroupedByGroupCreatedAt(certifications.getContent());
+        }
+
+        return new GroupedCertificationsResultDto(groupedCertifications, certifications);
     }
 
     public FindMyProfileDto getMyProfile(final Long memberId) {

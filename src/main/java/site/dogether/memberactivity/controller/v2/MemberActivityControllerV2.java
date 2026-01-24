@@ -2,7 +2,6 @@ package site.dogether.memberactivity.controller.v2;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,19 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.dto.response.ApiResponse;
-import site.dogether.dailytodocertification.entity.DailyTodoCertification;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMyActivityStatsAndCertificationsApiResponseV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMyGroupCertificationsApiResponseV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMyProfileApiResponseV1;
+import site.dogether.memberactivity.controller.v2.dto.response.GetMyCertificationsApiResponseV2;
 import site.dogether.memberactivity.controller.v2.dto.response.GetMyChallengeGroupActivitySummaryApiResponseV2;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
-import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
-import site.dogether.memberactivity.service.dto.FindMyProfileDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsResultDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -53,65 +45,15 @@ public class MemberActivityControllerV2 {
         )));
     }
 
-    @GetMapping("/activity")
-    public ResponseEntity<ApiResponse<GetMyActivityStatsAndCertificationsApiResponseV1>> getMyActivityStatsAndCertifications(
+    @GetMapping("/certifications")
+    public ResponseEntity<ApiResponse<GetMyCertificationsApiResponseV2>> getMyCertifications(
             @Authenticated final Long memberId,
             @RequestParam final String sortBy,
             @RequestParam(required = false) final String status,
             @PageableDefault(size = 50) final Pageable pageable
     ) {
-        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyCertificationStats(memberId);
-        final Slice<DailyTodoCertification> certifications = memberActivityService.getCertificationsByStatus(memberId, status, pageable);
+        final GroupedCertificationsResultDto certifications = memberActivityService.getCertifications(memberId, sortBy, status, pageable);
 
-        // TODO: 추후 v2 올릴 때 'TODO_COMPLETED_AT'가 아닌 'CERTIFICATED_AT'으로 변경 필요
-        if (sortBy.equals("TODO_COMPLETED_AT")) {
-            final List<CertificationsGroupedByCertificatedAtDto> groupedCertifications = memberActivityService.certificationsGroupedByCertificatedAt(certifications.getContent());
-
-            return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
-                GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myCertificationStats),
-                GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByCertificatedAt.fromList(groupedCertifications),
-                null,
-                GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(certifications)
-            )));
-        }
-
-        // sortBy = GROUP_CREATED_AT
-        final List<CertificationsGroupedByGroupCreatedAtDto> groupedCertifications = memberActivityService.certificationsGroupedByGroupCreatedAt(certifications.getContent());
-
-        return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
-            GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myCertificationStats),
-            null,
-            GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByGroupCreatedAt.fromList(groupedCertifications),
-            GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(certifications)
-        )));
-    }
-
-    @GetMapping("/activity/todos/{todoId}/group-certifications")
-    public ResponseEntity<ApiResponse<GetMyGroupCertificationsApiResponseV1>> getMyGroupCertifications(
-        @Authenticated final Long memberId,
-        @PathVariable final Long todoId,
-        @RequestParam final String sortBy,
-        @RequestParam(required = false) final String status
-    ) {
-        // TODO: 추후 v2 올릴 때 'TODO_COMPLETED_AT'가 아닌 'CERTIFICATED_AT'으로 변경 필요
-        if (sortBy.equals("TODO_COMPLETED_AT")) {
-            final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByCertificatedAt(memberId, todoId, status);
-
-            return ResponseEntity.ok(success(new GetMyGroupCertificationsApiResponseV1(GetMyGroupCertificationsApiResponseV1.Certification.fromList(dailyTodoCertificationActivity))));
-        }
-
-        // sortBy = GROUP_CREATED_AT
-        final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByGroupCreatedAt(memberId, todoId, status);
-
-        return ResponseEntity.ok(success(new GetMyGroupCertificationsApiResponseV1(GetMyGroupCertificationsApiResponseV1.Certification.fromList(dailyTodoCertificationActivity))));
-    }
-
-    @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<GetMyProfileApiResponseV1>> getMyProfile(
-        @Authenticated final Long memberId
-    ) {
-        final FindMyProfileDto myProfile = memberActivityService.getMyProfile(memberId);
-
-        return ResponseEntity.ok(success(GetMyProfileApiResponseV1.from(myProfile)));
+        return ResponseEntity.ok(success(GetMyCertificationsApiResponseV2.of(certifications)));
     }
 }
