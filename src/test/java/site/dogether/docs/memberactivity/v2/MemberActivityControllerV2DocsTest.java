@@ -17,6 +17,7 @@ import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsResultDto;
+import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -230,5 +231,43 @@ class MemberActivityControllerV2DocsTest extends RestDocsSupport {
                         .description("다음 페이지 존재 여부")
                         .type(JsonFieldType.BOOLEAN)
                 )));
+    }
+
+    @DisplayName("[V2] 사용자 인증 통계 조회 API")
+    @Test
+    void getMyCertificationStatsV2() throws Exception {
+        final MyCertificationStatsDto challengeGroupInfo = new MyCertificationStatsDto(3, 2, 1);
+
+        given(memberActivityService.getMyCertificationStats(any(), any()))
+            .willReturn(challengeGroupInfo);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/v2/my/certification-stats")
+                    .param("groupId", "1")
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                queryParameters(
+                    parameterWithName("groupId")
+                        .optional()
+                        .description("챌린지 그룹 id")
+                        .attributes(constraints("존재하는 챌린지 그룹 id만 입력 가능"))),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certificatedCount")
+                        .description("인증한 투두 개수")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.approvedCount")
+                        .description("인정받은 투두 개수")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.rejectedCount")
+                        .description("노인정 받은 투두 개수")
+                        .type(JsonFieldType.NUMBER))));
     }
 }

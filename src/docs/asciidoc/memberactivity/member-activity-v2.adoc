@@ -44,3 +44,25 @@ include::{snippets}/member-activity-controller-v2-docs-test/get-my-certification
 ==== HTTP Response
 include::{snippets}/member-activity-controller-v2-docs-test/get-my-certifications-v2/http-response.adoc[]
 include::{snippets}/member-activity-controller-v2-docs-test/get-my-certifications-v2/response-fields.adoc[]
+
+[[get-my-certification-stats-v2]]
+=== 사용자 인증 통계 조회 API
+
+==== 개발 상태
+|===
+| 환경 | 구현 여부
+
+| 개발
+| O
+
+| 운영
+| X
+|===
+
+==== HTTP Request
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certification-stats-v2/http-request.adoc[]
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certification-stats-v2/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certification-stats-v2/http-response.adoc[]
+include::{snippets}/member-activity-controller-v2-docs-test/get-my-certification-stats-v2/response-fields.adoc[]

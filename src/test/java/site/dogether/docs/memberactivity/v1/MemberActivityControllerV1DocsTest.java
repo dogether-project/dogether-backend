@@ -19,7 +19,6 @@ import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -63,7 +62,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
         );
 
         final MyRankInChallengeGroupDto myRankInChallengeGroup = new MyRankInChallengeGroupDto(10, 3);
-        final MyCertificationStatsInChallengeGroupDto myChallengeGroupStats = new MyCertificationStatsInChallengeGroupDto(123, 123, 123);
+        final MyCertificationStatsDto myChallengeGroupStats = new MyCertificationStatsDto(123, 123, 123);
 
         given(memberActivityService.getChallengeGroupInfo(any(), any()))
             .willReturn(challengeGroupInfo);
@@ -182,7 +181,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        given(memberActivityService.getMyCertificationStats(any()))
+        given(memberActivityService.getMyTotalCertificationStats(any()))
                 .willReturn(stats);
 
         given(memberActivityService.getCertificationsByStatus(any(), any(), any()))
@@ -313,7 +312,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        given(memberActivityService.getMyCertificationStats(any()))
+        given(memberActivityService.getMyTotalCertificationStats(any()))
             .willReturn(stats);
 
         given(memberActivityService.getCertificationsByStatus(any(), any(), any()))
