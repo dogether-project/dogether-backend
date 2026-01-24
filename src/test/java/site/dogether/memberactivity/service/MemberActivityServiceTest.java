@@ -16,7 +16,7 @@ import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
+import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.time.LocalDate;
@@ -169,7 +169,7 @@ class MemberActivityServiceTest {
 
     @DisplayName("유효한 값(memberId, groupId)이 들어오면 해당 그룹의 사용자 투두 인증 통계를 반환한다.")
     @Test
-    void givenMemberIdAndGroupId_whenGetMyCertificationStatsInChallengeGroup_thenReturnMyCertificationStats() {
+    void givenMemberIdAndGroupId_whenGetMyCertificationStatsInChallengeGroup_thenReturnMyTotalCertificationStats() {
         //Given
         final Member member = createMember("member1");
         memberRepository.save(member);
@@ -181,10 +181,10 @@ class MemberActivityServiceTest {
         challengeGroupMemberRepository.save(challengeGroupMember);
 
         //When
-        final MyCertificationStatsInChallengeGroupDto myCertificationStats = memberActivityService.getMyCertificationStatsInChallengeGroup(member.getId(), challengeGroup.getId());
+        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyCertificationStatsInChallengeGroup(member.getId(), challengeGroup.getId());
 
         //Then
-        final MyCertificationStatsInChallengeGroupDto expectedMyCertificationStats = new MyCertificationStatsInChallengeGroupDto(0, 0, 0);
+        final MyCertificationStatsDto expectedMyCertificationStats = new MyCertificationStatsDto(0, 0, 0);
 
         assertThat(myCertificationStats).isEqualTo(expectedMyCertificationStats);
     }

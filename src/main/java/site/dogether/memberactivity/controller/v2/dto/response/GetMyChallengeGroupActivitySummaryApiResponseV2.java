@@ -1,18 +1,28 @@
-package site.dogether.memberactivity.controller.v1.dto.response;
+package site.dogether.memberactivity.controller.v2.dto.response;
 
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
 
-public record GetMyChallengeGroupActivityStatsApiResponseV1(
+public record GetMyChallengeGroupActivitySummaryApiResponseV2(
     ChallengeGroupInfo groupInfo,
     List<CertificationPeriod> certificationPeriods,
-    MyRankInChallengeGroup ranking,
-    MyCertificationStatsInChallengeGroup stats
+    MyRankInChallengeGroup ranking
 ) {
+
+    public static GetMyChallengeGroupActivitySummaryApiResponseV2 of(
+        final ChallengeGroupInfoDto groupInfoDto,
+        final List<CertificationPeriodDto> periodsDto,
+        final MyRankInChallengeGroupDto rankDto
+    ) {
+        return new GetMyChallengeGroupActivitySummaryApiResponseV2(
+            ChallengeGroupInfo.from(groupInfoDto),
+            CertificationPeriod.from(periodsDto),
+            MyRankInChallengeGroup.from(rankDto)
+        );
+    }
 
     public record ChallengeGroupInfo(
         String name,
@@ -58,20 +68,6 @@ public record GetMyChallengeGroupActivityStatsApiResponseV1(
             return new MyRankInChallengeGroup(
                 dto.totalMemberCount(),
                 dto.myRank()
-            );
-        }
-    }
-
-    public record MyCertificationStatsInChallengeGroup(
-        int certificatedCount,
-        int approvedCount,
-        int rejectedCount
-    ) {
-        public static MyCertificationStatsInChallengeGroup from(final MyCertificationStatsDto dto) {
-            return new MyCertificationStatsInChallengeGroup(
-                dto.certificatedCount(),
-                dto.approvedCount(),
-                dto.rejectedCount()
             );
         }
     }

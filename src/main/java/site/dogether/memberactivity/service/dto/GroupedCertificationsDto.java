@@ -2,8 +2,8 @@ package site.dogether.memberactivity.service.dto;
 
 import java.util.List;
 
-public record CertificationsGroupedByCertificatedAtDto(
-    String createdAt,
+public record GroupedCertificationsDto(
+    String groupedBy,
     List<DailyTodoCertificationInfoDto> certificationInfo
 ) {
 }

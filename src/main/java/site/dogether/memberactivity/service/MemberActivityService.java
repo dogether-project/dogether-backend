@@ -1,5 +1,6 @@
 package site.dogether.memberactivity.service;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -26,14 +27,13 @@ import site.dogether.member.repository.MemberRepository;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.memberactivity.repository.DailyTodoStatsRepository;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsResultDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 import site.dogether.reminder.service.TodoActivityReminderService;
 
@@ -185,7 +185,7 @@ public class MemberActivityService {
         return new MyRankInChallengeGroupDto(totalMemberCount, myRank);
     }
 
-    public MyCertificationStatsInChallengeGroupDto getMyCertificationStatsInChallengeGroup(final Long memberId, final Long groupId) {
+    public MyCertificationStatsDto getMyCertificationStatsInChallengeGroup(final Long memberId, final Long groupId) {
         final Member member = getMember(memberId);
         final ChallengeGroup challengeGroup = challengeGroupReader.getById(groupId);
 
@@ -194,14 +194,14 @@ public class MemberActivityService {
 
         final DailyTodoCertificationCount dailyTodoCertificationCount = dailyTodoCertificationRepository.countDailyTodoCertification(challengeGroup, member);
 
-        return new MyCertificationStatsInChallengeGroupDto(
+        return new MyCertificationStatsDto(
             dailyTodoCertificationCount.getTotalCount(),
             dailyTodoCertificationCount.getApprovedCount(),
             dailyTodoCertificationCount.getRejectedCount()
         );
     }
 
-    public MyCertificationStatsDto getMyCertificationStats(final Long memberId) {
+    public MyCertificationStatsDto getMyTotalCertificationStats(final Long memberId) {
         final Member member = getMember(memberId);
 
         return dailyTodoStatsRepository.findByMember(member)
@@ -224,12 +224,12 @@ public class MemberActivityService {
         return dailyTodoCertificationRepository.findAllByDailyTodo_MemberOrderByCreatedAtDesc(member, pageable);
     }
 
-    public List<CertificationsGroupedByCertificatedAtDto> certificationsGroupedByCertificatedAt(final List<DailyTodoCertification> certifications) {
+    public List<GroupedCertificationsDto> certificationsGroupedByCertificatedAt(final List<DailyTodoCertification> certifications) {
         return certifications.stream()
             .collect(Collectors.groupingBy(certification -> certification.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
             .entrySet().stream()
             .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-            .map(entry -> new CertificationsGroupedByCertificatedAtDto(
+            .map(entry -> new GroupedCertificationsDto(
                 entry.getKey(),
                 entry.getValue().stream()
                     .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -252,12 +252,12 @@ public class MemberActivityService {
         );
     }
 
-    public List<CertificationsGroupedByGroupCreatedAtDto> certificationsGroupedByGroupCreatedAt(final List<DailyTodoCertification> certifications) {
+    public List<GroupedCertificationsDto> certificationsGroupedByGroupCreatedAt(final List<DailyTodoCertification> certifications) {
         return certifications.stream()
             .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
             .entrySet().stream()
             .sorted(Comparator.comparing(entry -> entry.getKey().getCreatedAt(), Comparator.reverseOrder()))
-            .map(entry -> new CertificationsGroupedByGroupCreatedAtDto(
+            .map(entry -> new GroupedCertificationsDto(
                 entry.getKey().getName(),
                 entry.getValue().stream()
                     .sorted(Comparator.comparing(DailyTodoCertification::getCreatedAt).reversed())
@@ -340,6 +340,22 @@ public class MemberActivityService {
         return dailyTodoCertificationRepository.findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameOrderByCreatedAtDesc(member, groupName);
     }
 
+    public GroupedCertificationsResultDto getCertifications(final Long memberId, final String sortBy, final String status, final Pageable pageable) {
+        final Slice<DailyTodoCertification> certifications = getCertificationsByStatus(memberId, status, pageable);
+
+        List<GroupedCertificationsDto> groupedCertifications = new ArrayList<>();
+
+        if (sortBy.equals("CERTIFICATED_AT")) {
+            groupedCertifications = certificationsGroupedByCertificatedAt(certifications.getContent());
+        }
+
+        if (sortBy.equals("GROUP_CREATED_AT")) {
+            groupedCertifications = certificationsGroupedByGroupCreatedAt(certifications.getContent());
+        }
+
+        return new GroupedCertificationsResultDto(groupedCertifications, certifications);
+    }
+
     public FindMyProfileDto getMyProfile(final Long memberId) {
         final Member member = getMember(memberId);
 
@@ -347,5 +363,13 @@ public class MemberActivityService {
                 member.getName(),
                 member.getProfileImageUrl()
         );
+    }
+
+    public MyCertificationStatsDto getMyCertificationStats(final Long memberId, @Nullable final Long groupId) {
+        if (groupId != null) {
+            return getMyCertificationStatsInChallengeGroup(memberId, groupId);
+        }
+
+        return getMyTotalCertificationStats(memberId);
     }
 }

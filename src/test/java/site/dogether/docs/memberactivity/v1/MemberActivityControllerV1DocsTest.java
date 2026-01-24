@@ -13,14 +13,12 @@ import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.memberactivity.controller.v1.MemberActivityControllerV1;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -64,7 +62,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
         );
 
         final MyRankInChallengeGroupDto myRankInChallengeGroup = new MyRankInChallengeGroupDto(10, 3);
-        final MyCertificationStatsInChallengeGroupDto myChallengeGroupStats = new MyCertificationStatsInChallengeGroupDto(123, 123, 123);
+        final MyCertificationStatsDto myChallengeGroupStats = new MyCertificationStatsDto(123, 123, 123);
 
         given(memberActivityService.getChallengeGroupInfo(any(), any()))
             .willReturn(challengeGroupInfo);
@@ -154,8 +152,8 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
         final Slice<DailyTodoCertification> slice = new SliceImpl<>(List.of(), PageRequest.of(0, 50), false);
 
-        final List<CertificationsGroupedByCertificatedAtDto> certificationsGroupedByCertificatedAt = List.of(
-                new CertificationsGroupedByCertificatedAtDto(
+        final List<GroupedCertificationsDto> certificationsGroupedByCertificatedAt = List.of(
+                new GroupedCertificationsDto(
                         "2025.05.01",
                         List.of(
                                 new DailyTodoCertificationInfoDto(
@@ -168,7 +166,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new CertificationsGroupedByCertificatedAtDto(
+                new GroupedCertificationsDto(
                         "2025.05.02",
                         List.of(
                                 new DailyTodoCertificationInfoDto(
@@ -183,7 +181,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        given(memberActivityService.getMyCertificationStats(any()))
+        given(memberActivityService.getMyTotalCertificationStats(any()))
                 .willReturn(stats);
 
         given(memberActivityService.getCertificationsByStatus(any(), any(), any()))
@@ -285,8 +283,8 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
         final Slice<DailyTodoCertification> slice = new SliceImpl<>(List.of(), PageRequest.of(0, 50), false);
 
-        final List<CertificationsGroupedByGroupCreatedAtDto> certificationsGroupedByGroupCreatedAt = List.of(
-                new CertificationsGroupedByGroupCreatedAtDto(
+        final List<GroupedCertificationsDto> certificationsGroupedByGroupCreatedAt = List.of(
+                new GroupedCertificationsDto(
                         "스쿼트 챌린지",
                         List.of(
                                 new DailyTodoCertificationInfoDto(
@@ -299,7 +297,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new CertificationsGroupedByGroupCreatedAtDto(
+                new GroupedCertificationsDto(
                         "TIL 챌린지",
                         List.of(
                                 new DailyTodoCertificationInfoDto(
@@ -314,7 +312,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        given(memberActivityService.getMyCertificationStats(any()))
+        given(memberActivityService.getMyTotalCertificationStats(any()))
             .willReturn(stats);
 
         given(memberActivityService.getCertificationsByStatus(any(), any(), any()))

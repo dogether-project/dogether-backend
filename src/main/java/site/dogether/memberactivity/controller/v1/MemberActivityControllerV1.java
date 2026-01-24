@@ -19,13 +19,11 @@ import site.dogether.memberactivity.controller.v1.dto.response.GetMyGroupCertifi
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyProfileApiResponseV1;
 import site.dogether.memberactivity.service.MemberActivityService;
 import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByCertificatedAtDto;
-import site.dogether.memberactivity.service.dto.CertificationsGroupedByGroupCreatedAtDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
-import site.dogether.memberactivity.service.dto.MyCertificationStatsInChallengeGroupDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
@@ -46,7 +44,7 @@ public class MemberActivityControllerV1 {
         final ChallengeGroupInfoDto challengeGroupInfo = memberActivityService.getChallengeGroupInfo(memberId, groupId);
         final List<CertificationPeriodDto> certificationPeriods = memberActivityService.getCertificationPeriods(memberId, groupId);
         final MyRankInChallengeGroupDto myRankInChallengeGroup = memberActivityService.getMyRankInChallengeGroup(memberId, groupId);
-        final MyCertificationStatsInChallengeGroupDto myCertificationStatsInChallengeGroup = memberActivityService.getMyCertificationStatsInChallengeGroup(memberId, groupId);
+        final MyCertificationStatsDto myCertificationStatsInChallengeGroup = memberActivityService.getMyCertificationStatsInChallengeGroup(memberId, groupId);
 
         return ResponseEntity.ok(success(new GetMyChallengeGroupActivityStatsApiResponseV1(
             GetMyChallengeGroupActivityStatsApiResponseV1.ChallengeGroupInfo.from(challengeGroupInfo),
@@ -63,12 +61,11 @@ public class MemberActivityControllerV1 {
             @RequestParam(required = false) final String status,
             @PageableDefault(size = 50) final Pageable pageable
     ) {
-        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyCertificationStats(memberId);
+        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyTotalCertificationStats(memberId);
         final Slice<DailyTodoCertification> certifications = memberActivityService.getCertificationsByStatus(memberId, status, pageable);
 
-        // TODO: 추후 v2 올릴 때 'TODO_COMPLETED_AT'가 아닌 'CERTIFICATED_AT'으로 변경 필요
         if (sortBy.equals("TODO_COMPLETED_AT")) {
-            final List<CertificationsGroupedByCertificatedAtDto> groupedCertifications = memberActivityService.certificationsGroupedByCertificatedAt(certifications.getContent());
+            final List<GroupedCertificationsDto> groupedCertifications = memberActivityService.certificationsGroupedByCertificatedAt(certifications.getContent());
 
             return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
                 GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myCertificationStats),
@@ -79,7 +76,7 @@ public class MemberActivityControllerV1 {
         }
 
         // sortBy = GROUP_CREATED_AT
-        final List<CertificationsGroupedByGroupCreatedAtDto> groupedCertifications = memberActivityService.certificationsGroupedByGroupCreatedAt(certifications.getContent());
+        final List<GroupedCertificationsDto> groupedCertifications = memberActivityService.certificationsGroupedByGroupCreatedAt(certifications.getContent());
 
         return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
             GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myCertificationStats),
@@ -96,7 +93,6 @@ public class MemberActivityControllerV1 {
         @RequestParam final String sortBy,
         @RequestParam(required = false) final String status
     ) {
-        // TODO: 추후 v2 올릴 때 'TODO_COMPLETED_AT'가 아닌 'CERTIFICATED_AT'으로 변경 필요
         if (sortBy.equals("TODO_COMPLETED_AT")) {
             final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByCertificatedAt(memberId, todoId, status);
 
