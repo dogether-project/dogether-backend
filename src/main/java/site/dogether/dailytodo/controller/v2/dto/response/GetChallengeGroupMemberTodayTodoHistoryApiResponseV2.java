@@ -28,7 +28,8 @@ public record GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(
         String certificationMediaUrl,
         boolean isRead,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        String reviewFeedback
+        String reviewFeedback,
+        boolean isMine
     ) {
         public static TodoData from(final TodoHistoryDto dto) {
             return new TodoData(
@@ -41,7 +42,8 @@ public record GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(
                 dto.certificationContent(),
                 dto.certificationMediaUrl(),
                 dto.isRead(),
-                dto.reviewFeedback()
+                dto.reviewFeedback(),
+                dto.isMine()
             );
         }
     }

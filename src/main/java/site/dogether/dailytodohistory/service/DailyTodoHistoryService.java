@@ -103,7 +103,8 @@ public class DailyTodoHistoryService {
                 dailyTodoCertification.getContent(),
                 dailyTodoCertification.getMediaUrl(),
                 isHistoryRead,
-                dailyTodoCertification.findReviewFeedback().orElse(null)))
+                dailyTodoCertification.findReviewFeedback().orElse(null),
+                history.isMine(viewer)))
             .orElse(new TodoHistoryDto(
                 history.getId(),
                 dailyTodo.getId(),
@@ -114,7 +115,8 @@ public class DailyTodoHistoryService {
                 null,
                 null,
                 isHistoryRead,
-                    null));
+                    null,
+                history.isMine(viewer)));
     }
 
     private boolean checkMemberReadDailyTodoHistory(final Member member, final DailyTodoHistory dailyTodoHistory) {
