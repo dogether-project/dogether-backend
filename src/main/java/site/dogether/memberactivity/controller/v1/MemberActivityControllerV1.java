@@ -2,7 +2,6 @@ package site.dogether.memberactivity.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.dto.response.ApiResponse;
-import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyActivityStatsAndCertificationsApiResponseV1;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyChallengeGroupActivityStatsApiResponseV1;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyGroupCertificationsApiResponseV1;
@@ -22,7 +20,7 @@ import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
 import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
-import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
+import site.dogether.memberactivity.service.dto.MyActivityStatsAndCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
@@ -61,28 +59,23 @@ public class MemberActivityControllerV1 {
             @RequestParam(required = false) final String status,
             @PageableDefault(size = 50) final Pageable pageable
     ) {
-        final MyCertificationStatsDto myCertificationStats = memberActivityService.getMyTotalCertificationStats(memberId);
-        final Slice<DailyTodoCertification> certifications = memberActivityService.getCertificationsByStatus(memberId, status, pageable);
+        final MyActivityStatsAndCertificationsDto myActivityStatsAndCertifications = memberActivityService.getMyActivityStatsAndCertifications(memberId, sortBy, status, pageable);
 
         if (sortBy.equals("TODO_COMPLETED_AT")) {
-            final List<GroupedCertificationsDto> groupedCertifications = memberActivityService.certificationsGroupedByCertificatedAt(certifications.getContent());
-
             return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
-                GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myCertificationStats),
-                GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByCertificatedAt.fromList(groupedCertifications),
+                GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myActivityStatsAndCertifications.myCertificationStats()),
+                GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByCertificatedAt.fromList(myActivityStatsAndCertifications.groupedCertifications()),
                 null,
-                GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(certifications)
+                GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(myActivityStatsAndCertifications.certifications())
             )));
         }
 
         // sortBy = GROUP_CREATED_AT
-        final List<GroupedCertificationsDto> groupedCertifications = memberActivityService.certificationsGroupedByGroupCreatedAt(certifications.getContent());
-
         return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
-            GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myCertificationStats),
+            GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myActivityStatsAndCertifications.myCertificationStats()),
             null,
-            GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByGroupCreatedAt.fromList(groupedCertifications),
-            GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(certifications)
+            GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByGroupCreatedAt.fromList(myActivityStatsAndCertifications.groupedCertifications()),
+            GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(myActivityStatsAndCertifications.certifications())
         )));
     }
 

@@ -168,7 +168,7 @@ class MemberActivityControllerV2DocsTest extends RestDocsSupport {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/v2/my/certifications")
-                    .param("sortBy", "TODO_COMPLETED_AT")
+                    .param("sortBy", "CERTIFICATED_AT")
                     .param("status", "APPROVE")
                     .param("page", "0")
                     .header("Authorization", "Bearer access_token")

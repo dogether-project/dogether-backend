@@ -18,6 +18,7 @@ import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDt
 import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
+import site.dogether.memberactivity.service.dto.MyActivityStatsAndCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
@@ -152,7 +153,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
         final Slice<DailyTodoCertification> slice = new SliceImpl<>(List.of(), PageRequest.of(0, 50), false);
 
-        final List<GroupedCertificationsDto> certificationsGroupedByCertificatedAt = List.of(
+        final List<GroupedCertificationsDto> certifications = List.of(
                 new GroupedCertificationsDto(
                         "2025.05.01",
                         List.of(
@@ -181,14 +182,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        given(memberActivityService.getMyTotalCertificationStats(any()))
-                .willReturn(stats);
+        final MyActivityStatsAndCertificationsDto dto = new MyActivityStatsAndCertificationsDto(stats, slice, certifications);
 
-        given(memberActivityService.getCertificationsByStatus(any(), any(), any()))
-            .willReturn(slice);
-
-        given(memberActivityService.certificationsGroupedByCertificatedAt(any()))
-            .willReturn(certificationsGroupedByCertificatedAt);
+        given(memberActivityService.getMyActivityStatsAndCertifications(any(), any(), any(), any()))
+                .willReturn(dto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/v1/my/activity")
@@ -283,7 +280,7 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
         final Slice<DailyTodoCertification> slice = new SliceImpl<>(List.of(), PageRequest.of(0, 50), false);
 
-        final List<GroupedCertificationsDto> certificationsGroupedByGroupCreatedAt = List.of(
+        final List<GroupedCertificationsDto> certifications = List.of(
                 new GroupedCertificationsDto(
                         "스쿼트 챌린지",
                         List.of(
@@ -312,14 +309,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        given(memberActivityService.getMyTotalCertificationStats(any()))
-            .willReturn(stats);
+        final MyActivityStatsAndCertificationsDto dto = new MyActivityStatsAndCertificationsDto(stats, slice, certifications);
 
-        given(memberActivityService.getCertificationsByStatus(any(), any(), any()))
-            .willReturn(slice);
-
-        given(memberActivityService.certificationsGroupedByGroupCreatedAt(any()))
-            .willReturn(certificationsGroupedByGroupCreatedAt);
+        given(memberActivityService.getMyActivityStatsAndCertifications(any(), any(), any(), any()))
+            .willReturn(dto);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/my/activity")
