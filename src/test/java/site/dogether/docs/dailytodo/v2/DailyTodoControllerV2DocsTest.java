@@ -190,12 +190,12 @@ public class DailyTodoControllerV2DocsTest extends RestDocsSupport {
         final FindTargetMemberTodayTodoHistoriesDto serviceMockResponse = new FindTargetMemberTodayTodoHistoriesDto(
             3,
             List.of(
-                new TodoHistoryDto(1L, 1L, "치킨 먹기", CERTIFY_PENDING.name(), true, false, null, null, true, null),
-                new TodoHistoryDto(2L, 2L, "재홍님 갈구기", CERTIFY_PENDING.name(), true, false, null, null, true, null),
-                new TodoHistoryDto(3L, 3L, "치킨 먹기", REVIEW_PENDING.name(), false, true, "개꿀맛 치킨 냠냠", "https://치킨.png", true, null),
-                new TodoHistoryDto(4L, 4L, "재홍님 갈구기", REVIEW_PENDING.name(), false, false, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null),
-                new TodoHistoryDto(5L, 5L,  "재홍님 갈구기", APPROVE.name(), false, false, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요"),
-                new TodoHistoryDto(6L, 6L,  "치킨 먹기", REJECT.name(), false, false, "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!")
+                new TodoHistoryDto(1L, 1L, "치킨 먹기", CERTIFY_PENDING.name(), true, false, null, null, true, null, false),
+                new TodoHistoryDto(2L, 2L, "재홍님 갈구기", CERTIFY_PENDING.name(), true, false, null, null, true, null, false),
+                new TodoHistoryDto(3L, 3L, "치킨 먹기", REVIEW_PENDING.name(), false, true, "개꿀맛 치킨 냠냠", "https://치킨.png", true, null, false),
+                new TodoHistoryDto(4L, 4L, "재홍님 갈구기", REVIEW_PENDING.name(), false, false, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null, false),
+                new TodoHistoryDto(5L, 5L,  "재홍님 갈구기", APPROVE.name(), false, false, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요", false),
+                new TodoHistoryDto(6L, 6L,  "치킨 먹기", REJECT.name(), false, false, "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!", false)
             )
         );
         given(dailyTodoHistoryService.findAllTodayTodoHistories(any(), any(), any()))
@@ -259,6 +259,9 @@ public class DailyTodoControllerV2DocsTest extends RestDocsSupport {
                     fieldWithPath("data.todos[].reviewFeedback")
                         .description("데일리 투두 인증 검사 피드백")
                         .optional()
-                        .type(JsonFieldType.STRING))));
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.todos[].isMine")
+                        .description("본인이 작성한 투두의 히스토리인지 여부")
+                        .type(JsonFieldType.BOOLEAN))));
     }
 }
