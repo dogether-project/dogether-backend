@@ -33,6 +33,7 @@ import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
 import site.dogether.memberactivity.service.dto.GroupedCertificationsResultDto;
+import site.dogether.memberactivity.service.dto.MyActivityStatsAndCertificationsDto;
 import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
 import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 import site.dogether.reminder.service.TodoActivityReminderService;
@@ -201,7 +202,29 @@ public class MemberActivityService {
         );
     }
 
-    public MyCertificationStatsDto getMyTotalCertificationStats(final Long memberId) {
+    public MyActivityStatsAndCertificationsDto getMyActivityStatsAndCertifications(
+        final Long memberId,
+        final String sortBy,
+        final String status,
+        final Pageable pageable
+    ) {
+        final MyCertificationStatsDto myCertificationStats = getMyTotalCertificationStats(memberId);
+        final Slice<DailyTodoCertification> certifications = getCertificationsByStatus(memberId, status, pageable);
+
+        List<GroupedCertificationsDto> groupedCertifications = new ArrayList<>();
+
+        if (sortBy.equals("TODO_COMPLETED_AT")) {
+            groupedCertifications = certificationsGroupedByCertificatedAt(certifications.getContent());
+        }
+
+        if (sortBy.equals("GROUP_CREATED_AT")) {
+            groupedCertifications = certificationsGroupedByGroupCreatedAt(certifications.getContent());
+        }
+
+        return new MyActivityStatsAndCertificationsDto(myCertificationStats, certifications, groupedCertifications);
+    }
+
+    private MyCertificationStatsDto getMyTotalCertificationStats(final Long memberId) {
         final Member member = getMember(memberId);
 
         return dailyTodoStatsRepository.findByMember(member)
@@ -213,7 +236,7 @@ public class MemberActivityService {
             .orElseGet(() -> new MyCertificationStatsDto(0, 0, 0));
     }
 
-    public Slice<DailyTodoCertification> getCertificationsByStatus(final Long memberId, final String status, final Pageable pageable) {
+    private Slice<DailyTodoCertification> getCertificationsByStatus(final Long memberId, final String status, final Pageable pageable) {
         final Member member = getMember(memberId);
 
         if (status != null && !status.isBlank()) {
@@ -224,7 +247,7 @@ public class MemberActivityService {
         return dailyTodoCertificationRepository.findAllByDailyTodo_MemberOrderByCreatedAtDesc(member, pageable);
     }
 
-    public List<GroupedCertificationsDto> certificationsGroupedByCertificatedAt(final List<DailyTodoCertification> certifications) {
+    private List<GroupedCertificationsDto> certificationsGroupedByCertificatedAt(final List<DailyTodoCertification> certifications) {
         return certifications.stream()
             .collect(Collectors.groupingBy(certification -> certification.getCreatedAt().toLocalDate().format(DATE_FORMATTER)))
             .entrySet().stream()
@@ -252,7 +275,7 @@ public class MemberActivityService {
         );
     }
 
-    public List<GroupedCertificationsDto> certificationsGroupedByGroupCreatedAt(final List<DailyTodoCertification> certifications) {
+    private List<GroupedCertificationsDto> certificationsGroupedByGroupCreatedAt(final List<DailyTodoCertification> certifications) {
         return certifications.stream()
             .collect(Collectors.groupingBy(certification -> certification.getDailyTodo().getChallengeGroup()))
             .entrySet().stream()
