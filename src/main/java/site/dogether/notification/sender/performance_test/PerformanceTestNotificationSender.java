@@ -8,7 +8,7 @@ import site.dogether.notification.sender.NotificationRequest;
 import site.dogether.notification.sender.NotificationSender;
 
 @Slf4j
-@Profile({"pt", "dev", "local"})
+@Profile({"pt", "local"})
 @Primary
 @Component
 public class PerformanceTestNotificationSender implements NotificationSender {
