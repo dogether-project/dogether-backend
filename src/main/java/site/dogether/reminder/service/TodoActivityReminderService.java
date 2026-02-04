@@ -35,11 +35,13 @@ public class TodoActivityReminderService {
     private final TodoActivityReminderHistoryRepository todoActivityReminderHistoryRepository;
     private final NotificationService notificationService;
 
+    @Transactional
     public void sendReminder(final Long requesterId, final Long todoId, final DailyTodoActivityReminderType reminderType) {
         final Member requester = getMember(requesterId);
 
         if (reminderType == TODO_CERTIFICATION) {
             sendTodoCertificationReminder(requester, todoId);
+            return;
         }
         sendTodoCertificationReviewReminder(requester, todoId);
     }
