@@ -67,7 +67,7 @@ public class DailyTodoHistoryService {
             .toList();
         int currentTodoHistoryToReadIndex = calculateCurrentTodoHistoryToReadIndex(todoHistoryDtos);
 
-        return new FindTargetMemberTodayTodoHistoriesDto(currentTodoHistoryToReadIndex, todoHistoryDtos);
+        return new FindTargetMemberTodayTodoHistoriesDto(targetMember.equals(viewer), currentTodoHistoryToReadIndex, todoHistoryDtos);
     }
 
     private ChallengeGroup getChallengeGroup(final Long challengeGroupId) {
@@ -103,8 +103,7 @@ public class DailyTodoHistoryService {
                 dailyTodoCertification.getContent(),
                 dailyTodoCertification.getMediaUrl(),
                 isHistoryRead,
-                dailyTodoCertification.findReviewFeedback().orElse(null),
-                history.isMine(viewer)))
+                dailyTodoCertification.findReviewFeedback().orElse(null)))
             .orElse(new TodoHistoryDto(
                 history.getId(),
                 dailyTodo.getId(),
@@ -115,8 +114,7 @@ public class DailyTodoHistoryService {
                 null,
                 null,
                 isHistoryRead,
-                    null,
-                history.isMine(viewer)));
+                    null));
     }
 
     private boolean checkMemberReadDailyTodoHistory(final Member member, final DailyTodoHistory dailyTodoHistory) {
