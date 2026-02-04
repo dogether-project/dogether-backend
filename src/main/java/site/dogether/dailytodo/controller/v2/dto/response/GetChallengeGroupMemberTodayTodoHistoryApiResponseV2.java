@@ -7,12 +7,13 @@ import site.dogether.dailytodohistory.service.dto.TodoHistoryDto;
 import java.util.List;
 
 public record GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(
+    boolean isMine,
     int currentTodoHistoryToReadIndex,
     List<TodoData> todos
 ) {
     public static GetChallengeGroupMemberTodayTodoHistoryApiResponseV2 from(final FindTargetMemberTodayTodoHistoriesDto dto) {
         final List<TodoData> todos = dto.todoHistories().stream().map(TodoData::from).toList();
-        return new GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(dto.currentTodoHistoryToReadIndex(), todos);
+        return new GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(dto.isMine(), dto.currentTodoHistoryToReadIndex(), todos);
     }
 
     public record TodoData(
@@ -28,8 +29,7 @@ public record GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(
         String certificationMediaUrl,
         boolean isRead,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        String reviewFeedback,
-        boolean isMine
+        String reviewFeedback
     ) {
         public static TodoData from(final TodoHistoryDto dto) {
             return new TodoData(
@@ -42,8 +42,7 @@ public record GetChallengeGroupMemberTodayTodoHistoryApiResponseV2(
                 dto.certificationContent(),
                 dto.certificationMediaUrl(),
                 dto.isRead(),
-                dto.reviewFeedback(),
-                dto.isMine()
+                dto.reviewFeedback()
             );
         }
     }

@@ -258,14 +258,15 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
     @Test
     void getChallengeGroupMemberTodayTodoHistoryV1() throws Exception {
         final FindTargetMemberTodayTodoHistoriesDto serviceMockResponse = new FindTargetMemberTodayTodoHistoriesDto(
+            false,
             3,
             List.of(
-                new TodoHistoryDto(1L, 1L, "치킨 먹기", CERTIFY_PENDING.name(), true, true, null, null, true, null, false),
-                new TodoHistoryDto(2L, 2L, "재홍님 갈구기", CERTIFY_PENDING.name(), true, true, null, null, true, null, false),
-                new TodoHistoryDto(3L, 3L, "치킨 먹기", REVIEW_PENDING.name(), true, true, "개꿀맛 치킨 냠냠", "https://치킨.png", true, null, false),
-                new TodoHistoryDto(4L, 4L, "재홍님 갈구기", REVIEW_PENDING.name(), true, true, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null, false),
-                new TodoHistoryDto(5L, 5L,  "재홍님 갈구기", APPROVE.name(), true, true, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요", false),
-                new TodoHistoryDto(6L, 6L,  "치킨 먹기", REJECT.name(), true, true, "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!", false)
+                new TodoHistoryDto(1L, 1L, "치킨 먹기", CERTIFY_PENDING.name(), true, true, null, null, true, null),
+                new TodoHistoryDto(2L, 2L, "재홍님 갈구기", CERTIFY_PENDING.name(), true, true, null, null, true, null),
+                new TodoHistoryDto(3L, 3L, "치킨 먹기", REVIEW_PENDING.name(), true, true, "개꿀맛 치킨 냠냠", "https://치킨.png", true, null),
+                new TodoHistoryDto(4L, 4L, "재홍님 갈구기", REVIEW_PENDING.name(), true, true, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null),
+                new TodoHistoryDto(5L, 5L,  "재홍님 갈구기", APPROVE.name(), true, true, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요"),
+                new TodoHistoryDto(6L, 6L,  "치킨 먹기", REJECT.name(), true, true, "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!")
             )
         );
         given(dailyTodoHistoryService.findAllTodayTodoHistories(any(), any(), any()))

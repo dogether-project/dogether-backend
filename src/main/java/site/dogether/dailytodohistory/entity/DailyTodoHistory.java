@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import site.dogether.common.audit.entity.BaseEntity;
 import site.dogether.dailytodo.entity.DailyTodo;
-import site.dogether.member.entity.Member;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,9 +59,5 @@ public class DailyTodoHistory extends BaseEntity {
 
     public void updateEventTime() {
         this.eventTime = LocalDateTime.now();
-    }
-
-    public boolean isMine(final Member target) {
-        return dailyTodo.isWriter(target);
     }
 }
