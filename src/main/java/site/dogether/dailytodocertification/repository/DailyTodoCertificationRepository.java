@@ -11,6 +11,7 @@ import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus;
 import site.dogether.member.entity.Member;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +19,22 @@ public interface DailyTodoCertificationRepository extends JpaRepository<DailyTod
 
     Optional<DailyTodoCertification> findByDailyTodo(final DailyTodo dailyTodo);
 
-    List<DailyTodoCertification> findAllByDailyTodo_MemberOrderByCreatedAtDesc(Member member);
+    Slice<DailyTodoCertification> findAllByDailyTodo_MemberOrderByCreatedAtDesc(final Member member, final Pageable pageable);
 
-    List<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(Member member, DailyTodoCertificationReviewStatus reviewStatus);
+    Slice<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(final Member member, final DailyTodoCertificationReviewStatus status, final Pageable pageable);
 
-    Slice<DailyTodoCertification> findAllByDailyTodo_MemberOrderByCreatedAtDesc(Member member, Pageable pageable);
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtDesc(final Member member, final LocalDateTime start, final LocalDateTime end);
 
-    Slice<DailyTodoCertification> findAllByDailyTodo_MemberAndReviewStatusOrderByCreatedAtDesc(Member member, DailyTodoCertificationReviewStatus status, Pageable pageable);
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndCreatedAtGreaterThanEqualAndCreatedAtLessThanAndReviewStatusOrderByCreatedAtDesc(
+        final Member member,
+        final LocalDateTime start,
+        final LocalDateTime end,
+        final DailyTodoCertificationReviewStatus reviewStatus
+    );
+
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameOrderByCreatedAtDesc(final Member member, final String groupName);
+
+    List<DailyTodoCertification> findAllByDailyTodo_MemberAndDailyTodo_ChallengeGroup_NameAndReviewStatusOrderByCreatedAtDesc(final Member member, final String groupName, final DailyTodoCertificationReviewStatus reviewStatus);
 
     @Query("""
     SELECT dtc

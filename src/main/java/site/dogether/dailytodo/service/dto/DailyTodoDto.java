@@ -12,6 +12,7 @@ public class DailyTodoDto {
     private final Long id;
     private final String content;
     private final String status;
+    private final boolean canRequestCertificationReview;
     private final String certificationContent;
     private final String certificationMediaUrl;
     private final String reviewFeedback;
@@ -21,17 +22,19 @@ public class DailyTodoDto {
             dailyTodo.getId(),
             dailyTodo.getContent(),
             dailyTodo.getStatus().name(),
+            false,
             null,
             null,
             null
         );
     }
 
-    public DailyTodoDto(final DailyTodo dailyTodo, final DailyTodoCertification dailyTodoCertification) {
+    public DailyTodoDto(final DailyTodo dailyTodo, final DailyTodoCertification dailyTodoCertification, final boolean canRequestCertificationReview) {
         this(
             dailyTodo.getId(),
             dailyTodo.getContent(),
             dailyTodoCertification.getReviewStatus().name(),
+            canRequestCertificationReview,
             dailyTodoCertification.getContent(),
             dailyTodoCertification.getMediaUrl(),
             dailyTodoCertification.findReviewFeedback().orElse(null)
@@ -48,6 +51,10 @@ public class DailyTodoDto {
 
     public String getStatus() {
         return status;
+    }
+
+    public boolean canRequestCertificationReview() {
+        return canRequestCertificationReview;
     }
 
     public Optional<String> findCertificationContent() {

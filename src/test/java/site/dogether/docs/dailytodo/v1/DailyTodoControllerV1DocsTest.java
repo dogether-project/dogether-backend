@@ -25,14 +25,20 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_COMPLETED;
 import static site.dogether.dailytodo.entity.DailyTodoStatus.CERTIFY_PENDING;
-import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.*;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.APPROVE;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REJECT;
+import static site.dogether.dailytodocertification.entity.DailyTodoCertificationReviewStatus.REVIEW_PENDING;
 
 @DisplayName("데일리 투두 V1 API 문서화 테스트")
 public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
@@ -137,9 +143,9 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
 
         final List<DailyTodoDto> dailyTodoDtos = List.of(
             new DailyTodoDto(dailyTodos.get(2)),
-            new DailyTodoDto(dailyTodos.get(0), dailyTodoCertifications.get(0)),
-            new DailyTodoDto(dailyTodos.get(1), dailyTodoCertifications.get(1)),
-            new DailyTodoDto(dailyTodos.get(3), dailyTodoCertifications.get(2))
+            new DailyTodoDto(dailyTodos.get(0), dailyTodoCertifications.get(0), true),
+            new DailyTodoDto(dailyTodos.get(1), dailyTodoCertifications.get(1), true),
+            new DailyTodoDto(dailyTodos.get(3), dailyTodoCertifications.get(2), true)
         );
         given(dailyTodoService.findMyDailyTodos(any())).willReturn(dailyTodoDtos);
 
@@ -198,7 +204,7 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
         final ChallengeGroup challengeGroup = ChallengeGroupFixture.create("켈리와 친구들", 6, LocalDate.now(), LocalDate.now().plusDays(7));
         final DailyTodo dailyTodo = new DailyTodo(2L, challengeGroup, doer,  "운동 하기", CERTIFY_COMPLETED, LocalDateTime.now().plusHours(2));
         final DailyTodoCertification dailyTodoCertification = new DailyTodoCertification(1L, dailyTodo, "운동 개조짐 ㅋㅋㅋㅋ", "https://image.url", REVIEW_PENDING, null, LocalDateTime.now().plusHours(3));
-        final List<DailyTodoDto> dailyTodoDtos = List.of(new DailyTodoDto(dailyTodo, dailyTodoCertification));
+        final List<DailyTodoDto> dailyTodoDtos = List.of(new DailyTodoDto(dailyTodo, dailyTodoCertification, true));
 
         given(dailyTodoService.findMyDailyTodos(any())).willReturn(dailyTodoDtos);
 
@@ -252,14 +258,15 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
     @Test
     void getChallengeGroupMemberTodayTodoHistoryV1() throws Exception {
         final FindTargetMemberTodayTodoHistoriesDto serviceMockResponse = new FindTargetMemberTodayTodoHistoriesDto(
+            false,
             3,
             List.of(
-                new TodoHistoryDto(1L, "치킨 먹기", CERTIFY_PENDING.name(), null, null, true, null),
-                new TodoHistoryDto(2L, "재홍님 갈구기", CERTIFY_PENDING.name(), null, null, true, null),
-                new TodoHistoryDto(3L, "치킨 먹기", REVIEW_PENDING.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", true, null),
-                new TodoHistoryDto(4L, "재홍님 갈구기", REVIEW_PENDING.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null),
-                new TodoHistoryDto(5L, "재홍님 갈구기", APPROVE.name(), "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요"),
-                new TodoHistoryDto(6L, "치킨 먹기", REJECT.name(), "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!")
+                new TodoHistoryDto(1L, 1L, "치킨 먹기", CERTIFY_PENDING.name(), true, true, null, null, true, null),
+                new TodoHistoryDto(2L, 2L, "재홍님 갈구기", CERTIFY_PENDING.name(), true, true, null, null, true, null),
+                new TodoHistoryDto(3L, 3L, "치킨 먹기", REVIEW_PENDING.name(), true, true, "개꿀맛 치킨 냠냠", "https://치킨.png", true, null),
+                new TodoHistoryDto(4L, 4L, "재홍님 갈구기", REVIEW_PENDING.name(), true, true, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, null),
+                new TodoHistoryDto(5L, 5L,  "재홍님 갈구기", APPROVE.name(), true, true, "아 재홍님 그거 그렇게 하는거 아닌데", "https://갈굼1.png", false, "재홍님 갈구기 너무 재밌어요"),
+                new TodoHistoryDto(6L, 6L,  "치킨 먹기", REJECT.name(), true, true, "개꿀맛 치킨 냠냠", "https://치킨.png", false, "치킨 부럽다ㅠㅠ 심술나서 노인정!")
             )
         );
         given(dailyTodoHistoryService.findAllTodayTodoHistories(any(), any(), any()))

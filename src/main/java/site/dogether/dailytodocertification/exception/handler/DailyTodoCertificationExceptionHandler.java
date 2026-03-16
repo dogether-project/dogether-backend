@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.dogether.common.controller.dto.response.ApiResponse;
 import site.dogether.dailytodocertification.exception.DailyTodoCertificationException;
+import site.dogether.dailytodocertification.exception.DailyTodoCertificationReviewerNotFoundException;
 
 import static site.dogether.common.controller.dto.response.ApiResponse.fail;
 import static site.dogether.dailytodocertification.exception.handler.DailyTodoCertificationErrorCode.DAILY_TODO_CERTIFICATION_ERROR;
+import static site.dogether.dailytodocertification.exception.handler.DailyTodoCertificationErrorCode.DAILY_TODO_CERTIFICATION_REVIEWER_NOT_FOUND;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -22,5 +24,12 @@ public class DailyTodoCertificationExceptionHandler {
         log.error("{} 발생!", e.getClass().getSimpleName(), e);
         return ResponseEntity.badRequest()
             .body(fail(DAILY_TODO_CERTIFICATION_ERROR));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<Void>> handleDailyTodoCertificationReviewerNotFoundException(final DailyTodoCertificationReviewerNotFoundException e) {
+        log.error("{} 발생!", e.getClass().getSimpleName(), e);
+        return ResponseEntity.badRequest()
+            .body(fail(DAILY_TODO_CERTIFICATION_REVIEWER_NOT_FOUND));
     }
 }

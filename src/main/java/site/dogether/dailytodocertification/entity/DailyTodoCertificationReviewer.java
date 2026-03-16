@@ -66,4 +66,8 @@ public class DailyTodoCertificationReviewer extends BaseEntity {
             throw new InvalidDailyTodoCertificationReviewerException(String.format("데일리 투두 인증 검사자로 투두 작성자 본인을 지정할 수 없습니다. (%s) (%s)", dailyTodoCertification, reviewer));
         }
     }
+
+    public Long getReviewerId() {
+        return reviewer.getId();
+    }
 }

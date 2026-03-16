@@ -2,16 +2,25 @@ package site.dogether.docs.memberactivity.v1;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import site.dogether.dailytodocertification.entity.DailyTodoCertification;
 import site.dogether.docs.util.RestDocsSupport;
 import site.dogether.memberactivity.controller.v1.MemberActivityControllerV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsApiResponseV1;
 import site.dogether.memberactivity.service.MemberActivityService;
-import site.dogether.memberactivity.service.MemberActivityServiceV1;
+import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
+import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
+import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
+import site.dogether.memberactivity.service.dto.DailyTodoCertificationInfoDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.GroupedCertificationsDto;
+import site.dogether.memberactivity.service.dto.MyActivityStatsAndCertificationsDto;
+import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
+import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
 
 import java.util.List;
 
@@ -20,25 +29,25 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("사용자 활동 V1 API 문서화 테스트")
 class MemberActivityControllerV1DocsTest extends RestDocsSupport {
 
-    //TODO: 추후 버저닝이 V0이 사라질 경우 service단은 V1 제거 예정
     private final MemberActivityService memberActivityService = mock(MemberActivityService.class);
-    private final MemberActivityServiceV1 memberActivityServiceV1 = mock(MemberActivityServiceV1.class);
 
     @Override
     protected Object initController() {
-        return new MemberActivityControllerV1(memberActivityService, memberActivityServiceV1);
+        return new MemberActivityControllerV1(memberActivityService);
     }
 
     @DisplayName("[V1] 참여중인 특정 챌린지 그룹 활동 통계 조회 API")
     @Test
     void getGroupActivityStatV1() throws Exception {
-        GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse groupInfo = new GetGroupActivityStatApiResponseV1.ChallengeGroupInfoResponse(
+        final ChallengeGroupInfoDto challengeGroupInfo = new ChallengeGroupInfoDto(
             "그로밋과 함께하는 챌린지",
             10,
             6,
@@ -46,25 +55,27 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
             "25.02.22"
         );
 
-        List<GetGroupActivityStatApiResponseV1.CertificationPeriodResponse> certificationPeriods = List.of(
-            new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(1, 8, 2, 25),
-            new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(2, 6, 3, 50),
-            new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(3, 6, 3, 50),
-            new GetGroupActivityStatApiResponseV1.CertificationPeriodResponse(4, 3, 3, 100)
+        final List<CertificationPeriodDto> certificationPeriods = List.of(
+            new CertificationPeriodDto(1, 8, 2, 25),
+            new CertificationPeriodDto(2, 6, 3, 50),
+            new CertificationPeriodDto(3, 6, 3, 50),
+            new CertificationPeriodDto(4, 3, 3, 100)
         );
 
-        GetGroupActivityStatApiResponseV1.RankingResponse ranking = new GetGroupActivityStatApiResponseV1.RankingResponse(10, 3);
-        GetGroupActivityStatApiResponseV1.MemberStatsResponse stats = new GetGroupActivityStatApiResponseV1.MemberStatsResponse(123, 123, 123);
+        final MyRankInChallengeGroupDto myRankInChallengeGroup = new MyRankInChallengeGroupDto(10, 3);
+        final MyCertificationStatsDto myChallengeGroupStats = new MyCertificationStatsDto(123, 123, 123);
 
-        GetGroupActivityStatApiResponseV1 response = new GetGroupActivityStatApiResponseV1(
-            groupInfo,
-            certificationPeriods,
-            ranking,
-            stats
-        );
+        given(memberActivityService.getChallengeGroupInfo(any(), any()))
+            .willReturn(challengeGroupInfo);
 
-        given(memberActivityService.getGroupActivityStat(any(), any()))
-            .willReturn(response);
+        given(memberActivityService.getCertificationPeriods(any(), any()))
+            .willReturn(certificationPeriods);
+
+        given(memberActivityService.getMyRankInChallengeGroup(any(), any()))
+            .willReturn(myRankInChallengeGroup);
+
+        given(memberActivityService.getMyCertificationStatsInChallengeGroup(any(), any()))
+            .willReturn(myChallengeGroupStats);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/v1/my//groups/{groupId}/activity", 1)
@@ -134,18 +145,19 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
     @DisplayName("[V1] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (투두 완료일 순)")
     @Test
     void getMemberAllStatsSortedByTodoCompletedAtV1() throws Exception {
-
-        GetMemberAllStatsApiResponseV1.DailyTodoStats stats = new GetMemberAllStatsApiResponseV1.DailyTodoStats(
+        final MyCertificationStatsDto stats = new MyCertificationStatsDto(
                 5,
                 3,
                 2
         );
 
-        List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt> certificationsGroupedByTodoCompletedAt = List.of(
-                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt(
+        final Slice<DailyTodoCertification> slice = new SliceImpl<>(List.of(), PageRequest.of(0, 50), false);
+
+        final List<GroupedCertificationsDto> certifications = List.of(
+                new GroupedCertificationsDto(
                         "2025.05.01",
                         List.of(
-                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
+                                new DailyTodoCertificationInfoDto(
                                         1L,
                                         "운동 하기",
                                         "APPROVE",
@@ -155,10 +167,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByTodoCompletedAt(
+                new GroupedCertificationsDto(
                         "2025.05.02",
                         List.of(
-                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
+                                new DailyTodoCertificationInfoDto(
                                         2L,
                                         "인강 듣기",
                                         "APPROVE",
@@ -170,18 +182,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        GetMemberAllStatsApiResponseV1.PageInfoDto pageInfoDto = new GetMemberAllStatsApiResponseV1.PageInfoDto(
-            10,
-            0,
-            true,
-            50
-        );
+        final MyActivityStatsAndCertificationsDto dto = new MyActivityStatsAndCertificationsDto(stats, slice, certifications);
 
-
-        GetMemberAllStatsApiResponseV1 response = new GetMemberAllStatsApiResponseV1(stats, certificationsGroupedByTodoCompletedAt, null, pageInfoDto);
-
-        given(memberActivityServiceV1.getMemberAllStats(any(), any(), any(), any()))
-                .willReturn(response);
+        given(memberActivityService.getMyActivityStatsAndCertifications(any(), any(), any(), any()))
+                .willReturn(dto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/v1/my/activity")
@@ -268,18 +272,19 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
     @DisplayName("[V1] 사용자의 활동 통계 및 작성한 인증 목록 전체 조회 API (그룹 생성일 순)")
     @Test
     void getMemberAllStatsSortedByGroupCreatedAtV1() throws Exception {
-
-        GetMemberAllStatsApiResponseV1.DailyTodoStats stats = new GetMemberAllStatsApiResponseV1.DailyTodoStats(
+        final MyCertificationStatsDto stats = new MyCertificationStatsDto(
                 5,
                 3,
                 2
         );
 
-        List<GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt> certificationsGroupedByGroupCreatedAt = List.of(
-                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt(
+        final Slice<DailyTodoCertification> slice = new SliceImpl<>(List.of(), PageRequest.of(0, 50), false);
+
+        final List<GroupedCertificationsDto> certifications = List.of(
+                new GroupedCertificationsDto(
                         "스쿼트 챌린지",
                         List.of(
-                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
+                                new DailyTodoCertificationInfoDto(
                                         1L,
                                         "운동 하기",
                                         "REJECT",
@@ -289,10 +294,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                 )
                         )
                 ),
-                new GetMemberAllStatsApiResponseV1.CertificationsGroupedByGroupCreatedAt(
+                new GroupedCertificationsDto(
                         "TIL 챌린지",
                         List.of(
-                                new GetMemberAllStatsApiResponseV1.DailyTodoCertificationInfo(
+                                new DailyTodoCertificationInfoDto(
                                         2L,
                                         "인강 듣기",
                                         "REJECT",
@@ -304,17 +309,10 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                 )
         );
 
-        GetMemberAllStatsApiResponseV1.PageInfoDto pageInfoDto = new GetMemberAllStatsApiResponseV1.PageInfoDto(
-            10,
-            0,
-            true,
-            50
-        );
+        final MyActivityStatsAndCertificationsDto dto = new MyActivityStatsAndCertificationsDto(stats, slice, certifications);
 
-        GetMemberAllStatsApiResponseV1 response = new GetMemberAllStatsApiResponseV1(stats, null, certificationsGroupedByGroupCreatedAt, pageInfoDto);
-
-        given(memberActivityServiceV1.getMemberAllStats(any(), any(), any(), any()))
-                .willReturn(response);
+        given(memberActivityService.getMyActivityStatsAndCertifications(any(), any(), any(), any()))
+            .willReturn(dto);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/my/activity")
@@ -396,6 +394,90 @@ class MemberActivityControllerV1DocsTest extends RestDocsSupport {
                                     .description("현재 페이지 내 인증 목록 개수")
                                     .type(JsonFieldType.NUMBER)
                         )));
+    }
+
+    @DisplayName("[V1] 사용자의 인증 목록 전체 조회 API (페이징 X)")
+    @Test
+    void getMyGroupCertificationsV1() throws Exception {
+        final List<DailyTodoCertificationActivityDto> certifications = List.of(
+            new DailyTodoCertificationActivityDto(
+                1L,
+                "운동 하기",
+                "REJECT",
+                false,
+                "운동 개조짐 ㅋㅋㅋㅋ",
+                "운동 조지는 짤.png",
+                "에이 이건 운동 아니지"
+            ),
+            new DailyTodoCertificationActivityDto(
+                2L,
+                "인강 듣기",
+                "REJECT",
+                false,
+                "인강 진짜 열심히 들었습니다. ㅎ",
+                "인강 달리는 짤.png",
+                "우리 오늘 인강 듣는날 아닌데?"
+            )
+        );
+
+        given(memberActivityService.getMyGroupCertificationsByCertificatedAt(any(), any(), any()))
+            .willReturn(certifications);
+
+        given(memberActivityService.getMyGroupCertificationsByGroupCreatedAt(any(), any(), any()))
+            .willReturn(certifications);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/v1/my/activity/todos/{todoId}/group-certifications", 1)
+                    .param("sortBy", "GROUP_CREATED_AT")
+                    .param("status", "REJECT")
+                    .header("Authorization", "Bearer access_token")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andDo(createDocument(
+                pathParameters(
+                    parameterWithName("todoId")
+                        .description("데일리 투두 id")
+                        .attributes(constraints("존재하는 데일리 투두 id만 입력 가능"), pathVariableExample(1))),
+                queryParameters(
+                    parameterWithName("sortBy")
+                        .description("정렬 방식")
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("TODO_COMPLETED_AT(투두 완료일 순)", "GROUP_CREATED_AT(그룹 생성일 순)")),
+                    parameterWithName("status")
+                        .optional()
+                        .description("데일리 투두 상태")
+                        .attributes(constraints("옵션으로 정해진 값만 허용"))
+                        .attributes(options("REVIEW_PENDING(검사 대기)", "APPROVE(인정)", "REJECT(노인정)"))
+                ),
+                responseFields(
+                    fieldWithPath("code")
+                        .description("응답 코드")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("message")
+                        .description("응답 메시지")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].id")
+                        .description("데일리 투두 id")
+                        .type(JsonFieldType.NUMBER),
+                    fieldWithPath("data.certifications[].content")
+                        .description("데일리 투두 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].status")
+                        .description("데일리 투두 상태")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].canRequestCertificationReview")
+                        .description("데일리 투두 인증 검사 요청 가능 여부")
+                        .type(JsonFieldType.BOOLEAN),
+                    fieldWithPath("data.certifications[].certificationContent")
+                        .description("데일리 투두 인증글 내용")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].certificationMediaUrl")
+                        .description("데일리 투두 인증글 이미지 URL")
+                        .type(JsonFieldType.STRING),
+                    fieldWithPath("data.certifications[].reviewFeedback")
+                        .description("데일리 투두 인증 검사 피드백")
+                        .type(JsonFieldType.STRING)
+                )));
     }
 
     @DisplayName("[V1] 사용자 프로필 조회 API")

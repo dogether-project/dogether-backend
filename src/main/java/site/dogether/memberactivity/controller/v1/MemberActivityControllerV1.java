@@ -11,12 +11,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.dogether.auth.resolver.Authenticated;
 import site.dogether.common.controller.dto.response.ApiResponse;
-import site.dogether.memberactivity.controller.v1.dto.response.GetGroupActivityStatApiResponseV1;
-import site.dogether.memberactivity.controller.v1.dto.response.GetMemberAllStatsApiResponseV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetMyActivityStatsAndCertificationsApiResponseV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetMyChallengeGroupActivityStatsApiResponseV1;
+import site.dogether.memberactivity.controller.v1.dto.response.GetMyGroupCertificationsApiResponseV1;
 import site.dogether.memberactivity.controller.v1.dto.response.GetMyProfileApiResponseV1;
 import site.dogether.memberactivity.service.MemberActivityService;
-import site.dogether.memberactivity.service.MemberActivityServiceV1;
+import site.dogether.memberactivity.service.dto.CertificationPeriodDto;
+import site.dogether.memberactivity.service.dto.ChallengeGroupInfoDto;
+import site.dogether.memberactivity.service.dto.DailyTodoCertificationActivityDto;
 import site.dogether.memberactivity.service.dto.FindMyProfileDto;
+import site.dogether.memberactivity.service.dto.MyActivityStatsAndCertificationsDto;
+import site.dogether.memberactivity.service.dto.MyCertificationStatsDto;
+import site.dogether.memberactivity.service.dto.MyRankInChallengeGroupDto;
+
+import java.util.List;
 
 import static site.dogether.common.controller.dto.response.ApiResponse.success;
 
@@ -25,30 +33,69 @@ import static site.dogether.common.controller.dto.response.ApiResponse.success;
 @RestController
 public class MemberActivityControllerV1 {
 
-    //TODO: 추후 버저닝이 V0이 사라질 경우 service단은 V1 제거 예정
     private final MemberActivityService memberActivityService;
-    private final MemberActivityServiceV1 memberActivityServiceV1;
 
     @GetMapping("/groups/{groupId}/activity")
-    public ResponseEntity<ApiResponse<GetGroupActivityStatApiResponseV1>> getGroupActivityStat(
+    public ResponseEntity<ApiResponse<GetMyChallengeGroupActivityStatsApiResponseV1>> getMyChallengeGroupActivityStats(
         @Authenticated final Long memberId, @PathVariable final Long groupId
     ) {
-        final GetGroupActivityStatApiResponseV1 groupActivityStat = memberActivityService.getGroupActivityStat(memberId, groupId);
+        final ChallengeGroupInfoDto challengeGroupInfo = memberActivityService.getChallengeGroupInfo(memberId, groupId);
+        final List<CertificationPeriodDto> certificationPeriods = memberActivityService.getCertificationPeriods(memberId, groupId);
+        final MyRankInChallengeGroupDto myRankInChallengeGroup = memberActivityService.getMyRankInChallengeGroup(memberId, groupId);
+        final MyCertificationStatsDto myCertificationStatsInChallengeGroup = memberActivityService.getMyCertificationStatsInChallengeGroup(memberId, groupId);
 
-        return ResponseEntity.ok(success(groupActivityStat));
+        return ResponseEntity.ok(success(new GetMyChallengeGroupActivityStatsApiResponseV1(
+            GetMyChallengeGroupActivityStatsApiResponseV1.ChallengeGroupInfo.from(challengeGroupInfo),
+            GetMyChallengeGroupActivityStatsApiResponseV1.CertificationPeriod.from(certificationPeriods),
+            GetMyChallengeGroupActivityStatsApiResponseV1.MyRankInChallengeGroup.from(myRankInChallengeGroup),
+            GetMyChallengeGroupActivityStatsApiResponseV1.MyCertificationStatsInChallengeGroup.from(myCertificationStatsInChallengeGroup)
+        )));
     }
 
-    //TODO: 추후 service단 V1 교체 필요
     @GetMapping("/activity")
-    public ResponseEntity<ApiResponse<GetMemberAllStatsApiResponseV1>> getMemberAllStats(
+    public ResponseEntity<ApiResponse<GetMyActivityStatsAndCertificationsApiResponseV1>> getMyActivityStatsAndCertifications(
             @Authenticated final Long memberId,
             @RequestParam final String sortBy,
             @RequestParam(required = false) final String status,
             @PageableDefault(size = 50) final Pageable pageable
     ) {
-        final GetMemberAllStatsApiResponseV1 memberAllStats = memberActivityServiceV1.getMemberAllStats(memberId, sortBy, status, pageable);
+        final MyActivityStatsAndCertificationsDto myActivityStatsAndCertifications = memberActivityService.getMyActivityStatsAndCertifications(memberId, sortBy, status, pageable);
 
-        return ResponseEntity.ok(success(memberAllStats));
+        if (sortBy.equals("TODO_COMPLETED_AT")) {
+            return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
+                GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myActivityStatsAndCertifications.myCertificationStats()),
+                GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByCertificatedAt.fromList(myActivityStatsAndCertifications.groupedCertifications()),
+                null,
+                GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(myActivityStatsAndCertifications.certifications())
+            )));
+        }
+
+        // sortBy = GROUP_CREATED_AT
+        return ResponseEntity.ok(success(new GetMyActivityStatsAndCertificationsApiResponseV1(
+            GetMyActivityStatsAndCertificationsApiResponseV1.MyCertificationStats.from(myActivityStatsAndCertifications.myCertificationStats()),
+            null,
+            GetMyActivityStatsAndCertificationsApiResponseV1.CertificationsGroupedByGroupCreatedAt.fromList(myActivityStatsAndCertifications.groupedCertifications()),
+            GetMyActivityStatsAndCertificationsApiResponseV1.PageInfo.from(myActivityStatsAndCertifications.certifications())
+        )));
+    }
+
+    @GetMapping("/activity/todos/{todoId}/group-certifications")
+    public ResponseEntity<ApiResponse<GetMyGroupCertificationsApiResponseV1>> getMyGroupCertifications(
+        @Authenticated final Long memberId,
+        @PathVariable final Long todoId,
+        @RequestParam final String sortBy,
+        @RequestParam(required = false) final String status
+    ) {
+        if (sortBy.equals("TODO_COMPLETED_AT")) {
+            final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByCertificatedAt(memberId, todoId, status);
+
+            return ResponseEntity.ok(success(new GetMyGroupCertificationsApiResponseV1(GetMyGroupCertificationsApiResponseV1.Certification.fromList(dailyTodoCertificationActivity))));
+        }
+
+        // sortBy = GROUP_CREATED_AT
+        final List<DailyTodoCertificationActivityDto> dailyTodoCertificationActivity = memberActivityService.getMyGroupCertificationsByGroupCreatedAt(memberId, todoId, status);
+
+        return ResponseEntity.ok(success(new GetMyGroupCertificationsApiResponseV1(GetMyGroupCertificationsApiResponseV1.Certification.fromList(dailyTodoCertificationActivity))));
     }
 
     @GetMapping("/profile")
@@ -56,8 +103,7 @@ public class MemberActivityControllerV1 {
         @Authenticated final Long memberId
     ) {
         final FindMyProfileDto myProfile = memberActivityService.getMyProfile(memberId);
-        final GetMyProfileApiResponseV1 response = GetMyProfileApiResponseV1.from(myProfile);
 
-        return ResponseEntity.ok(success(response));
+        return ResponseEntity.ok(success(GetMyProfileApiResponseV1.from(myProfile)));
     }
 }
