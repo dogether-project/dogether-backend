@@ -22,6 +22,7 @@ import site.dogether.dailytodohistory.entity.DailyTodoHistoryRead;
 import site.dogether.member.exception.InvalidMemberException;
 import site.dogether.memberactivity.entity.DailyTodoStats;
 import site.dogether.notification.entity.NotificationToken;
+import site.dogether.reminder.entity.TodoActivityReminderHistory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,6 +69,10 @@ public class Member extends BaseEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<DailyTodoHistoryRead> dailyTodoHistoryRead;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<TodoActivityReminderHistory> todoActivityReminderHistories;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
