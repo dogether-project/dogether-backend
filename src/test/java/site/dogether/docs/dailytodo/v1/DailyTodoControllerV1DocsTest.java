@@ -299,7 +299,7 @@ public class DailyTodoControllerV1DocsTest extends RestDocsSupport {
                         .description("조회한 챌린지 그룹 멤버 투두 리스트")
                         .type(JsonFieldType.ARRAY),
                     fieldWithPath("data.todos[].id")
-                        .description("데일리 투두 id")
+                        .description("투두 히스토리 id")
                         .type(JsonFieldType.NUMBER),
                     fieldWithPath("data.todos[].content")
                         .description("데일리 투두 내용")
