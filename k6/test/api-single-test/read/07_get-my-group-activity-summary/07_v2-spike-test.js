@@ -2,11 +2,11 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import http from 'k6/http';
-import {getChallengeGroupIdsPerMember} from "../../../common/test-data/test-data-common.js";
-import {parseResponseBody, setRequestHeader} from "../../../common/util/api-util.js";
-import {API_BASE_URL} from "../../../common/secret/secret.js";
+import {getChallengeGroupIdsPerMember} from "../../../../common/test-data/test-data-common.js";
+import {parseResponseBody, setRequestHeader} from "../../../../common/util/api-util.js";
+import {API_BASE_URL} from "../../../../common/secret/secret.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../common/secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../common/secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
@@ -53,15 +53,17 @@ export default function (data) {
         '응답 데이터 - certificationPeriods[0].certificationRate 존재': () => responseData?.certificationPeriods[0].certificationRate !== undefined,
         '응답 데이터 - ranking.totalMemberCount 존재': () => responseData?.ranking.totalMemberCount !== undefined,
         '응답 데이터 - ranking.myRank 존재': () => responseData?.ranking.myRank !== undefined,
-        '응답 데이터 - stats.certificatedCount 존재': () => responseData?.stats.certificatedCount !== undefined,
-        '응답 데이터 - stats.approvedCount 존재': () => responseData?.stats.approvedCount !== undefined,
-        '응답 데이터 - stats.rejectedCount 존재': () => responseData?.stats.rejectedCount !== undefined,
     });
 }
 
 function requestApi(vuIndex, challengeGroupId) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
+    const endpoint = `${API_BASE_URL}/api/v2/my/groups/${challengeGroupId}/activity-summary`;
 
-    return http.get(`${API_BASE_URL}/api/v1/my/groups/${challengeGroupId}/activity`, { headers, timeout });
+    if (__VU === 1 && __ITER === 0) {
+        console.log(`API 요청 엔드포인트 : ${endpoint}`);
+    }
+
+    return http.get(endpoint, { headers, timeout });
 }
