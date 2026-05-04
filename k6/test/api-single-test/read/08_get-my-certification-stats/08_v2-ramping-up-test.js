@@ -10,7 +10,7 @@ const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../comm
 export const options = {
     setupTimeout: '30m',
     scenarios: {
-        v1_01_ramping_test: {
+        v2_08_ramping_test: {
             executor: 'ramping-vus',
             stages: [
                 { duration: '2m', target: 200 }, // 2분 동안 0명에서 200명까지 점진적 증가
