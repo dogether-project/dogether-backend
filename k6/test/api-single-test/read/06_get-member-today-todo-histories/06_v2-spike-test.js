@@ -14,7 +14,7 @@ const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../comm
 export const options = {
     setupTimeout: '30m',
     scenarios: {
-        default: {
+        v2_06_spike_test: {
             executor: 'per-vu-iterations',
             vus: 1,
             // vus: 100,
