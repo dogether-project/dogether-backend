@@ -2,17 +2,17 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import http from 'k6/http';
-import {getChallengeGroupIdsPerMember} from "../../../common/test-data/test-data-common.js";
-import {parseResponseBody, setRequestHeader} from "../../../common/util/api-util.js";
-import {API_BASE_URL} from "../../../common/secret/secret.js";
-import {getDateNDaysAgoMySqlDateFormatString} from "../../../common/util/time-util.js";
+import {getChallengeGroupIdsPerMember} from "../../../../common/test-data/test-data-common.js";
+import {parseResponseBody, setRequestHeader} from "../../../../common/util/api-util.js";
+import {API_BASE_URL} from "../../../../common/secret/secret.js";
+import {getDateNDaysAgoMySqlDateFormatString} from "../../../../common/util/time-util.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../common/secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../common/secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
     scenarios: {
-        default: {
+        v2_04_spike_test: {
             executor: 'per-vu-iterations',
             vus: 1,
             // vus: 100,
@@ -39,20 +39,35 @@ export default function (data) {
     const responseBody = parseResponseBody(response);
     const responseData = responseBody.data;
 
-    check(null, {
+    const checks = {
         'API HTTP 상태 코드 200': () => response?.status === 200,
         'API 응답 코드 success': () => responseBody?.code === 'success',
         '응답 데이터 - todos 빈 배열 X': () => responseData?.todos.length > 0,
         '응답 데이터 - todos[0].id 존재': () => responseData?.todos[0].id !== undefined,
         '응답 데이터 - todos[0].content 존재': () => responseData?.todos[0].content !== undefined,
         '응답 데이터 - todos[0].status 존재': () => responseData?.todos[0].status !== undefined,
-    });
+        '응답 데이터 - todos[0].canRequestCertificationReview 존재': () => responseData?.todos[0].status !== undefined,
+    };
+
+    // 투두가 인증 상태일 경우
+    if (responseData?.todos[0].status !== 'CERTIFY_PENDING') {
+        checks['응답 데이터 - todos[0].certificationContent 존재'] = () => responseData?.todos[0].certificationContent !== undefined,
+        checks['응답 데이터 - todos[0].certificationMediaUrl 존재'] = () => responseData?.todos[0].certificationMediaUrl !== undefined,
+        checks['응답 데이터 - todos[0].reviewFeedback 존재'] = () => responseData?.todos[0].reviewFeedback !== undefined
+    }
+
+    check(null, checks);
 }
 
 function requestApi(vuIndex, challengeGroupId) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
     const todayDate = getDateNDaysAgoMySqlDateFormatString(0);
+    const endpoint = `${API_BASE_URL}/api/v2/challenge-groups/${challengeGroupId}/my-todos?date=${todayDate}`;
 
-    return http.get(`${API_BASE_URL}/api/v1/challenge-groups/${challengeGroupId}/my-todos?date=${todayDate}`, { headers, timeout });
+    if (__VU === 1 && __ITER === 0) {
+        console.log(`API 요청 엔드포인트 : ${endpoint}`);
+    }
+
+    return http.get(endpoint, { headers, timeout });
 }

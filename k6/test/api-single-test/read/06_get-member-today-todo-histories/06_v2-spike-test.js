@@ -5,16 +5,16 @@ import http from 'k6/http';
 import {
     getChallengeGroupIdsPerMember,
     getChallengeGroupMembersPerMember
-} from "../../../common/test-data/test-data-common.js";
-import {parseResponseBody, setRequestHeader} from "../../../common/util/api-util.js";
-import {API_BASE_URL} from "../../../common/secret/secret.js";
+} from "../../../../common/test-data/test-data-common.js";
+import {parseResponseBody, setRequestHeader} from "../../../../common/util/api-util.js";
+import {API_BASE_URL} from "../../../../common/secret/secret.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../common/secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../common/secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
     scenarios: {
-        default: {
+        v2_06_spike_test: {
             executor: 'per-vu-iterations',
             vus: 1,
             // vus: 100,
@@ -45,11 +45,15 @@ export default function (data) {
     check(null, {
         'API HTTP 상태 코드 200': () => response?.status === 200,
         'API 응답 코드 success': () => responseBody?.code === 'success',
+        '응답 데이터 - isMine 존재': () => responseData?.isMine !== undefined,
         '응답 데이터 - currentTodoHistoryToReadIndex 존재': () => responseData?.currentTodoHistoryToReadIndex !== undefined,
         '응답 데이터 - todos 빈 배열 X': () => responseData?.todos.length > 0,
-        '응답 데이터 - todos[0].id 존재': () => responseData?.todos[0].id !== undefined,
+        '응답 데이터 - todos[0].historyId 존재': () => responseData?.todos[0].historyId !== undefined,
+        '응답 데이터 - todos[0].todoId 존재': () => responseData?.todos[0].todoId !== undefined,
         '응답 데이터 - todos[0].content 존재': () => responseData?.todos[0].content !== undefined,
         '응답 데이터 - todos[0].status 존재': () => responseData?.todos[0].status !== undefined,
+        '응답 데이터 - todos[0].canRequestCertification 존재': () => responseData?.todos[0].canRequestCertification !== undefined,
+        '응답 데이터 - todos[0].canRequestCertificationReview 존재': () => responseData?.todos[0].canRequestCertificationReview !== undefined,
         '응답 데이터 - todos[0].isRead 존재': () => responseData?.todos[0].isRead !== undefined,
     });
 }
@@ -57,6 +61,11 @@ export default function (data) {
 function requestApi(vuIndex, challengeGroupId, otherMemberId) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
+    const endpoint = `${API_BASE_URL}/api/v2/challenge-groups/${challengeGroupId}/challenge-group-members/${otherMemberId}/today-todo-history`;
 
-    return http.get(`${API_BASE_URL}/api/v1/challenge-groups/${challengeGroupId}/challenge-group-members/${otherMemberId}/today-todo-history`, { headers, timeout });
+    if (__VU === 1 && __ITER === 0) {
+        console.log(`API 요청 엔드포인트 : ${endpoint}`);
+    }
+
+    return http.get(endpoint, { headers, timeout });
 }

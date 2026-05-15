@@ -2,15 +2,15 @@ import { sleep } from 'k6';
 import {check} from 'k6';
 import { SharedArray } from 'k6/data';
 import http from 'k6/http';
-import {parseResponseBody, setRequestHeader} from "../../../common/util/api-util.js";
-import {API_BASE_URL} from "../../../common/secret/secret.js";
+import {parseResponseBody, setRequestHeader} from "../../../../common/util/api-util.js";
+import {API_BASE_URL} from "../../../../common/secret/secret.js";
 
-const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../common/secret/tokens.json')));
+const tokens = new SharedArray('tokens', () => JSON.parse(open('../../../../common/secret/tokens.json')));
 
 export const options = {
     setupTimeout: '30m',
     scenarios: {
-        default: {
+        v2_08_spike_test: {
             executor: 'per-vu-iterations',
             vus: 1,
             // vus: 100,
@@ -36,13 +36,20 @@ export default function () {
     check(null, {
         'API HTTP 상태 코드 200': () => response?.status === 200,
         'API 응답 코드 success': () => responseBody?.code === 'success',
-        '응답 데이터 - checkParticipating 존재': () => responseData?.checkParticipating !== undefined
+        '응답 데이터 - certificatedCount 존재': () => responseData?.certificatedCount !== undefined,
+        '응답 데이터 - approvedCount 존재': () => responseData?.approvedCount !== undefined,
+        '응답 데이터 - rejectedCount 존재': () => responseData?.rejectedCount !== undefined,
     });
 }
 
 function requestApi(vuIndex) {
     const timeout = '1800s';
     const headers = setRequestHeader(tokens[vuIndex]);
+    const endpoint = `${API_BASE_URL}/api/v2/my/certification-stats`;
 
-    return http.get(`${API_BASE_URL}/api/v1/groups/participating`, { headers, timeout });
+    if (__VU === 1 && __ITER === 0) {
+        console.log(`API 요청 엔드포인트 : ${endpoint}`);
+    }
+
+    return http.get(endpoint, { headers, timeout });
 }

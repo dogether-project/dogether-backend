@@ -5,8 +5,8 @@ import {deleteAllByRowInsertedAt} from "../../util/db-query.js";
 async function clearCurrentActivityData() {
     // nDay전 날짜로 row_inserted_at이 설정된 데이터를 모두 삭제
     // 기본값은 0, 원하는 날짜로 변경해서 사용후 원복할 것
-    const nDay = 0;
-    console.log(`🧹 현재 활동 테스트 데이터 삭제 시작. (${nDay}일전 데이터}\n`);
+    const nDay = 1;
+    console.log(`🧹 현재 활동 테스트 데이터 삭제 시작. (${nDay}일전 데이터, ${getDateNDaysAgoMySqlDateFormatString(nDay)})\n`);
     await clearData(nDay);
     console.log("🎉 현재 활동 데이터 삭제 완료!\n");
 }
